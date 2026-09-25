@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ t('reg.title') }}{% endblock %}
+{% block content %}
+<div class="wrap-narrow section">
+  <span class="eyebrow">{{ t('reg.subtitle') }}</span>
+  <h1>{{ t('reg.title') }}</h1>
+  <div class="card kumkum">
+    {% if state == 'not_yet' %}
+      <h2>{{ t('reg.not_yet') }} {{ dates.reg_start|date }}</h2>
+      <p class="dim">{{ t('reg.intro') }}</p>
+      <p class="small muted">{{ t('reg.closes_on') }}: {{ dates.reg_end|date }}</p>
+    {% else %}
+      <h2>{{ t('reg.closed') }}</h2>
+      <p class="dim">{{ t('reg.closed_on') }} {{ dates.reg_end|date }}.</p>
+    {% endif %}
+    <div class="btn-row"><a class="btn" href="{{ url_for('public.status') }}">{{ t('nav.status') }}</a><a class="btn secondary" href="{{ url_for('public.examination') }}">{{ t('nav.exam') }}</a><a class="btn secondary" href="{{ url_for('public.notices') }}">{{ t('nav.notices') }}</a></div>
+  </div>
+</div>
+{% endblock %}

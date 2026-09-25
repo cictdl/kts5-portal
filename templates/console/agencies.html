@@ -1,0 +1,12 @@
+{% extends "console/base.html" %}
+{% block title %}Participating agencies{% endblock %}
+{% block content %}
+<p><a class="btn sm" href="{{ url_for('admin.agency_form') }}">+ New agency</a> <a class="btn sm secondary" href="{{ url_for('public.partners') }}" target="_blank">Public page ↗</a></p>
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Code</th><th>Agency</th><th>Kind</th><th>Contact</th><th class="num">Users</th><th class="num">Open tasks</th><th>Status</th><th></th></tr></thead>
+  <tbody>{% for a in rows %}
+  <tr><td><code>{{ a.code }}</code></td><td><b>{{ a.short_name }}</b><div class="small muted">{{ a.name }}</div></td><td>{{ a.kind }}</td><td class="small">{{ a.contact_name }}{% if a.email %}<br>{{ a.email }}{% endif %}{% if a.phone %}<br>{{ a.phone }}{% endif %}</td><td class="num">{{ a.users }}</td><td class="num">{{ a.open_tasks }}</td>
+    <td>{% if a.active %}<span class="pill green">active</span>{% else %}<span class="pill grey">inactive</span>{% endif %}</td>
+    <td><a class="btn xs secondary" href="{{ url_for('admin.agency_form', aid=a.id) }}">Edit</a> <a class="btn xs ghost" href="{{ url_for('agency.tasks', agency=a.id) }}">Tasks</a></td></tr>
+  {% endfor %}</tbody></table></div>
+{% endblock %}

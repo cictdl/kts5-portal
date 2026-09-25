@@ -1,0 +1,18 @@
+{% extends "console/base.html" %}
+{% block title %}{{ 'Edit notice' if n else 'New notice' }}{% endblock %}
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="card" style="max-width:860px">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <div class="fields">
+    <div class="field wide"><label for="title">Title</label><input type="text" id="title" name="title" value="{{ n.title if n else '' }}" required maxlength="200"></div>
+    <div class="field wide"><label for="body">Body (plain text; blank line between paragraphs)</label><textarea id="body" name="body" rows="10">{{ n.body if n else '' }}</textarea></div>
+    <div class="field"><label for="category">Category</label><select id="category" name="category">{% for c in cats %}<option value="{{ c }}" {{ 'selected' if n and n.category == c }}>{{ c }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="lang">Language of the text</label><select id="lang" name="lang">{% for c, nm in [('en', 'English'), ('ta', 'Tamil'), ('hi', 'Hindi')] %}<option value="{{ c }}" {{ 'selected' if n and n.lang == c }}>{{ nm }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="publish_at">Publish from (optional, YYYY-MM-DDTHH:MM)</label><input type="datetime-local" id="publish_at" name="publish_at" value="{{ n.publish_at or '' if n else '' }}"></div>
+    <div class="field"><label for="link">External link (optional)</label><input type="url" id="link" name="link" value="{{ n.link if n else '' }}"></div>
+    <div class="field"><label for="attachment">Attachment (PDF, image, office file)</label><input type="file" id="attachment" name="attachment">{% if n and n.attachment %}<span class="help">Current: {{ n.attachment }}</span>{% endif %}</div>
+    <div class="field"><label>&nbsp;</label><label class="check"><input type="checkbox" name="published" value="1" {{ 'checked' if (n and n.published) or not n }}> Published</label><label class="check"><input type="checkbox" name="pinned" value="1" {{ 'checked' if n and n.pinned }}> Pinned to the top</label></div>
+  </div>
+  <div class="btn-row" style="margin-top:14px"><button class="btn" type="submit">Save</button><a class="btn ghost" href="{{ url_for('admin.notices') }}">Cancel</a></div>
+</form>
+{% endblock %}

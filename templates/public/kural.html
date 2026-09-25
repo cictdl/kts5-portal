@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ t('res.kural_browser') }} · {{ chapter.adhigaram }}. {{ chapter.name }}{% endblock %}
+{% block content %}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('res.cat_translation') }}</span>
+  <h1>{{ t('res.kural_browser') }}</h1>
+  <p class="dim" style="max-width:70ch">{{ t('res.kural_intro') }}</p>
+  <form method="get" class="chapter-nav">
+    <label for="ch" class="small"><b>{{ t('common.chapter') }}</b></label>
+    <select id="ch" name="ch" data-autosubmit style="max-width:340px">
+      {% for pal in pals %}<optgroup label="{{ pal.num }}. {{ pal.name }} · {{ pal.nameEn }}">
+        {% for c in chapters if c.palNum == pal.num %}<option value="{{ c.adhigaram }}" {{ 'selected' if c.adhigaram == chapter.adhigaram }}>{{ c.adhigaram }}. {{ c.name }} · {{ c.nameEn }}</option>{% endfor %}
+      </optgroup>{% endfor %}
+    </select>
+    <label for="l" class="small"><b>{{ t('common.language') }}</b></label>
+    <select id="l" name="l" data-autosubmit style="max-width:260px">
+      {% for L in langs %}<option value="{{ L.code }}" {{ 'selected' if L.code == lang }}>{{ L.name }} · {{ L.native }}</option>{% endfor %}
+      {% for base, var in variants.items() %}<option value="{{ var }}" {{ 'selected' if var == lang }}>{{ var|langname }}</option>{% endfor %}
+    </select>
+    {% if chapter.adhigaram > 1 %}<a class="btn sm secondary" href="{{ url_for('public.kural_browser', ch=chapter.adhigaram - 1, l=lang) }}">← {{ t('common.previous') }}</a>{% endif %}
+    {% if chapter.adhigaram < 133 %}<a class="btn sm secondary" href="{{ url_for('public.kural_browser', ch=chapter.adhigaram + 1, l=lang) }}">{{ t('common.next') }} →</a>{% endif %}
+  </form>
+
+  <div class="two-col" style="grid-template-columns: 1fr 300px; align-items:start">
+    <div class="card">
+      <span class="eyebrow">{{ chapter.pal }} · {{ chapter.palEn }} › {{ chapter.iyal }} · {{ chapter.iyalEn }}</span>
+      <h2><span class="ta">{{ chapter.adhigaram }}. {{ chapter.name }}</span> <span class="dim" style="font-weight:500">· {{ chapter.nameEn }}</span></h2>
+      <div {% if lang in ('ur', 'ksn') %}dir="rtl"{% endif %}>
+      {% for k, ln in rows %}
+      <div class="kural-row" id="k{{ k.n }}">
+        <div class="n"><a href="{{ url_for('public.kural_single', n=k.n) }}">{{ k.n }}</a></div>
+        <div>
+          <div class="tamil ta" dir="ltr">{{ k.l1 }}<br>{{ k.l2 }}</div>
+          {% if lang != 'ta' %}
+            {% if ln %}<div class="trans">{% for line in ln %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}</div>{% else %}<div class="trans muted small">—</div>{% endif %}
+          {% elif k.tr.tac %}<div class="trans ta">{{ k.tr.tac[0] }}</div>{% endif %}
+          {% if lang == 'en' and k.tl %}<div class="tl">{{ k.tl|join(' · ') }}</div>{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+      </div>
+    </div>
+    <div class="card flat">
+      <h3>{{ t('common.chapters') }}</h3>
+      <div class="chapter-list">
+        {% for c in chapters %}<a href="{{ url_for('public.kural_browser', ch=c.adhigaram, l=lang) }}" class="{{ 'on' if c.adhigaram == chapter.adhigaram }}">{{ c.adhigaram }}. <span class="ta">{{ c.name }}</span></a>{% endfor %}
+      </div>
+    </div>
+  </div>
+  <p class="small muted" style="margin-top:16px">Translations © Central Institute of Classical Tamil, Chennai · CC BY 4.0 · Also available as the <a href="https://cictdl.github.io/index.html/kural-app/" rel="noopener">Thirukkural Multilingual App</a>.</p>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "console/base.html" %}
+{% block title %}Test monitor{% endblock %}
+{% block content %}
+<div class="kpis">
+  <div class="kpi"><div class="lbl">Window</div><div class="num" style="font-size:1.2rem">{{ settings['exam.date']|date }}</div><div class="sub">{{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST · {% if is_open %}<span class="pill green">open now</span>{% else %}<span class="pill grey">closed · mode {{ settings['exam.open'] }}</span>{% endif %}</div></div>
+  <div class="kpi"><div class="lbl">Eligible</div><div class="num">{{ '{:,}'.format(eligible) }}</div><div class="sub">verified candidates</div></div>
+  <div class="kpi"><div class="lbl">In progress</div><div class="num">{{ counts.get('in_progress', 0) }}</div></div>
+  <div class="kpi"><div class="lbl">Submitted</div><div class="num">{{ counts.get('submitted', 0) }}</div><div class="sub">{{ counts.get('expired', 0) }} auto-submitted at time-out</div></div>
+</div>
+{% if has_perm(current_user, 'exam.manage') %}
+<div class="card" style="margin-bottom:16px">
+  <form method="post" class="btn-row">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <span class="small dim">Window control:</span>
+    <button class="btn sm" name="action" value="auto">Automatic (by date and time)</button>
+    <button class="btn sm saffron" name="action" value="open">Force open now</button>
+    <button class="btn sm danger" name="action" value="close">Force close</button>
+    <span style="flex:1"></span>
+    <button class="btn sm ghost" name="action" value="expire_stale">Close overdue sessions</button>
+  </form>
+</div>
+{% endif %}
+<div class="two-col">
+  <div class="card">
+    <h3>Results by language</h3>
+    <table class="table"><thead><tr><th>Language</th><th class="num">Submitted</th><th class="num">Average</th><th class="num">Best</th></tr></thead>
+      <tbody>{% for r in by_lang %}<tr><td>{{ r.lang|langname }}</td><td class="num">{{ r.n }}</td><td class="num">{{ '%.1f'|format(r.avg or 0) }}</td><td class="num">{{ r.best|int if r.best is not none else '' }}</td></tr>{% else %}<tr><td colspan="4" class="muted">No submissions yet.</td></tr>{% endfor %}</tbody></table>
+  </div>
+  <div class="card">
+    <h3>Score distribution</h3>
+    {% set mx = (dist|map(attribute='n')|max) if dist else 1 %}
+    {% for d in dist %}<div class="hbar"><span>{{ d.s }}</span><div class="track"><div class="fill" style="width:{{ (d.n / mx * 100)|round(1) }}%"></div></div><span class="v">{{ d.n }}</span></div>{% else %}<p class="muted small">No submissions yet.</p>{% endfor %}
+  </div>
+</div>
+<div class="card" style="margin-top:16px">
+  <h3>Live sessions ({{ live|length }})</h3>
+  <div class="table-wrap"><table class="table"><thead><tr><th>Candidate</th><th>Language</th><th>Started</th><th>Deadline</th><th>IP</th><th></th></tr></thead>
+    <tbody>{% for s in live %}<tr><td><a href="{{ url_for('admin.application', aid=s.application_id) }}">{{ s.app_no }}</a> {{ s.full_name }}</td><td>{{ s.lang|langname }}</td><td>{{ s.started_at|time }}</td><td>{{ s.deadline_at|time }}</td><td class="small">{{ s.ip }}</td><td><a class="btn xs secondary" href="{{ url_for('admin.exam_session', sid=s.id) }}">Open</a></td></tr>{% else %}<tr><td colspan="6" class="muted">None right now.</td></tr>{% endfor %}</tbody></table></div>
+</div>
+<div class="card" style="margin-top:16px">
+  <h3>Recent submissions</h3>
+  <div class="table-wrap"><table class="table"><thead><tr><th>Candidate</th><th>Institution</th><th>Language</th><th>Submitted</th><th class="num">Time</th><th class="num">Score</th><th>Status</th><th></th></tr></thead>
+    <tbody>{% for s in recent %}<tr><td><a href="{{ url_for('admin.application', aid=s.application_id) }}">{{ s.app_no }}</a> {{ s.full_name }}</td><td>{{ s.college_name|truncate(40) }}</td><td>{{ s.lang|langname }}</td><td>{{ s.submitted_at|datetime }}</td><td class="num">{{ s.time_taken_sec // 60 }}m</td><td class="num"><b>{{ s.score|int }}</b></td><td><span class="status-chip st-{{ s.status }}">{{ s.status }}</span></td><td><a class="btn xs secondary" href="{{ url_for('admin.exam_session', sid=s.id) }}">Answers</a></td></tr>{% else %}<tr><td colspan="8" class="muted">None yet.</td></tr>{% endfor %}</tbody></table></div>
+</div>
+{% endblock %}

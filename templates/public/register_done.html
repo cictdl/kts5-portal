@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{ t('reg.ack') }} · {{ app.app_no }}{% endblock %}
+{% block content %}
+<div class="wrap section">
+  {% if not printable %}
+  <div class="alert success"><b>{{ t('reg.done_title') }}.</b> {{ t('reg.done_lead') }} <b>{{ app.app_no }}</b>. {{ t('reg.done_note') }}</div>
+  {% endif %}
+  <div class="doc">
+    <div class="head">
+      <img src="{{ url_for('static', filename='img/kts-logo.png') }}" alt="">
+      <div><b>{{ site.name }} · {{ site.theme_en }}</b><small>{{ site.organiser }} · {{ site.ministry }}</small><br><small>{{ t('reg.ack') }}</small></div>
+      <img src="{{ url_for('static', filename='img/cict-logo.png') }}" alt="">
+    </div>
+    <div class="row">
+      <div>
+        <div class="appno">{{ app.app_no }}</div>
+        <dl style="margin-top:12px">
+          <dt>{{ t('reg.full_name') }}</dt><dd>{{ app.full_name }}</dd>
+          <dt>{{ t('reg.dob') }}</dt><dd>{{ app.dob|date }}</dd>
+          <dt>{{ t('common.mobile') }}</dt><dd>{{ app.mobile[:2] }}XXXXXX{{ app.mobile[-2:] }}</dd>
+          <dt>{{ t('common.email') }}</dt><dd>{{ app.email }}</dd>
+          <dt>{{ t('reg.college_name') }}</dt><dd>{{ app.college_name }}{% if app.aishe_code %} ({{ app.aishe_code }}){% endif %}, {{ app.college_state }}</dd>
+          <dt>{{ t('reg.course_level') }}</dt><dd>{{ app.course_level }} · {{ app.discipline }} · {{ app.year_of_study }}</dd>
+          <dt>{{ t('reg.pref_lang') }}</dt><dd>{{ lang_name }}</dd>
+          <dt>Submitted</dt><dd>{{ app.created_at|datetime }} IST</dd>
+          <dt>{{ t('common.status') }}</dt><dd><span class="status-chip st-{{ app.status }}">{{ app.status.replace('_', ' ') }}</span></dd>
+        </dl>
+      </div>
+      <div style="text-align:center">
+        {% if printable %}<img class="photo" src="{{ url_for('candidate.photo') }}" alt="">{% endif %}
+        {% if qr %}<img class="qr" src="{{ qr }}" alt="QR"><br><small>{{ site.base_url }}/status</small>{% endif %}
+      </div>
+    </div>
+    <div class="foot">
+      {{ t('reg.done_note') }}<br>
+      {{ t('home.exam_date') }}: {{ settings['exam.date']|date }}, {{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST · {{ t('common.help') }}: {{ settings['contact.email'] }}
+    </div>
+  </div>
+  <div class="btn-row no-print" style="margin-top:16px;justify-content:center">
+    <button class="btn" onclick="window.print()">{{ t('common.print') }}</button>
+    <a class="btn secondary" href="{{ url_for('candidate.login') }}">{{ t('nav.candidate') }}</a>
+    <a class="btn ghost" href="{{ url_for('public.home') }}">{{ t('nav.home') }}</a>
+  </div>
+</div>
+{% endblock %}

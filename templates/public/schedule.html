@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ t('schedule.title') }}{% endblock %}
+{% block content %}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('home.kicker') }}</span>
+  <h1>{{ t('schedule.title') }}</h1>
+  <p class="dim" style="max-width:70ch">{{ t('schedule.intro') }}</p>
+  <div class="dates" style="margin-bottom:24px">
+    <div class="date-tile"><div class="lbl">{{ t('home.reg_window') }}</div><div class="val">{{ dates.reg_start|date }} – {{ dates.reg_end|date }}</div></div>
+    <div class="date-tile"><div class="lbl">{{ t('home.exam_date') }}</div><div class="val">{{ dates.exam_date|date }}</div><div class="sub">{{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST</div></div>
+    <div class="date-tile"><div class="lbl">{{ t('home.merit') }}</div><div class="val">{% if settings['merit.published'] == '1' %}Published{% else %}To be announced{% endif %}</div></div>
+    <div class="date-tile"><div class="lbl">{{ t('home.orientation') }}</div><div class="val">After the merit list</div></div>
+  </div>
+  <h2>{{ t('schedule.upcoming') }}</h2>
+  <div class="table-wrap"><table class="table">
+    <thead><tr><th>{{ t('common.date') }}</th><th>Event</th><th>{{ t('common.category') }}</th><th>{{ t('common.language') }}</th><th>{{ t('common.venue') }}</th><th>Agency</th></tr></thead>
+    <tbody>{% for e in upcoming %}<tr><td style="white-space:nowrap">{{ e.starts_at|datetime }}{% if e.ends_at %}<br><span class="muted small">to {{ e.ends_at|datetime }}</span>{% endif %}</td><td><b>{{ e.title }}</b>{% if e.description %}<div class="small dim">{{ e.description }}</div>{% endif %}</td><td><span class="pill grey">{{ e.kind }}</span></td><td>{{ e.lang|langname if e.lang else '' }}</td><td>{{ e.venue }}{% if e.link %} <a href="{{ e.link }}" rel="noopener">🔗</a>{% endif %}</td><td>{{ e.agency or '' }}</td></tr>
+    {% else %}<tr><td colspan="6" class="muted">{{ t('common.none') }}</td></tr>{% endfor %}</tbody></table></div>
+  {% if past %}
+  <h2 style="margin-top:28px">{{ t('schedule.past') }}</h2>
+  <div class="table-wrap"><table class="table">
+    <tbody>{% for e in past %}<tr><td style="white-space:nowrap">{{ e.starts_at|datetime }}</td><td><b>{{ e.title }}</b></td><td><span class="pill grey">{{ e.kind }}</span></td><td>{{ e.venue }}</td></tr>{% endfor %}</tbody></table></div>
+  {% endif %}
+</div>
+{% endblock %}

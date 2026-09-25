@@ -1,0 +1,40 @@
+{% extends "console/base.html" %}
+{% block title %}Coordination hub{% if agency %} · {{ agency.short_name }}{% endif %}{% endblock %}
+{% block content %}
+{% if agency %}<div class="alert info"><b>{{ agency.name }}</b> · {{ agency.role_desc }}</div>{% endif %}
+<div class="kpis">
+  <div class="kpi"><div class="lbl">Open</div><div class="num">{{ counts.get('open', 0) }}</div></div>
+  <div class="kpi"><div class="lbl">In progress</div><div class="num">{{ counts.get('in_progress', 0) }}</div></div>
+  <div class="kpi"><div class="lbl">Blocked</div><div class="num" style="color:var(--kumkum)">{{ counts.get('blocked', 0) }}</div></div>
+  <div class="kpi"><div class="lbl">Done</div><div class="num" style="color:var(--green)">{{ counts.get('done', 0) }}</div></div>
+</div>
+<div class="two-col">
+  <div>
+    <div class="card">
+      <div class="section-head"><h3>Due soon</h3><a class="small" href="{{ url_for('agency.tasks') }}">All tasks →</a></div>
+      {% for t_ in due_soon %}<div class="tcard {{ 'overdue' if t_.due_date < today }}"><a class="t" href="{{ url_for('agency.task', tid=t_.id) }}">{{ t_.title }}</a><div class="m"><span class="status-chip st-{{ t_.status }}">{{ t_.status.replace('_', ' ') }}</span><span>{{ t_.agency or '—' }}</span><span class="{{ 'prio-' + t_.priority }}">{{ t_.priority }}</span><span>due {{ t_.due_date|date }}</span></div></div>{% else %}<p class="muted small">Nothing due.</p>{% endfor %}
+      {% if has_perm(current_user, 'coord.edit') %}<a class="btn sm" href="{{ url_for('agency.task_form') }}" style="margin-top:8px">+ New task</a>{% endif %}
+    </div>
+    {% if by_agency %}
+    <div class="card" style="margin-top:14px">
+      <h3>Workload by agency</h3>
+      <table class="table"><thead><tr><th>Agency</th><th class="num">Open</th><th class="num">Overdue</th><th class="num">Done</th></tr></thead><tbody>{% for r in by_agency %}<tr><td>{{ r.short_name }}</td><td class="num">{{ r.open or 0 }}</td><td class="num" style="{{ 'color:var(--kumkum);font-weight:700' if r.overdue }}">{{ r.overdue or 0 }}</td><td class="num">{{ r.done or 0 }}</td></tr>{% endfor %}</tbody></table>
+    </div>
+    {% endif %}
+  </div>
+  <div>
+    <div class="card">
+      <div class="section-head"><h3>Latest updates</h3></div>
+      {% for u in updates %}<div class="update"><span class="who">{{ u.who or 'system' }}</span> <span class="when">{{ u.created_at|datetime }}</span> · <a href="{{ url_for('agency.task', tid=u.task_id) }}">{{ u.title }}</a>{% if u.new_status %} <span class="status-chip st-{{ u.new_status }}">{{ u.new_status.replace('_', ' ') }}</span>{% endif %}<div class="dim">{{ u.note }}</div></div>{% else %}<p class="muted small">No updates yet.</p>{% endfor %}
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="section-head"><h3>Calendar</h3><a class="small" href="{{ url_for('agency.calendar') }}">Full calendar →</a></div>
+      <ul class="notice-list">{% for e in events %}<li><div><b>{{ e.title }}</b><div class="meta">{{ e.kind }}{% if e.agency %} · {{ e.agency }}{% endif %}</div></div><span class="meta">{{ e.starts_at|datetime }}</span></li>{% else %}<li class="muted">No upcoming events.</li>{% endfor %}</ul>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="section-head"><h3>Shared documents</h3><a class="small" href="{{ url_for('agency.documents') }}">All →</a></div>
+      <ul class="notice-list">{% for d in docs %}<li><div><a href="{{ url_for('agency.document_download', did=d.id) }}">{{ d.title }}</a><div class="meta">{{ d.agency or 'CICT' }} · {{ d.file_size|size }}</div></div><span class="meta">{{ d.created_at|date }}</span></li>{% else %}<li class="muted">None yet.</li>{% endfor %}</ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

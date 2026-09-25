@@ -1,0 +1,19 @@
+# runtime data (never commit participants' data)
+instance/
+uploads/
+logs/
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+secret.key
+# build output and vendored packages (rebuilt by deploy/package*.ps1)
+dist/
+/lib/
+/web.config
+venv/
+.venv/
+# caches and local tooling
+__pycache__/
+*.pyc
+.pytest_cache/
+.claude/

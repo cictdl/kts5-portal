@@ -1,0 +1,24 @@
+{% extends "console/base.html" %}
+{% block title %}Users and roles{% endblock %}
+{% block content %}
+<p><a class="btn sm" href="{{ url_for('admin.user_form') }}">+ New user</a></p>
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Agency</th><th>Status</th><th>Last sign-in</th><th></th></tr></thead>
+  <tbody>{% for u in rows %}
+  <tr><td><b>{{ u.name }}</b></td><td>{{ u.email }}</td><td><span class="pill">{{ u.role }}</span></td><td>{{ u.agency or '' }}</td>
+    <td>{% if u.active %}<span class="pill green">active</span>{% else %}<span class="pill grey">disabled</span>{% endif %}{% if u.must_change_password %} <span class="pill saffron">temp password</span>{% endif %}</td>
+    <td class="small">{{ u.last_login_at|datetime if u.last_login_at else 'never' }}</td>
+    <td><a class="btn xs secondary" href="{{ url_for('admin.user_form', uid=u.id) }}">Edit</a></td></tr>
+  {% endfor %}</tbody></table></div>
+<div class="card" style="margin-top:16px">
+  <h3>Roles</h3>
+  <table class="table"><tbody>
+    <tr><td><b>superadmin</b></td><td>Everything, including users, settings and the audit log.</td></tr>
+    <tr><td><b>admin</b></td><td>Applications, question bank, test monitor, selection, content, coordination, settings. No user management.</td></tr>
+    <tr><td><b>verifier</b></td><td>Verify or reject applications, export lists, read-only test monitor.</td></tr>
+    <tr><td><b>content</b></td><td>Notices, repository, events, helpdesk messages.</td></tr>
+    <tr><td><b>agency</b></td><td>Coordination hub for their own agency: tasks, updates, shared documents, calendar. No participant data.</td></tr>
+    <tr><td><b>viewer</b></td><td>Read-only dashboard and lists.</td></tr>
+  </tbody></table>
+</div>
+{% endblock %}

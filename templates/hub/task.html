@@ -1,0 +1,40 @@
+{% extends "console/base.html" %}
+{% block title %}Task #{{ tk.id }}{% endblock %}
+{% block heading %}{{ tk.title }} <span class="status-chip st-{{ tk.status }}">{{ tk.status.replace('_', ' ') }}</span>{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('agency.tasks') }}">← Tasks</a></p>
+<div class="two-col" style="grid-template-columns: 1.3fr 1fr">
+  <div>
+    <div class="card">
+      <dl class="detail" style="display:grid;grid-template-columns:150px 1fr;gap:6px 12px;font-size:.93rem">
+        <dt class="muted">Workstream</dt><dd>{{ workstreams.get(tk.workstream, tk.workstream) }}</dd>
+        <dt class="muted">Agency</dt><dd>{{ tk.agency_name or '—' }}</dd>
+        <dt class="muted">Assignee</dt><dd>{{ tk.assignee or '—' }}</dd>
+        <dt class="muted">Priority</dt><dd class="prio-{{ tk.priority }}">{{ tk.priority }}</dd>
+        <dt class="muted">Due</dt><dd>{{ tk.due_date|date if tk.due_date else '—' }}</dd>
+        <dt class="muted">Created</dt><dd>{{ tk.created_at|datetime }} by {{ tk.creator or 'system' }}</dd>
+      </dl>
+      {% if tk.description %}<p style="white-space:pre-line;margin-top:12px">{{ tk.description }}</p>{% endif %}
+      {% if can_edit %}<a class="btn xs secondary" href="{{ url_for('agency.task_form', tid=tk.id) }}">Edit task</a>{% endif %}
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3>Progress</h3>
+      {% for u in updates %}<div class="update"><span class="who">{{ u.who or 'system' }}</span> <span class="when">{{ u.created_at|datetime }}</span>{% if u.new_status %} · <span class="status-chip st-{{ u.old_status }}">{{ u.old_status.replace('_', ' ') }}</span> → <span class="status-chip st-{{ u.new_status }}">{{ u.new_status.replace('_', ' ') }}</span>{% endif %}<div style="white-space:pre-line">{{ u.note }}</div>{% if u.attachment %}<a class="small" href="{{ url_for('agency.hub_file', relpath=u.attachment) }}" target="_blank" rel="noopener">📎 attachment</a>{% endif %}</div>{% else %}<p class="muted small">No updates yet.</p>{% endfor %}
+    </div>
+  </div>
+  <div>
+    {% if can_edit %}
+    <div class="card accent">
+      <h3>Post an update</h3>
+      <form method="post" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <div class="field"><label for="note">Note</label><textarea id="note" name="note" rows="4" placeholder="What was done, what is needed from others, blockers…"></textarea></div>
+        <div class="field" style="margin-top:8px"><label for="status">Status</label><select id="status" name="status">{% for s in statuses %}<option value="{{ s }}" {{ 'selected' if tk.status == s }}>{{ s.replace('_', ' ') }}</option>{% endfor %}</select></div>
+        <div class="field" style="margin-top:8px"><label for="attachment">Attachment</label><input type="file" id="attachment" name="attachment"></div>
+        <button class="btn sm" type="submit" style="margin-top:10px">Post update</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

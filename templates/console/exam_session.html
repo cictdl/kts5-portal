@@ -1,0 +1,19 @@
+{% extends "console/base.html" %}
+{% block title %}Test session · {{ s.app_no }}{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('admin.exam_monitor') }}">← Test monitor</a> · <a href="{{ url_for('admin.application', aid=s.application_id) }}">{{ s.app_no }} {{ s.full_name }}</a> · {{ s.college_name }}</p>
+<div class="kpis">
+  <div class="kpi"><div class="lbl">Status</div><div class="num" style="font-size:1.1rem"><span class="status-chip st-{{ s.status }}">{{ s.status.replace('_', ' ') }}</span></div></div>
+  <div class="kpi"><div class="lbl">Score</div><div class="num">{{ s.score|int if s.score is not none else '–' }}</div><div class="sub">{{ s.correct_count if s.correct_count is not none else '–' }} correct of {{ questions|length }}</div></div>
+  <div class="kpi"><div class="lbl">Started</div><div class="num" style="font-size:1.1rem">{{ s.started_at|datetime }}</div><div class="sub">deadline {{ s.deadline_at|time }}</div></div>
+  <div class="kpi"><div class="lbl">Submitted</div><div class="num" style="font-size:1.1rem">{{ s.submitted_at|datetime if s.submitted_at else '–' }}</div><div class="sub">{{ (s.time_taken_sec or 0) // 60 }} min {{ (s.time_taken_sec or 0) % 60 }} s · {{ s.ip }}</div></div>
+</div>
+{% for q in questions %}
+{% set given = answers.get(q.id|string) %}
+<div class="q">
+  <div class="qno">Question {{ q.no }} · #{{ q.id }} {% if given %}{% if given == correct.get(q.id) %}<span class="pill green">correct</span>{% else %}<span class="pill kumkum">wrong</span>{% endif %}{% else %}<span class="pill grey">unanswered</span>{% endif %}</div>
+  <div class="qtext">{{ q.text }}</div>
+  <div class="opts">{% for letter, text in q.options %}<div class="opt {{ 'on' if given == letter }}" style="{{ 'border-color:var(--green)' if correct.get(q.id) == letter }}"><span class="letter">{{ letter }}</span><span>{{ text }}</span></div>{% endfor %}</div>
+</div>
+{% endfor %}
+{% endblock %}

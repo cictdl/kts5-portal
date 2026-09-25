@@ -1,0 +1,57 @@
+{% extends "console/base.html" %}
+{% block title %}Question bank{% endblock %}
+{% block content %}
+<div class="two-col" style="grid-template-columns: 1fr 380px">
+  <div>
+    <form method="get" class="filters">
+      <div class="field grow"><label for="q">Search</label><input type="search" id="q" name="q" value="{{ f.q }}"></div>
+      <div class="field"><label for="lang">Language</label><select id="lang" name="lang"><option value="">All</option>{% for l in langs %}<option value="{{ l }}" {{ 'selected' if f.lang == l }}>{{ l|langname }}</option>{% endfor %}</select></div>
+      <div class="field"><label for="qtype">Type</label><select id="qtype" name="qtype"><option value="">All</option>{% for q in qtypes %}<option value="{{ q }}" {{ 'selected' if f.qtype == q }}>{{ q }}</option>{% endfor %}</select></div>
+      <div class="field"><label for="active">Active</label><select id="active" name="active"><option value="">Any</option><option value="1" {{ 'selected' if f.active == '1' }}>Active</option><option value="0" {{ 'selected' if f.active == '0' }}>Inactive</option></select></div>
+      <div class="field"><button class="btn" type="submit">Filter</button></div>
+      {% if has_perm(current_user, 'exam.manage') %}<div class="field"><a class="btn secondary" href="{{ url_for('admin.question_form') }}">+ New</a></div><div class="field"><a class="btn secondary" href="{{ url_for('admin.questions_export') }}">Export CSV</a></div>{% endif %}
+    </form>
+    <p class="small muted">{{ pg.total }} question(s)</p>
+    <div class="table-wrap"><table class="table">
+      <thead><tr><th>#</th><th>Lang</th><th>Type</th><th>Question</th><th>Correct</th><th>Kural</th><th>Src</th><th></th></tr></thead>
+      <tbody>{% for q in rows %}
+      <tr style="{{ 'opacity:.5' if not q.active }}"><td>{{ q.id }}</td><td>{{ q.lang }}</td><td><span class="pill grey">{{ q.qtype }}</span></td>
+        <td style="white-space:pre-line;max-width:520px">{{ q.text|truncate(180) }}<div class="small muted">A. {{ q.opt_a|truncate(50) }} · B. {{ q.opt_b|truncate(50) }} · C. {{ q.opt_c|truncate(50) }} · D. {{ q.opt_d|truncate(50) }}</div></td>
+        <td><b>{{ q.correct }}</b></td><td>{{ q.kural_no or '' }}</td><td class="small">{{ q.source }}</td>
+        <td style="white-space:nowrap">{% if has_perm(current_user, 'exam.manage') %}<a class="btn xs secondary" href="{{ url_for('admin.question_form', qid=q.id) }}">Edit</a> <form method="post" action="{{ url_for('admin.question_toggle', qid=q.id) }}" style="display:inline"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn xs ghost">{{ 'Disable' if q.active else 'Enable' }}</button></form>{% endif %}</td></tr>
+      {% else %}<tr><td colspan="8" class="muted">No questions yet. Generate a bank from the Thirukkural corpus or import a CSV.</td></tr>{% endfor %}</tbody></table></div>
+    {% if pg.pages > 1 %}<div class="pagination">{% if pg.has_prev %}<a href="{{ url_for('admin.questions', page=pg.page - 1, **f) }}">← Prev</a>{% endif %}<span class="cur">{{ pg.page }}</span><span>of {{ pg.pages }}</span>{% if pg.has_next %}<a href="{{ url_for('admin.questions', page=pg.page + 1, **f) }}">Next →</a>{% endif %}</div>{% endif %}
+  </div>
+  <div>
+    <div class="card">
+      <h3>Bank by language</h3>
+      <table class="table"><thead><tr><th>Language</th><th class="num">Active</th><th class="num">Total</th></tr></thead><tbody>{% for c in counts %}<tr><td>{{ c.lang|langname }}</td><td class="num">{{ c.active }}</td><td class="num">{{ c.n }}</td></tr>{% else %}<tr><td colspan="3" class="muted">Empty</td></tr>{% endfor %}</tbody></table>
+    </div>
+    {% if has_perm(current_user, 'exam.manage') %}
+    <div class="card accent" style="margin-top:14px">
+      <h3>Generate from the corpus</h3>
+      <p class="small dim">Builds complete-the-couplet, identify-the-chapter, identify-the-section and general-knowledge MCQs from CICT's 22-language Thirukkural. Question stems are localised for English, Tamil and Hindi; other languages use English stems with the couplet in that language. Review before the test.</p>
+      <form method="post" action="{{ url_for('admin.questions_generate') }}">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <div class="field"><label>Languages</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:.88rem;max-height:220px;overflow:auto;border:1px solid var(--border);padding:8px;border-radius:8px">
+            <label><input type="checkbox" name="langs" value="all"> <b>All 23</b></label>
+            {% for l in langs %}<label><input type="checkbox" name="langs" value="{{ l }}"> {{ l|langname }}</label>{% endfor %}
+          </div></div>
+        <div class="field" style="margin-top:8px"><label for="count">Questions per language</label><input type="number" id="count" name="count" value="60" min="5" max="300"></div>
+        <button class="btn sm" type="submit" style="margin-top:10px">Generate</button>
+      </form>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3>Import CSV</h3>
+      <p class="small dim">Columns: lang, text, opt_a, opt_b, opt_c, opt_d, correct (A–D), kural_no, difficulty, qtype.</p>
+      <form method="post" action="{{ url_for('admin.questions_import') }}" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <input type="file" name="file" accept=".csv" required>
+        <button class="btn sm secondary" type="submit" style="margin-top:8px">Import</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

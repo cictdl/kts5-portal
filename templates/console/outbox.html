@@ -1,0 +1,8 @@
+{% extends "console/base.html" %}
+{% block title %}Mail outbox{% endblock %}
+{% block content %}
+{% if not smtp %}<div class="alert warning">SMTP is not configured (set <code>KTS_SMTP_HOST</code>, <code>KTS_SMTP_USER</code>, <code>KTS_SMTP_PASSWORD</code>, <code>KTS_SMTP_FROM</code>). Messages are kept here so the helpdesk can send them by hand.</div>{% endif %}
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Queued</th><th>To</th><th>Subject</th><th>Status</th><th>Body</th></tr></thead>
+  <tbody>{% for m in rows %}<tr><td class="small" style="white-space:nowrap">{{ m.created_at|datetime }}</td><td class="small">{{ m.to_addr }}</td><td>{{ m.subject }}</td><td>{% if m.status == 'sent' %}<span class="pill green">sent</span>{% elif m.status == 'failed' %}<span class="pill kumkum" title="{{ m.error }}">failed</span>{% else %}<span class="pill grey">queued</span>{% endif %}</td><td class="small" style="white-space:pre-line;max-width:520px">{{ m.body|truncate(400) }}</td></tr>{% else %}<tr><td colspan="5" class="muted">Nothing queued.</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

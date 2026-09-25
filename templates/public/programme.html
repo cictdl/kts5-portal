@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}{{ t('programme.title') }}{% endblock %}
+{% block content %}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('site.organiser') }}</span>
+  <h1>{{ t('programme.title') }}</h1>
+  <p class="lead dim" style="max-width:70ch">{{ t('programme.intro') }}</p>
+
+  <h2 style="margin-top:28px"><span class="pill kumkum">I</span> Academic orientation and training programme</h2>
+  <div class="programme-item">
+    <div class="no">1</div>
+    <div><h3>Dedicated portal</h3><div class="titles"><span class="ta">தனித்த இணையதளம்</span> · <span class="hi">समर्पित पोर्टल</span></div>
+      <p>This website: a single place for programme administration, participant registration, content delivery and coordination among the participating agencies. It carries the registration and selection system, the candidate portal with the online test, the digital repository and the partners' coordination hub.</p></div>
+  </div>
+  <div class="programme-item">
+    <div class="no">2</div>
+    <div><h3>Digital resources and supporting materials</h3><div class="titles"><span class="ta">மின்னிலக்க வளங்கள்</span> · <span class="hi">डिजिटल संसाधन</span></div>
+      <p>A fully accessible repository of learning materials and research assets: the Thirukkural in the Indian languages and in foreign languages, research publications, the Thirukkural Multilingual App, the Thirukkural Ground-Truth Corpus of palm-leaf manuscripts, and related websites.</p>
+      <a class="btn sm secondary" href="{{ url_for('public.resources') }}">{{ t('res.title') }}</a> <a class="btn sm secondary" href="{{ url_for('public.kural_browser') }}">{{ t('res.kural_browser') }}</a></div>
+  </div>
+  <div class="programme-item">
+    <div class="no">3</div>
+    <div><h3>Nationwide publicity and student registration</h3><div class="titles"><span class="ta">விளம்பரமும் மாணவர் பதிவும்</span> · <span class="hi">प्रचार एवं विद्यार्थी पंजीकरण</span></div>
+      <p>A pan-India campaign across academic institutions, digital media and partner universities invites applications for the selection of 1,000 students from 1,000 colleges. Applications are received and processed on this portal.</p>
+      <ul><li>Registration window: {{ settings['reg.start']|date }} – {{ settings['reg.end']|date }}</li><li>Eligibility: students currently enrolled in any college or university in India</li><li>One delegate per institution</li></ul>
+      <a class="btn sm saffron" href="{{ url_for('public.register') }}" style="margin-top:8px">{{ t('nav.register') }}</a></div>
+  </div>
+  <div class="programme-item">
+    <div class="no">4</div>
+    <div><h3>Examination and selection</h3><div class="titles"><span class="ta">தேர்வும் தெரிவும்</span> · <span class="hi">परीक्षा एवं चयन</span></div>
+      <p>A secure, standardised online assessment of the applicants' understanding of the Thirukkural, offered in the language each applicant chose. Results are processed into a merit list of 1,000 student delegates, one per institution.</p>
+      <ul><li>{{ settings['exam.date']|date }}, {{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST · {{ settings['exam.duration_min'] }} minutes</li><li>{{ settings['exam.questions'] }} objective questions · {{ settings['exam.marks_per_q'] }} marks each · no negative marking</li></ul>
+      <a class="btn sm secondary" href="{{ url_for('public.examination') }}" style="margin-top:8px">{{ t('exam.title') }}</a></div>
+  </div>
+  <div class="programme-item">
+    <div class="no">5</div>
+    <div><h3>Online orientation in 21 languages</h3><div class="titles"><span class="ta">இணையவழி அறிமுகப் பயிற்சி</span> · <span class="hi">ऑनलाइन अभिविन्यास</span></div>
+      <p>A ten-part academic video lecture series on the Thirukkural, translated, dubbed or subtitled into the 21 scheduled languages other than Tamil, delivered language by language with a 20-minute live question-and-answer segment in each session.</p>
+      <a class="btn sm secondary" href="{{ url_for('public.orientation') }}">{{ t('nav.orientation') }}</a></div>
+  </div>
+  <div class="programme-item">
+    <div class="no">6</div>
+    <div><h3>One-month internship</h3><div class="titles"><span class="ta">ஒரு மாதப் பயிற்சி</span> · <span class="hi">एक माह की इंटर्नशिप</span></div>
+      <p>One hundred of the selected students receive a one-month internship, with a stipend of ₹10,000 each, to deepen their understanding of the Thirukkural, its values, philosophy and contemporary relevance.</p></div>
+  </div>
+  <div class="programme-item">
+    <div class="no">7</div>
+    <div><h3>Student presentation and knowledge dissemination</h3><div class="titles"><span class="ta">மாணவர் உரை</span> · <span class="hi">विद्यार्थी प्रस्तुति</span></div>
+      <p>Every delegate is equipped to deliver a one-hour presentation or lecture on the Thirukkural in their own college under the guidance of a designated faculty mentor, so that each of the 1,000 campuses hears the couplets from one of its own.</p></div>
+  </div>
+
+  <h2 style="margin-top:36px"><span class="pill kumkum">II</span> Apps, videos, films, conferences and public displays</h2>
+  <div class="grid grid-2" style="margin-top:14px">
+    <div class="card"><h3>Thirukkural Multilingual App</h3><p class="small dim">All 1,330 couplets with CICT's translations into the 22 scheduled languages, two Tamil commentaries, English prose, word-level grammar, metrical analysis and palm-leaf references. Offline, ad-free, CC BY 4.0.</p></div>
+    <div class="card"><h3>Educational video series</h3><p class="small dim">Twenty-minute lectures on selected couplets in Indian languages, explaining their meaning, values and relevance, published on CICT's YouTube channels and this portal.</p></div>
+    <div class="card"><h3>Thirukkural audiobooks</h3><p class="small dim">Recitations of the couplets with meanings, explanations and translations in multiple languages, designed for visually impaired students, auditory learners and non-Tamil audiences.</p></div>
+    <div class="card"><h3>Thirukkural Recitation App</h3><p class="small dim">Verse-by-verse recitation of the entire text with Dr Mu. Varadarajan's Tamil commentary, for correct pronunciation and study of the three sections.</p></div>
+    <div class="card"><h3>Short films</h3><p class="small dim">Fifteen-minute films dramatising selected couplets on ethical leadership, social harmony, truthfulness, gratitude and civic duty, screened at KTS venues, campuses and broadcasters.</p></div>
+    <div class="card"><h3>Reels and shorts</h3><p class="small dim">Sixty- to ninety-second AI-assisted animated videos on individual couplets with multilingual subtitles, published daily on CICT's social channels.</p></div>
+    <div class="card"><h3>Annual National Conference on the Thirukkural</h3><p class="small dim">Held in major cities with the Bharatiya Bhasha Samiti and Banaras Hindu University, bringing scholars and translators from every language region together.</p></div>
+    <div class="card"><h3>Public displays</h3><p class="small dim">Couplets with translations on passenger information systems and signage at railway stations, airports and highway toll plazas, in coordination with Indian Railways, AAI and NHAI.</p></div>
+    <div class="card"><h3>Comic books</h3><p class="small dim">Illustrated stories inspired by the Thirukkural for children, first in English and Hindi, distributed through school boards and downloadable from this portal.</p></div>
+    <div class="card"><h3>Posters and charts</h3><p class="small dim">Print-ready multilingual posters for schools, colleges and libraries, distributed to CBSE, KVS, JNV and state networks and available for download.</p></div>
+  </div>
+
+  <h2 style="margin-top:36px"><span class="pill kumkum">III</span> Reaching non-Tamil-speaking students</h2>
+  <div class="grid grid-3" style="margin-top:14px">
+    <div class="card accent"><h3>Daily Kural</h3><p class="small dim">A 200-day calendar of couplets, one for each morning assembly, with translation and meaning in the school's language, distributed as printed flip-charts and digital packages.</p><a class="btn sm secondary" href="{{ url_for('public.daily_kural') }}">{{ t('res.daily_title') }}</a></div>
+    <div class="card accent"><h3>Storytelling</h3><p class="small dim">Script banks, narration guides and theatrical prompts so that students present the values of the Thirukkural through stories, speeches, skits, plays and dance-dramas.</p></div>
+    <div class="card accent"><h3>Thirukkural Gaming App</h3><p class="small dim">Crosswords, puzzles, complete-the-line, memory pairs, Wordle-style and typing challenges with localised interfaces and beginner-to-scholar tiers.</p></div>
+  </div>
+</div>
+{% endblock %}

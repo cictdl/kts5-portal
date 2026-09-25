@@ -1,0 +1,13 @@
+{% extends "console/base.html" %}
+{% block title %}Notices{% endblock %}
+{% block content %}
+<p><a class="btn sm" href="{{ url_for('admin.notice_form') }}">+ New notice</a> <a class="btn sm secondary" href="{{ url_for('public.notices') }}" target="_blank">Public page ↗</a></p>
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Title</th><th>Category</th><th>Lang</th><th>Status</th><th>Author</th><th>Updated</th><th></th></tr></thead>
+  <tbody>{% for n in rows %}
+  <tr><td>{% if n.pinned %}📌 {% endif %}<b>{{ n.title }}</b>{% if n.attachment %} 📎{% endif %}</td><td>{{ n.category }}</td><td>{{ n.lang }}</td>
+    <td>{% if n.published %}<span class="pill green">published</span>{% else %}<span class="pill grey">draft</span>{% endif %}{% if n.publish_at %}<div class="small muted">from {{ n.publish_at|datetime }}</div>{% endif %}</td>
+    <td>{{ n.author or '' }}</td><td class="small">{{ n.updated_at|datetime }}</td>
+    <td style="white-space:nowrap"><a class="btn xs secondary" href="{{ url_for('admin.notice_form', nid=n.id) }}">Edit</a> <form method="post" action="{{ url_for('admin.notice_delete', nid=n.id) }}" style="display:inline" data-confirm="Delete this notice?"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn xs ghost">Delete</button></form></td></tr>
+  {% else %}<tr><td colspan="7" class="muted">No notices yet.</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

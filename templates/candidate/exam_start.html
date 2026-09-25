@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ t('exam.title') }}{% endblock %}
+{% block content %}
+<div class="wrap-narrow section">
+  <span class="eyebrow">{{ cand.app_no }} · {{ cand.full_name }}</span>
+  <h1>{{ t('exam.title') }}</h1>
+  <div class="card accent">
+    <div class="grid grid-2" style="margin-bottom:12px">
+      <div class="date-tile"><div class="lbl">{{ t('cand.exam_window') }}</div><div class="val">{{ settings['exam.date']|date }}</div><div class="sub">{{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST</div></div>
+      <div class="date-tile"><div class="lbl">{{ t('exam.duration') }}</div><div class="val">{{ settings['exam.duration_min'] }} {{ t('exam.minutes') }}</div><div class="sub">{{ settings['exam.questions'] }} MCQ · {{ settings['exam.marks_per_q'] }} {{ t('exam.marks_each') }}</div></div>
+    </div>
+    <h3>{{ t('exam.guidelines') }}</h3>
+    <ol class="prose"><li>{{ t('exam.g1') }}</li><li>{{ t('exam.g2') }}</li><li>{{ t('exam.g3') }}</li><li>{{ t('exam.g4') }}</li></ol>
+    <p class="small dim">{{ t('common.language') }}: <b>{{ cand.pref_lang|langname }}</b></p>
+    {% if not eligible %}
+      <div class="alert warning">{{ t('exam.not_eligible') }}</div>
+    {% elif exam %}
+      <a class="btn saffron" href="{{ url_for('candidate.paper') }}">{{ t('cand.resume_exam') }} →</a>
+    {% elif is_open %}
+      <form method="post" data-confirm="{{ t('exam.g2') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn saffron" type="submit">▶ {{ t('exam.start') }}</button></form>
+    {% else %}
+      <div class="alert info">{{ t('exam.not_open') }} {% if start %}<b>{{ start.strftime('%d %b %Y, %I:%M %p') }} – {{ end.strftime('%I:%M %p') }} IST</b>{% endif %}</div>
+    {% endif %}
+  </div>
+  <p style="margin-top:12px"><a href="{{ url_for('candidate.home') }}">← {{ t('cand.title') }}</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends "console/base.html" %}
+{% block title %}Programme calendar{% endblock %}
+{% block content %}
+{% if has_perm(current_user, 'content') %}<p><a class="btn sm" href="{{ url_for('admin.event_form') }}">+ New event</a></p>{% endif %}
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Starts</th><th>Ends</th><th>Event</th><th>Kind</th><th>Language</th><th>Venue / link</th><th>Agency</th><th>Public</th></tr></thead>
+  <tbody>{% for e in rows %}<tr style="{{ 'opacity:.6' if e.starts_at[:10] < today }}"><td style="white-space:nowrap">{{ e.starts_at|datetime }}</td><td class="small">{{ e.ends_at|datetime if e.ends_at else '' }}</td><td><b>{{ e.title }}</b>{% if e.description %}<div class="small dim">{{ e.description|truncate(100) }}</div>{% endif %}</td><td><span class="pill grey">{{ e.kind }}</span></td><td>{{ e.lang|langname if e.lang else '' }}</td><td class="small">{{ e.venue }}{% if e.link %} <a href="{{ e.link }}" rel="noopener">🔗</a>{% endif %}</td><td>{{ e.agency or '' }}</td><td>{{ '✓' if e.published else '' }}</td></tr>{% else %}<tr><td colspan="8" class="muted">No events.</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

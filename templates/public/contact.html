@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ t('contact.title') }}{% endblock %}
+{% block content %}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('site.organiser') }}</span>
+  <h1>{{ t('contact.title') }}</h1>
+  <div class="two-col" style="align-items:start">
+    <div class="card">
+      {% if sent %}<div class="alert success">{{ t('contact.sent') }}</div>{% endif %}
+      <p class="dim">{{ t('contact.intro') }}</p>
+      <form method="post" novalidate>
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <div class="honey" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+        <div class="fields">
+          <div class="field {{ 'has-err' if errors.get('name') }}"><label for="name">{{ t('common.name') }} <span class="req">*</span></label><input type="text" id="name" name="name" value="{{ data.get('name', '') }}" required maxlength="120">{% if errors.get('name') %}<span class="err">{{ errors['name'] }}</span>{% endif %}</div>
+          <div class="field {{ 'has-err' if errors.get('email') }}"><label for="email">{{ t('common.email') }} <span class="req">*</span></label><input type="email" id="email" name="email" value="{{ data.get('email', '') }}" required maxlength="120">{% if errors.get('email') %}<span class="err">{{ errors['email'] }}</span>{% endif %}</div>
+          <div class="field"><label for="phone">{{ t('common.mobile') }}</label><input type="tel" id="phone" name="phone" value="{{ data.get('phone', '') }}" maxlength="15"></div>
+          <div class="field"><label for="topic">{{ t('contact.topic') }}</label><select id="topic" name="topic">{% for tp in ['registration', 'examination', 'orientation', 'resources', 'partners', 'media', 'general'] %}<option value="{{ tp }}" {{ 'selected' if data.get('topic') == tp }}>{{ tp|capitalize }}</option>{% endfor %}</select></div>
+          <div class="field wide {{ 'has-err' if errors.get('body') }}"><label for="subject">{{ t('common.subject') }} <span class="req">*</span></label><input type="text" id="subject" name="subject" value="{{ data.get('subject', '') }}" required maxlength="160"></div>
+          <div class="field wide"><label for="body">{{ t('common.message') }} <span class="req">*</span></label><textarea id="body" name="body" rows="5" required maxlength="3000">{{ data.get('body', '') }}</textarea>{% if errors.get('body') %}<span class="err">{{ errors['body'] }}</span>{% endif %}</div>
+          <div class="field {{ 'has-err' if errors.get('captcha') }}"><label for="captcha">{{ t('common.captcha') }}: <b>{{ captcha }}</b></label><input type="text" id="captcha" name="captcha" inputmode="numeric" required autocomplete="off" style="max-width:160px">{% if errors.get('captcha') %}<span class="err">{{ errors['captcha'] }}</span>{% endif %}</div>
+        </div>
+        <div class="btn-row" style="margin-top:14px"><button class="btn" type="submit">{{ t('common.send') }}</button></div>
+      </form>
+    </div>
+    <div>
+      <div class="card accent">
+        <h3>{{ t('site.coordinating') }}</h3>
+        <p>{{ site.organiser }}<br><span class="dim">{{ settings['contact.address'] }}</span></p>
+        <p><a href="mailto:{{ settings['contact.email'] }}">{{ settings['contact.email'] }}</a><br>{{ settings['contact.phone'] }}</p>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3>{{ t('nav.status') }}</h3>
+        <p class="small dim">Before writing about an application, check its status with your application number.</p>
+        <a class="btn sm secondary" href="{{ url_for('public.status') }}">{{ t('status.check') }}</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

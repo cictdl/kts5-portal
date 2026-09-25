@@ -1,0 +1,20 @@
+{% extends "console/base.html" %}
+{% block title %}{{ 'Edit event' if e else 'New event' }}{% endblock %}
+{% block content %}
+<form method="post" class="card" style="max-width:860px">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <div class="fields">
+    <div class="field wide"><label for="title">Title</label><input type="text" id="title" name="title" value="{{ e.title if e else '' }}" required maxlength="200"></div>
+    <div class="field wide"><label for="description">Description</label><textarea id="description" name="description" rows="3">{{ e.description if e else '' }}</textarea></div>
+    <div class="field"><label for="kind">Kind</label><select id="kind" name="kind">{% for k in kinds %}<option value="{{ k }}" {{ 'selected' if e and e.kind == k }}>{{ k }}</option>{% endfor %}</select><span class="help">Use “orientation” with a language for the language-wise sessions.</span></div>
+    <div class="field"><label for="lang">Language</label><select id="lang" name="lang">{% for l in langs %}<option value="{{ l }}" {{ 'selected' if e and e.lang == l }}>{{ l|langname if l else '—' }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="starts_at">Starts (IST)</label><input type="datetime-local" id="starts_at" name="starts_at" value="{{ e.starts_at if e else '' }}" required></div>
+    <div class="field"><label for="ends_at">Ends (optional)</label><input type="datetime-local" id="ends_at" name="ends_at" value="{{ e.ends_at or '' if e else '' }}"></div>
+    <div class="field"><label for="venue">Venue</label><input type="text" id="venue" name="venue" value="{{ e.venue if e else '' }}" maxlength="200"></div>
+    <div class="field"><label for="link">Meeting / stream link</label><input type="url" id="link" name="link" value="{{ e.link if e else '' }}"></div>
+    <div class="field"><label for="agency_id">Responsible agency</label><select id="agency_id" name="agency_id"><option value="">—</option>{% for a in agencies %}<option value="{{ a.id }}" {{ 'selected' if e and e.agency_id == a.id }}>{{ a.short_name }}</option>{% endfor %}</select></div>
+    <div class="field"><label>&nbsp;</label><label class="check"><input type="checkbox" name="published" value="1" {{ 'checked' if (e and e.published) or not e }}> Published on the public schedule</label></div>
+  </div>
+  <div class="btn-row" style="margin-top:14px"><button class="btn" type="submit">Save</button><a class="btn ghost" href="{{ url_for('admin.events') }}">Cancel</a></div>
+</form>
+{% endblock %}

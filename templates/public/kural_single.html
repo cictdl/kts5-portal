@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ t('common.verse') }} {{ k.n }} · {{ k.chapter_name }}{% endblock %}
+{% block content %}
+<div class="wrap section">
+  <span class="eyebrow"><a href="{{ url_for('public.kural_browser', ch=k.adhigaram) }}">{{ k.adhigaram }}. {{ k.chapter_name }} · {{ k.chapter_name_en }}</a></span>
+  <h1>{{ t('common.verse') }} {{ k.n }}</h1>
+  <div class="card accent">
+    <div class="big-kural ta">{{ k.l1 }}<br>{{ k.l2 }}</div>
+    <div class="dim" style="margin-top:8px">{{ k.tl|join(' · ') }}</div>
+    {% if k.tr.tac %}<p class="ta" style="margin-top:12px"><b>உரை:</b> {{ k.tr.tac[0] }}</p>{% endif %}
+    {% if prose.get('en') %}<p class="dim"><b>Prose:</b> {{ prose.en }}</p>{% endif %}
+    <div class="btn-row">
+      {% if k.n > 1 %}<a class="btn sm secondary" href="{{ url_for('public.kural_single', n=k.n - 1) }}">← {{ k.n - 1 }}</a>{% endif %}
+      {% if k.n < 1330 %}<a class="btn sm secondary" href="{{ url_for('public.kural_single', n=k.n + 1) }}">{{ k.n + 1 }} →</a>{% endif %}
+      <a class="btn sm ghost" href="{{ url_for('public.kural_browser', ch=k.adhigaram) }}#k{{ k.n }}">{{ t('common.chapter') }}</a>
+    </div>
+  </div>
+  <h2 style="margin-top:24px">{{ t('res.kural_browser') }}</h2>
+  <div class="card">
+    {% for info, ln in streams %}
+    <div class="stream" {% if info.dir == 'rtl' %}dir="rtl"{% endif %}>
+      <div class="lang" dir="ltr">{{ info.name }}<small>{{ info.native }} · {{ info.script }}</small></div>
+      <div>{% for line in ln %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

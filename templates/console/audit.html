@@ -1,0 +1,10 @@
+{% extends "console/base.html" %}
+{% block title %}Audit log{% endblock %}
+{% block content %}
+<form method="get" class="filters"><div class="field grow"><label for="q">Search action, actor, entity or detail</label><input type="search" id="q" name="q" value="{{ q }}"></div><div class="field"><button class="btn" type="submit">Search</button></div></form>
+<p class="small muted">{{ '{:,}'.format(pg.total) }} entries</p>
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>When (UTC)</th><th>Actor</th><th>Action</th><th>Entity</th><th>Detail</th><th>IP</th></tr></thead>
+  <tbody>{% for r in rows %}<tr><td class="small" style="white-space:nowrap">{{ r.created_at }}</td><td class="small">{{ r.actor }}</td><td><code>{{ r.action }}</code></td><td class="small">{{ r.entity }}{% if r.entity_id %} #{{ r.entity_id }}{% endif %}</td><td class="small" style="max-width:420px;word-break:break-word">{{ r.detail }}</td><td class="small">{{ r.ip }}</td></tr>{% endfor %}</tbody></table></div>
+{% if pg.pages > 1 %}<div class="pagination">{% if pg.has_prev %}<a href="{{ url_for('admin.audit_log', page=pg.page - 1, q=q) }}">← Prev</a>{% endif %}<span class="cur">{{ pg.page }}</span><span>of {{ pg.pages }}</span>{% if pg.has_next %}<a href="{{ url_for('admin.audit_log', page=pg.page + 1, q=q) }}">Next →</a>{% endif %}</div>{% endif %}
+{% endblock %}

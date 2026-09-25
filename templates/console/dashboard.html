@@ -1,0 +1,48 @@
+{% extends "console/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="kpis">
+  <div class="kpi"><div class="lbl">Applications</div><div class="num">{{ '{:,}'.format(total) }}</div><div class="sub">{{ by_status.get('submitted', 0) }} awaiting verification</div></div>
+  <div class="kpi"><div class="lbl">Verified</div><div class="num">{{ '{:,}'.format(by_status.get('verified', 0) + by_status.get('selected', 0) + by_status.get('waitlisted', 0) + by_status.get('not_selected', 0)) }}</div><div class="sub">{{ by_status.get('rejected', 0) }} rejected</div></div>
+  <div class="kpi"><div class="lbl">Institutions</div><div class="num">{{ '{:,}'.format(colleges) }}</div><div class="sub">{{ states }} states / UTs</div></div>
+  <div class="kpi"><div class="lbl">Tests submitted</div><div class="num">{{ '{:,}'.format((exam.get('submitted', 0) + exam.get('expired', 0))) }}</div><div class="sub">{{ exam.get('in_progress', 0) }} in progress</div></div>
+  <div class="kpi"><div class="lbl">Selected</div><div class="num">{{ '{:,}'.format(by_status.get('selected', 0)) }}</div><div class="sub">{{ by_status.get('waitlisted', 0) }} waitlisted · {{ 'published' if settings['merit.published'] == '1' else 'not published' }}</div></div>
+  <div class="kpi"><div class="lbl">Open tasks</div><div class="num">{{ (tasks.get('open', 0) + tasks.get('in_progress', 0) + tasks.get('blocked', 0)) }}</div><div class="sub">{{ overdue }} overdue · {{ tasks.get('blocked', 0) }} blocked</div></div>
+</div>
+
+<div class="two-col">
+  <div class="card">
+    <div class="section-head"><h3>Applications per day · last 30 days</h3><span class="small muted">peak {{ max_day }}</span></div>
+    <div class="bars">{% for d, n in days %}<div class="bar" style="height:{{ (n / max_day * 100)|round(1) }}%" title="{{ d }}: {{ n }}"><span>{{ d[5:] }} · {{ n }}</span></div>{% endfor %}</div>
+    <div class="small muted" style="display:flex;justify-content:space-between;margin-top:4px"><span>{{ days[0][0] }}</span><span>{{ days[-1][0] }}</span></div>
+  </div>
+  <div class="card">
+    <h3>Programme status</h3>
+    <dl class="detail" style="display:grid;grid-template-columns:160px 1fr;gap:6px 12px;font-size:.92rem">
+      <dt class="muted">Registration</dt><dd>{% if reg_state == 'open' %}<span class="pill green">open</span>{% elif reg_state == 'not_yet' %}<span class="pill saffron">opens {{ settings['reg.start']|date }}</span>{% else %}<span class="pill kumkum">closed</span>{% endif %} {{ settings['reg.start']|date }} – {{ settings['reg.end']|date }}</dd>
+      <dt class="muted">Online test</dt><dd>{{ settings['exam.date']|date }} · {{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST {% if exam_open %}<span class="pill green">window open</span>{% else %}<span class="pill grey">mode: {{ settings['exam.open'] }}</span>{% endif %}</dd>
+      <dt class="muted">Question bank</dt><dd>{% for q in qbank %}<span class="pill grey">{{ q.lang }} {{ q.n }}</span> {% else %}<span class="pill kumkum">empty – generate questions</span>{% endfor %}</dd>
+      <dt class="muted">Merit list</dt><dd>{{ 'published' if settings['merit.published'] == '1' else 'not published' }} · select {{ settings['merit.select_count'] }} · waitlist {{ settings['merit.wait_count'] }}</dd>
+      <dt class="muted">Helpdesk</dt><dd>{{ messages }} unanswered message(s) · <a href="{{ url_for('admin.messages') }}">open</a></dd>
+    </dl>
+  </div>
+</div>
+
+<div class="two-col" style="margin-top:16px">
+  <div class="card">
+    <h3>Top states by institution</h3>
+    {% set mx = (top_states[0].n if top_states else 1) %}
+    {% for r in top_states %}<div class="hbar"><span>{{ r.s or '—' }}</span><div class="track"><div class="fill" style="width:{{ (r.n / mx * 100)|round(1) }}%"></div></div><span class="v">{{ r.n }}</span></div>{% else %}<p class="muted small">No applications yet.</p>{% endfor %}
+  </div>
+  <div class="card">
+    <h3>Language chosen for the orientation and test</h3>
+    {% set mx = (by_lang[0].n if by_lang else 1) %}
+    {% for r in by_lang %}<div class="hbar"><span>{{ r.l|langname }}</span><div class="track"><div class="fill" style="width:{{ (r.n / mx * 100)|round(1) }}%;background:var(--indigo)"></div></div><span class="v">{{ r.n }}</span></div>{% else %}<p class="muted small">No applications yet.</p>{% endfor %}
+  </div>
+</div>
+
+<div class="card" style="margin-top:16px">
+  <div class="section-head"><h3>Recent activity</h3><a class="small" href="{{ url_for('admin.audit_log') }}">Audit log →</a></div>
+  {% for r in recent %}<div class="audit-row"><span class="muted">{{ r.created_at|datetime }}</span><span><code>{{ r.action }}</code> {{ r.entity }}{% if r.entity_id %} #{{ r.entity_id }}{% endif %} <span class="muted">· {{ r.actor }}</span> <span class="dim">{{ r.detail|truncate(90) }}</span></span></div>{% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ t('res.orient_title') }}{% endblock %}
+{% block content %}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('nav.orientation') }}</span>
+  <h1>{{ t('res.orient_title') }}</h1>
+  <p class="lead dim" style="max-width:74ch">{{ t('res.orient_intro') }}</p>
+  {% if settings['orientation.note'] %}<div class="alert info">{{ settings['orientation.note'] }}</div>{% endif %}
+  <div class="grid grid-3">
+    {% for L in langs %}
+    <div class="card">
+      <h3>{{ L.name }} <span class="dim" style="font-weight:500">· {{ L.native }}</span></h3>
+      {% set ss = by_lang.get(L.code, []) %}
+      {% if ss %}
+        <ul class="notice-list">{% for s in ss %}<li><div><b>{{ s.title }}</b><div class="meta">{{ s.venue }}{% if s.link %} · <a href="{{ s.link }}" rel="noopener">{{ t('common.open') }}</a>{% endif %}</div></div><span class="meta">{{ s.starts_at|datetime }}</span></li>{% endfor %}</ul>
+      {% else %}<p class="small muted">Sessions to be scheduled.</p>{% endif %}
+      {% set vv = vids.get(L.code, []) %}
+      {% if vv %}<div class="btn-row">{% for v in vv[:4] %}<a class="btn xs secondary" href="{{ url_for('public.resource_open', rid=v.id) }}">▶ {{ v.title|truncate(28) }}</a>{% endfor %}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

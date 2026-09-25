@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}{{ t('about.title') }}{% endblock %}
+{% block content %}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('site.ministry') }}</span>
+  <h1>{{ t('about.title') }}</h1>
+  <div class="two-col" style="align-items:start">
+    <div class="prose">
+      <p class="lead dim">Kashi Tamil Sangamam celebrates the civilisational bond between Tamil Nadu and Kashi. It was conceived as an expression of <em>Ek Bharat Shreshtha Bharat</em>: two of India's oldest centres of learning, Kashi on the Ganga and the Tamil country on the Vaigai and the Kaveri, meeting to rediscover shared traditions of language, scholarship, faith, craft and cuisine.</p>
+      <h2>The fifth edition: Thirukkural Payilvom</h2>
+      <p>KTS 5.0 takes the Thirukkural, the 1,330 couplets of Thiruvalluvar, as its unifying theme. The couplets speak of virtue, wealth and love in a language that every Indian tradition recognises as its own, which is why the text has been translated into all twenty-two languages of the Eighth Schedule by the Central Institute of Classical Tamil.</p>
+      <p>Under the theme <span class="ta">திருக்குறள் பயில்வோம்</span> · <span class="hi">तिरुक्कुरल अभ्यास करें</span>, one thousand students from one thousand colleges across India will register, take an online test, study the Thirukkural through a ten-lecture orientation in their own language, and then carry the text back to their campuses through student-led presentations.</p>
+      <h2>Who does what</h2>
+      <ul>
+        <li><b>Ministry of Education</b> is the nodal ministry for the Sangamam.</li>
+        <li><b>Central Institute of Classical Tamil, Chennai</b> implements KTS 5.0: this portal, registration and selection, the multilingual orientation, the digital repository, apps, films, publications and school outreach.</li>
+        <li><b>IIT Madras</b> and <b>Banaras Hindu University</b> are the nodal and coordinating institutes on the Tamil Nadu and Kashi sides.</li>
+        <li>Indian Railways, the Airports Authority of India, NHAI, the Ministry of Culture, UGC, AICTE, CBSE, KVS and the state governments of Tamil Nadu and Uttar Pradesh partner for displays, outreach, travel and venues. See <a href="{{ url_for('public.partners') }}">{{ t('nav.partners') }}</a>.</li>
+      </ul>
+    </div>
+    <div>
+      <figure class="portrait card flat">
+        <img src="{{ url_for('static', filename='img/thiruvalluvar-gold.png') }}" alt="Thiruvalluvar" width="170">
+        <figcaption><span class="ta">திருவள்ளுவர்</span> · Thiruvalluvar, author of the Thirukkural · emblem of Thirukkural Payilvom</figcaption>
+      </figure>
+      <div class="card accent">
+        <h3>{{ t('home.journey') }}</h3>
+        <div class="timeline" style="margin-top:14px">
+          <div class="item"><b>KTS 1.0 · 16 Nov – 15 Dec 2022</b><br><span class="small dim">Over 2,500 people from Tamil Nadu in twelve walks of life visited Varanasi, Prayagraj and Ayodhya on eight-day tours. Organised by the Ministry of Education with the Government of Uttar Pradesh at BHU.</span></div>
+          <div class="item"><b>KTS 2.0 · 17 – 30 Dec 2023</b><br><span class="small dim">Held at Namo Ghat, Varanasi, with interactive academic sessions between professionals from Tamil Nadu and Kashi, and app-based real-time Tamil translation of the inaugural address.</span></div>
+          <div class="item"><b>KTS 3.0 · 15 – 24 Feb 2025</b><br><span class="small dim">Bridging Indian knowledge and tradition with contemporary discourse, highlighting the legacy of Sage Agasthyar; 1,200 participants including 200 students of Tamil origin from central universities.</span></div>
+          <div class="item"><b>KTS 4.0 · Nov 2025 – Jan 2026</b><br><span class="small dim">"Let us learn Tamil": fifty Tamil teachers taught in Varanasi schools, 300 Varanasi students studied Tamil in Tamil Nadu colleges, and the Agasthya Expedition travelled from Tenkasi to Kashi. Valedictory at Rameswaram.</span></div>
+          <div class="item"><b>KTS 5.0 · 2026</b><br><span class="small dim">"Thirukkural Payilvom": the Thirukkural for every campus in India, in every Indian language.</span></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3>{{ t('site.coordinating') }}</h3>
+        <p class="small dim">{{ site.organiser }}<br>{{ get_setting('contact.address') }}<br><a href="mailto:{{ get_setting('contact.email') }}">{{ get_setting('contact.email') }}</a> · {{ get_setting('contact.phone') }}</p>
+        <a class="btn sm secondary" href="https://www.cict.in" rel="noopener">www.cict.in</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

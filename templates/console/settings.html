@@ -1,0 +1,25 @@
+{% extends "console/base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<form method="post" style="max-width:900px">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  {% for group, items in groups %}
+  <div class="card" style="margin-bottom:14px">
+    <h3>{{ group }}</h3>
+    <div class="fields">
+      {% for key, label, kind in items %}
+      <div class="field {{ 'wide' if kind == 'text' and key in ('site.banner', 'merit.note', 'orientation.note', 'contact.address', 'exam.instructions_url') }}">
+        {% if kind == 'bool' %}
+          <label>&nbsp;</label><label class="check"><input type="checkbox" name="{{ key }}" value="1" {{ 'checked' if values[key] == '1' }}> {{ label }}</label>
+        {% else %}
+          <label for="{{ key }}">{{ label }}</label><input type="{{ 'number' if kind == 'number' else ('date' if kind == 'date' else 'text') }}" id="{{ key }}" name="{{ key }}" value="{{ values[key] }}">
+        {% endif %}
+        <span class="help"><code>{{ key }}</code></span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+  <button class="btn" type="submit">Save settings</button>
+</form>
+{% endblock %}

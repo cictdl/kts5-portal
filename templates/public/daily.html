@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ t('res.daily_title') }}{% endblock %}
+{% block content %}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('res.cat_daily') }}</span>
+  <h1>{{ t('res.daily_title') }}</h1>
+  <p class="dim" style="max-width:70ch">{{ t('res.daily_intro') }}</p>
+  <div class="two-col" style="align-items:start">
+    <div class="card accent">
+      <form method="get" class="inline-form" style="margin-bottom:12px">
+        <div class="field"><label for="d">{{ t('common.date') }}</label><input type="date" id="d" name="d" value="{{ day.isoformat() }}"></div>
+        <div class="field"><label for="l">{{ t('common.language') }}</label><select id="l" name="l" data-autosubmit>{% for L in langs %}<option value="{{ L.code }}" {{ 'selected' if L.code == lang }}>{{ L.name }} · {{ L.native }}</option>{% endfor %}</select></div>
+        <div class="field"><button class="btn sm" type="submit">{{ t('common.open') }}</button></div>
+      </form>
+      <span class="eyebrow">{{ day.strftime('%d %B %Y') }} · {{ t('common.verse') }} {{ k.n }} · <span class="ta">{{ k.chapter_name }}</span> · {{ k.chapter_name_en }}</span>
+      <div class="big-kural ta">{{ k.l1 }}<br>{{ k.l2 }}</div>
+      {% if lang != 'ta' %}<div style="margin-top:10px;font-size:1.15rem" {% if lang in ('ur', 'ksn') %}dir="rtl"{% endif %}>{% for line in lines %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}</div>
+      {% elif k.tr.tac %}<p class="ta" style="margin-top:10px">{{ k.tr.tac[0] }}</p>{% endif %}
+      <div class="btn-row" style="margin-top:12px"><a class="btn sm secondary" href="{{ url_for('public.kural_single', n=k.n) }}">{{ t('home.kotd_more') }}</a><button class="btn sm ghost" onclick="window.print()">{{ t('common.print') }}</button></div>
+    </div>
+    <div class="card">
+      <h3>{{ t('res.daily_calendar') }}</h3>
+      <p class="small dim">A CSV with 200 school days from the chosen date: day number, date, couplet number, chapter, the Tamil original and the translation in the chosen language. Open it in Excel or print it as a flip-chart.</p>
+      <form method="get" action="{{ url_for('public.daily_calendar') }}" class="inline-form">
+        <div class="field"><label for="cstart">Start date</label><input type="date" id="cstart" name="start" value="{{ day.isoformat() }}"></div>
+        <div class="field"><label for="cl">{{ t('common.language') }}</label><select id="cl" name="l">{% for L in langs %}<option value="{{ L.code }}" {{ 'selected' if L.code == lang }}>{{ L.name }}</option>{% endfor %}</select></div>
+        <div class="field"><button class="btn sm" type="submit">{{ t('common.download') }} CSV</button></div>
+      </form>
+      <p class="small muted" style="margin-top:12px">Schools may also download printed charts and audio clips from the <a href="{{ url_for('public.resources', cat='daily') }}">Daily Kural kits</a> in the repository.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

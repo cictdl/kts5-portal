@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}{{ t('reg.title') }}{% endblock %}
+{% macro field(name, label, required=False, help='', type='text', wide=False, attrs='') %}
+<div class="field {{ 'wide' if wide }} {{ 'has-err' if errors.get(name) }}">
+  <label for="{{ name }}">{{ label }}{% if required %} <span class="req">*</span>{% endif %}</label>
+  <input type="{{ type }}" id="{{ name }}" name="{{ name }}" value="{{ data.get(name, '') }}" {{ 'required' if required }} {{ attrs|safe }}>
+  {% if errors.get(name) %}<span class="err">{{ errors[name] }}</span>{% elif help %}<span class="help">{{ help }}</span>{% endif %}
+</div>
+{% endmacro %}
+{% macro select(name, label, options, required=False, help='', wide=False) %}
+<div class="field {{ 'wide' if wide }} {{ 'has-err' if errors.get(name) }}">
+  <label for="{{ name }}">{{ label }}{% if required %} <span class="req">*</span>{% endif %}</label>
+  <select id="{{ name }}" name="{{ name }}" {{ 'required' if required }}>
+    <option value="">—</option>
+    {% for o in options %}<option value="{{ o }}" {{ 'selected' if data.get(name) == o }}>{{ o }}</option>{% endfor %}
+  </select>
+  {% if errors.get(name) %}<span class="err">{{ errors[name] }}</span>{% elif help %}<span class="help">{{ help }}</span>{% endif %}
+</div>
+{% endmacro %}
+{% block content %}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('reg.subtitle') }}</span>
+  <h1>{{ t('reg.title') }}</h1>
+  <p class="lead dim" style="max-width:70ch">{{ t('reg.intro') }}</p>
+  <p><span class="pill green">{{ t('reg.closes_on') }}: {{ dates.reg_end|date }}</span></p>
+
+  <form method="post" enctype="multipart/form-data" novalidate class="wrap-narrow" style="margin-inline:0;max-width:900px" data-once>
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <div class="honey" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+
+    <div class="form-section">
+      <h2>{{ t('reg.sec_personal') }}</h2>
+      <div class="fields">
+        {{ field('full_name', t('reg.full_name'), True, wide=True, attrs='autocomplete="name" maxlength="120"') }}
+        <div class="field {{ 'has-err' if errors.get('gender') }}">
+          <label>{{ t('reg.gender') }} <span class="req">*</span></label>
+          <div class="radio-row">
+            <label><input type="radio" name="gender" value="M" {{ 'checked' if data.get('gender') == 'M' }}> {{ t('reg.gender_m') }}</label>
+            <label><input type="radio" name="gender" value="F" {{ 'checked' if data.get('gender') == 'F' }}> {{ t('reg.gender_f') }}</label>
+            <label><input type="radio" name="gender" value="O" {{ 'checked' if data.get('gender') == 'O' }}> {{ t('reg.gender_o') }}</label>
+          </div>
+          {% if errors.get('gender') %}<span class="err">{{ errors['gender'] }}</span>{% endif %}
+        </div>
+        {{ field('dob', t('reg.dob'), True, type='date', attrs='min="1985-01-01" max="2012-12-31"') }}
+        {{ select('category', t('reg.category'), ref.categories) }}
+        <div class="field"><label>{{ t('reg.pwd') }}</label><label class="check"><input type="checkbox" name="pwd" value="1" {{ 'checked' if data.get('pwd') }}> {{ t('common.yes') }}</label></div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>{{ t('reg.sec_contact') }}</h2>
+      <div class="fields">
+        {{ field('mobile', t('reg.mobile'), True, type='tel', attrs='inputmode="numeric" pattern="[6-9][0-9]{9}" maxlength="10" autocomplete="tel-national"') }}
+        <div class="field {{ 'has-err' if errors.get('whatsapp') }}">
+          <label for="whatsapp">{{ t('reg.whatsapp') }}</label>
+          <input type="tel" id="whatsapp" name="whatsapp" value="{{ data.get('whatsapp', '') }}" inputmode="numeric" maxlength="10">
+          <label class="check small"><input type="checkbox" id="same_wa"> Same as mobile</label>
+          {% if errors.get('whatsapp') %}<span class="err">{{ errors['whatsapp'] }}</span>{% endif %}
+        </div>
+        {{ field('email', t('reg.email'), True, t('reg.email_help'), type='email', wide=True, attrs='autocomplete="email" maxlength="120"') }}
+        <div class="field wide"><label for="address">{{ t('reg.address') }}</label><textarea id="address" name="address" rows="2" maxlength="400">{{ data.get('address', '') }}</textarea></div>
+        {{ select('state', t('reg.state'), ref.all_states, True) }}
+        {{ field('district', t('reg.district'), attrs='maxlength="80"') }}
+        {{ field('pincode', t('reg.pincode'), attrs='inputmode="numeric" maxlength="6"') }}
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>{{ t('reg.sec_college') }}</h2>
+      <p class="hint">{{ t('reg.college_help') }}</p>
+      <div class="fields">
+        {{ field('college_name', t('reg.college_name'), True, wide=True, attrs='maxlength="200"') }}
+        {{ field('aishe_code', t('reg.aishe'), False, t('reg.aishe_help'), attrs='maxlength="20"') }}
+        {{ select('college_type', t('reg.college_type'), ref.college_types, True) }}
+        {{ select('college_state', t('reg.college_state'), ref.all_states, True) }}
+        {{ field('college_district', t('reg.college_district'), attrs='maxlength="80"') }}
+        {{ field('university', t('reg.university'), wide=True, attrs='maxlength="200"') }}
+        {{ select('course_level', t('reg.course_level'), ref.course_levels, True) }}
+        {{ field('discipline', t('reg.discipline'), attrs='maxlength="120" placeholder="B.A. Economics, B.Tech CSE, M.Sc Physics…"') }}
+        {{ select('year_of_study', t('reg.year'), ref.years, True) }}
+        {{ field('roll_no', t('reg.roll'), attrs='maxlength="40"') }}
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>{{ t('reg.sec_lang') }}</h2>
+      <div class="fields">
+        <div class="field"><label for="mother_tongue">{{ t('reg.mother_tongue') }}</label>
+          <select id="mother_tongue" name="mother_tongue"><option value="">—</option>
+            {% for l in mother %}<option value="{{ l.code }}" {{ 'selected' if data.get('mother_tongue') == l.code }}>{{ l.name }} · {{ l.native }}</option>{% endfor %}
+            <option value="other" {{ 'selected' if data.get('mother_tongue') == 'other' }}>Other</option>
+          </select></div>
+        <div class="field {{ 'has-err' if errors.get('pref_lang') }}"><label for="pref_lang">{{ t('reg.pref_lang') }} <span class="req">*</span></label>
+          <select id="pref_lang" name="pref_lang" required><option value="">—</option>
+            {% for l in langs %}<option value="{{ l.code }}" {{ 'selected' if data.get('pref_lang') == l.code }}>{{ l.name }} · {{ l.native }}</option>{% endfor %}
+          </select>
+          {% if errors.get('pref_lang') %}<span class="err">{{ errors['pref_lang'] }}</span>{% else %}<span class="help">{{ t('reg.pref_help') }}</span>{% endif %}</div>
+        {{ select('tamil_level', t('reg.tamil_level'), ref.tamil_levels) }}
+        {{ select('kural_level', t('reg.kural_level'), ref.kural_levels) }}
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>{{ t('reg.sec_mentor') }} <span class="muted small">({{ t('common.optional') }})</span></h2>
+      <p class="hint">{{ t('reg.mentor_intro') }}</p>
+      <div class="fields">
+        {{ field('mentor_name', t('reg.mentor_name'), attrs='maxlength="120"') }}
+        {{ field('mentor_designation', t('reg.mentor_designation'), attrs='maxlength="120"') }}
+        {{ field('mentor_email', t('reg.mentor_email'), type='email', attrs='maxlength="120"') }}
+        {{ field('mentor_phone', t('reg.mentor_phone'), type='tel', attrs='inputmode="numeric" maxlength="10"') }}
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>{{ t('reg.sec_upload') }}</h2>
+      <div class="fields">
+        <div class="field {{ 'has-err' if errors.get('photo') }}"><label for="photo">{{ t('reg.photo') }} <span class="req">*</span></label>
+          <input type="file" id="photo" name="photo" accept=".jpg,.jpeg,.png,image/jpeg,image/png" required data-max="614400">
+          {% if errors.get('photo') %}<span class="err">{{ errors['photo'] }}</span>{% else %}<span class="help">{{ t('reg.photo_help') }}</span>{% endif %}</div>
+        <div class="field {{ 'has-err' if errors.get('idproof') }}"><label for="idproof">{{ t('reg.idproof') }} <span class="req">*</span></label>
+          <input type="file" id="idproof" name="idproof" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required data-max="2097152">
+          {% if errors.get('idproof') %}<span class="err">{{ errors['idproof'] }}</span>{% else %}<span class="help">{{ t('reg.idproof_help') }}</span>{% endif %}</div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>{{ t('reg.sec_declare') }}</h2>
+      <div style="display:grid;gap:10px">
+        <label class="check"><input type="checkbox" name="declare_true" value="1" required> {{ t('reg.declare_true') }}</label>
+        <label class="check"><input type="checkbox" name="declare_participate" value="1" required> {{ t('reg.declare_participate') }}</label>
+        <label class="check"><input type="checkbox" name="declare_consent" value="1" required> {{ t('reg.declare_consent') }}</label>
+        {% if errors.get('declare') %}<span class="err" style="color:var(--kumkum);font-weight:600">{{ errors['declare'] }}</span>{% endif %}
+      </div>
+      <div class="fields" style="margin-top:16px">
+        <div class="field {{ 'has-err' if errors.get('captcha') }}"><label for="captcha">{{ t('common.captcha') }}: <b>{{ captcha }}</b> <span class="req">*</span></label>
+          <input type="text" id="captcha" name="captcha" inputmode="numeric" required autocomplete="off" style="max-width:160px">
+          {% if errors.get('captcha') %}<span class="err">{{ errors['captcha'] }}</span>{% else %}<span class="help">{{ t('common.captcha_help') }}</span>{% endif %}</div>
+      </div>
+    </div>
+    <div class="btn-row"><button class="btn saffron" type="submit" data-busy="Submitting…">{{ t('reg.submit') }}</button><a class="btn ghost" href="{{ url_for('public.status') }}">{{ t('nav.status') }}</a></div>
+  </form>
+</div>
+{% endblock %}

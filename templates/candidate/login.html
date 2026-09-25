@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ t('cand.title') }}{% endblock %}
+{% block content %}
+<div class="wrap login-box">
+  <div class="card accent">
+    <span class="eyebrow">{{ t('reg.subtitle') }}</span>
+    <h1 style="font-size:1.5rem">{{ t('cand.title') }}</h1>
+    <p class="dim small">{{ t('exam.login_hint') }}</p>
+    {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+    <form method="post" novalidate>
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <div class="field" style="margin-bottom:10px"><label for="app_no">{{ t('status.app_no') }}</label><input type="text" id="app_no" name="app_no" placeholder="KTS5-2026-000123" required autocomplete="username" style="text-transform:uppercase"></div>
+      <div class="field" style="margin-bottom:10px"><label for="dob">{{ t('reg.dob') }}</label><input type="date" id="dob" name="dob" required></div>
+      <div class="field" style="margin-bottom:14px"><label for="last4">{{ t('status.last4') }}</label><input type="text" id="last4" name="last4" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" required autocomplete="off"></div>
+      <button class="btn" type="submit" style="width:100%;justify-content:center">{{ t('common.login') }}</button>
+    </form>
+    <p class="small muted" style="margin:14px 0 0">{{ t('home.exam_date') }}: {{ settings['exam.date']|date }} · {{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST<br>{{ t('common.help') }}: {{ settings['contact.email'] }}</p>
+  </div>
+</div>
+{% endblock %}

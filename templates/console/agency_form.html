@@ -1,0 +1,21 @@
+{% extends "console/base.html" %}
+{% block title %}{{ 'Edit agency' if a else 'New agency' }}{% endblock %}
+{% block content %}
+<form method="post" class="card" style="max-width:860px">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <div class="fields">
+    <div class="field"><label for="code">Code</label><input type="text" id="code" name="code" value="{{ a.code if a else '' }}" required maxlength="12" style="text-transform:uppercase"></div>
+    <div class="field"><label for="short_name">Short name</label><input type="text" id="short_name" name="short_name" value="{{ a.short_name if a else '' }}" required maxlength="40"></div>
+    <div class="field wide"><label for="name">Full name</label><input type="text" id="name" name="name" value="{{ a.name if a else '' }}" required maxlength="200"></div>
+    <div class="field"><label for="kind">Kind</label><select id="kind" name="kind">{% for k in kinds %}<option value="{{ k }}" {{ 'selected' if a and a.kind == k }}>{{ k }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="sort_order">Sort order</label><input type="number" id="sort_order" name="sort_order" value="{{ a.sort_order if a else 100 }}"></div>
+    <div class="field wide"><label for="role_desc">Role in KTS 5.0 (shown publicly)</label><textarea id="role_desc" name="role_desc" rows="3">{{ a.role_desc if a else '' }}</textarea></div>
+    <div class="field"><label for="contact_name">Nodal officer</label><input type="text" id="contact_name" name="contact_name" value="{{ a.contact_name if a else '' }}"></div>
+    <div class="field"><label for="email">Email (task notifications go here)</label><input type="email" id="email" name="email" value="{{ a.email if a else '' }}"></div>
+    <div class="field"><label for="phone">Phone</label><input type="text" id="phone" name="phone" value="{{ a.phone if a else '' }}"></div>
+    <div class="field"><label for="website">Website</label><input type="url" id="website" name="website" value="{{ a.website if a else '' }}"></div>
+    <div class="field"><label>&nbsp;</label><label class="check"><input type="checkbox" name="active" value="1" {{ 'checked' if (a and a.active) or not a }}> Active</label></div>
+  </div>
+  <div class="btn-row" style="margin-top:14px"><button class="btn" type="submit">Save</button><a class="btn ghost" href="{{ url_for('admin.agencies') }}">Cancel</a></div>
+</form>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ t('cand.admit') }} · {{ cand.app_no }}{% endblock %}
+{% block content %}
+<div class="wrap section">
+  <div class="doc">
+    <div class="head">
+      <img src="{{ url_for('static', filename='img/kts-logo.png') }}" alt="">
+      <div><b>{{ site.name }} · {{ site.theme_en }}</b><small>{{ site.organiser }} · {{ site.ministry }}</small><br><small><b>{{ t('cand.admit') }} · {{ t('exam.title') }}</b></small></div>
+      <img src="{{ url_for('static', filename='img/cict-logo.png') }}" alt="">
+    </div>
+    <div class="row">
+      <div>
+        <div class="appno">{{ cand.app_no }}</div>
+        <dl style="margin-top:12px">
+          <dt>{{ t('common.name') }}</dt><dd><b>{{ cand.full_name }}</b></dd>
+          <dt>{{ t('reg.dob') }}</dt><dd>{{ cand.dob|date }}</dd>
+          <dt>{{ t('reg.college_name') }}</dt><dd>{{ cand.college_name }}, {{ cand.college_state }}</dd>
+          <dt>{{ t('common.language') }}</dt><dd>{{ lang_name }}</dd>
+          <dt>{{ t('common.date') }}</dt><dd><b>{{ settings['exam.date']|date }}</b></dd>
+          <dt>{{ t('exam.window') }}</dt><dd><b>{{ settings['exam.start_time'] }} – {{ settings['exam.end_time'] }} IST</b></dd>
+          <dt>{{ t('exam.duration') }}</dt><dd>{{ settings['exam.duration_min'] }} {{ t('exam.minutes') }} from the moment you press Start</dd>
+          <dt>{{ t('exam.pattern') }}</dt><dd>{{ settings['exam.questions'] }} {{ t('exam.pattern_text') }} · {{ settings['exam.marks_per_q'] }} {{ t('exam.marks_each') }}</dd>
+          <dt>{{ t('exam.mode') }}</dt><dd>{{ t('exam.online') }} · {{ site.base_url }}/candidate/login</dd>
+        </dl>
+      </div>
+      <div style="text-align:center"><img class="photo" src="{{ url_for('candidate.photo') }}" alt=""><br>{% if qr %}<img class="qr" src="{{ qr }}" alt="QR" style="margin-top:8px">{% endif %}</div>
+    </div>
+    <div class="foot">
+      <ol style="padding-left:1.2em;margin:0">
+        <li>{{ t('exam.g1') }}</li><li>{{ t('exam.g2') }}</li><li>{{ t('exam.g3') }}</li><li>{{ t('exam.g4') }}</li>
+        <li>Use a laptop or desktop with a stable internet connection and a modern browser; keep your application number, date of birth and mobile phone at hand.</li>
+      </ol>
+    </div>
+  </div>
+  <div class="btn-row no-print" style="margin-top:16px;justify-content:center"><button class="btn" onclick="window.print()">{{ t('common.print') }}</button><a class="btn ghost" href="{{ url_for('candidate.home') }}">{{ t('common.back') }}</a></div>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "console/base.html" %}
+{% block title %}Shared documents{% endblock %}
+{% block content %}
+<div class="two-col" style="grid-template-columns: 1.4fr 1fr">
+  <div class="table-wrap"><table class="table">
+    <thead><tr><th>Document</th><th>Agency</th><th>Visibility</th><th>Shared by</th><th>Size</th><th></th></tr></thead>
+    <tbody>{% for d in rows %}<tr><td><a href="{{ url_for('agency.document_download', did=d.id) }}"><b>{{ d.title }}</b></a><div class="small muted">{{ d.description }} · {{ d.file_name }}</div></td><td>{{ d.agency or 'CICT' }}</td><td>{% if d.visibility == 'all' %}<span class="pill green">all agencies</span>{% else %}<span class="pill grey">agency only</span>{% endif %}</td><td class="small">{{ d.who or '' }}<br>{{ d.created_at|date }}</td><td class="small">{{ d.file_size|size }}</td>
+      <td>{% if manage or d.uploaded_by == current_user.id %}<form method="post" action="{{ url_for('agency.document_delete', did=d.id) }}" data-confirm="Remove this document?"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn xs ghost">Remove</button></form>{% endif %}</td></tr>{% else %}<tr><td colspan="6" class="muted">No documents shared yet.</td></tr>{% endfor %}</tbody></table></div>
+  <div>
+    {% if can_edit %}
+    <div class="card accent">
+      <h3>Share a document</h3>
+      <form method="post" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <div class="field"><label for="title">Title</label><input type="text" id="title" name="title" required maxlength="200"></div>
+        <div class="field" style="margin-top:8px"><label for="description">Description</label><input type="text" id="description" name="description" maxlength="300"></div>
+        {% if not locked_agency %}<div class="field" style="margin-top:8px"><label for="agency_id">Agency</label><select id="agency_id" name="agency_id"><option value="">CICT / secretariat</option>{% for a in agencies %}<option value="{{ a.id }}">{{ a.short_name }}</option>{% endfor %}</select></div>{% endif %}
+        <div class="field" style="margin-top:8px"><label for="visibility">Visibility</label><select id="visibility" name="visibility"><option value="all">All agencies</option><option value="agency">This agency and CICT only</option></select></div>
+        <div class="field" style="margin-top:8px"><label for="file">File (up to 20 MB)</label><input type="file" id="file" name="file" required></div>
+        <button class="btn sm" type="submit" style="margin-top:10px">Upload</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "console/base.html" %}
+{% block title %}{{ 'Edit resource' if r else 'New resource' }}{% endblock %}
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="card" style="max-width:860px">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <div class="fields">
+    <div class="field wide"><label for="title">Title</label><input type="text" id="title" name="title" value="{{ r.title if r else '' }}" required maxlength="200"></div>
+    <div class="field wide"><label for="description">Description</label><textarea id="description" name="description" rows="4">{{ r.description if r else '' }}</textarea></div>
+    <div class="field"><label for="category">Category</label><select id="category" name="category">{% for c in categories %}<option value="{{ c }}" {{ 'selected' if r and r.category == c }}>{{ c }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="lang">Language (blank = all)</label><select id="lang" name="lang"><option value="">All languages</option>{% for L in langs %}<option value="{{ L.code }}" {{ 'selected' if r and r.lang == L.code }}>{{ L.name }}</option>{% endfor %}</select></div>
+    <div class="field wide"><label for="url">Link (YouTube, app store, website, DOI…)</label><input type="url" id="url" name="url" value="{{ r.url if r else '' }}"></div>
+    <div class="field"><label for="file">Or upload a file (PDF, image, audio, video, zip, office; up to 20 MB)</label><input type="file" id="file" name="file">{% if r and r.file_path %}<span class="help">Current: {{ r.file_name }} · {{ r.file_size|size }}</span>{% endif %}</div>
+    <div class="field"><label for="sort_order">Sort order (lower first)</label><input type="number" id="sort_order" name="sort_order" value="{{ r.sort_order if r else 100 }}"></div>
+    <div class="field"><label>&nbsp;</label><label class="check"><input type="checkbox" name="published" value="1" {{ 'checked' if (r and r.published) or not r }}> Published</label><label class="check"><input type="checkbox" name="featured" value="1" {{ 'checked' if r and r.featured }}> Featured on the home page</label></div>
+  </div>
+  <div class="btn-row" style="margin-top:14px"><button class="btn" type="submit">Save</button><a class="btn ghost" href="{{ url_for('admin.resources') }}">Cancel</a></div>
+</form>
+{% endblock %}

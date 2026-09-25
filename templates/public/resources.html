@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ t('res.title') }}{% endblock %}
+{% block content %}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('site.organiser') }}</span>
+  <h1>{{ t('res.title') }}</h1>
+  <p class="lead dim" style="max-width:74ch">{{ t('res.intro') }}</p>
+
+  <div class="grid grid-3" style="margin:18px 0 26px">
+    <a class="card accent res-card" href="{{ url_for('public.kural_browser') }}"><span class="cat">{{ t('res.cat_translation') }}</span><h3>{{ t('res.kural_browser') }}</h3><div class="desc">{{ t('res.kural_intro') }}</div></a>
+    <a class="card accent res-card" href="{{ url_for('public.daily_kural') }}"><span class="cat">{{ t('res.cat_daily') }}</span><h3>{{ t('res.daily_title') }}</h3><div class="desc">{{ t('res.daily_intro') }}</div></a>
+    <a class="card accent res-card" href="{{ url_for('public.orientation') }}"><span class="cat">{{ t('res.cat_video') }}</span><h3>{{ t('res.orient_title') }}</h3><div class="desc">{{ t('res.orient_intro') }}</div></a>
+  </div>
+
+  <form method="get" class="filters">
+    <div class="field grow"><label for="q">{{ t('common.search') }}</label><input type="search" id="q" name="q" value="{{ q }}"></div>
+    <div class="field"><label for="l">{{ t('common.language') }}</label><select id="l" name="l" data-autosubmit><option value="">{{ t('common.all') }}</option>{% for L in langs %}<option value="{{ L.code }}" {{ 'selected' if L.code == lang }}>{{ L.name }}</option>{% endfor %}</select></div>
+    {% if cat %}<input type="hidden" name="cat" value="{{ cat }}">{% endif %}
+    <div class="field"><button class="btn" type="submit">{{ t('common.search') }}</button></div>
+  </form>
+  <div class="res-tabs">
+    <a href="{{ url_for('public.resources', l=lang, q=q) }}" class="{{ 'on' if not cat }}">{{ t('common.all') }}</a>
+    {% for c in categories %}{% if counts.get(c) %}<a href="{{ url_for('public.resources', cat=c, l=lang, q=q) }}" class="{{ 'on' if cat == c }}">{{ t('res.cat_' + c) }} <span class="muted">{{ counts[c] }}</span></a>{% endif %}{% endfor %}
+  </div>
+  {% if rows %}
+  <div class="grid grid-3">
+    {% for r in rows %}
+    <div class="card res-card">
+      <span class="cat">{{ t('res.cat_' + r.category) }}{% if r.lang %} · {{ r.lang|langname }}{% endif %}{% if r.featured %} · ★{% endif %}</span>
+      <h3><a href="{{ url_for('public.resource_open', rid=r.id) }}">{{ r.title }}</a></h3>
+      <div class="desc">{{ r.description }}</div>
+      <div class="foot"><span>{% if r.file_path %}{{ r.file_name }} · {{ r.file_size|size }}{% else %}{{ r.url|replace('https://', '')|replace('http://', '')|truncate(40) }}{% endif %}</span><a class="btn xs secondary" href="{{ url_for('public.resource_open', rid=r.id) }}">{% if r.file_path %}{{ t('common.download') }}{% else %}{{ t('common.open') }}{% endif %}</a></div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card"><p class="muted" style="margin:0">{{ t('common.none') }}</p></div>
+  {% endif %}
+</div>
+{% endblock %}

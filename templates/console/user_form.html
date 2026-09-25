@@ -1,0 +1,17 @@
+{% extends "console/base.html" %}
+{% block title %}{{ 'Edit user' if u else 'New user' }}{% endblock %}
+{% block content %}
+<form method="post" class="card" style="max-width:700px">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <div class="fields">
+    <div class="field"><label for="name">Name</label><input type="text" id="name" name="name" value="{{ u.name if u else '' }}" required></div>
+    <div class="field"><label for="email">Email (sign-in)</label><input type="email" id="email" name="email" value="{{ u.email if u else '' }}" required></div>
+    <div class="field"><label for="role">Role</label><select id="role" name="role">{% for r in roles %}<option value="{{ r }}" {{ 'selected' if u and u.role == r }}>{{ r }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="agency_id">Agency (required for the agency role)</label><select id="agency_id" name="agency_id"><option value="">—</option>{% for a in agencies %}<option value="{{ a.id }}" {{ 'selected' if u and u.agency_id == a.id }}>{{ a.short_name }} · {{ a.name|truncate(40) }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="phone">Phone</label><input type="text" id="phone" name="phone" value="{{ u.phone if u else '' }}"></div>
+    <div class="field"><label>&nbsp;</label><label class="check"><input type="checkbox" name="active" value="1" {{ 'checked' if (u and u.active) or not u }}> Active</label>{% if u %}<label class="check"><input type="checkbox" name="reset" value="1"> Issue a new temporary password</label>{% endif %}</div>
+  </div>
+  <p class="small muted" style="margin-top:10px">{% if not u %}A temporary password is generated and shown once after saving (and mailed if SMTP is configured). The user must change it at first sign-in.{% endif %}</p>
+  <div class="btn-row"><button class="btn" type="submit">Save</button><a class="btn ghost" href="{{ url_for('admin.users') }}">Cancel</a></div>
+</form>
+{% endblock %}

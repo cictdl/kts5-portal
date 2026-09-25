@@ -1,0 +1,85 @@
+{% extends "console/base.html" %}
+{% block title %}{{ a.app_no }}{% endblock %}
+{% block heading %}{{ a.app_no }} · {{ a.full_name }} <span class="status-chip st-{{ a.status }}">{{ a.status.replace('_', ' ') }}</span>{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('admin.applications') }}">← Applications</a></p>
+<div class="two-col" style="grid-template-columns: 1.4fr 1fr">
+  <div>
+    <div class="card detail">
+      <div style="display:flex;gap:18px;align-items:flex-start;margin-bottom:12px">
+        <div class="photo-box">{% if a.photo_path %}<img src="{{ url_for('admin.staff_file', relpath=a.photo_path) }}" alt="Photo">{% else %}<span class="muted">No photo</span>{% endif %}</div>
+        <dl>
+          <dt>Name</dt><dd><b>{{ a.full_name }}</b> · {{ {'M': 'Male', 'F': 'Female', 'O': 'Other'}.get(a.gender, a.gender) }}{% if a.pwd %} · PwD{% endif %}</dd>
+          <dt>Date of birth</dt><dd>{{ a.dob|date }}</dd>
+          <dt>Category</dt><dd>{{ a.category or '–' }}</dd>
+          <dt>Mobile / WhatsApp</dt><dd>{{ a.mobile }}{% if a.whatsapp %} / {{ a.whatsapp }}{% endif %}</dd>
+          <dt>Email</dt><dd><a href="mailto:{{ a.email }}">{{ a.email }}</a></dd>
+          <dt>Address</dt><dd>{{ a.address or '–' }}<br>{{ a.district }}{% if a.district %}, {% endif %}{{ a.state }} {{ a.pincode }}</dd>
+        </dl>
+      </div>
+      <h3>Institution</h3>
+      <dl>
+        <dt>College</dt><dd><b>{{ a.college_name }}</b>{% if a.aishe_code %} · AISHE {{ a.aishe_code }}{% endif %}</dd>
+        <dt>Type</dt><dd>{{ a.college_type }}</dd>
+        <dt>Location</dt><dd>{{ a.college_district }}{% if a.college_district %}, {% endif %}{{ a.college_state }}</dd>
+        <dt>University</dt><dd>{{ a.university or '–' }}</dd>
+        <dt>Programme</dt><dd>{{ a.course_level }} · {{ a.discipline or '–' }} · {{ a.year_of_study }}{% if a.roll_no %} · Roll {{ a.roll_no }}{% endif %}</dd>
+        <dt>ID proof</dt><dd>{% if a.idproof_path %}<a href="{{ url_for('admin.staff_file', relpath=a.idproof_path) }}" target="_blank" rel="noopener">Open document ↗</a>{% else %}–{% endif %}</dd>
+        <dt>Institution key</dt><dd><code class="small">{{ a.college_key }}</code></dd>
+      </dl>
+      <h3 style="margin-top:14px">Language and mentor</h3>
+      <dl>
+        <dt>Orientation / test</dt><dd><b>{{ lang_name }}</b></dd>
+        <dt>Mother tongue</dt><dd>{{ a.mother_tongue|langname if a.mother_tongue else '–' }}</dd>
+        <dt>Tamil · Kural</dt><dd>{{ a.tamil_level or '–' }} · {{ a.kural_level or '–' }}</dd>
+        <dt>Mentor</dt><dd>{{ a.mentor_name or '–' }}{% if a.mentor_designation %}, {{ a.mentor_designation }}{% endif %}{% if a.mentor_email %} · {{ a.mentor_email }}{% endif %}{% if a.mentor_phone %} · {{ a.mentor_phone }}{% endif %}</dd>
+        <dt>Submitted</dt><dd>{{ a.created_at|datetime }} · IP {{ a.ip }}</dd>
+        {% if verifier %}<dt>Verified by</dt><dd>{{ verifier.name }} · {{ a.verified_at|datetime }}</dd>{% endif %}
+      </dl>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h3>Online test</h3>
+      {% if exam %}
+      <dl class="detail" style="display:grid;grid-template-columns:160px 1fr;gap:6px 12px">
+        <dt class="muted">Status</dt><dd><span class="status-chip st-{{ exam.status }}">{{ exam.status.replace('_', ' ') }}</span></dd>
+        <dt class="muted">Started</dt><dd>{{ exam.started_at|datetime }} · deadline {{ exam.deadline_at|time }}</dd>
+        {% if exam.submitted_at %}<dt class="muted">Submitted</dt><dd>{{ exam.submitted_at|datetime }} · {{ exam.time_taken_sec // 60 }} min {{ exam.time_taken_sec % 60 }} s</dd>{% endif %}
+        {% if exam.score is not none %}<dt class="muted">Score</dt><dd><b>{{ exam.score|int }}</b> · {{ exam.correct_count }} correct</dd>{% endif %}
+        {% if merit %}<dt class="muted">Merit</dt><dd>Rank {{ merit.rank }} · {{ merit.outcome.replace('_', ' ') }}</dd>{% endif %}
+        <dt class="muted">Client</dt><dd class="small">{{ exam.ip }} · {{ exam.user_agent|truncate(80) }}</dd>
+      </dl>
+      <a class="btn xs secondary" href="{{ url_for('admin.exam_session', sid=exam.id) }}">View answers</a>
+      {% else %}<p class="muted small" style="margin:0">Not taken.</p>{% endif %}
+    </div>
+  </div>
+
+  <div>
+    {% if has_perm(current_user, 'apps.verify') %}
+    <div class="card accent">
+      <h3>Action</h3>
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <div class="field"><label for="remarks">Remarks (shown to the candidate if rejected)</label><textarea id="remarks" name="remarks" rows="3">{{ a.remarks }}</textarea></div>
+        <div class="btn-row" style="margin-top:10px">
+          {% if a.status in ('submitted', 'rejected') %}<button class="btn sm" name="action" value="verify">✓ Verify</button>{% endif %}
+          {% if a.status in ('submitted', 'verified') %}<button class="btn sm danger" name="action" value="reject">✗ Reject</button>{% endif %}
+          <button class="btn sm secondary" name="action" value="note">Save remarks</button>
+          {% if a.status != 'withdrawn' %}<button class="btn sm ghost" name="action" value="withdraw" onclick="return confirm('Withdraw this application?')">Withdraw</button>{% endif %}
+          {% if exam and has_perm(current_user, 'exam.manage') %}<button class="btn sm ghost" name="action" value="reset_exam" onclick="return confirm('Delete this test attempt so the candidate can retake it?')">Reset test</button>{% endif %}
+        </div>
+      </form>
+    </div>
+    {% endif %}
+    <div class="card" style="margin-top:14px">
+      <h3>Same institution ({{ same_college|length }})</h3>
+      {% if same_college %}<ul class="notice-list">{% for s in same_college %}<li><div><a href="{{ url_for('admin.application', aid=s.id) }}">{{ s.app_no }}</a> {{ s.full_name }}</div><span><span class="status-chip st-{{ s.status }}">{{ s.status.replace('_', ' ') }}</span>{% if s.exam_score is not none %} {{ s.exam_score|int }}{% endif %}</span></li>{% endfor %}</ul>
+      {% else %}<p class="muted small" style="margin:0">Only applicant from this institution so far.</p>{% endif %}
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3>History</h3>
+      {% for h in history %}<div class="audit-row"><span class="muted">{{ h.created_at|datetime }}</span><span><code>{{ h.action }}</code> <span class="muted">{{ h.actor }}</span> <span class="dim">{{ h.detail|truncate(80) }}</span></span></div>{% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "console/base.html" %}
+{% block title %}Selection and merit list{% endblock %}
+{% block content %}
+<div class="kpis">
+  <div class="kpi"><div class="lbl">Tests submitted</div><div class="num">{{ '{:,}'.format(tested) }}</div></div>
+  <div class="kpi"><div class="lbl">Ranked institutions</div><div class="num">{{ '{:,}'.format(summary.values()|sum) }}</div><div class="sub">best candidate per institution</div></div>
+  <div class="kpi"><div class="lbl">Selected</div><div class="num">{{ '{:,}'.format(summary.get('selected', 0)) }}</div></div>
+  <div class="kpi"><div class="lbl">Waitlisted</div><div class="num">{{ '{:,}'.format(summary.get('waitlisted', 0)) }}</div><div class="sub">{{ summary.get('not_selected', 0) }} not selected</div></div>
+  <div class="kpi"><div class="lbl">Public status</div><div class="num" style="font-size:1.1rem">{% if settings['merit.published'] == '1' %}<span class="pill green">published</span>{% else %}<span class="pill grey">not published</span>{% endif %}</div><div class="sub">{% if last %}last run {{ last.run_id }}{% endif %}</div></div>
+</div>
+<div class="two-col">
+  <div class="card accent">
+    <h3>Run the selection</h3>
+    <p class="small dim">Ranks every candidate who submitted the test by score (ties: shorter time taken, then earlier application), keeps the best candidate of each institution, then marks the top N as selected and the next M as waitlisted. Candidates from an institution whose top candidate ranks above them are marked not selected. Re-running replaces the previous list.</p>
+    <form method="post" data-confirm="Run the selection now? This replaces the current merit list and updates every candidate's status.">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <div class="fields">
+        <div class="field"><label for="select_count">Number to select</label><input type="number" id="select_count" name="select_count" value="{{ settings['merit.select_count'] }}" min="1"></div>
+        <div class="field"><label for="wait_count">Waitlist size</label><input type="number" id="wait_count" name="wait_count" value="{{ settings['merit.wait_count'] }}" min="0"></div>
+      </div>
+      <button class="btn saffron" name="action" value="run" type="submit" style="margin-top:10px">Run selection</button>
+    </form>
+  </div>
+  <div class="card">
+    <h3>Publish</h3>
+    <form method="post">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <div class="field"><label for="note">Note shown above the public merit list</label><textarea id="note" name="note" rows="3">{{ settings['merit.note'] }}</textarea></div>
+      <div class="btn-row" style="margin-top:10px">
+        <button class="btn" name="action" value="publish" type="submit" {{ 'disabled' if not summary }}>Publish merit list</button>
+        <button class="btn ghost" name="action" value="unpublish" type="submit">Unpublish</button>
+        <a class="btn secondary" href="{{ url_for('admin.selection_export') }}" {{ 'aria-disabled=true' if not summary }}>Export Excel</a>
+        <a class="btn secondary" href="{{ url_for('public.merit') }}" target="_blank">Public page ↗</a>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="two-col" style="margin-top:16px">
+  <div class="card">
+    <h3>Top of the list</h3>
+    <div class="table-wrap"><table class="table"><thead><tr><th class="num">Rank</th><th>App no</th><th>Name</th><th>Institution</th><th>State</th><th>Lang</th><th class="num">Score</th><th>Outcome</th></tr></thead>
+      <tbody>{% for r in top %}<tr><td class="num">{{ r.rank }}</td><td><code>{{ r.app_no }}</code></td><td>{{ r.full_name }}</td><td>{{ r.college_name|truncate(36) }}</td><td>{{ r.college_state }}</td><td>{{ r.pref_lang }}</td><td class="num">{{ r.score|int }}</td><td><span class="status-chip st-{{ r.outcome }}">{{ r.outcome.replace('_', ' ') }}</span></td></tr>{% else %}<tr><td colspan="8" class="muted">No selection has been run.</td></tr>{% endfor %}</tbody></table></div>
+  </div>
+  <div class="card">
+    <h3>Selected by state</h3>
+    <table class="table"><thead><tr><th>State</th><th class="num">Selected</th><th class="num">Ranked</th></tr></thead><tbody>{% for r in by_state %}<tr><td>{{ r.s }}</td><td class="num">{{ r.sel }}</td><td class="num">{{ r.n }}</td></tr>{% else %}<tr><td colspan="3" class="muted">—</td></tr>{% endfor %}</tbody></table>
+  </div>
+</div>
+{% endblock %}

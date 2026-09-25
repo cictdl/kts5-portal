@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  KTS 5.0 portal · IIS configuration (HttpPlatformHandler mode).
+  setup-iis.ps1 fills the placeholders and writes this file as web.config
+  in the portal folder. IIS starts the Waitress server (serve.py) on a private
+  port and forwards every request to it.
+
+  Requires the HttpPlatformHandler IIS module:
+  https://www.iis.net/downloads/microsoft/httpplatformhandler
+-->
+<configuration>
+  <system.webServer>
+    <handlers>
+      <add name="httpPlatformHandler" path="*" verb="*" modules="httpPlatformHandler" resourceType="Unspecified" requireAccess="Script" />
+    </handlers>
+    <httpPlatform processPath="__PYTHON__"
+                  arguments="&quot;__HOME__\serve.py&quot;"
+                  startupTimeLimit="90"
+                  startupRetryCount="3"
+                  requestTimeout="00:10:00"
+                  stdoutLogEnabled="true"
+                  stdoutLogFile="__HOME__\logs\stdout">
+      <environmentVariables>
+        <environmentVariable name="KTS_PORT" value="%HTTP_PLATFORM_PORT%" />
+        <environmentVariable name="KTS_HOST" value="127.0.0.1" />
+        <environmentVariable name="KTS_THREADS" value="8" />
+        <environmentVariable name="KTS_HTTPS" value="__HTTPS__" />
+        <environmentVariable name="KTS_BEHIND_PROXY" value="1" />
+        <environmentVariable name="KTS_BASE_URL" value="__BASE_URL__" />
+        <environmentVariable name="KTS_URL_PREFIX" value="__PREFIX__" />
+        <environmentVariable name="PYTHONIOENCODING" value="utf-8" />
+        <environmentVariable name="PYTHONUNBUFFERED" value="1" />
+        <!-- Outgoing mail: fill in and restart the application pool.
+        <environmentVariable name="KTS_SMTP_HOST" value="smtp.example.gov.in" />
+        <environmentVariable name="KTS_SMTP_PORT" value="587" />
+        <environmentVariable name="KTS_SMTP_USER" value="kts5@cict.in" />
+        <environmentVariable name="KTS_SMTP_PASSWORD" value="" />
+        <environmentVariable name="KTS_SMTP_FROM" value="kts5@cict.in" />
+        -->
+      </environmentVariables>
+    </httpPlatform>
+    <security>
+      <requestFiltering removeServerHeader="true">
+        <requestLimits maxAllowedContentLength="26214400" />
+      </requestFiltering>
+    </security>
+    <httpErrors existingResponse="PassThrough" />
+    <httpProtocol>
+      <customHeaders>
+        <remove name="X-Powered-By" />
+      </customHeaders>
+    </httpProtocol>
+  </system.webServer>
+</configuration>

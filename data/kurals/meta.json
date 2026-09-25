@@ -1,0 +1,2263 @@
+{
+ "title": "திருக்குறள் · Tirukkuṟaḷ — 22 மொழிகள்",
+ "built": "2026-09-23",
+ "version": "c7779509",
+ "counts": {
+  "kurals": 1330,
+  "chapters": 133,
+  "languages": 30,
+  "scheduled": 22,
+  "wordTokens": 13124,
+  "proseLangs": [
+   "en",
+   "ta"
+  ]
+ },
+ "languages": {
+  "ta": {
+   "name": "Tamil (மூலம்)",
+   "native": "தமிழ்",
+   "short": "த",
+   "script": "Tamil",
+   "dir": "ltr",
+   "group": "ta",
+   "kind": "verse",
+   "credit": "Canonical published text (CICT)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "ta-IN",
+    "ta-LK",
+    "ta"
+   ],
+   "rate": 0.85,
+   "url": "",
+   "prose": true
+  },
+  "tac": {
+   "name": "Tamil (Commentary)",
+   "native": "தமிழ் உரை",
+   "short": "உரை",
+   "script": "Tamil",
+   "dir": "ltr",
+   "group": "ta",
+   "kind": "prose",
+   "credit": "Tamil critical commentary: Prof. P. Marudanayagam (CICT, 2023, ISBN 978-81-19249-27-5) · CICT Digital Archives",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "ta-IN",
+    "ta-LK",
+    "ta"
+   ],
+   "rate": 0.85,
+   "url": "https://www.digitalarchives.cict.in/#ground-truth",
+   "prose": false
+  },
+  "en": {
+   "name": "English",
+   "native": "English",
+   "short": "EN",
+   "script": "Latin",
+   "dir": "ltr",
+   "group": "en",
+   "kind": "verse",
+   "credit": "Yogi Shuddhananda Bharati (CICT, 2024, ISBN 978-81-19249-91-6)",
+   "coverage": 1330,
+   "scheduled": false,
+   "voices": [
+    "en-IN",
+    "en-GB",
+    "en-US",
+    "en"
+   ],
+   "rate": 0.88,
+   "url": "",
+   "prose": true
+  },
+  "ena": {
+   "name": "English (V. V. S. Aiyar)",
+   "native": "English",
+   "short": "AI",
+   "script": "Latin",
+   "dir": "ltr",
+   "group": "en",
+   "kind": "prose",
+   "credit": "V. V. S. Aiyar (CICT, 2nd ed. 2026; K886 & K995 absent in source)",
+   "coverage": 1328,
+   "scheduled": false,
+   "voices": [
+    "en-IN",
+    "en-GB",
+    "en-US",
+    "en"
+   ],
+   "rate": 0.85,
+   "url": "",
+   "prose": false
+  },
+  "enm": {
+   "name": "English (Manikkodi)",
+   "native": "English",
+   "short": "MK",
+   "script": "Latin",
+   "dir": "ltr",
+   "group": "en",
+   "kind": "verse",
+   "credit": "Manikkodi Srinivasan (CICT, 2026, ISBN 978-93-49646-50-6)",
+   "coverage": 1330,
+   "scheduled": false,
+   "voices": [
+    "en-IN",
+    "en-GB",
+    "en-US",
+    "en"
+   ],
+   "rate": 0.88,
+   "url": "",
+   "prose": false
+  },
+  "as": {
+   "name": "Assamese",
+   "native": "অসমীয়া",
+   "short": "অস",
+   "script": "Bengali",
+   "dir": "ltr",
+   "group": "as",
+   "kind": "prose",
+   "credit": "B. Vijayakumar (CICT, 2023, ISBN 978-81-19249-32-9)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "as-IN",
+    "as",
+    "bn-IN"
+   ],
+   "rate": 0.85,
+   "url": "",
+   "prose": false
+  },
+  "bn": {
+   "name": "Bengali",
+   "native": "বাংলা",
+   "short": "বা",
+   "script": "Bengali",
+   "dir": "ltr",
+   "group": "bn",
+   "kind": "prose",
+   "credit": "Dr. B. Natarajan (CICT, 2026, ISBN 978-93-49646-71-1)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "bn-IN",
+    "bn-BD",
+    "bn"
+   ],
+   "rate": 0.85,
+   "url": "",
+   "prose": false
+  },
+  "brx": {
+   "name": "Bodo",
+   "native": "बड़ो",
+   "short": "बड़",
+   "script": "Devanagari",
+   "dir": "ltr",
+   "group": "brx",
+   "kind": "prose",
+   "credit": "Rupali Swargiary & B. Vijayakumar (CICT, 2023, ISBN 978-81-19249-41-1)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "brx-IN",
+    "brx",
+    "hi-IN"
+   ],
+   "rate": 0.85,
+   "url": "",
+   "prose": false
+  },
+  "doi": {
+   "name": "Dogri",
+   "native": "डोगरी",
+   "short": "डो",
+   "script": "Devanagari",
+   "dir": "ltr",
+   "group": "doi",
+   "kind": "verse",
+   "credit": "Vineet Budki (CICT, 2023, ISBN 978-81-19249-37-4)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "doi-IN",
+    "doi",
+    "hi-IN"
+   ],
+   "rate": 0.88,
+   "url": "",
+   "prose": false
+  },
+  "gu": {
+   "name": "Gujarati",
+   "native": "ગુજરાતી",
+   "short": "ગુ",
+   "script": "Gujarati",
+   "dir": "ltr",
+   "group": "gu",
+   "kind": "verse",
+   "credit": "Dr. P. C. Kokila (CICT, 2nd ed.)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "gu-IN",
+    "gu"
+   ],
+   "rate": 0.88,
+   "url": "",
+   "prose": false
+  },
+  "hi": {
+   "name": "Hindi",
+   "native": "हिन्दी",
+   "short": "हि",
+   "script": "Devanagari",
+   "dir": "ltr",
+   "group": "hi",
+   "kind": "verse",
+   "credit": "M. Govindarajan (CICT, 3rd ed. 2025, Publication No. 79, ISBN 978-93-81744-70-3)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "hi-IN",
+    "hi"
+   ],
+   "rate": 0.9,
+   "url": "",
+   "prose": false
+  },
+  "kn": {
+   "name": "Kannada",
+   "native": "ಕನ್ನಡ",
+   "short": "ಕ",
+   "script": "Kannada",
+   "dir": "ltr",
+   "group": "kn",
+   "kind": "verse",
+   "credit": "S. Srinivasan (CICT, 2022, ISBN 978-93-81744-05-5)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "kn-IN",
+    "kn"
+   ],
+   "rate": 0.88,
+   "url": "",
+   "prose": false
+  },
+  "ks": {
+   "name": "Kashmiri (Devanagari)",
+   "native": "कॉशुर",
+   "short": "कॉ",
+   "script": "Devanagari",
+   "dir": "ltr",
+   "group": "ks",
+   "kind": "verse",
+   "credit": "Beena Budki (CICT, 2023, ISBN 978-81-19249-31-2)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "ks-IN",
+    "ks-Deva",
+    "ks",
+    "hi-IN"
+   ],
+   "rate": 0.88,
+   "url": "",
+   "prose": false
+  },
+  "ksn": {
+   "name": "Kashmiri (Nastaliq)",
+   "native": "کٲشُر",
+   "short": "ک",
+   "script": "Arabic",
+   "dir": "rtl",
+   "group": "ks",
+   "kind": "verse",
+   "credit": "Dr. Beena Budki & Dr. Zargar Adil Ahmad (CICT, 2026, ISBN 978-93-49646-45-2)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "ur-IN",
+    "ur-PK",
+    "ar-SA",
+    "hi-IN"
+   ],
+   "rate": 0.8,
+   "url": "",
+   "prose": false
+  },
+  "kok": {
+   "name": "Konkani (Kannada script)",
+   "native": "ಕೊಂಕಣಿ",
+   "short": "ಕೊಂ",
+   "script": "Kannada",
+   "dir": "ltr",
+   "group": "kok",
+   "kind": "verse",
+   "credit": "Shwetha Pai (CICT, 2026, ISBN 978-81-969995-3-7)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "kok-IN",
+    "kok",
+    "kn-IN"
+   ],
+   "rate": 0.85,
+   "url": "",
+   "prose": false
+  },
+  "gom": {
+   "name": "Konkani (Devanagari)",
+   "native": "कोंकणी",
+   "short": "कों",
+   "script": "Devanagari",
+   "dir": "ltr",
+   "group": "kok",
+   "kind": "prose",
+   "credit": "Saurabh Varik (CICT, 2026)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "kok-IN",
+    "kok",
+    "mr-IN",
+    "hi-IN"
+   ],
+   "rate": 0.85,
+   "url": "",
+   "prose": false
+  },
+  "mai": {
+   "name": "Maithili",
+   "native": "मैथिली",
+   "short": "मै",
+   "script": "Devanagari",
+   "dir": "ltr",
+   "group": "mai",
+   "kind": "verse",
+   "credit": "Ramchandra Roy (CICT, 2023, ISBN 978-81-19249-35-0)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "mai-IN",
+    "mai",
+    "hi-IN"
+   ],
+   "rate": 0.85,
+   "url": "",
+   "prose": false
+  },
+  "ml": {
+   "name": "Malayalam",
+   "native": "മലയാളം",
+   "short": "മ",
+   "script": "Malayalam",
+   "dir": "ltr",
+   "group": "ml",
+   "kind": "verse",
+   "credit": "Dr. N. Manoharan (CICT, 2022, ISBN 978-93-81744-67-3)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "ml-IN",
+    "ml"
+   ],
+   "rate": 0.9,
+   "url": "",
+   "prose": false
+  },
+  "mni": {
+   "name": "Manipuri (Bengali script)",
+   "native": "মৈতৈলোন্",
+   "short": "মৈ",
+   "script": "Bengali",
+   "dir": "ltr",
+   "group": "mni",
+   "kind": "prose",
+   "credit": "Soibam Rebika Devi (CICT, 2025, ISBN 978-81-90800-08-2)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "mni-IN",
+    "mni",
+    "bn-IN"
+   ],
+   "rate": 0.85,
+   "url": "",
+   "prose": false
+  },
+  "mei": {
+   "name": "Manipuri (Meitei Mayek)",
+   "native": "ꯃꯩꯇꯩꯂꯣꯟ",
+   "short": "ꯃꯩ",
+   "script": "Meetei Mayek",
+   "dir": "ltr",
+   "group": "mni",
+   "kind": "prose",
+   "credit": "Soibam Rebika Devi (CICT, 2025, ISBN 978-81-90800-08-2)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "mni-Mtei",
+    "mni-IN",
+    "mni"
+   ],
+   "rate": 0.85,
+   "url": "",
+   "prose": false
+  },
+  "mr": {
+   "name": "Marathi",
+   "native": "मराठी",
+   "short": "म",
+   "script": "Devanagari",
+   "dir": "ltr",
+   "group": "mr",
+   "kind": "verse",
+   "credit": "Dr. N. Lalitha (CICT, 2012, ISBN 978-93-81744-69-7)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "mr-IN",
+    "mr"
+   ],
+   "rate": 0.88,
+   "url": "",
+   "prose": false
+  },
+  "ne": {
+   "name": "Nepali",
+   "native": "नेपाली",
+   "short": "ने",
+   "script": "Devanagari",
+   "dir": "ltr",
+   "group": "ne",
+   "kind": "verse",
+   "credit": "Sunita Dahal (CICT, 2022, Publication No. 69)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "ne-NP",
+    "ne-IN",
+    "ne"
+   ],
+   "rate": 0.88,
+   "url": "",
+   "prose": false
+  },
+  "or": {
+   "name": "Odia",
+   "native": "ଓଡ଼ିଆ",
+   "short": "ଓ",
+   "script": "Odia",
+   "dir": "ltr",
+   "group": "or",
+   "kind": "verse",
+   "credit": "Prof. Dr. Giribala Mohanty (CICT, 2022, ISBN 978-93-81744-68-0)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "or-IN",
+    "or",
+    "ory"
+   ],
+   "rate": 0.88,
+   "url": "",
+   "prose": false
+  },
+  "pa": {
+   "name": "Punjabi",
+   "native": "ਪੰਜਾਬੀ",
+   "short": "ਪੰ",
+   "script": "Gurmukhi",
+   "dir": "ltr",
+   "group": "pa",
+   "kind": "verse",
+   "credit": "Tarlochan Singh Bedi (CICT, 2012, ISBN 978-93-81744-02-4)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "pa-IN",
+    "pa-Guru",
+    "pa"
+   ],
+   "rate": 0.9,
+   "url": "",
+   "prose": false
+  },
+  "sa": {
+   "name": "Sanskrit",
+   "native": "संस्कृतम्",
+   "short": "सं",
+   "script": "Devanagari",
+   "dir": "ltr",
+   "group": "sa",
+   "kind": "prose",
+   "credit": "S. Rajagopalan (CICT, 2022, ISBN 978-93-81744-84-0)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "sa-IN",
+    "sa",
+    "hi-IN"
+   ],
+   "rate": 0.85,
+   "url": "",
+   "prose": false
+  },
+  "sat": {
+   "name": "Santali (Devanagari)",
+   "native": "ᱥᱟᱱᱛᱟᱲᱤ",
+   "short": "ᱥᱟ",
+   "script": "Devanagari",
+   "dir": "ltr",
+   "group": "sat",
+   "kind": "verse",
+   "credit": "Meenakshi G. Murmu (CICT, 2026, ISBN 978-81-969995-5-1) — Devanagari transcription",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "sat-IN",
+    "sat",
+    "hi-IN"
+   ],
+   "rate": 0.85,
+   "url": "",
+   "prose": false
+  },
+  "sd": {
+   "name": "Sindhi (Devanagari)",
+   "native": "सिन्धी",
+   "short": "सि",
+   "script": "Devanagari",
+   "dir": "ltr",
+   "group": "sd",
+   "kind": "verse",
+   "credit": "Dr. Kishore Vaswani (CICT, 2026, ISBN 978-93-49646-39-1)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "sd-IN",
+    "sd-PK",
+    "sd",
+    "hi-IN"
+   ],
+   "rate": 0.85,
+   "url": "",
+   "prose": false
+  },
+  "te": {
+   "name": "Telugu",
+   "native": "తెలుగు",
+   "short": "తె",
+   "script": "Telugu",
+   "dir": "ltr",
+   "group": "te",
+   "kind": "prose",
+   "credit": "CICT Telugu translation (2014 edition)",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "te-IN",
+    "te"
+   ],
+   "rate": 0.85,
+   "url": "",
+   "prose": false
+  },
+  "ur": {
+   "name": "Urdu",
+   "native": "اُردُو",
+   "short": "اُ",
+   "script": "Arabic",
+   "dir": "rtl",
+   "group": "ur",
+   "kind": "verse",
+   "credit": "Dr. Amanulla M. B. (CICT, 2022, ISBN 978-93-81744-66-6) — rhyming couplets",
+   "coverage": 1330,
+   "scheduled": true,
+   "voices": [
+    "ur-IN",
+    "ur-PK",
+    "ur",
+    "hi-IN"
+   ],
+   "rate": 0.8,
+   "url": "",
+   "prose": false
+  },
+  "bho": {
+   "name": "Bhojpuri",
+   "native": "भोजपुरी",
+   "short": "भो",
+   "script": "Devanagari",
+   "dir": "ltr",
+   "group": "bho",
+   "kind": "verse",
+   "credit": "Harish Chandra Mishra (CICT, 2023, ISBN 978-81-19249-22-0) — not in the Eighth Schedule",
+   "coverage": 1330,
+   "scheduled": false,
+   "voices": [
+    "bho-IN",
+    "bho",
+    "hi-IN"
+   ],
+   "rate": 0.88,
+   "url": "",
+   "prose": false
+  }
+ },
+ "langOrder": [
+  "ta",
+  "tac",
+  "en",
+  "ena",
+  "enm",
+  "as",
+  "bn",
+  "brx",
+  "doi",
+  "gu",
+  "hi",
+  "kn",
+  "ks",
+  "ksn",
+  "kok",
+  "gom",
+  "mai",
+  "ml",
+  "mni",
+  "mei",
+  "mr",
+  "ne",
+  "or",
+  "pa",
+  "sa",
+  "sat",
+  "sd",
+  "te",
+  "ur",
+  "bho"
+ ],
+ "pals": [
+  {
+   "num": 1,
+   "name": "அறத்துப்பால்",
+   "nameEn": "Virtue",
+   "iyals": [
+    {
+     "num": 1,
+     "name": "பாயிரவியல்",
+     "nameEn": "Prologue",
+     "chapters": [
+      1,
+      2,
+      3,
+      4
+     ]
+    },
+    {
+     "num": 2,
+     "name": "இல்லறவியல்",
+     "nameEn": "Domestic Virtue",
+     "chapters": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24
+     ]
+    },
+    {
+     "num": 3,
+     "name": "துறவறவியல்",
+     "nameEn": "Ascetic Virtue",
+     "chapters": [
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37
+     ]
+    },
+    {
+     "num": 4,
+     "name": "ஊழியல்",
+     "nameEn": "Fate",
+     "chapters": [
+      38
+     ]
+    }
+   ]
+  },
+  {
+   "num": 2,
+   "name": "பொருட்பால்",
+   "nameEn": "Wealth",
+   "iyals": [
+    {
+     "num": 1,
+     "name": "அரசியல்",
+     "nameEn": "Royalty",
+     "chapters": [
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+     ]
+    },
+    {
+     "num": 2,
+     "name": "அமைச்சியல்",
+     "nameEn": "Ministers of State",
+     "chapters": [
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73
+     ]
+    },
+    {
+     "num": 3,
+     "name": "அங்கவியல்",
+     "nameEn": "Essentials of a State",
+     "chapters": [
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96
+     ]
+    },
+    {
+     "num": 4,
+     "name": "ஒழிபியல்",
+     "nameEn": "Miscellaneous",
+     "chapters": [
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108
+     ]
+    }
+   ]
+  },
+  {
+   "num": 3,
+   "name": "காமத்துப்பால்",
+   "nameEn": "Love",
+   "iyals": [
+    {
+     "num": 12,
+     "name": "களவியல்",
+     "nameEn": "The Pre-marital love",
+     "chapters": [
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116
+     ]
+    },
+    {
+     "num": 13,
+     "name": "கற்பியல்",
+     "nameEn": "The Post-marital love",
+     "chapters": [
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127,
+      128,
+      129,
+      130,
+      131,
+      132,
+      133
+     ]
+    }
+   ]
+  }
+ ],
+ "chapters": [
+  {
+   "adhigaram": 1,
+   "name": "கடவுள் வாழ்த்து",
+   "nameEn": "The Praise of God",
+   "transliteration": "Katavul Vaazhththu",
+   "start": 1,
+   "end": 10,
+   "palNum": 1,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 2,
+   "name": "வான்சிறப்பு",
+   "nameEn": "The Blessing of Rain",
+   "transliteration": "Vaansirappu",
+   "start": 11,
+   "end": 20,
+   "palNum": 1,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 3,
+   "name": "நீத்தார் பெருமை",
+   "nameEn": "The Greatness of Ascetics",
+   "transliteration": "Neeththaar Perumai",
+   "start": 21,
+   "end": 30,
+   "palNum": 1,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 4,
+   "name": "அறன் வலியுறுத்தல்",
+   "nameEn": "Assertion of the Strength of Virtue",
+   "transliteration": "Aran Valiyuruththal",
+   "start": 31,
+   "end": 40,
+   "palNum": 1,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 5,
+   "name": "இல்வாழ்க்கை",
+   "nameEn": "Domestic Life",
+   "transliteration": "Ilvaazhkkai",
+   "start": 41,
+   "end": 50,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 6,
+   "name": "வாழ்க்கைத் துணைநலம்",
+   "nameEn": "The Worth of a Wife",
+   "transliteration": "Vaazhkkaith Thunainalam",
+   "start": 51,
+   "end": 60,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 7,
+   "name": "மக்கட்பேறு",
+   "nameEn": "The Wealth of Children",
+   "transliteration": "Pudhalvaraip Perudhal",
+   "start": 61,
+   "end": 70,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 8,
+   "name": "அன்புடைமை",
+   "nameEn": "The Possession of Love",
+   "transliteration": "Anputaimai",
+   "start": 71,
+   "end": 80,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 9,
+   "name": "விருந்தோம்பல்",
+   "nameEn": "Hospitality",
+   "transliteration": "Virundhompal",
+   "start": 81,
+   "end": 90,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 10,
+   "name": "இனியவை கூறல்",
+   "nameEn": "The Utterance of Pleasant Words",
+   "transliteration": "Iniyavaikooral",
+   "start": 91,
+   "end": 100,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 11,
+   "name": "செய்ந்நன்றியறிதல்",
+   "nameEn": "Gratitude",
+   "transliteration": "Seynnandri Aridhal",
+   "start": 101,
+   "end": 110,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 12,
+   "name": "நடுவு நிலைமை",
+   "nameEn": "Impartiality",
+   "transliteration": "Natuvu Nilaimai",
+   "start": 111,
+   "end": 120,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 13,
+   "name": "அடக்கம் உடைமை",
+   "nameEn": "The Possession of Self-restraint",
+   "transliteration": "Atakkamutaimai",
+   "start": 121,
+   "end": 130,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 14,
+   "name": "ஒழுக்கம் உடைமை",
+   "nameEn": "The Possession of Decorum",
+   "transliteration": "Ozhukkamutaimai",
+   "start": 131,
+   "end": 140,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 15,
+   "name": "பிறனில் விழையாமை",
+   "nameEn": "Not coveting another\"s Wife",
+   "transliteration": "Piranil Vizhaiyaamai",
+   "start": 141,
+   "end": 150,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 16,
+   "name": "பொறையுடைமை",
+   "nameEn": "The Possession of Patience, Forbearance",
+   "transliteration": "Poraiyutaimai",
+   "start": 151,
+   "end": 160,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 17,
+   "name": "அழுக்காறாமை",
+   "nameEn": "Not Envying",
+   "transliteration": "Azhukkaaraamai",
+   "start": 161,
+   "end": 170,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 18,
+   "name": "வெஃகாமை",
+   "nameEn": "Not Coveting",
+   "transliteration": "Veqkaamai",
+   "start": 171,
+   "end": 180,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 19,
+   "name": "புறங்கூறாமை",
+   "nameEn": "Not Backbiting",
+   "transliteration": "Purangooraamai",
+   "start": 181,
+   "end": 190,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 20,
+   "name": "பயனில சொல்லாமை",
+   "nameEn": "Against Vain Speaking",
+   "transliteration": "Payanila Sollaamai",
+   "start": 191,
+   "end": 200,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 21,
+   "name": "தீவினையச்சம்",
+   "nameEn": "Dread of Evil Deeds",
+   "transliteration": "Theevinaiyachcham",
+   "start": 201,
+   "end": 210,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 22,
+   "name": "ஒப்புரவறிதல்",
+   "nameEn": "Duty to Society",
+   "transliteration": "Oppuravaridhal",
+   "start": 211,
+   "end": 220,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 23,
+   "name": "ஈகை",
+   "nameEn": "Giving",
+   "transliteration": "Eekai",
+   "start": 221,
+   "end": 230,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 24,
+   "name": "புகழ்",
+   "nameEn": "Renown",
+   "transliteration": "Pukazh",
+   "start": 231,
+   "end": 240,
+   "palNum": 1,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 25,
+   "name": "அருளுடைமை",
+   "nameEn": "Compassion",
+   "transliteration": "Arulutaimai",
+   "start": 241,
+   "end": 250,
+   "palNum": 1,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 26,
+   "name": "புலால் மறுத்தல்",
+   "nameEn": "Abstinence from Flesh",
+   "transliteration": "Pulaanmaruththal",
+   "start": 251,
+   "end": 260,
+   "palNum": 1,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 27,
+   "name": "தவம்",
+   "nameEn": "Penance",
+   "transliteration": "Thavam",
+   "start": 261,
+   "end": 270,
+   "palNum": 1,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 28,
+   "name": "கூடா ஒழுக்கம்",
+   "nameEn": "Imposture",
+   "transliteration": "Kootaavozhukkam",
+   "start": 271,
+   "end": 280,
+   "palNum": 1,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 29,
+   "name": "கள்ளாமை",
+   "nameEn": "The Absence of Fraud",
+   "transliteration": "Kallaamai",
+   "start": 281,
+   "end": 290,
+   "palNum": 1,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 30,
+   "name": "வாய்மை",
+   "nameEn": "Veracity",
+   "transliteration": "Vaaimai",
+   "start": 291,
+   "end": 300,
+   "palNum": 1,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 31,
+   "name": "வெகுளாமை",
+   "nameEn": "Restraining Anger",
+   "transliteration": "Vekulaamai",
+   "start": 301,
+   "end": 310,
+   "palNum": 1,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 32,
+   "name": "இன்னா செய்யாமை",
+   "nameEn": "Not doing Evil",
+   "transliteration": "Innaaseyyaamai",
+   "start": 311,
+   "end": 320,
+   "palNum": 1,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 33,
+   "name": "கொல்லாமை",
+   "nameEn": "Not killing",
+   "transliteration": "Kollaamai",
+   "start": 321,
+   "end": 330,
+   "palNum": 1,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 34,
+   "name": "நிலையாமை",
+   "nameEn": "Instability",
+   "transliteration": "Nilaiyaamai",
+   "start": 331,
+   "end": 340,
+   "palNum": 1,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 35,
+   "name": "துறவு",
+   "nameEn": "Renunciation",
+   "transliteration": "Thuravu",
+   "start": 341,
+   "end": 350,
+   "palNum": 1,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 36,
+   "name": "மெய்யுணர்தல்",
+   "nameEn": "Truth-Conciousness",
+   "transliteration": "Meyyunardhal",
+   "start": 351,
+   "end": 360,
+   "palNum": 1,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 37,
+   "name": "அவா அறுத்தல்",
+   "nameEn": "Curbing of Desire",
+   "transliteration": "Avaavaruththal",
+   "start": 361,
+   "end": 370,
+   "palNum": 1,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 38,
+   "name": "ஊழ்",
+   "nameEn": "Fate",
+   "transliteration": "Oozh",
+   "start": 371,
+   "end": 380,
+   "palNum": 1,
+   "iyalNum": 4
+  },
+  {
+   "adhigaram": 39,
+   "name": "இறைமாட்சி",
+   "nameEn": "The Greatness of a King",
+   "transliteration": "Iraimaatchi",
+   "start": 381,
+   "end": 390,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 40,
+   "name": "கல்வி",
+   "nameEn": "Learning",
+   "transliteration": "Kalvi",
+   "start": 391,
+   "end": 400,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 41,
+   "name": "கல்லாமை",
+   "nameEn": "Ignorance",
+   "transliteration": "Kallaamai",
+   "start": 401,
+   "end": 410,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 42,
+   "name": "கேள்வி",
+   "nameEn": "Hearing",
+   "transliteration": "Kelvi",
+   "start": 411,
+   "end": 420,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 43,
+   "name": "அறிவுடைமை",
+   "nameEn": "The Possession of Knowledge",
+   "transliteration": "Arivutaimai",
+   "start": 421,
+   "end": 430,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 44,
+   "name": "குற்றங்கடிதல்",
+   "nameEn": "The Correction of Faults",
+   "transliteration": "Kutrangatidhal",
+   "start": 431,
+   "end": 440,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 45,
+   "name": "பெரியாரைத் துணைக்கோடல்",
+   "nameEn": "Seeking the Aid of Great Men",
+   "transliteration": "Periyaaraith Thunaikkotal",
+   "start": 441,
+   "end": 450,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 46,
+   "name": "சிற்றினம் சேராமை",
+   "nameEn": "Avoiding mean Associations",
+   "transliteration": "Sitrinanjeraamai",
+   "start": 451,
+   "end": 460,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 47,
+   "name": "தெரிந்து செயல்வகை",
+   "nameEn": "Acting after due Consideration",
+   "transliteration": "Therindhuseyalvakai",
+   "start": 461,
+   "end": 470,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 48,
+   "name": "வலியறிதல்",
+   "nameEn": "The Knowledge of Power",
+   "transliteration": "Valiyaridhal",
+   "start": 471,
+   "end": 480,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 49,
+   "name": "காலமறிதல்",
+   "nameEn": "Knowing the fitting Time",
+   "transliteration": "Kaalamaridhal",
+   "start": 481,
+   "end": 490,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 50,
+   "name": "இடனறிதல்",
+   "nameEn": "Knowing the Place",
+   "transliteration": "Itanaridhal",
+   "start": 491,
+   "end": 500,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 51,
+   "name": "தெரிந்து தெளிதல்",
+   "nameEn": "Selection and Confidence",
+   "transliteration": "Therindhudhelidhal",
+   "start": 501,
+   "end": 510,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 52,
+   "name": "தெரிந்து வினையாடல்",
+   "nameEn": "Selection and Employment",
+   "transliteration": "Therindhuvinaiyaatal",
+   "start": 511,
+   "end": 520,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 53,
+   "name": "சுற்றந் தழால்",
+   "nameEn": "Cherishing Kinsmen",
+   "transliteration": "Sutrandhazhaal",
+   "start": 521,
+   "end": 530,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 54,
+   "name": "பொச்சாவாமை",
+   "nameEn": "Unforgetfulness",
+   "transliteration": "Pochchaavaamai",
+   "start": 531,
+   "end": 540,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 55,
+   "name": "செங்கோன்மை",
+   "nameEn": "The Right Sceptre",
+   "transliteration": "Sengonmai",
+   "start": 541,
+   "end": 550,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 56,
+   "name": "கொடுங்கோன்மை",
+   "nameEn": "The Cruel Sceptre",
+   "transliteration": "Kotungonmai",
+   "start": 551,
+   "end": 560,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 57,
+   "name": "வெருவந்த செய்யாமை",
+   "nameEn": "Absence of Terrorism",
+   "transliteration": "Veruvandhaseyyaamai",
+   "start": 561,
+   "end": 570,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 58,
+   "name": "கண்ணோட்டம்",
+   "nameEn": "Benignity",
+   "transliteration": "Kannottam",
+   "start": 571,
+   "end": 580,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 59,
+   "name": "ஒற்றாடல்",
+   "nameEn": "Detectives",
+   "transliteration": "Otraatal",
+   "start": 581,
+   "end": 590,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 60,
+   "name": "ஊக்கம் உடைமை",
+   "nameEn": "Energy",
+   "transliteration": "Ookkamutaimai",
+   "start": 591,
+   "end": 600,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 61,
+   "name": "மடி இன்மை",
+   "nameEn": "Unsluggishness",
+   "transliteration": "Matiyinmai",
+   "start": 601,
+   "end": 610,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 62,
+   "name": "ஆள்வினை உடைமை",
+   "nameEn": "Manly Effort",
+   "transliteration": "Aalvinaiyutaimai",
+   "start": 611,
+   "end": 620,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 63,
+   "name": "இடுக்கண் அழியாமை",
+   "nameEn": "Hopefulness in Trouble",
+   "transliteration": "Itukkan Azhiyaamai",
+   "start": 621,
+   "end": 630,
+   "palNum": 2,
+   "iyalNum": 1
+  },
+  {
+   "adhigaram": 64,
+   "name": "அமைச்சு",
+   "nameEn": "The Office of Minister of state",
+   "transliteration": "Amaichchu",
+   "start": 631,
+   "end": 640,
+   "palNum": 2,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 65,
+   "name": "சொல்வன்மை",
+   "nameEn": "Power of Speech",
+   "transliteration": "Solvanmai",
+   "start": 641,
+   "end": 650,
+   "palNum": 2,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 66,
+   "name": "வினைத் தூய்மை",
+   "nameEn": "Purity in Action",
+   "transliteration": "Vinaiththooimai",
+   "start": 651,
+   "end": 660,
+   "palNum": 2,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 67,
+   "name": "வினைத்திட்பம்",
+   "nameEn": "Power in Action",
+   "transliteration": "Vinaiththitpam",
+   "start": 661,
+   "end": 670,
+   "palNum": 2,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 68,
+   "name": "வினை செயல்வகை",
+   "nameEn": "Modes of Action",
+   "transliteration": "Vinaiseyalvakai",
+   "start": 671,
+   "end": 680,
+   "palNum": 2,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 69,
+   "name": "தூது",
+   "nameEn": "The Envoy",
+   "transliteration": "Thoodhu",
+   "start": 681,
+   "end": 690,
+   "palNum": 2,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 70,
+   "name": "மன்னரைச் சேர்ந்து ஒழுகல்",
+   "nameEn": "Conduct in the Presence of the King",
+   "transliteration": "Mannaraich Cherndhozhudhal",
+   "start": 691,
+   "end": 700,
+   "palNum": 2,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 71,
+   "name": "குறிப்பறிதல்",
+   "nameEn": "The Knowledge of Indications",
+   "transliteration": "Kuripparidhal",
+   "start": 701,
+   "end": 710,
+   "palNum": 2,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 72,
+   "name": "அவை அறிதல்",
+   "nameEn": "The Knowledge of the Council Chamber",
+   "transliteration": "Avaiyaridhal",
+   "start": 711,
+   "end": 720,
+   "palNum": 2,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 73,
+   "name": "அவை அஞ்சாமை",
+   "nameEn": "Not to dread the Council",
+   "transliteration": "Avaiyanjaamai",
+   "start": 721,
+   "end": 730,
+   "palNum": 2,
+   "iyalNum": 2
+  },
+  {
+   "adhigaram": 74,
+   "name": "நாடு",
+   "nameEn": "The Land",
+   "transliteration": "Naatu",
+   "start": 731,
+   "end": 740,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 75,
+   "name": "அரண்",
+   "nameEn": "The Fortification",
+   "transliteration": "Aran",
+   "start": 741,
+   "end": 750,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 76,
+   "name": "பொருள் செயல்வகை",
+   "nameEn": "Way of Accumulating Wealth",
+   "transliteration": "Porulseyalvakai",
+   "start": 751,
+   "end": 760,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 77,
+   "name": "படை மாட்சி",
+   "nameEn": "The Excellence of an Army",
+   "transliteration": "Pataimaatchi",
+   "start": 761,
+   "end": 770,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 78,
+   "name": "படைச் செருக்கு",
+   "nameEn": "Military Spirit",
+   "transliteration": "Pataichcherukku",
+   "start": 771,
+   "end": 780,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 79,
+   "name": "நட்பு",
+   "nameEn": "Friendship",
+   "transliteration": "Natpu",
+   "start": 781,
+   "end": 790,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 80,
+   "name": "நட்பாராய்தல்",
+   "nameEn": "Investigation in forming Friendships",
+   "transliteration": "Natpaaraaidhal",
+   "start": 791,
+   "end": 800,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 81,
+   "name": "பழைமை",
+   "nameEn": "Familiarity",
+   "transliteration": "Pazhaimai",
+   "start": 801,
+   "end": 810,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 82,
+   "name": "தீ நட்பு",
+   "nameEn": "Evil Friendship",
+   "transliteration": "Thee Natpu",
+   "start": 811,
+   "end": 820,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 83,
+   "name": "கூடா நட்பு",
+   "nameEn": "Unreal Friendship",
+   "transliteration": "Kootaanatpu",
+   "start": 821,
+   "end": 830,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 84,
+   "name": "பேதைமை",
+   "nameEn": "Folly",
+   "transliteration": "Pedhaimai",
+   "start": 831,
+   "end": 840,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 85,
+   "name": "புல்லறிவாண்மை",
+   "nameEn": "Ignorance",
+   "transliteration": "Pullarivaanmai",
+   "start": 841,
+   "end": 850,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 86,
+   "name": "இகல்",
+   "nameEn": "Hostility",
+   "transliteration": "Ikal",
+   "start": 851,
+   "end": 860,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 87,
+   "name": "பகை மாட்சி",
+   "nameEn": "The Might of Hatred",
+   "transliteration": "Pakaimaatchi",
+   "start": 861,
+   "end": 870,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 88,
+   "name": "பகைத்திறம் தெரிதல்",
+   "nameEn": "Knowing the Quality of Hate",
+   "transliteration": "Pakaiththirandheridhal",
+   "start": 871,
+   "end": 880,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 89,
+   "name": "உட்பகை",
+   "nameEn": "Enmity within",
+   "transliteration": "Utpakai",
+   "start": 881,
+   "end": 890,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 90,
+   "name": "பெரியாரைப் பிழையாமை",
+   "nameEn": "Not Offending the Great",
+   "transliteration": "Periyaaraip Pizhaiyaamai",
+   "start": 891,
+   "end": 900,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 91,
+   "name": "பெண்வழிச் சேறல்",
+   "nameEn": "Being led by Women",
+   "transliteration": "Penvazhichcheral",
+   "start": 901,
+   "end": 910,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 92,
+   "name": "வரைவின் மகளிர்",
+   "nameEn": "Wanton Women",
+   "transliteration": "Varaivinmakalir",
+   "start": 911,
+   "end": 920,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 93,
+   "name": "கள்ளுண்ணாமை",
+   "nameEn": "Not Drinking Palm-Wine",
+   "transliteration": "Kallunnaamai",
+   "start": 921,
+   "end": 930,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 94,
+   "name": "சூது",
+   "nameEn": "Gambling",
+   "transliteration": "Soodhu",
+   "start": 931,
+   "end": 940,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 95,
+   "name": "மருந்து",
+   "nameEn": "Medicine",
+   "transliteration": "Marundhu",
+   "start": 941,
+   "end": 950,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 96,
+   "name": "குடிமை",
+   "nameEn": "Nobility",
+   "transliteration": "Kutimai",
+   "start": 951,
+   "end": 960,
+   "palNum": 2,
+   "iyalNum": 3
+  },
+  {
+   "adhigaram": 97,
+   "name": "மானம்",
+   "nameEn": "Honour",
+   "transliteration": "Maanam",
+   "start": 961,
+   "end": 970,
+   "palNum": 2,
+   "iyalNum": 4
+  },
+  {
+   "adhigaram": 98,
+   "name": "பெருமை",
+   "nameEn": "Greatness",
+   "transliteration": "Perumai",
+   "start": 971,
+   "end": 980,
+   "palNum": 2,
+   "iyalNum": 4
+  },
+  {
+   "adhigaram": 99,
+   "name": "சான்றாண்மை",
+   "nameEn": "Perfectness",
+   "transliteration": "Saandraanmai",
+   "start": 981,
+   "end": 990,
+   "palNum": 2,
+   "iyalNum": 4
+  },
+  {
+   "adhigaram": 100,
+   "name": "பண்புடைமை",
+   "nameEn": "Courtesy",
+   "transliteration": "Panputaimai",
+   "start": 991,
+   "end": 1000,
+   "palNum": 2,
+   "iyalNum": 4
+  },
+  {
+   "adhigaram": 101,
+   "name": "நன்றியில் செல்வம்",
+   "nameEn": "Wealth without Benefaction",
+   "transliteration": "Nandriyilselvam",
+   "start": 1001,
+   "end": 1010,
+   "palNum": 2,
+   "iyalNum": 4
+  },
+  {
+   "adhigaram": 102,
+   "name": "நாணுடைமை",
+   "nameEn": "Shame",
+   "transliteration": "Naanutaimai",
+   "start": 1011,
+   "end": 1020,
+   "palNum": 2,
+   "iyalNum": 4
+  },
+  {
+   "adhigaram": 103,
+   "name": "குடிசெயல் வகை",
+   "nameEn": "The Way of Maintaining the Family",
+   "transliteration": "Kutiseyalvakai",
+   "start": 1021,
+   "end": 1030,
+   "palNum": 2,
+   "iyalNum": 4
+  },
+  {
+   "adhigaram": 104,
+   "name": "உழவு",
+   "nameEn": "Farming",
+   "transliteration": "Uzhavu",
+   "start": 1031,
+   "end": 1040,
+   "palNum": 2,
+   "iyalNum": 4
+  },
+  {
+   "adhigaram": 105,
+   "name": "நல்குரவு",
+   "nameEn": "Poverty",
+   "transliteration": "Nalkuravu",
+   "start": 1041,
+   "end": 1050,
+   "palNum": 2,
+   "iyalNum": 4
+  },
+  {
+   "adhigaram": 106,
+   "name": "இரவு",
+   "nameEn": "Mendicancy",
+   "transliteration": "Iravu",
+   "start": 1051,
+   "end": 1060,
+   "palNum": 2,
+   "iyalNum": 4
+  },
+  {
+   "adhigaram": 107,
+   "name": "இரவச்சம்",
+   "nameEn": "The Dread of Mendicancy",
+   "transliteration": "Iravachcham",
+   "start": 1061,
+   "end": 1070,
+   "palNum": 2,
+   "iyalNum": 4
+  },
+  {
+   "adhigaram": 108,
+   "name": "கயமை",
+   "nameEn": "Baseness",
+   "transliteration": "Kayamai",
+   "start": 1071,
+   "end": 1080,
+   "palNum": 2,
+   "iyalNum": 4
+  },
+  {
+   "adhigaram": 109,
+   "name": "தகை அணங்குறுத்தல்",
+   "nameEn": "The Pre-marital love",
+   "transliteration": "Thakaiyananguruththal",
+   "start": 1081,
+   "end": 1090,
+   "palNum": 3,
+   "iyalNum": 12
+  },
+  {
+   "adhigaram": 110,
+   "name": "குறிப்பறிதல்",
+   "nameEn": "Recognition of the Signs ",
+   "transliteration": "Kuripparidhal",
+   "start": 1091,
+   "end": 1100,
+   "palNum": 3,
+   "iyalNum": 12
+  },
+  {
+   "adhigaram": 111,
+   "name": "புணர்ச்சி மகிழ்தல்",
+   "nameEn": "Rejoicing in the Embrace",
+   "transliteration": "Punarchchimakizhdhal",
+   "start": 1101,
+   "end": 1110,
+   "palNum": 3,
+   "iyalNum": 12
+  },
+  {
+   "adhigaram": 112,
+   "name": "நலம் புனைந்து உரைத்தல்",
+   "nameEn": "The Praise of her Beauty",
+   "transliteration": "Nalampunaindhuraiththal",
+   "start": 1111,
+   "end": 1120,
+   "palNum": 3,
+   "iyalNum": 12
+  },
+  {
+   "adhigaram": 113,
+   "name": "காதற் சிறப்புரைத்தல்",
+   "nameEn": "Declaration of Love\"s special Excellence",
+   "transliteration": "Kaadharsirappuraiththal",
+   "start": 1121,
+   "end": 1130,
+   "palNum": 3,
+   "iyalNum": 12
+  },
+  {
+   "adhigaram": 114,
+   "name": "நாணுத் துறவுரைத்தல்",
+   "nameEn": "The Abandonment of Reserve",
+   "transliteration": "Naanuththuravuraiththal",
+   "start": 1131,
+   "end": 1140,
+   "palNum": 3,
+   "iyalNum": 12
+  },
+  {
+   "adhigaram": 115,
+   "name": "அலர் அறிவுறுத்தல்",
+   "nameEn": "The Announcement of the Rumour",
+   "transliteration": "Alararivuruththal",
+   "start": 1141,
+   "end": 1150,
+   "palNum": 3,
+   "iyalNum": 12
+  },
+  {
+   "adhigaram": 116,
+   "name": "பிரிவு ஆற்றாமை",
+   "nameEn": "Separation unendurable",
+   "transliteration": "Pirivaatraamai",
+   "start": 1151,
+   "end": 1160,
+   "palNum": 3,
+   "iyalNum": 12
+  },
+  {
+   "adhigaram": 117,
+   "name": "படர்மெலிந் திரங்கல்",
+   "nameEn": "Complainings",
+   "transliteration": "Patarmelindhirangal",
+   "start": 1161,
+   "end": 1170,
+   "palNum": 3,
+   "iyalNum": 13
+  },
+  {
+   "adhigaram": 118,
+   "name": "கண் விதுப்பழிதல்",
+   "nameEn": "Eyes consumed with Grief",
+   "transliteration": "Kanvidhuppazhidhal",
+   "start": 1171,
+   "end": 1180,
+   "palNum": 3,
+   "iyalNum": 13
+  },
+  {
+   "adhigaram": 119,
+   "name": "பசப்புறு பருவரல்",
+   "nameEn": "The Pallid Hue",
+   "transliteration": "Pasapparuparuvaral",
+   "start": 1181,
+   "end": 1190,
+   "palNum": 3,
+   "iyalNum": 13
+  },
+  {
+   "adhigaram": 120,
+   "name": "தனிப்படர் மிகுதி",
+   "nameEn": "The Solitary Anguish",
+   "transliteration": "Thanippatarmikudhi",
+   "start": 1191,
+   "end": 1200,
+   "palNum": 3,
+   "iyalNum": 13
+  },
+  {
+   "adhigaram": 121,
+   "name": "நினைந்தவர் புலம்பல்",
+   "nameEn": "Sad Memories",
+   "transliteration": "Ninaindhavarpulampal",
+   "start": 1201,
+   "end": 1210,
+   "palNum": 3,
+   "iyalNum": 13
+  },
+  {
+   "adhigaram": 122,
+   "name": "கனவுநிலை உரைத்தல்",
+   "nameEn": "The Visions of the Night",
+   "transliteration": "Kanavunilaiyuraiththal",
+   "start": 1211,
+   "end": 1220,
+   "palNum": 3,
+   "iyalNum": 13
+  },
+  {
+   "adhigaram": 123,
+   "name": "பொழுதுகண்டு இரங்கல்",
+   "nameEn": "Lamentations at Eventide",
+   "transliteration": "Pozhudhukantirangal",
+   "start": 1221,
+   "end": 1230,
+   "palNum": 3,
+   "iyalNum": 13
+  },
+  {
+   "adhigaram": 124,
+   "name": "உறுப்புநலன் அழிதல்",
+   "nameEn": "Wasting Away",
+   "transliteration": "Uruppunalanazhidhal",
+   "start": 1231,
+   "end": 1240,
+   "palNum": 3,
+   "iyalNum": 13
+  },
+  {
+   "adhigaram": 125,
+   "name": "நெஞ்சொடு கிளத்தல்",
+   "nameEn": "Soliloquy",
+   "transliteration": "Nenjotukilaththal",
+   "start": 1241,
+   "end": 1250,
+   "palNum": 3,
+   "iyalNum": 13
+  },
+  {
+   "adhigaram": 126,
+   "name": "நிறையழிதல்",
+   "nameEn": "Reserve Overcome",
+   "transliteration": "Niraiyazhidhal",
+   "start": 1251,
+   "end": 1260,
+   "palNum": 3,
+   "iyalNum": 13
+  },
+  {
+   "adhigaram": 127,
+   "name": "அவர்வயின் விதும்பல்",
+   "nameEn": "Mutual Desire",
+   "transliteration": "Avarvayinvidhumpal",
+   "start": 1261,
+   "end": 1270,
+   "palNum": 3,
+   "iyalNum": 13
+  },
+  {
+   "adhigaram": 128,
+   "name": "குறிப்பறிவுறுத்தல்",
+   "nameEn": "The Reading of the Signs",
+   "transliteration": "Kuripparivuruththal",
+   "start": 1271,
+   "end": 1280,
+   "palNum": 3,
+   "iyalNum": 13
+  },
+  {
+   "adhigaram": 129,
+   "name": "புணர்ச்சி விதும்பல்",
+   "nameEn": "Desire for Reunion",
+   "transliteration": "Punarchchividhumpal",
+   "start": 1281,
+   "end": 1290,
+   "palNum": 3,
+   "iyalNum": 13
+  },
+  {
+   "adhigaram": 130,
+   "name": "நெஞ்சொடு புலத்தல்",
+   "nameEn": "Expostulation with Oneself",
+   "transliteration": "Nenjotupulaththal",
+   "start": 1291,
+   "end": 1300,
+   "palNum": 3,
+   "iyalNum": 13
+  },
+  {
+   "adhigaram": 131,
+   "name": "புலவி",
+   "nameEn": "Pouting",
+   "transliteration": "Pulavi",
+   "start": 1301,
+   "end": 1310,
+   "palNum": 3,
+   "iyalNum": 13
+  },
+  {
+   "adhigaram": 132,
+   "name": "புலவி நுணுக்கம்",
+   "nameEn": "Feigned Anger",
+   "transliteration": "Pulavi Nunukkam",
+   "start": 1311,
+   "end": 1320,
+   "palNum": 3,
+   "iyalNum": 13
+  },
+  {
+   "adhigaram": 133,
+   "name": "ஊடலுவகை",
+   "nameEn": "The Pleasures of Temporary Variance",
+   "transliteration": "Ootaluvakai",
+   "start": 1321,
+   "end": 1330,
+   "palNum": 3,
+   "iyalNum": 13
+  }
+ ],
+ "credits": {
+  "text": "Canonical Tirukkuṟaḷ text, மு. வரதராசனார் உரை and English prose via tk120404/thirukkural (open data)",
+  "commentary": "தமிழ் உரை — Tamil critical commentary by Prof. P. Marudanayagam (CICT, 2023, ISBN 978-81-19249-27-5); CICT Digital Archives — https://www.digitalarchives.cict.in/#ground-truth",
+  "grammar": "இலக்கணக்குறிப்பு layer — CICT Digital Archives ground-truth/grammar (AI-assisted, 133 அதிகாரம் double-verified, open to scholarly correction)",
+  "metre": "யாப்பு layer — CICT reference metrical scanner (Yappu-Metrical-Scanner, scan_verse_best)",
+  "audio": "Tamil audiobook per அதிகாரம் — CICT Tirukkural audio; per-kural recitation & commentary via on-device speech synthesis",
+  "publisher": "செம்மொழித் தமிழாய்வு மத்திய நிறுவனம் · Central Institute of Classical Tamil, Chennai",
+  "licence": "CC BY 4.0",
+  "contact": "kannan.k@cict.in"
+ },
+ "manuscript": {
+  "kurals": 1000,
+  "withImage": 990,
+  "note": "CICT palm-leaf corpus, 133 specimens; images served by Zenodo IIIF (needs network), scribal readings bundled offline"
+ },
+ "scan": {
+  "reseg": 37,
+  "kural_venpa": 1298,
+  "clean": 1326
+ },
+ "changelog": [
+  {
+   "date": "2026-09-09",
+   "langs": [
+    "mai",
+    "kok",
+    "sat",
+    "mei",
+    "ksn",
+    "mr",
+    "bho",
+    "ml"
+   ],
+   "ta": "மைதிலி மொழிபெயர்ப்பில் இலத்தீன் ‘l’ எழுத்தாக இருந்த 2,633 தண்டங்கள் (। ॥) சரியான குறியீடுகளாகின; கொங்கணியில் மூன்று இடங்களிலும் அவ்வாறே. சந்தாலியின் கீழ்ப்புள்ளிக் குறி இரு வெவ்வேறு பழைய குறியீடுகளிலிருந்து ஒரே யுனிகோடு குறிக்குக் கொண்டுவரப்பட்டது. மணிப்புரி (மெய்தெய் மயெக்) ஒரு வரியில் இருந்த வங்காள முற்றுப்புள்ளி ꯫ ஆனது. காஷ்மீரி (நஸ்தலீக்) ஐந்து வரிகளிலும் மராத்தி ஒரு வரியிலும் முன்னால் ஒட்டியிருந்த குறள் எண் நீக்கப்பட்டது; மராத்தி 1080-இன் இரண்டாம் வரியில் தவறுதலாக இருந்த தமிழ்ப் பால் தலைப்பு நீக்கப்பட்டது. இடைவெளிக்குப் பின் தனித்து நின்ற 33 சார்பெழுத்துக் குறிகள் முந்தைய எழுத்துடன் இணைக்கப்பட்டன. நான்கு பாடங்களில் தத்தல் குறிகள் இடைவெளிகளாயின.",
+   "en": "Maithili: 2,633 dandas typed as the Latin letter l now use । and ॥; likewise three in Konkani. Santali: the dot-below vowel mark, carried in two different legacy encodings, is now one Unicode mark. Manipuri (Meetei Mayek): a Bengali full stop became ꯫. Five Kashmiri (Nastaliq) lines and one Marathi line began with the couplet's own number, now removed; the Tamil section heading that stood in place of the Marathi second line of Kural 1080 was removed. 33 combining marks stranded after a space were attached to the letter before them. Tab characters in four streams became spaces."
+  },
+  {
+   "date": "2026-09-07",
+   "langs": [
+    "ml"
+   ],
+   "ta": "மலையாள மொழிபெயர்ப்பு: பழைய எழுத்துரு மாற்றத்தால் ஏற்பட்ட ஐந்து வகைத் தவறான குறியீடுகள் (அனுஸ்வாரம், சில்லு ர் உள்ளிட்டவை) 1,330 குறள்களிலும் மூலத்திலேயே திருத்தப்பட்டன.",
+   "en": "Malayalam translation: five classes of wrong code points left by a legacy-font conversion (the anusvara, the chillu r and three rarer signs) corrected at the source across all 1,330 couplets."
+  },
+  {
+   "date": "2026-09-24",
+   "langs": [
+    "ta"
+   ],
+   "ta": "குறள் 599: இரண்டாம் அடியில் 'வெருஉம்' என்ற சொல் பழைய எழுத்துரு மாற்றத்தால் சிதைந்து (ஒதுக்கப்படாத குறியீடு U+0BA6) இருந்தது; மூலம், இலக்கணக் குறிப்பு, தேடல் அட்டவணை, குறுக்கெழுத்துக் குறிப்பு ஆகியவற்றில் திருத்தப்பட்டது.",
+   "en": "Kural 599: the word 'வெருஉம்' in the second line was corrupted by a legacy-font conversion (an unassigned code point, U+0BA6); repaired in the text, the grammar layer, the search index and the crossword clue."
+  }
+ ]
+}

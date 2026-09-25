@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ t('exam.title') }} · {{ cand.app_no }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=3">
+<meta name="robots" content="noindex">
+<link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+<body>
+<div class="exam-top">
+  <div class="wrap">
+    <div class="brand"><img class="exam-mark" src="{{ url_for('static', filename='img/kts-mark.png') }}" alt="" width="42" height="42"><div><b>{{ site.short }} · {{ t('exam.title') }}</b><br><span class="small dim">{{ cand.app_no }} · {{ cand.full_name }} · {{ lang|langname }}</span></div></div>
+    <div style="display:flex;gap:14px;align-items:center"><span class="small dim">{{ t('exam.time_left') }}</span><span class="timer" id="timer" aria-live="polite">--:--</span></div>
+  </div>
+</div>
+<main class="wrap section" id="exam-app" data-remaining="{{ remaining }}" data-save="{{ url_for('candidate.save') }}" data-csrf="{{ csrf_token() }}" data-total="{{ questions|length }}" data-confirm="{{ t('exam.confirm_submit') }}">
+  <div class="exam-shell">
+    <div {% if dir == 'rtl' %}dir="rtl"{% endif %}>
+      {% for q in questions %}
+      <div class="q" id="q{{ q.no }}">
+        <div class="qno">{{ t('exam.question') }} {{ q.no }} {{ t('exam.of') }} {{ questions|length }}</div>
+        <div class="qtext">{{ q.text }}</div>
+        <div class="opts">
+          {% for letter, text in q.options %}
+          <label class="opt {{ 'on' if answers.get(q.id|string) == letter }}"><input type="radio" name="q{{ q.id }}" value="{{ letter }}" {{ 'checked' if answers.get(q.id|string) == letter }}><span class="letter">{{ loop.index }}.</span><span>{{ text }}</span></label>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+      <form method="post" action="{{ url_for('candidate.submit') }}" id="submit-form">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <input type="hidden" name="answers" id="answers-field" value="">
+        <button class="btn saffron" type="submit">{{ t('exam.submit') }}</button>
+      </form>
+    </div>
+    <aside>
+      <div class="sticky-side card">
+        <div class="small dim"><b id="answered">{{ answers|length }}</b> / {{ questions|length }} {{ t('exam.answered') }}</div>
+        <div class="saved-state" id="save-state">&nbsp;</div>
+        <div class="palette" style="margin-top:10px">
+          {% for q in questions %}<a href="#q{{ q.no }}" data-q="{{ q.id }}" class="{{ 'done' if answers.get(q.id|string) }}">{{ q.no }}</a>{% endfor %}
+        </div>
+        <p class="small muted" style="margin:12px 0 0">{{ t('exam.g2') }}</p>
+      </div>
+    </aside>
+  </div>
+</main>
+<script src="{{ url_for('static', filename='js/portal.js') }}?v=3" defer></script>
+</body>
+</html>

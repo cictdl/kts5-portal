@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ t('status.title') }}{% endblock %}
+{% block content %}
+<div class="wrap-narrow section">
+  <span class="eyebrow">{{ t('reg.subtitle') }}</span>
+  <h1>{{ t('status.title') }}</h1>
+  <p class="dim">{{ t('status.intro') }}</p>
+  <form method="post" class="card" novalidate>
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <div class="fields three">
+      <div class="field"><label for="app_no">{{ t('status.app_no') }}</label><input type="text" id="app_no" name="app_no" value="{{ request.form.get('app_no', prefill) }}" placeholder="KTS5-2026-000123" required autocomplete="off" style="text-transform:uppercase"></div>
+      <div class="field"><label for="dob">{{ t('reg.dob') }}</label><input type="date" id="dob" name="dob" value="{{ request.form.get('dob', '') }}" required></div>
+      <div class="field"><label for="last4">{{ t('status.last4') }}</label><input type="text" id="last4" name="last4" value="{{ request.form.get('last4', '') }}" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" required autocomplete="off"></div>
+    </div>
+    {% if error %}<div class="alert error" style="margin-top:12px">{{ error }}</div>{% endif %}
+    <div class="btn-row" style="margin-top:14px"><button class="btn" type="submit">{{ t('status.check') }}</button><a class="btn ghost" href="{{ url_for('candidate.login') }}">{{ t('nav.candidate') }}</a></div>
+  </form>
+
+  {% if result %}
+  {% set a = result.app %}
+  <div class="card accent" style="margin-top:18px">
+    <div class="section-head"><div><span class="eyebrow">{{ a.app_no }}</span><h2>{{ a.full_name }}</h2></div><span class="status-chip st-{{ a.status }}">{{ result.status_text }}</span></div>
+    <div class="detail"><dl>
+      <dt>{{ t('reg.college_name') }}</dt><dd>{{ a.college_name }}, {{ a.college_state }}</dd>
+      <dt>{{ t('reg.pref_lang') }}</dt><dd>{{ a.pref_lang|langname }}</dd>
+      <dt>Submitted</dt><dd>{{ a.created_at|datetime }}</dd>
+      <dt>{{ t('exam.title') }}</dt><dd>{% if result.exam and result.exam.status != 'in_progress' %}{{ t('status.exam_done') }} · {{ result.exam.submitted_at|datetime }}{% if result.show_score and result.exam.score is not none %} · {{ t('status.score') }}: <b>{{ result.exam.score|int }}</b>{% endif %}{% else %}{{ t('status.exam_pending') }} · {{ dates.exam_date|date }}, {{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST{% endif %}</dd>
+      {% if a.exam_rank and settings['merit.published'] == '1' %}<dt>{{ t('status.rank') }}</dt><dd>{{ a.exam_rank }}</dd>{% endif %}
+      {% if a.remarks and a.status == 'rejected' %}<dt>Remarks</dt><dd>{{ a.remarks }}</dd>{% endif %}
+    </dl></div>
+    <div class="btn-row" style="margin-top:14px"><a class="btn" href="{{ url_for('candidate.login') }}">{{ t('nav.candidate') }} →</a></div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{{ t('cand.title') }} · {{ cand.app_no }}{% endblock %}
+{% block content %}
+<div class="wrap section">
+  <div class="section-head">
+    <div><span class="eyebrow">{{ t('cand.title') }} · {{ cand.app_no }}</span><h1>{{ t('cand.welcome') }}, {{ cand.full_name.split(' ')[0] }}</h1></div>
+    <form method="post" action="{{ url_for('candidate.logout') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn ghost sm" type="submit">{{ t('common.logout') }}</button></form>
+  </div>
+  <div class="two-col" style="align-items:start">
+    <div>
+      <div class="card accent">
+        <div class="section-head"><h3>{{ t('status.title') }}</h3><span class="status-chip st-{{ cand.status }}">{{ cand.status.replace('_', ' ') }}</span></div>
+        <div class="detail"><dl>
+          <dt>{{ t('reg.college_name') }}</dt><dd>{{ cand.college_name }}, {{ cand.college_state }}</dd>
+          <dt>{{ t('reg.pref_lang') }}</dt><dd>{{ lang_name }}</dd>
+          <dt>{{ t('common.email') }}</dt><dd>{{ cand.email }}</dd>
+          <dt>Submitted</dt><dd>{{ cand.created_at|datetime }}</dd>
+          {% if cand.status == 'rejected' and cand.remarks %}<dt>Remarks</dt><dd>{{ cand.remarks }}</dd>{% endif %}
+          {% if merit %}<dt>{{ t('status.rank') }}</dt><dd><b>{{ merit.rank }}</b> · {{ merit.outcome.replace('_', ' ') }}</dd>{% endif %}
+        </dl></div>
+        <div class="btn-row" style="margin-top:12px"><a class="btn sm secondary" href="{{ url_for('candidate.ack') }}">{{ t('reg.ack') }}</a>
+          {% if cand.status in ('verified', 'selected', 'waitlisted', 'not_selected') %}<a class="btn sm secondary" href="{{ url_for('candidate.admit_card') }}">{{ t('cand.admit') }}</a>{% endif %}</div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h3>{{ t('exam.title') }}</h3>
+        <p class="small dim"><b>{{ t('cand.exam_window') }}:</b> {{ settings['exam.date']|date }}, {{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST · {{ settings['exam.duration_min'] }} {{ t('exam.minutes') }} · {{ settings['exam.questions'] }} {{ t('exam.pattern_text') }}</p>
+        {% if exam and exam.status != 'in_progress' %}
+          <div class="alert success">{{ t('status.exam_done') }} · {{ exam.submitted_at|datetime }}{% if settings['exam.show_score'] == '1' %} · {{ t('status.score') }}: <b>{{ exam.score|int }}</b>{% endif %}</div>
+          <a class="btn sm secondary" href="{{ url_for('candidate.result') }}">{{ t('exam.done_title') }}</a>
+        {% elif exam %}
+          <div class="alert warning">A test session is in progress.</div><a class="btn saffron" href="{{ url_for('candidate.paper') }}">{{ t('cand.resume_exam') }} →</a>
+        {% elif cand.status == 'submitted' %}
+          <div class="alert info">{{ t('exam.not_eligible') }}</div>
+        {% elif cand.status in ('rejected', 'withdrawn') %}
+          <div class="alert error">{{ t('status.rejected') }}</div>
+        {% elif is_open %}
+          <a class="btn saffron" href="{{ url_for('candidate.exam') }}">{{ t('cand.take_exam') }} →</a>
+        {% else %}
+          <div class="alert info">{{ t('exam.not_open') }} {% if start %}<br><b>{{ start.strftime('%d %b %Y, %I:%M %p') }} IST</b>{% endif %}</div>
+          <a class="btn sm secondary" href="{{ url_for('candidate.exam') }}">{{ t('exam.guidelines') }}</a>
+        {% endif %}
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h3>{{ t('cand.my_orientation') }} · {{ lang_name }}</h3>
+        {% if sessions %}<ul class="notice-list">{% for s in sessions %}<li><div><b>{{ s.title }}</b><div class="meta">{{ s.venue }}{% if s.link %} · <a href="{{ s.link }}" rel="noopener">Join</a>{% endif %}</div></div><span class="meta">{{ s.starts_at|datetime }}</span></li>{% endfor %}</ul>
+        {% else %}<p class="small muted">{{ settings['orientation.note'] }}</p>{% endif %}
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3>{{ t('cand.my_resources') }}</h3>
+        {% if materials %}<ul class="notice-list">{% for m in materials %}<li><div><a href="{{ url_for('public.resource_open', rid=m.id) }}">{{ m.title }}</a><div class="meta">{{ t('res.cat_' + m.category) }}</div></div></li>{% endfor %}</ul>{% endif %}
+        <div class="btn-row" style="margin-top:10px"><a class="btn sm secondary" href="{{ url_for('public.kural_browser', l=cand.pref_lang) }}">{{ t('res.kural_browser') }}</a><a class="btn sm secondary" href="{{ url_for('public.daily_kural', l=cand.pref_lang) }}">{{ t('res.daily_title') }}</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

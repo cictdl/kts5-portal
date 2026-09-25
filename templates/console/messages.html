@@ -1,0 +1,16 @@
+{% extends "console/base.html" %}
+{% block title %}Helpdesk messages{% endblock %}
+{% block content %}
+<div class="res-tabs"><a href="{{ url_for('admin.messages', show='open') }}" class="{{ 'on' if show == 'open' }}">Open</a><a href="{{ url_for('admin.messages', show='all') }}" class="{{ 'on' if show == 'all' }}">All</a></div>
+{% for m in rows %}
+<div class="card" style="margin-bottom:10px;{{ 'opacity:.7' if m.handled }}">
+  <div class="section-head"><div><span class="pill grey">{{ m.topic }}</span> <b>{{ m.subject }}</b><div class="small muted">{{ m.name }} · <a href="mailto:{{ m.email }}">{{ m.email }}</a>{% if m.phone %} · {{ m.phone }}{% endif %} · {{ m.created_at|datetime }}</div></div>{% if m.handled %}<span class="pill green">handled</span>{% endif %}</div>
+  <p style="white-space:pre-line">{{ m.body }}</p>
+  <form method="post" class="inline-form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="id" value="{{ m.id }}"><input type="hidden" name="show" value="{{ show }}">
+    <div class="field grow" style="flex:1"><input type="text" name="note" value="{{ m.reply_note }}" placeholder="Internal note / how it was resolved"></div>
+    <div class="field"><button class="btn sm {{ 'ghost' if m.handled else '' }}" type="submit">{{ 'Reopen' if m.handled else 'Mark handled' }}</button></div>
+  </form>
+</div>
+{% else %}<div class="card"><p class="muted" style="margin:0">No messages.</p></div>{% endfor %}
+{% endblock %}

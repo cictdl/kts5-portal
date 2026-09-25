@@ -1,0 +1,45 @@
+{% extends "console/base.html" %}
+{% block title %}Applications{% endblock %}
+{% block content %}
+<form method="get" class="filters">
+  <div class="field grow"><label for="q">Search</label><input type="search" id="q" name="q" value="{{ f.q }}" placeholder="Name, email, mobile, application no, AISHE"></div>
+  <div class="field"><label for="status">Status</label><select id="status" name="status"><option value="">All</option>{% for s in statuses %}<option value="{{ s }}" {{ 'selected' if f.status == s }}>{{ s.replace('_', ' ') }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="state">College state</label><select id="state" name="state"><option value="">All</option>{% for s in states %}<option {{ 'selected' if f.state == s }}>{{ s }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="lang">Language</label><select id="lang" name="lang"><option value="">All</option>{% for l in langs %}<option value="{{ l }}" {{ 'selected' if f.lang == l }}>{{ l|langname }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="college">College</label><input type="text" id="college" name="college" value="{{ f.college }}"></div>
+  <div class="field"><label for="exam_filter">Test</label><select id="exam_filter" name="exam"><option value="">Any</option><option value="done" {{ 'selected' if f.exam == 'done' }}>Taken</option><option value="pending" {{ 'selected' if f.exam == 'pending' }}>Not taken</option></select></div>
+  <div class="field"><button class="btn" type="submit">Filter</button></div>
+  {% if has_perm(current_user, 'apps.export') %}
+  <div class="field"><a class="btn secondary" href="{{ url_for('admin.applications_export', fmt='xlsx', **request.args) }}">Excel</a></div>
+  <div class="field"><a class="btn secondary" href="{{ url_for('admin.applications_export', fmt='csv', **request.args) }}">CSV</a></div>
+  {% endif %}
+</form>
+<p class="small muted">{{ '{:,}'.format(pg.total) }} application(s) · page {{ pg.page }} of {{ pg.pages }}</p>
+<form method="post" action="{{ url_for('admin.applications_bulk') }}" data-confirm="Apply this action to all selected applications?">
+<input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+<div class="table-wrap"><table class="table">
+  <thead><tr>{% if has_perm(current_user, 'apps.verify') %}<th><input type="checkbox" id="check-all" aria-label="Select all"></th>{% endif %}<th>App no</th><th>Name</th><th>Institution</th><th>State</th><th>Language</th><th>Status</th><th class="num">Score</th><th>Submitted</th></tr></thead>
+  <tbody>
+  {% for a in rows %}
+  <tr>{% if has_perm(current_user, 'apps.verify') %}<td><input type="checkbox" name="ids" value="{{ a.id }}"></td>{% endif %}
+    <td><a href="{{ url_for('admin.application', aid=a.id) }}"><code>{{ a.app_no }}</code></a></td>
+    <td>{{ a.full_name }}<div class="small muted">{{ a.email }} · {{ a.mobile }}</div></td>
+    <td>{{ a.college_name|truncate(48) }}{% if a.aishe_code %}<div class="small muted">{{ a.aishe_code }}</div>{% endif %}</td>
+    <td>{{ a.college_state }}</td><td>{{ a.pref_lang|langname }}</td>
+    <td><span class="status-chip st-{{ a.status }}">{{ a.status.replace('_', ' ') }}</span></td>
+    <td class="num">{{ a.exam_score|int if a.exam_score is not none else '–' }}</td>
+    <td class="small">{{ a.created_at|datetime }}</td></tr>
+  {% else %}<tr><td colspan="9" class="muted">No applications match.</td></tr>{% endfor %}
+  </tbody></table></div>
+{% if has_perm(current_user, 'apps.verify') and rows %}
+<div class="btn-row" style="margin-top:10px"><button class="btn sm" name="action" value="verify" type="submit">Verify selected</button><button class="btn sm danger" name="action" value="reject" type="submit">Reject selected</button></div>
+{% endif %}
+</form>
+{% if pg.pages > 1 %}
+<div class="pagination">
+  {% if pg.has_prev %}<a href="{{ url_for('admin.applications', page=pg.page - 1, **f) }}">← Prev</a>{% endif %}
+  <span class="cur">{{ pg.page }}</span><span>of {{ pg.pages }}</span>
+  {% if pg.has_next %}<a href="{{ url_for('admin.applications', page=pg.page + 1, **f) }}">Next →</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

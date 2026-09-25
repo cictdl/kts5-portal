@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ t('exam.merit_title') }}{% endblock %}
+{% block content %}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('reg.subtitle') }}</span>
+  <h1>{{ t('exam.merit_title') }}</h1>
+  {% if not published %}
+  <div class="card kumkum"><p class="dim" style="margin:0">{{ t('exam.merit_unpublished') }}</p></div>
+  {% else %}
+  <p class="dim" style="max-width:70ch">{{ t('exam.merit_intro') }}</p>
+  {% if settings['merit.note'] %}<div class="alert info">{{ settings['merit.note'] }}</div>{% endif %}
+  <form method="get" class="filters">
+    <div class="field grow"><label for="q">{{ t('common.search') }}</label><input type="search" id="q" name="q" value="{{ q }}" placeholder="Name, institution or application number"></div>
+    <div class="field"><label for="state">{{ t('reg.state') }}</label><select id="state" name="state"><option value="">{{ t('common.all') }}</option>{% for s in ref.all_states %}<option {{ 'selected' if s == state }}>{{ s }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="outcome">{{ t('common.status') }}</label><select id="outcome" name="outcome"><option value="selected" {{ 'selected' if outcome == 'selected' }}>{{ t('status.selected') }}</option><option value="waitlisted" {{ 'selected' if outcome == 'waitlisted' }}>{{ t('status.waitlisted') }}</option><option value="all" {{ 'selected' if outcome == 'all' }}>{{ t('common.all') }}</option></select></div>
+    <div class="field"><button class="btn" type="submit">{{ t('common.filter') }}</button></div>
+    <div class="field"><a class="btn secondary" href="{{ url_for('public.merit_csv') }}">CSV</a></div>
+  </form>
+  <div class="table-wrap"><table class="table">
+    <thead><tr><th class="num">#</th><th>{{ t('status.app_no') }}</th><th>{{ t('common.name') }}</th><th>{{ t('reg.college_name') }}</th><th>{{ t('reg.state') }}</th><th>{{ t('common.status') }}</th></tr></thead>
+    <tbody>
+    {% for r in rows %}<tr><td class="num">{{ r.rank }}</td><td><code>{{ r.app_no }}</code></td><td>{{ r.full_name }}</td><td>{{ r.college_name }}</td><td>{{ r.college_state }}</td><td><span class="status-chip st-{{ r.outcome }}">{{ r.outcome.replace('_', ' ') }}</span></td></tr>
+    {% else %}<tr><td colspan="6" class="muted">{{ t('common.none') }}</td></tr>{% endfor %}
+    </tbody></table></div>
+  {% endif %}
+</div>
+{% endblock %}

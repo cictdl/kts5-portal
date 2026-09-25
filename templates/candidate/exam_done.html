@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ t('exam.done_title') }}{% endblock %}
+{% block content %}
+<div class="wrap-narrow section">
+  <span class="eyebrow">{{ cand.app_no }} · {{ cand.full_name }}</span>
+  <h1>{{ t('exam.done_title') }}</h1>
+  <div class="card green">
+    <p>{{ t('exam.done_text') }}</p>
+    <div class="detail"><dl>
+      <dt>Submitted</dt><dd>{{ exam.submitted_at|datetime }} IST{% if exam.status == 'expired' %} <span class="pill kumkum">auto-submitted at time-out</span>{% endif %}</dd>
+      <dt>Questions</dt><dd>{{ total }}</dd>
+      <dt>Time taken</dt><dd>{{ (exam.time_taken_sec // 60) }} min {{ exam.time_taken_sec % 60 }} s</dd>
+      {% if show_score %}<dt>{{ t('status.score') }}</dt><dd><b style="font-size:1.4rem">{{ exam.score|int }}</b> / {{ max_score|int }} · {{ exam.correct_count }} correct</dd>{% endif %}
+    </dl></div>
+    <p class="small muted" style="margin-top:12px">{{ t('exam.merit_intro') }}</p>
+    <a class="btn" href="{{ url_for('candidate.home') }}">{{ t('cand.title') }}</a>
+  </div>
+</div>
+{% endblock %}

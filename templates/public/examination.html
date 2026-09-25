@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}{{ t('exam.title') }}{% endblock %}
+{% block content %}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('reg.subtitle') }}</span>
+  <h1>{{ t('exam.title') }}</h1>
+  <div class="two-col" style="align-items:start">
+    <div>
+      <div class="card accent">
+        <h2>{{ t('exam.notice') }}</h2>
+        <p class="dim">{{ t('site.name') }} · {{ t('site.theme') }}. The online test for the selection of 1,000 student delegates, one from each participating institution, will be conducted as follows.</p>
+        <div class="grid grid-2" style="margin:12px 0">
+          <div class="date-tile"><div class="lbl">📅 {{ t('common.date') }}</div><div class="val">{{ settings['exam.date']|date }}</div></div>
+          <div class="date-tile"><div class="lbl">💻 {{ t('exam.mode') }}</div><div class="val">{{ t('exam.online') }}</div></div>
+          <div class="date-tile"><div class="lbl">⏰ {{ t('exam.window') }}</div><div class="val">{{ settings['exam.start_time'] }} – {{ settings['exam.end_time'] }} IST</div></div>
+          <div class="date-tile"><div class="lbl">⏳ {{ t('exam.duration') }}</div><div class="val">{{ settings['exam.duration_min'] }} {{ t('exam.minutes') }}</div></div>
+        </div>
+        <p><b>{{ t('exam.pattern') }}:</b> {{ settings['exam.questions'] }} {{ t('exam.pattern_text') }} · {{ settings['exam.marks_per_q'] }} {{ t('exam.marks_each') }}</p>
+        <h3>{{ t('exam.guidelines') }}</h3>
+        <ul class="prose">
+          <li>{{ t('exam.g1') }}</li><li>{{ t('exam.g2') }}</li><li>{{ t('exam.g3') }}</li><li>{{ t('exam.g4') }}</li>
+        </ul>
+        {% if settings['exam.instructions_url'] %}<p><a class="btn sm secondary" href="{{ settings['exam.instructions_url'] }}" target="_blank" rel="noopener">📄 Official instructions (PDF)</a></p>{% endif %}
+        <div class="btn-row" style="margin-top:12px">
+          <a class="btn saffron" href="{{ url_for('candidate.login') }}">{{ t('cand.take_exam') }} →</a>
+          {% if is_open %}<span class="pill green">Login window open now</span>{% elif start %}<span class="pill saffron">⚠️ Link active on {{ start.strftime('%d %b %Y') }} at {{ start.strftime('%I:%M %p') }} IST</span>{% endif %}
+        </div>
+        <p class="small muted" style="margin-top:10px">{{ t('exam.login_hint') }}</p>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h3>{{ t('exam.merit_title') }}</h3>
+        {% if settings['merit.published'] == '1' %}<p class="dim">{{ t('exam.merit_intro') }}</p><a class="btn" href="{{ url_for('public.merit') }}">{{ t('nav.merit') }} →</a>
+        {% else %}<p class="dim">{{ t('exam.merit_unpublished') }}</p>{% endif %}
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3>{{ t('res.cat_study') }}</h3>
+        <p class="dim small">Prepare with the Thirukkural in your language, the orientation lectures and the study material in the repository.</p>
+        <div class="btn-row"><a class="btn sm secondary" href="{{ url_for('public.kural_browser') }}">{{ t('res.kural_browser') }}</a><a class="btn sm secondary" href="{{ url_for('public.resources', cat='study') }}">{{ t('res.cat_study') }}</a></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3>{{ t('common.help') }}</h3>
+        <p class="small dim">{{ settings['contact.email'] }} · {{ settings['contact.phone'] }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

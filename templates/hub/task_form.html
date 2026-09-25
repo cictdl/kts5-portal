@@ -1,0 +1,19 @@
+{% extends "console/base.html" %}
+{% block title %}{{ 'Edit task' if tk else 'New task' }}{% endblock %}
+{% block content %}
+<form method="post" class="card" style="max-width:860px">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <div class="fields">
+    <div class="field wide"><label for="title">Title</label><input type="text" id="title" name="title" value="{{ tk.title if tk else '' }}" required maxlength="200"></div>
+    <div class="field wide"><label for="description">Description / expected output</label><textarea id="description" name="description" rows="5">{{ tk.description if tk else '' }}</textarea></div>
+    <div class="field"><label for="workstream">Workstream</label><select id="workstream" name="workstream">{% for k, nm in workstreams %}<option value="{{ k }}" {{ 'selected' if tk and tk.workstream == k }}>{{ nm }}</option>{% endfor %}</select></div>
+    {% if locked_agency %}<input type="hidden" name="agency_id" value="{{ locked_agency }}">{% else %}
+    <div class="field"><label for="agency_id">Responsible agency</label><select id="agency_id" name="agency_id"><option value="">—</option>{% for a in agencies %}<option value="{{ a.id }}" {{ 'selected' if tk and tk.agency_id == a.id }}>{{ a.short_name }}</option>{% endfor %}</select></div>{% endif %}
+    <div class="field"><label for="assignee_id">Assignee</label><select id="assignee_id" name="assignee_id"><option value="">—</option>{% for u in users %}<option value="{{ u.id }}" {{ 'selected' if tk and tk.assignee_id == u.id }}>{{ u.name }} ({{ u.role }})</option>{% endfor %}</select></div>
+    <div class="field"><label for="priority">Priority</label><select id="priority" name="priority">{% for p in priorities %}<option value="{{ p }}" {{ 'selected' if (tk and tk.priority == p) or (not tk and p == 'normal') }}>{{ p }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="status">Status</label><select id="status" name="status">{% for s in statuses %}<option value="{{ s }}" {{ 'selected' if (tk and tk.status == s) or (not tk and s == 'open') }}>{{ s.replace('_', ' ') }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="due_date">Due date</label><input type="date" id="due_date" name="due_date" value="{{ tk.due_date or '' if tk else '' }}"></div>
+  </div>
+  <div class="btn-row" style="margin-top:14px"><button class="btn" type="submit">Save</button><a class="btn ghost" href="{{ url_for('agency.tasks') }}">Cancel</a></div>
+</form>
+{% endblock %}

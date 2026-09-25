@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Console sign-in{% endblock %}
+{% block content %}
+<div class="wrap login-box">
+  <div class="card indigo">
+    <span class="eyebrow">CICT · partner agencies</span>
+    <h1 style="font-size:1.5rem">Console sign-in</h1>
+    <p class="dim small">For the KTS 5.0 secretariat at CICT and the coordinators of participating agencies.</p>
+    {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+    <form method="post">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <div class="field" style="margin-bottom:10px"><label for="email">Email</label><input type="email" id="email" name="email" required autocomplete="username" autofocus></div>
+      <div class="field" style="margin-bottom:14px"><label for="password">Password</label><input type="password" id="password" name="password" required autocomplete="current-password"></div>
+      <button class="btn" type="submit" style="width:100%;justify-content:center">Sign in</button>
+    </form>
+    <p class="small muted" style="margin:14px 0 0">Candidates: use the <a href="{{ url_for('candidate.login') }}">candidate portal</a> instead.</p>
+  </div>
+</div>
+{% endblock %}

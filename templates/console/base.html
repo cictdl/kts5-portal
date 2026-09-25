@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Console{% endblock %} · KTS 5.0</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=3">
+</head>
+<body>
+<div class="console">
+  <aside class="side">
+    <a class="brand" href="{{ url_for('admin.dashboard') }}" style="color:#fff;text-decoration:none"><img src="{{ url_for('static', filename='img/kts-mark.png') }}" alt=""><span><b>KTS 5.0 Console</b><small>Thirukkural Payilvom</small></span></a>
+    {% set ep = request.endpoint or '' %}
+    {% set u = current_user %}
+    {% if u.role != 'agency' %}
+    <a class="item {{ 'active' if ep == 'admin.dashboard' }}" href="{{ url_for('admin.dashboard') }}">📊 Dashboard</a>
+    {% endif %}
+    {% if has_perm(u, 'apps.view') %}
+    <div class="group">Participants</div>
+    <a class="item {{ 'active' if ep.startswith('admin.application') }}" href="{{ url_for('admin.applications') }}">🗂 Applications</a>
+    <a class="item {{ 'active' if ep == 'admin.applications' and request.args.get('status') == 'submitted' }}" href="{{ url_for('admin.applications', status='submitted') }}">✅ Verification queue</a>
+    {% endif %}
+    {% if has_perm(u, 'exam.view') %}
+    <div class="group">Examination</div>
+    <a class="item {{ 'active' if ep.startswith('admin.question') }}" href="{{ url_for('admin.questions') }}">❓ Question bank</a>
+    <a class="item {{ 'active' if ep.startswith('admin.exam') }}" href="{{ url_for('admin.exam_monitor') }}">⏱ Test monitor</a>
+    {% endif %}
+    {% if has_perm(u, 'selection') %}
+    <a class="item {{ 'active' if ep.startswith('admin.selection') }}" href="{{ url_for('admin.selection') }}">🏅 Selection &amp; merit list</a>
+    {% endif %}
+    {% if has_perm(u, 'content') %}
+    <div class="group">Content</div>
+    <a class="item {{ 'active' if ep.startswith('admin.notice') }}" href="{{ url_for('admin.notices') }}">📣 Notices</a>
+    <a class="item {{ 'active' if ep.startswith('admin.resource') }}" href="{{ url_for('admin.resources') }}">📚 Repository</a>
+    <a class="item {{ 'active' if ep.startswith('admin.event') }}" href="{{ url_for('admin.events') }}">📅 Events &amp; sessions</a>
+    {% endif %}
+    {% if has_perm(u, 'messages') %}
+    <a class="item {{ 'active' if ep == 'admin.messages' }}" href="{{ url_for('admin.messages') }}">✉️ Messages</a>
+    {% endif %}
+    <div class="group">Coordination</div>
+    <a class="item {{ 'active' if ep == 'agency.home' }}" href="{{ url_for('agency.home') }}">🤝 Hub overview</a>
+    <a class="item {{ 'active' if ep.startswith('agency.task') }}" href="{{ url_for('agency.tasks') }}">📋 Tasks</a>
+    <a class="item {{ 'active' if ep.startswith('agency.document') }}" href="{{ url_for('agency.documents') }}">📁 Shared documents</a>
+    <a class="item {{ 'active' if ep == 'agency.calendar' }}" href="{{ url_for('agency.calendar') }}">🗓 Calendar</a>
+    {% if has_perm(u, 'coord.manage') %}
+    <a class="item {{ 'active' if ep.startswith('admin.agenc') }}" href="{{ url_for('admin.agencies') }}">🏛 Agencies</a>
+    {% endif %}
+    {% if has_perm(u, 'users') or has_perm(u, 'settings') or has_perm(u, 'audit') %}
+    <div class="group">Administration</div>
+    {% if has_perm(u, 'users') %}<a class="item {{ 'active' if ep.startswith('admin.user') }}" href="{{ url_for('admin.users') }}">👥 Users &amp; roles</a>{% endif %}
+    {% if has_perm(u, 'settings') %}<a class="item {{ 'active' if ep == 'admin.settings_page' }}" href="{{ url_for('admin.settings_page') }}">⚙️ Settings</a>
+    <a class="item {{ 'active' if ep == 'admin.outbox' }}" href="{{ url_for('admin.outbox') }}">📤 Mail outbox</a>{% endif %}
+    {% if has_perm(u, 'audit') %}<a class="item {{ 'active' if ep == 'admin.audit_log' }}" href="{{ url_for('admin.audit_log') }}">🧾 Audit log</a>{% endif %}
+    {% endif %}
+    <div class="group">Account</div>
+    <a class="item" href="{{ url_for('auth.password') }}">🔑 Change password</a>
+    <a class="item" href="{{ url_for('public.home') }}" target="_blank">🌐 Public site ↗</a>
+    <form method="post" action="{{ url_for('auth.logout') }}" style="margin-top:6px"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn ghost sm" type="submit" style="color:#fff;border-color:rgba(255,255,255,.4);width:100%;justify-content:center">Sign out</button></form>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <h1>{% block heading %}{{ self.title() }}{% endblock %}</h1>
+      <div class="who"><span><b>{{ u.name }}</b> · {{ u.role }}</span><span class="muted">{{ now_ist().strftime('%d %b %Y, %I:%M %p') }} IST</span></div>
+    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}<div class="alert {{ cat }}" role="status">{{ msg }}</div>{% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </div>
+</div>
+<script src="{{ url_for('static', filename='js/portal.js') }}?v=3" defer></script>
+</body>
+</html>
