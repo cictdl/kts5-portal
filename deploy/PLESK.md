@@ -110,6 +110,28 @@ portal, the vendored libraries, `web.config`, and empty `instance\`,
    wait in *Console → Mail outbox*.
 6. Test a registration yourself and delete it from the console (withdraw).
 
+## 6b. Deploy from GitHub instead of uploading zips
+
+The repository <https://github.com/cictdl/kts5-portal> is laid out to run as
+is: `web.config`, `serve.py`, vendored `lib\`, and the data folders are all at
+the root. With Plesk's Git feature the subdomain becomes a checkout:
+
+1. *Websites & Domains* → **kts5.digitalarchives.cict.in** → **Git** → *Add
+   repository*.
+2. *Remote Git hosting* → repository URL `https://github.com/cictdl/kts5-portal.git`,
+   branch `main`.
+3. Deployment: target the subdomain's document root (the folder
+   `kts5.digitalarchives.cict.in` itself), mode *Automatic*.
+4. Plesk clones the repository into the folder. Existing runtime files
+   (`instance\kts5.sqlite3`, `uploads\`) are left alone because they are not
+   tracked in git.
+5. Later updates: push to `main`, then *Pull updates* in Plesk (or register
+   the webhook URL Plesk shows in the GitHub repository settings so pulls are
+   automatic). Saving `web.config` through a pull restarts the portal.
+
+The one-time server preparation (`deploy\plesk\server-setup.ps1` as
+Administrator) is still required; git only delivers the files.
+
 ## 7. Updating later
 
 Build a new package, upload it into `httpdocs`, extract (overwrite). The

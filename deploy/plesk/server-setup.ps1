@@ -180,10 +180,15 @@ if ($SitePath) {
     $x = Get-Content $wc -Raw
     if ($x -notmatch "<httpPlatform") { Warn "web.config in $SitePath is not the portal's (no <httpPlatform> element) - replace it with deploy\plesk\web.config." }
     elseif ($py -and $x -match 'processPath="python\.exe"') {
-      $x = $x -replace 'processPath="python\.exe"', ('processPath="' + $py + '"')
-      [IO.File]::WriteAllText($wc, $x, (New-Object System.Text.UTF8Encoding($false)))
-      Note "processPath set to $py"
-      $report.Add("web.config processPath: $py")
+      $onPath = Get-Command python.exe -All -ErrorAction SilentlyContinue | Where-Object { $_.Source -notlike "*WindowsApps*" } | Select-Object -First 1
+      if ($onPath) {
+        Note "python.exe resolves through PATH ($($onPath.Source)); web.config left unchanged so git deployments stay clean"
+      } else {
+        $x = $x -replace 'processPath="python\.exe"', ('processPath="' + $py + '"')
+        [IO.File]::WriteAllText($wc, $x, (New-Object System.Text.UTF8Encoding($false)))
+        Note "processPath set to $py (python.exe is not on the system PATH)"
+        $report.Add("web.config processPath: $py")
+      }
     } else { Note "web.config present" }
   }
   foreach ($d in @("instance", "uploads", "logs")) { New-Item -ItemType Directory -Force -Path (Join-Path $SitePath $d) | Out-Null }

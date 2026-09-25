@@ -125,6 +125,19 @@ the subdomain's `httpdocs` with the Plesk File Manager; a three-file probe
 (`deploy\plesk\probe`) first confirms that the server has Python 3.11+ and
 the HttpPlatformHandler module.
 
+**Straight from git (Plesk Git, recommended).** The repository root *is* the
+site: `web.config` (HttpPlatformHandler), `serve.py`, the vendored Python
+libraries in `lib\`, and the empty `instance\`, `uploads\`, `logs\` folders.
+In Plesk: *Websites & Domains* → the subdomain → **Git** → *Add repository* →
+remote repository `https://github.com/cictdl/kts5-portal.git`, branch `main`,
+deploy to the subdomain's document root, deployment mode *Automatic*. Every
+push to `main` (followed by *Pull updates*, or the webhook Plesk shows) updates
+the site; `instance\` and `uploads\` are not in git and survive deployments.
+The server itself needs Python 3.11+ and the HttpPlatformHandler module once:
+`deploy\plesk\server-setup.ps1`, run as Administrator. After changing
+`requirements.txt`, refresh the vendored libraries with
+`powershell -File tools\vendor.ps1` and commit `lib\`.
+
 **Linux.** `gunicorn -w 4 -b 127.0.0.1:8905 'kts:create_app()'` (or Waitress)
 behind nginx; nginx serves `/static/` directly and proxies the rest.
 

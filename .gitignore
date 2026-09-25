@@ -1,15 +1,16 @@
-# runtime data (never commit participants' data)
-instance/
-uploads/
-logs/
+# runtime data (never commit participants' data); the folders themselves are kept
+instance/*
+!instance/.keep
+uploads/*
+!uploads/.keep
+logs/*
+!logs/.keep
 *.sqlite3
 *.sqlite3-wal
 *.sqlite3-shm
 secret.key
-# build output and vendored packages (rebuilt by deploy/package*.ps1)
+# build output
 dist/
-/lib/
-/web.config
 venv/
 .venv/
 # caches and local tooling
