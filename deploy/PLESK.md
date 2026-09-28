@@ -1,5 +1,68 @@
 # Installing the KTS 5.0 portal through Plesk (Windows / IIS)
 
+## The short way: one file
+
+With Remote Desktop access to the server as an administrator, the whole
+installation is one file: copy `deploy\plesk\kts-install.bat` to the server
+and double-click it (accept the question of Windows about administrator
+rights). It
+
+1. finds the IIS website of `kts.cict.in` and its folder, and stops if that
+   folder also serves another website;
+2. downloads the portal from GitHub;
+3. keeps a copy of whatever it replaces in `C:\kts5-setup\before-<date>`;
+4. copies the portal into the folder, never touching the database, the
+   uploads or the logs of an existing installation, and keeping a `web.config`
+   that was edited on the server;
+5. prepares the server with `server-setup.ps1` (Python, the
+   HttpPlatformHandler module, IIS permissions, write access);
+6. restarts the portal and checks that it answers; it asks before it would
+   restart the whole of IIS;
+7. checks the https certificate and lists what is left to do by hand.
+
+Running the file again later updates the portal to the newest version on
+GitHub. Everything shown on the screen is also written to
+`C:\kts5-setup\install-<date>.log`. The website `kts.cict.in` must exist in
+Plesk beforehand, and the Let's Encrypt certificate is issued in Plesk
+afterwards (step 5 below).
+
+### Without Remote Desktop: let Plesk run it
+
+The same file can be started by Plesk itself. With the option `-Unattended`
+it asks nothing, waits for no key and stops without changing anything if it
+has no administrator rights.
+
+1. Plesk, as administrator: *Tools & Settings* → **Scheduled Tasks** →
+   **Add Task**.
+2. Task type **Run a command**, and as the command this one line (if Plesk
+   shows one box for the program and one for its arguments, the path of
+   `powershell.exe` goes into the first and the rest into the second):
+
+   ```
+   C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol='Tls12'; $f=Join-Path $env:TEMP 'kts-install.bat'; (New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/cictdl/kts5-portal/main/deploy/plesk/kts-install.bat', $f); & cmd.exe /c $f -Unattended; exit $LASTEXITCODE"
+   ```
+
+3. *System user*: the administrator entry. Schedule: anything, the task is
+   removed again after use.
+4. **Run Now**. The first run downloads Python and the IIS module and can
+   take ten minutes. Plesk shows what the installer wrote.
+5. **Remove the task**, so that it never runs by itself.
+6. The record of the run is in *Files* → `kts.cict.in` → `logs` →
+   `install-<date>.log`.
+
+If the output is "STOPPED: this run has no administrator rights", Plesk runs
+its tasks with a restricted account on this server, and Remote Desktop is the
+only way. To let the installer restart the whole of IIS (needed at times
+after the IIS module was installed for the first time), add ` -RestartIIS`
+after `-Unattended`; every website on the server then stops for about ten
+seconds.
+
+The rest of this guide describes the same installation step by step, for
+servers without Remote Desktop access and without administrator rights in
+Plesk.
+
+## The long way: Plesk panel only
+
 Everything below is done in the Plesk panel and a browser; no remote desktop
 or command line on the server is needed. Time: about 30 minutes plus the wait
 for DNS.
@@ -118,21 +181,60 @@ The repository <https://github.com/cictdl/kts5-portal> is laid out to run as
 is: `web.config`, `serve.py`, vendored `lib\`, and the data folders are all at
 the root. With Plesk's Git feature the subdomain becomes a checkout:
 
-1. *Websites & Domains* → **kts.cict.in** → **Git** → *Add
-   repository*.
-2. *Remote Git hosting* → repository URL `https://github.com/cictdl/kts5-portal.git`,
-   branch `main`.
-3. Deployment: target the subdomain's document root (the folder
-   `kts.cict.in` itself), mode *Automatic*.
-4. Plesk clones the repository into the folder. Existing runtime files
-   (`instance\kts5.sqlite3`, `uploads\`) are left alone because they are not
-   tracked in git.
-5. Later updates: push to `main`, then *Pull updates* in Plesk (or register
-   the webhook URL Plesk shows in the GitHub repository settings so pulls are
-   automatic). Saving `web.config` through a pull restarts the portal.
+**Before you start**
 
-The one-time server preparation (`deploy\plesk\server-setup.ps1` as
-Administrator) is still required; git only delivers the files.
+* *Websites & Domains* → **kts.cict.in** → *Hosting Settings*: note the
+  **Document root**. That folder is the target of the deployment. Plesk
+  proposes `/httpdocs`, which on this server belongs to the main site: never
+  leave that value.
+* If **Git** is not among the icons of the domain, install it once:
+  *Extensions* → search for *Git* → *Install* (Plesk administrator).
+
+**Connect the repository**
+
+1. *Websites & Domains* → **kts.cict.in** → **Git** (then *Add Repository*
+   if a repository already exists).
+2. Where the code is stored: **Remote Git hosting like GitHub or BitBucket**.
+3. *Remote Git repository*: `https://github.com/cictdl/kts5-portal.git`.
+   The repository is public, so no key or password is needed (Plesk for
+   Windows cannot sign in over HTTPS; a private repository would need the SSH
+   address and the key that Plesk shows).
+4. *Your Website* → deployment mode: **Automatic deployment**.
+5. *Your Website* → target directory: click the proposed `/httpdocs` and
+   choose the document root noted above (the folder `kts.cict.in`).
+6. **OK**. Plesk clones the repository and copies the files into the folder.
+7. On the Git page check the branch: it must be **main** (*Change branch and
+   path* if it is not).
+8. *Repository Settings* → tick **Enable additional deploy actions** and
+   enter this one line, which restarts the portal after every deployment so
+   that new program files and translations are loaded:
+
+   ```
+   copy /b web.config +,,
+   ```
+
+**Check**
+
+* *Files* → the folder `kts.cict.in` now holds `web.config`, `serve.py`,
+  `kts\`, `lib\`, `static\`, `templates\`, `data\`, `instance\`, `uploads\`,
+  `logs\`. Delete Plesk's own `index.html` and other default files if they are
+  still there.
+* Run the one-time server preparation if it has not been run:
+  `deploy\plesk\server-setup.ps1`, as Administrator (the script is now on the
+  server, inside the folder). Git only delivers the files; Python and the
+  HttpPlatformHandler module come from the script, which also gives the site
+  write access to `instance\`, `uploads\` and `logs\`.
+* Open `https://kts.cict.in/healthz`: `{"ok": true, …}`.
+
+**Later updates**
+
+Push to `main` on GitHub, then *Websites & Domains → Git →* **Pull Updates**.
+The runtime files (`instance\kts5.sqlite3`, `uploads\`) are not in git and
+are left alone. To make the pull automatic, copy the webhook address from
+*Repository Settings* and add it in GitHub: *Settings → Webhooks → Add
+webhook*, content type `application/json`, "Just the push event". If the
+Plesk panel itself has a self-signed certificate, write the address with
+`http://`, as the Plesk manual advises.
 
 ## 7. Updating later
 

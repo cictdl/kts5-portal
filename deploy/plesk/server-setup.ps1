@@ -219,9 +219,36 @@ if ($site) {
 Step "Restarting IIS and checking the site"
 if (-not $NoReset) { & iisreset /noforce | Out-Null; Start-Sleep -Seconds 6 }
 elseif ($site) { Restart-WebAppPool $pool; Start-Sleep -Seconds 6 }
-[Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
+# The check must also pass while the certificate is still Plesk's own, untrusted one.
+if (-not ("KtsSetupCertificates" -as [type])) {
+  Add-Type -TypeDefinition @"
+using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+public static class KtsSetupCertificates {
+    private static bool Accept(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors errors) { return true; }
+    public static void AcceptAny() { ServicePointManager.ServerCertificateValidationCallback = Accept; }
+}
+"@
+}
+[KtsSetupCertificates]::AcceptAny()
+# Plesk binds a site to the server's own address, so 127.0.0.1 alone may not reach it.
+$targets = @("https://127.0.0.1/healthz", "http://127.0.0.1/healthz")
+if ($site) {
+  foreach ($b in $site.bindings.Collection) {
+    $parts = $b.bindingInformation -split ":"
+    if ($b.protocol -eq "http" -and $parts.Count -ge 3) {
+      $ip = ($parts[0..($parts.Count - 3)] -join ":")
+      if ($ip -and $ip -ne "*") {
+        if ($ip -like "*:*") { $ip = "[$ip]" }
+        $targets += "http://$($ip):$($parts[-2])/healthz"
+      }
+    }
+  }
+}
+$targets = @($targets | Select-Object -Unique)
 $ok = $false
-foreach ($url in @("https://127.0.0.1/healthz", "http://127.0.0.1/healthz")) {
+foreach ($url in $targets) {
   try {
     $r = Invoke-WebRequest -Uri $url -Headers @{ Host = $HostName } -UseBasicParsing -TimeoutSec 150 -MaximumRedirection 0 -ErrorAction Stop
     if ($r.StatusCode -eq 200) { Write-Host "    $url -> HTTP 200 $($r.Content)" -ForegroundColor Green; $ok = $true; break }

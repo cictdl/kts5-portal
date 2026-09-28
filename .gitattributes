@@ -9,3 +9,5 @@
 *.webp binary
 *.ico binary
 *.zip binary
+# batch files are kept byte for byte, with their Windows line endings, also in a raw download
+*.bat -text
