@@ -8,7 +8,7 @@
     <h3>{{ group }}</h3>
     <div class="fields">
       {% for key, label, kind in items %}
-      <div class="field {{ 'wide' if kind == 'text' and key in ('site.banner', 'merit.note', 'orientation.note', 'contact.address', 'exam.instructions_url') }}">
+      <div class="field {{ 'wide' if kind == 'text' and key in ('site.banner', 'merit.note', 'orientation.note', 'contact.address', 'exam.instructions_url', 'home.pm_quote', 'home.pm_caption') }}">
         {% if kind == 'bool' %}
           <label>&nbsp;</label><label class="check"><input type="checkbox" name="{{ key }}" value="1" {{ 'checked' if values[key] == '1' }}> {{ label }}</label>
         {% else %}

@@ -6,7 +6,7 @@
   on failure. setup-iis.ps1 -Mode Proxy calls this for you.
 
 .EXAMPLE
-  .\install-service.ps1 -InstallDir C:\inetpub\kts5 -Port 8905 -BaseUrl https://kts5.cict.in
+  .\install-service.ps1 -InstallDir C:\inetpub\kts5 -Port 8905 -BaseUrl https://kts.cict.in
 #>
 #Requires -RunAsAdministrator
 [CmdletBinding()]
@@ -14,7 +14,7 @@ param(
   [string]$InstallDir = "C:\inetpub\kts5",
   [string]$ServiceName = "KTS5Portal",
   [int]$Port = 8905,
-  [string]$BaseUrl = "https://kts5.cict.in",
+  [string]$BaseUrl = "https://kts.cict.in",
   [string]$Prefix = "",
   [string]$Https = "1"
 )

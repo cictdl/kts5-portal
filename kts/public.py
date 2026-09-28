@@ -10,7 +10,8 @@ from flask import (Blueprint, Response, abort, current_app, flash, g, redirect, 
 
 from . import kural as K
 from .db import all_settings, audit, execute, get_setting, query, utcnow
-from .i18n import LANG_NAMES, get_lang, t
+from . import i18n
+from .i18n import get_lang, t
 from .utils import (DOC_EXT, IMAGE_EXT, age_on, check_captcha, client_ip, college_key, csv_bytes,
                     exam_window, fmt_date, limiter, make_app_no, new_captcha, now_ist, qr_data_uri,
                     registration_state, save_upload, send_mail, valid_email, valid_mobile,
@@ -37,13 +38,25 @@ def _key_dates(settings):
     }
 
 
+def _stream(requested=None):
+    """(stream, direction) of the corpus to show: the one asked for, else that of the interface language."""
+    stream = requested or i18n.corpus_lang()
+    info = K.lang_info(stream)
+    if not info:
+        stream, info = "en", K.lang_info("en")
+    return stream, info.get("dir", "ltr")
+
+
+@bp.route("/lang")
 @bp.route("/lang/<code>")
-def set_lang(code):
-    if code in LANG_NAMES:
-        session["lang"] = code
+def set_lang(code=None):
+    """Choose the interface language: /lang/bn, or /lang?code=bn from the menu."""
+    code = code or request.args.get("code") or ""
     target = request.referrer or url_for("public.home")
     resp = redirect(target)
-    resp.set_cookie("lang", code, max_age=60 * 60 * 24 * 365, samesite="Lax")
+    if i18n.offered(code):
+        session["lang"] = code
+        resp.set_cookie("lang", code, max_age=60 * 60 * 24 * 365, samesite="Lax")
     return resp
 
 
@@ -63,10 +76,12 @@ def home():
                     "FROM applications WHERE status != 'withdrawn'", one=True)
         stats = {"apps": row["n"], "colleges": row["c"], "states": row["s"]}
     k = K.daily()
-    kotd_lang = lang if lang in ("ta", "hi") else "en"
+    kotd_lang, kotd_dir = _stream()
+    if not K.lines(k, kotd_lang):
+        kotd_lang, kotd_dir = "en", "ltr"
     return render_template("public/home.html", settings=settings, dates=_key_dates(settings),
                            notices=notices, events=events, agencies=agencies, stats=stats,
-                           kotd=k, kotd_lines=K.lines(k, kotd_lang), kotd_lang=kotd_lang,
+                           kotd=k, kotd_lines=K.lines(k, kotd_lang), kotd_lang=kotd_lang, kotd_dir=kotd_dir,
                            featured=query("SELECT * FROM resources WHERE published = 1 AND featured = 1 "
                                           "ORDER BY sort_order, created_at DESC LIMIT 6"))
 
@@ -310,7 +325,7 @@ def resources():
     sql += " ORDER BY featured DESC, sort_order, created_at DESC"
     rows = query(sql, args)
     counts = {r["category"]: r["n"] for r in query("SELECT category, COUNT(*) AS n FROM resources WHERE published = 1 GROUP BY category")}
-    return render_template("public/resources.html", rows=rows, cat=cat, lang=lang, q=q,
+    return render_template("public/resources.html", rows=rows, cat=cat, flang=lang, q=q,
                            categories=CATEGORIES, counts=counts, langs=K.languages())
 
 
@@ -343,12 +358,10 @@ def kural_browser():
         ch_n = max(1, min(133, int(ch)))
     except ValueError:
         ch_n = 1
-    lang = request.args.get("l") or ({"ta": "ta", "hi": "hi"}.get(get_lang(), "en"))
-    if not K.lang_info(lang):
-        lang = "en"
+    stream, stream_dir = _stream(request.args.get("l"))
     chapter = K.chapter(ch_n)
-    rows = [(k, K.lines(k, lang)) for k in chapter["kurals"]]
-    return render_template("public/kural.html", chapter=chapter, rows=rows, lang=lang,
+    rows = [(k, K.lines(k, stream)) for k in chapter["kurals"]]
+    return render_template("public/kural.html", chapter=chapter, rows=rows, stream=stream, stream_dir=stream_dir,
                            langs=K.languages(), chapters=K.chapters(), pals=K.corpus()["meta"]["pals"],
                            variants=K.VARIANTS)
 
@@ -369,24 +382,21 @@ def kural_single(n):
 
 @bp.route("/daily-kural")
 def daily_kural():
-    lang = request.args.get("l") or ({"ta": "ta", "hi": "hi"}.get(get_lang(), "en"))
-    if not K.lang_info(lang):
-        lang = "en"
+    stream, stream_dir = _stream(request.args.get("l"))
     day_s = request.args.get("d")
     try:
         day = date.fromisoformat(day_s) if day_s else date.today()
     except ValueError:
         day = date.today()
     k = K.daily(day)
-    return render_template("public/daily.html", k=k, day=day, lang=lang, lines=K.lines(k, lang),
-                           langs=K.languages(), n=K.daily_number(day))
+    return render_template("public/daily.html", k=k, day=day, stream=stream, stream_dir=stream_dir,
+                           lines=K.lines(k, stream), langs=K.languages(), variants=K.VARIANTS,
+                           n=K.daily_number(day))
 
 
 @bp.route("/daily-kural/calendar.csv")
 def daily_calendar():
-    lang = request.args.get("l") or "hi"
-    if not K.lang_info(lang):
-        lang = "en"
+    lang, _ = _stream(request.args.get("l"))
     start_s = request.args.get("start")
     try:
         start = date.fromisoformat(start_s) if start_s else date.today()

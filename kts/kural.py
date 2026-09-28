@@ -166,24 +166,8 @@ def calendar_rows(lang, start=None, days=200):
 
 # ---- Question bank generator -----------------------------------------------
 
-STEMS = {
-    "chapter": {
-        "en": "To which chapter (adhikāram) of the Thirukkural does this couplet belong?",
-        "ta": "இக்குறள் எந்த அதிகாரத்தைச் சேர்ந்தது?",
-        "hi": "यह कुरल तिरुक्कुरल के किस अध्याय (अधिकारम्) से है?",
-    },
-    "complete": {
-        "en": "Choose the correct second line of this couplet.",
-        "ta": "இக்குறளின் சரியான இரண்டாம் அடியைத் தேர்ந்தெடுக்க.",
-        "hi": "इस कुरल की सही दूसरी पंक्ति चुनें।",
-    },
-    "section": {
-        "en": "This couplet belongs to which section (pāl) of the Thirukkural?",
-        "ta": "இக்குறள் திருக்குறளின் எந்தப் பாலைச் சேர்ந்தது?",
-        "hi": "यह कुरल तिरुक्कुरल के किस खंड (पाल) से है?",
-    },
-    "none": {"en": "None of these", "ta": "இவற்றில் எதுவும் இல்லை", "hi": "इनमें से कोई नहीं"},
-}
+# The stems of the generated questions are the keys q.chapter, q.complete, q.section and q.none of
+# the interface translations (data/i18n), so that every language with a translation gets its own.
 
 GK = {
     "en": [
@@ -244,8 +228,8 @@ GK = {
 
 
 def _stem(kind, lang):
-    table = STEMS[kind]
-    return table.get(lang) or table["en"]
+    from .i18n import stream_text
+    return stream_text(f"q.{kind}", lang)
 
 
 def _shuffle_options(rng, options, correct_idx):
@@ -263,8 +247,11 @@ def generate_questions(lang, count=40, seed=None):
 
     Mix: ~40% complete-the-couplet, ~30% identify-the-chapter, ~15% identify-
     the-section, ~15% general knowledge. Returns dicts ready for the
-    questions table. Stems for languages other than en/ta/hi fall back to
-    English while the couplet text itself is in the chosen language.
+    questions table. The stems come from the interface translations: a
+    reviewed language gives its own wording, a draft language its wording
+    followed by the English, and a stream in a script without an interface
+    translation gives English. The general-knowledge questions exist in
+    English, Tamil and Hindi; other languages receive the English set.
     """
     rng = random.Random(seed)
     data = corpus()
@@ -321,7 +308,7 @@ def generate_questions(lang, count=40, seed=None):
     # identify the section
     rng.shuffle(pool)
     for k in pool[:n_section]:
-        options = [pal_label(1, lang), pal_label(2, lang), pal_label(3, lang), _stem("none", lang)]
+        options = [pal_label(1, lang), pal_label(2, lang), pal_label(3, lang), _stem("none", lang).replace("\n", " / ")]
         opts, letter = _shuffle_options(rng, options, k["pal_num"] - 1)
         text = f"{_stem('section', lang)}\n\n“{' / '.join(lines(k, lang))}”"
         out.append(dict(lang=lang, qtype="section", text=text,

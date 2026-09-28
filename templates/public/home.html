@@ -7,8 +7,9 @@
     <div>
       <span class="kicker">{{ t('home.kicker') }}</span>
       <h1>{{ t('site.name') }}</h1>
-      <div class="theme-lines"><span class="ta">{{ site.theme_ta }}</span><span>{{ site.theme_en }}</span><span class="hi">{{ site.theme_hi }}</span></div>
+      <div class="theme-lines" dir="ltr"><span class="ta">{{ site.theme_ta }}</span><span>{{ site.theme_en }}</span><span class="hi">{{ site.theme_hi }}</span></div>
       <p class="lead">{{ t('home.hero_sub') }}</p>
+      <p class="stipend-note"><span class="amt">₹10,000</span><span>{{ t('home.stipend') }}</span></p>
       <div class="actions">
         {% if dates.reg_state == 'open' %}<a class="btn saffron" href="{{ url_for('public.register') }}">{{ t('home.cta_register') }}</a>{% endif %}
         <a class="btn" href="{{ url_for('public.programme') }}">{{ t('home.cta_programme') }}</a>
@@ -16,20 +17,37 @@
       </div>
     </div>
     <aside class="kural-card">
-      <img class="avatar" src="{{ url_for('static', filename='img/thiruvalluvar-gold.png') }}" alt="" width="72">
-      <div class="label">{{ t('home.kotd') }} · {{ now_ist().strftime('%d %b %Y') }}</div>
-      <div class="tamil ta">{{ kotd.l1 }}<br>{{ kotd.l2 }}</div>
-      {% if kotd_lang != 'ta' and kotd_lines %}<div class="trans {{ kotd_lang }}">{{ kotd_lines|join(' ') }}</div>{% endif %}
-      <div class="meta"><span>{{ t('common.verse') }} {{ kotd.n }} · <span class="ta">{{ kotd.chapter_name }}</span> · {{ kotd.chapter_name_en }}</span><a href="{{ url_for('public.kural_single', n=kotd.n) }}">{{ t('home.kotd_more') }} →</a></div>
+      <img class="avatar" src="{{ url_for('static', filename='img/thiruvalluvar-bust.jpg') }}" alt="" width="76" height="76">
+      <div class="label">{{ t('home.kotd') }} · {{ now_ist()|date }}</div>
+      <div class="tamil ta" dir="ltr" lang="ta">{{ kotd.l1 }}<br>{{ kotd.l2 }}</div>
+      {% if kotd_lang != 'ta' and kotd_lines %}<div class="trans" dir="{{ kotd_dir }}">{{ kotd_lines|join(' ') }}</div>{% endif %}
+      <div class="meta"><span>{{ t('common.verse') }} {{ kotd.n }} · <span class="ta" lang="ta">{{ kotd.chapter_name }}</span>{% if lang == 'en' %} · {{ kotd.chapter_name_en }}{% endif %}</span><a href="{{ url_for('public.kural_single', n=kotd.n) }}">{{ t('home.kotd_more') }} {{ fwd }}</a></div>
     </aside>
   </div>
 </section>
+
+{% if settings['home.pm_on'] == '1' and settings['home.pm_quote'] %}
+<section class="section pm-section">
+  <div class="wrap">
+    <div class="pm-grid">
+      <figure class="pm-photo">
+        <img src="{{ url_for('static', filename='img/pm-thirukkural.jpg') }}" alt="{{ st('home.pm_caption') }}" width="1100" height="711">
+        <figcaption dir="{{ st_dir('home.pm_caption') }}">{{ st('home.pm_caption') }}</figcaption>
+      </figure>
+      <blockquote class="pm-quote">
+        <p dir="{{ st_dir('home.pm_quote') }}">“{{ st('home.pm_quote') }}”</p>
+        <footer dir="{{ st_dir('home.pm_quote_by') }}">— {{ st('home.pm_quote_by') }}</footer>
+      </blockquote>
+    </div>
+  </div>
+</section>
+{% endif %}
 
 <section class="section">
   <div class="wrap">
     <div class="section-head"><div><span class="eyebrow">{{ t('home.kicker') }}</span><h2>{{ t('home.dates') }}</h2></div>
       {% if dates.exam_start and dates.exam_start > now_ist() %}
-      <div class="countdown" data-countdown="{{ dates.exam_start.isoformat() }}" data-done="{{ t('exam.online') }}">
+      <div class="countdown" dir="ltr" data-countdown="{{ dates.exam_start.isoformat() }}" data-done="{{ t('exam.online') }}" title="{{ t('home.countdown') }}">
         <div class="units" style="display:contents">
           <div class="unit"><b data-u="d">–</b><span>{{ t('home.days') }}</span></div>
           <div class="unit"><b data-u="h">–</b><span>{{ t('home.hours') }}</span></div>
@@ -40,11 +58,11 @@
       {% endif %}
     </div>
     <div class="dates">
-      <div class="date-tile"><div class="lbl">{{ t('home.reg_window') }}</div><div class="val">{{ dates.reg_start|date }} – {{ dates.reg_end|date }}</div>
-        <div class="sub">{% if dates.reg_state == 'open' %}<span class="pill green">Open</span>{% elif dates.reg_state == 'not_yet' %}<span class="pill saffron">{{ t('reg.not_yet') }} {{ dates.reg_start|date }}</span>{% else %}<span class="pill kumkum">{{ t('reg.closed') }}</span>{% endif %}</div></div>
-      <div class="date-tile"><div class="lbl">{{ t('home.exam_date') }}</div><div class="val">{{ dates.exam_date|date }}</div><div class="sub">{{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST · {{ settings['exam.duration_min'] }} {{ t('exam.minutes') }} · {{ t('exam.online') }}</div></div>
-      <div class="date-tile"><div class="lbl">{{ t('home.merit') }}</div><div class="val">{% if settings['merit.published'] == '1' %}<a href="{{ url_for('public.merit') }}">Published</a>{% else %}To be announced{% endif %}</div><div class="sub">1,000 delegates · one per institution</div></div>
-      <div class="date-tile"><div class="lbl">{{ t('home.orientation') }}</div><div class="val">21 + 1 languages</div><div class="sub">10 lectures · live Q&amp;A</div></div>
+      <div class="date-tile"><div class="lbl">{{ t('home.reg_window') }}</div><div class="val"><bdi>{{ dates.reg_start|date }} – {{ dates.reg_end|date }}</bdi></div>
+        <div class="sub">{% if dates.reg_state == 'open' %}<span class="pill green">{{ t('home.open') }}</span>{% elif dates.reg_state == 'not_yet' %}<span class="pill saffron">{{ t('reg.not_yet') }} {{ dates.reg_start|date }}</span>{% else %}<span class="pill kumkum">{{ t('reg.closed') }}</span>{% endif %}</div></div>
+      <div class="date-tile"><div class="lbl">{{ t('home.exam_date') }}</div><div class="val">{{ dates.exam_date|date }}</div><div class="sub"><bdi>{{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST</bdi> · {{ settings['exam.duration_min'] }} {{ t('exam.minutes') }} · {{ t('exam.online') }}</div></div>
+      <div class="date-tile"><div class="lbl">{{ t('home.merit') }}</div><div class="val">{% if settings['merit.published'] == '1' %}<a href="{{ url_for('public.merit') }}">{{ t('home.published') }}</a>{% else %}{{ t('home.tba') }}{% endif %}</div><div class="sub">{{ t('home.merit_sub') }}</div></div>
+      <div class="date-tile"><div class="lbl">{{ t('home.orientation') }}</div><div class="val">{{ t('home.orient_val') }}</div><div class="sub">{{ t('home.orient_sub') }}</div></div>
     </div>
   </div>
 </section>
@@ -53,17 +71,18 @@
   <div class="wrap">
     <div class="section-head"><h2>{{ t('home.pathway') }}</h2><a class="btn sm secondary" href="{{ url_for('public.programme') }}">{{ t('home.cta_programme') }}</a></div>
     <div class="steps">
-      <div class="step"><b>{{ t('home.step_register') }}</b><small>{{ dates.reg_start|date }} – {{ dates.reg_end|date }}</small></div>
-      <div class="step"><b>{{ t('home.step_exam') }}</b><small>{{ dates.exam_date|date }} · {{ settings['exam.questions'] }} MCQ</small></div>
-      <div class="step"><b>{{ t('home.step_merit') }}</b><small>1 per college · 1,000 delegates</small></div>
-      <div class="step"><b>{{ t('home.step_orient') }}</b><small>10 lectures + 20-min Q&amp;A</small></div>
-      <div class="step"><b>{{ t('home.step_present') }}</b><small>1-hour talk with a faculty mentor</small></div>
+      <div class="step"><b>{{ t('home.step_register') }}</b><small><bdi>{{ dates.reg_start|date }} – {{ dates.reg_end|date }}</bdi></small></div>
+      <div class="step"><b>{{ t('home.step_exam') }}</b><small>{{ dates.exam_date|date }} · {{ settings['exam.questions'] }} {{ t('exam.pattern_text') }}</small></div>
+      <div class="step"><b>{{ t('home.step_merit') }}</b><small>{{ t('home.step_merit_sub') }}</small></div>
+      <div class="step"><b>{{ t('home.step_orient') }}</b><small>{{ t('home.step_orient_sub') }}</small></div>
+      <div class="step"><b>{{ t('home.step_present') }}</b><small>{{ t('home.step_present_sub') }}</small></div>
     </div>
   </div>
 </section>
 
 <section class="section">
   <div class="wrap">
+    <div class="section-head"><h2>{{ t('home.stats') }}</h2></div>
     <div class="grid grid-4">
       {% if stats %}
       <div class="card stat indigo"><div class="num">{{ '{:,}'.format(stats.apps) }}</div><div class="lbl">{{ t('home.stat_apps') }}</div></div>
@@ -78,21 +97,21 @@
 <section class="section alt">
   <div class="wrap two-col">
     <div class="card">
-      <div class="section-head"><h3>{{ t('home.latest') }}</h3><a class="small" href="{{ url_for('public.notices') }}">{{ t('home.all_notices') }} →</a></div>
+      <div class="section-head"><h3>{{ t('home.latest') }}</h3><a class="small" href="{{ url_for('public.notices') }}">{{ t('home.all_notices') }} {{ fwd }}</a></div>
       {% if notices %}
       <ul class="notice-list">
         {% for n in notices %}
-        <li><div>{% if n.pinned %}<span class="pill kumkum">{{ t('notices.pinned') }}</span> {% endif %}<a href="{{ url_for('public.notice', nid=n.id) }}">{{ n.title }}</a></div><span class="meta">{{ n.created_at|date }}</span></li>
+        <li><div>{% if n.pinned %}<span class="pill kumkum">{{ t('notices.pinned') }}</span> {% endif %}<a href="{{ url_for('public.notice', nid=n.id) }}"><bdi>{{ n.title }}</bdi></a></div><span class="meta">{{ n.created_at|date }}</span></li>
         {% endfor %}
       </ul>
       {% else %}<p class="muted">{{ t('common.none') }}</p>{% endif %}
     </div>
     <div class="card">
-      <div class="section-head"><h3>{{ t('schedule.upcoming') }}</h3><a class="small" href="{{ url_for('public.schedule') }}">{{ t('nav.schedule') }} →</a></div>
+      <div class="section-head"><h3>{{ t('schedule.upcoming') }}</h3><a class="small" href="{{ url_for('public.schedule') }}">{{ t('nav.schedule') }} {{ fwd }}</a></div>
       {% if events %}
       <ul class="notice-list">
         {% for e in events %}
-        <li><div><b>{{ e.title }}</b>{% if e.lang %} <span class="pill">{{ e.lang|langname }}</span>{% endif %}<div class="meta">{{ e.venue or e.agency or '' }}</div></div><span class="meta">{{ e.starts_at|datetime }}</span></li>
+        <li><div><b><bdi>{{ e.title }}</bdi></b>{% if e.lang %} <span class="pill">{{ e.lang|langnative }}</span>{% endif %}<div class="meta"><bdi>{{ e.venue or e.agency or '' }}</bdi></div></div><span class="meta">{{ e.starts_at|datetime }}</span></li>
         {% endfor %}
       </ul>
       {% else %}<p class="muted">{{ t('common.none') }}</p>{% endif %}
@@ -106,7 +125,7 @@
     <div class="section-head"><h2>{{ t('res.featured') }}</h2><a class="btn sm secondary" href="{{ url_for('public.resources') }}">{{ t('nav.resources') }}</a></div>
     <div class="grid grid-3">
       {% for r in featured %}
-      <a class="card res-card" href="{{ url_for('public.resource_open', rid=r.id) }}"><span class="cat">{{ t('res.cat_' + r.category) }}</span><h3>{{ r.title }}</h3><div class="desc">{{ r.description[:140] }}</div></a>
+      <a class="card res-card" href="{{ url_for('public.resource_open', rid=r.id) }}"><span class="cat">{{ t('res.cat_' + r.category) }}</span><h3><bdi>{{ r.title }}</bdi></h3><div class="desc"><bdi>{{ r.description[:140] }}</bdi></div></a>
       {% endfor %}
     </div>
   </div>
@@ -115,20 +134,21 @@
 
 <section class="section alt">
   <div class="wrap">
-    <div class="section-head"><h2>{{ t('home.journey') }}</h2><a class="small" href="{{ url_for('public.about') }}">{{ t('nav.about') }} →</a></div>
+    <div class="section-head"><h2>{{ t('home.journey') }}</h2><a class="small" href="{{ url_for('public.about') }}">{{ t('nav.about') }} {{ fwd }}</a></div>
     <div class="grid grid-4">
-      <div class="card flat"><span class="pill">KTS 1.0 · 2022</span><p class="small dim" style="margin-top:8px">Twelve delegations from Tamil Nadu travelled to Varanasi, Prayagraj and Ayodhya in the first month-long Sangamam, hosted at BHU.</p></div>
-      <div class="card flat"><span class="pill">KTS 2.0 · 2023</span><p class="small dim" style="margin-top:8px">Academic and cultural sessions at Namo Ghat, with the first real-time Tamil translation of the Prime Minister's address.</p></div>
-      <div class="card flat"><span class="pill">KTS 3.0 · 2025</span><p class="small dim" style="margin-top:8px">Sage Agasthyar's legacy and Indian knowledge traditions; 1,200 participants including students from central universities.</p></div>
-      <div class="card flat"><span class="pill">KTS 4.0 · 2025</span><p class="small dim" style="margin-top:8px">"Let us learn Tamil": Tamil teachers in Varanasi schools, a study tour of Tamil Nadu and the Agasthya expedition from Tenkasi to Kashi.</p></div>
+      <div class="card flat"><span class="pill" dir="ltr">KTS 1.0 · 2022</span><p class="small dim" style="margin-top:8px">{{ t('home.j1') }}</p></div>
+      <div class="card flat"><span class="pill" dir="ltr">KTS 2.0 · 2023</span><p class="small dim" style="margin-top:8px">{{ t('home.j2') }}</p></div>
+      <div class="card flat"><span class="pill" dir="ltr">KTS 3.0 · 2025</span><p class="small dim" style="margin-top:8px">{{ t('home.j3') }}</p></div>
+      <div class="card flat"><span class="pill" dir="ltr">KTS 4.0 · 2025</span><p class="small dim" style="margin-top:8px">{{ t('home.j4') }}</p></div>
     </div>
   </div>
 </section>
 
 <section class="section">
   <div class="wrap">
-    <div class="section-head"><h2>{{ t('home.partners') }}</h2><a class="small" href="{{ url_for('public.partners') }}">{{ t('nav.partners') }} →</a></div>
-    <div class="agency-strip">{% for a in agencies %}<span title="{{ a.name }}">{{ a.short_name }}</span>{% endfor %}</div>
+    <div class="section-head"><h2>{{ t('home.partners') }}</h2><a class="small" href="{{ url_for('public.partners') }}">{{ t('nav.partners') }} {{ fwd }}</a></div>
+    <div class="partner-logos">{% for a in agencies %}{% set lg = agency_logo(a.code) %}{% if lg %}<img src="{{ url_for('static', filename=lg) }}" alt="{{ agency_text(a, 'name') }}" title="{{ agency_text(a, 'name') }}">{% endif %}{% endfor %}</div>
+    <div class="agency-strip" dir="ltr">{% for a in agencies %}<span title="{{ agency_text(a, 'name') }}">{{ a.short_name }}</span>{% endfor %}</div>
   </div>
 </section>
 {% endblock %}

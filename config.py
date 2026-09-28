@@ -77,8 +77,7 @@ class Config:
     ORGANISER = "Central Institute of Classical Tamil (CICT), Chennai"
     MINISTRY = "Ministry of Education, Government of India"
     BASE_URL = _env("KTS_BASE_URL", "http://localhost:8905")
-    DEFAULT_LANG = "en"
-    LANGS = ("en", "ta", "hi")
+    DEFAULT_LANG = "en"  # the 23 interface languages are listed in kts/i18n.py
 
     # ---- mail (optional) ------------------------------------------------
     # If SMTP is not configured, every message is kept in the outbox table
@@ -87,7 +86,7 @@ class Config:
     SMTP_PORT = int(_env("KTS_SMTP_PORT", "587"))
     SMTP_USER = _env("KTS_SMTP_USER")
     SMTP_PASSWORD = _env("KTS_SMTP_PASSWORD")
-    SMTP_FROM = _env("KTS_SMTP_FROM", "kts5@cict.in")
+    SMTP_FROM = _env("KTS_SMTP_FROM", "office@cict.in")
     SMTP_TLS = _env("KTS_SMTP_TLS", "1") == "1"
 
     # ---- first administrator -------------------------------------------

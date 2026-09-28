@@ -16,13 +16,13 @@
     Proxy                   The portal runs as a Windows service; IIS forwards to it with URL Rewrite + ARR.
 
 .EXAMPLE
-  .\setup-iis.ps1 -Package C:\temp\kts5-portal-20260925-1300.zip -HostName kts5.cict.in
+  .\setup-iis.ps1 -Package C:\temp\kts5-portal-20260925-1300.zip -HostName kts.cict.in
 .EXAMPLE
-  .\setup-iis.ps1 -Package C:\temp\kts5.zip -HostName kts5.cict.in -CertThumbprint 3F2A...  # with https binding
+  .\setup-iis.ps1 -Package C:\temp\kts5.zip -HostName kts.cict.in -CertThumbprint 3F2A...  # with https binding
 .EXAMPLE
   .\setup-iis.ps1 -Package C:\temp\kts5.zip -ParentSite "digitalarchives.cict.in" -AppPath /kts5 -HostName www.digitalarchives.cict.in
 .EXAMPLE
-  .\setup-iis.ps1 -Package C:\temp\kts5.zip -HostName kts5.cict.in -Mode Proxy
+  .\setup-iis.ps1 -Package C:\temp\kts5.zip -HostName kts.cict.in -Mode Proxy
 #>
 #Requires -RunAsAdministrator
 [CmdletBinding()]
@@ -30,7 +30,7 @@ param(
   [Parameter(Mandatory = $true)] [string]$Package,
   [string]$InstallDir = "C:\inetpub\kts5",
   [string]$SiteName = "KTS5",
-  [string]$HostName = "kts5.cict.in",
+  [string]$HostName = "kts.cict.in",
   [string]$AppPath = "",
   [string]$ParentSite = "Default Web Site",
   [string]$Python = "",

@@ -12,7 +12,7 @@ KTS 4.0 (`kashitamil.bhu.edu.in`) but extended for the 1,000-students-from-
 
 | Area | Features |
 |---|---|
-| **Public site** (English · தமிழ் · हिन्दी) | Home with key dates, live countdown to the online test, Kural of the Day and live counts · About KTS (journey 1.0–4.0) · Programme page mirroring the DPR (parts I–III) · Notices and circulars · Schedule · Participating agencies · Contact form with helpdesk queue |
+| **Public site in 23 languages** (English and the 22 languages of the Eighth Schedule) | Home with key dates, live countdown to the online test, Kural of the Day and live counts · About KTS (journey 1.0–4.0) · Programme page mirroring the DPR (parts I–III) · Notices and circulars · Schedule · Participating agencies · Contact form with helpdesk queue |
 | **Participant registration** | Seven-section form (personal, contact, institution with AISHE code, language, faculty mentor, photo + ID upload, declarations), server-side validation, duplicate email/mobile rejection, arithmetic captcha + honeypot + per-IP rate limit, application number `KTS5-2026-nnnnnn`, printable acknowledgement with QR, confirmation mail (outbox) |
 | **Candidate portal** | Sign in with application number + date of birth + last 4 digits of mobile · status · acknowledgement · admit card · **timed online MCQ test** in the candidate's language (autosave every answer, palette navigation, auto-submit at time-out, one attempt) · result · orientation sessions and study material for their language |
 | **Examination** | Question bank per language (23: the 21 scheduled languages other than Tamil, English, plus Tamil) with **automatic generation from CICT's 22-language Thirukkural corpus** (complete-the-couplet, identify-the-chapter, identify-the-section, general knowledge), CSV import/export, manual editing · test window by date/time or forced open/closed · live monitor, score distribution, per-session answer review |
@@ -36,7 +36,7 @@ portal/
   kts/              application package
     __init__.py     app factory, CSRF guard, security headers, template filters
     db.py           schema, migrations, settings, audit
-    i18n.py         interface strings (en / ta / hi)
+    i18n.py         interface in 23 languages (reads data/i18n/<code>.json)
     kural.py        Thirukkural corpus, Kural of the Day, question generator
     public.py       public site + registration + repository
     candidate.py    candidate portal + online test
@@ -45,9 +45,10 @@ portal/
     auth.py         staff login, roles, permissions
     utils.py        CSRF, rate limiting, uploads, exports, mail, dates
   templates/        public/ · candidate/ · console/ · hub/
-  static/           css/portal.css · js/portal.js · img/ (kts-logo.png, kts-mark.png, thiruvalluvar-gold.png, favicon, lockups)
-  tools/make_logo.py  rebuilds the KTS 5.0 logo set from the Thiruvalluvar portrait (re-run with a higher-resolution original)
-  data/             kurals/ (133 chapter files + meta.json from the CICT app) · agencies.json · states.json
+  static/           css/portal.css · js/portal.js · img/ (kts-logo.png, kts-mark.png, thiruvalluvar.jpg, logos/, favicon, lockups)
+  tools/make_logo.py  rebuilds the logo set from the originals in tools/logo-src/
+  tools/check_i18n.py checks the translations (missing keys, wrong script, lost numbers)
+  data/             kurals/ (133 chapter files + meta.json from the CICT app) · i18n/ (one file per interface language) · agencies.json · states.json
   instance/         kts5.sqlite3 (created on first start)
   uploads/          photos/ idproofs/ resources/ notices/ documents/ tasks/
   tests/            pytest smoke test of the whole flow
@@ -99,7 +100,7 @@ python -m pytest tests -q
 | Variable | Purpose |
 |---|---|
 | `KTS_SECRET_KEY` | **Required in production.** Session signing key. |
-| `KTS_BASE_URL` | Public URL used in mails and QR codes, e.g. `https://kts5.cict.in` |
+| `KTS_BASE_URL` | Public URL used in mails and QR codes, e.g. `https://kts.cict.in` |
 | `KTS_DATABASE`, `KTS_UPLOAD_DIR`, `KTS_INSTANCE_DIR` | Storage locations |
 | `KTS_HTTPS=1` | Mark cookies Secure (behind TLS) |
 | `KTS_SMTP_HOST`, `KTS_SMTP_PORT`, `KTS_SMTP_USER`, `KTS_SMTP_PASSWORD`, `KTS_SMTP_FROM`, `KTS_SMTP_TLS` | Outgoing mail; without them mails stay in the outbox for manual sending |
@@ -111,7 +112,7 @@ python -m pytest tests -q
 **Windows / IIS (the CICT web server).** Fully scripted: see
 [deploy/DEPLOY.md](deploy/DEPLOY.md). In short, `deploy\package.ps1` builds
 `dist\kts5-portal-<stamp>.zip`; on the server an elevated
-`deploy\setup-iis.ps1 -Package <zip> -HostName kts5.cict.in` unpacks it,
+`deploy\setup-iis.ps1 -Package <zip> -HostName kts.cict.in` unpacks it,
 creates the virtual environment, writes `web.config`, creates the app pool and
 site (HttpPlatformHandler mode, or `-Mode Proxy` with URL Rewrite + ARR and a
 Windows service), sets permissions and runs a health check. The portal can
@@ -164,21 +165,114 @@ a network share.
   candidate pages are `no-store`.
 * All staff actions are written to the audit log with actor and IP.
 
-## Logo
+## Languages
 
-The site uses the official Kashi Tamil Sangamam logo (`static/img/kts-logo.png`
-in the masthead and print headers; `kts-mark.png`, the circle alone, for the
-favicon, console and exam header) and the golden Thiruvalluvar as the emblem
-of *Thirukkural Payilvom – Thirukkural Abhyas Karen* (`thiruvalluvar-gold.png`
-on the home page card and the About page). `tools/make_logo.py` regenerates
-these, the favicon, the touch icon and the lockups (`kts5-lockup.png/.svg`)
-from the originals in `tools/logo-src/`.
+The public site and the candidate portal are offered in **23 languages**:
+English and the 22 languages of the Eighth Schedule. The language is chosen
+from the menu at the top of every page (or the list in the footer, or
+`/lang/<code>`, or `?lang=<code>` on any address) and is remembered for a year.
+
+| Code | Language | Script | | Code | Language | Script |
+|---|---|---|---|---|---|---|
+| `en` | English | Latin | | `ml` | Malayalam | Malayalam |
+| `as` | Assamese | Bengali-Assamese | | `mni` | Manipuri | Bengali |
+| `bn` | Bengali | Bengali | | `mr` | Marathi | Devanagari |
+| `brx` | Bodo | Devanagari | | `ne` | Nepali | Devanagari |
+| `doi` | Dogri | Devanagari | | `or` | Odia | Odia |
+| `gu` | Gujarati | Gujarati | | `pa` | Punjabi | Gurmukhi |
+| `hi` | Hindi | Devanagari | | `sa` | Sanskrit | Devanagari |
+| `kn` | Kannada | Kannada | | `sat` | Santali | Ol Chiki |
+| `ks` | Kashmiri | Perso-Arabic, right to left | | `sd` | Sindhi | Devanagari |
+| `kok` | Konkani | Devanagari | | `ta` | Tamil | Tamil |
+| `mai` | Maithili | Devanagari | | `te` | Telugu | Telugu |
+| | | | | `ur` | Urdu | Perso-Arabic, right to left |
+
+* **One file per language**: `data/i18n/<code>.json`, a flat list of
+  `key: text`. English (`en.json`) is the source. A key that a language lacks
+  is shown in English, never blank. To correct a translation, edit the file
+  and restart the portal; no code changes.
+* **Check before publishing**: `python tools/check_i18n.py` (all languages) or
+  `python tools/check_i18n.py bn te ur`. It reports missing or unknown keys,
+  text left in English or written in the wrong script, numbers that differ
+  from the English, and labels that grew too long. The same check runs in
+  `python -m pytest tests -q`, together with a rendering of every public page
+  in every language.
+* **Reviewed and draft languages**: English, Tamil and Hindi are reviewed. The
+  other twenty were drafted by machine and must be read by a speaker of the
+  language before they are relied on; until then every page in those
+  languages carries the note “This translation of the interface is a draft…”
+  with a link back to English. After review add the code to `REVIEWED` in
+  `kts/i18n.py`; the note can also be switched off in *Console → Settings →
+  Site*.
+* **Right to left**: Urdu and Kashmiri set `dir="rtl"` on the page; the layout
+  mirrors, and couplets, numbers, application numbers, addresses and e-mail
+  addresses keep their own direction.
+* **Dates** are written `25 Sep 2026` in English and `25-09-2026` with the
+  24-hour clock in every other language, so that no month name is left in
+  English.
+* **What follows the interface language**: the Kural of the Day, the
+  Thirukkural browser and the Daily Kural open in the translation of the
+  interface language (Kashmiri in the Perso-Arabic script, Konkani in
+  Devanagari; the other scripts remain in the language list of the browser).
+* **What is translated beyond the labels**: the names of the States and Union
+  Territories, the participating agencies and their roles, categories of
+  notices and events, error pages and the messages of the online test. The
+  default banner, orientation note and the quotation on the home page are
+  translated as long as the administrator has not changed them in Settings;
+  wording entered in the console (notices, events, resources, a new banner) is
+  shown as entered.
+* **The staff console and the agencies' hub** remain in English.
+* **Online test**: the stems of the generated questions come from the same
+  files (`q.chapter`, `q.complete`, `q.section`, `q.none`). Tamil and Hindi
+  give their own wording; a draft language gives its wording with the English
+  below it; streams of the corpus in a script without an interface translation
+  (Kashmiri in Devanagari, Konkani in the Kannada script, Santali in
+  Devanagari, Manipuri in Meetei Mayek) keep the English stem.
+
+## Logos and images
+
+All artwork is generated by `tools/make_logo.py` from the originals in
+`tools/logo-src/`:
+
+* `static/img/kts-logo.png` (masthead, print headers) and `kts-mark.png`
+  (the circle alone: favicon, console, exam header) from the official
+  Kashi Tamil Sangamam logo;
+* `static/img/logos/<code>.png`: Government of India and Ministry of
+  Education (masthead and the organisers' band above the footer), CICT,
+  IIT Madras, BHU and BBS (organisers' band, home page and Partners page).
+  A logo file named after an agency's code, in lower case, is picked up
+  automatically for that agency;
+* `static/img/thiruvalluvar.jpg` and `thiruvalluvar-bust.jpg`, the painting of
+  Thiruvalluvar (About page and the Kural of the Day card);
+* `static/img/pm-thirukkural.jpg`, the Prime Minister presenting the
+  Thirukkural in Russian translation, shown on the home page with a quotation.
+  The quotation, its attribution and the caption are edited in
+  *Console → Settings → Home page*, where the block can also be switched off;
+* `kts5-lockup.png/.svg` for letterheads.
 
 ## Known limits / next steps
 
-* Question stems are localised for English, Tamil and Hindi; for the other 20
-  languages the stem is English while the couplet is in that language. Add
-  localised stems in `kts/kural.py` (`STEMS`, `GK`) as translators deliver them.
+* The twenty draft interface languages need a reading by a speaker of each
+  language (see *Languages*). Bodo, Dogri, Kashmiri, Konkani, Maithili,
+  Manipuri, Sanskrit, Santali and Sindhi have little published administrative
+  vocabulary and deserve the closest reading.
+* The general-knowledge questions of the test (`GK` in `kts/kural.py`) exist
+  in English, Tamil and Hindi; the other languages receive the English set
+  until translators deliver theirs.
+* The test and the orientation use the primary stream of each language in the
+  corpus: Kashmiri in Devanagari and Konkani in the Kannada script. If
+  candidates should choose the script, add the variants (`ksn`, `gom`) to
+  `ORIENTATION_LANGS` in `kts/kural.py`.
+* **Kashmiri in the Perso-Arabic script (`ksn`).** In the data received from
+  the Thirukkural app this stream was one couplet out of place from couplet 93
+  to 1330 (entry 93 was a second version of couplet 92). The portal's copy is
+  repaired by `tools/fix_ksn_alignment.py`, which records what it did in
+  `data/kurals/ksn-repair.json`; couplet 1330 has no text in this script until
+  CICT supplies it, and the portal shows the English there. Do not copy the
+  chapter files from the app again without running the repair.
+* In the Urdu stream several couplets break the line one word early (for
+  example couplets 7, 8 and 393), which weakens the "choose the second line"
+  question in Urdu; the affected couplets still need to be listed and corrected.
 * The candidate sign-in (application number + DOB + mobile last 4) matches the
   BHU practice; if OTP is wanted, add an SMS gateway behind `utils.send_mail`-style
   hooks.

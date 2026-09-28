@@ -1,30 +1,30 @@
 <!DOCTYPE html>
-<html lang="{{ lang }}" data-theme="light">
+<html lang="{{ lang }}" dir="{{ lang_dir }}" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ t('exam.title') }} · {{ cand.app_no }}</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=3">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=8">
 <meta name="robots" content="noindex">
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 </head>
 <body>
 <div class="exam-top">
   <div class="wrap">
-    <div class="brand"><img class="exam-mark" src="{{ url_for('static', filename='img/kts-mark.png') }}" alt="" width="42" height="42"><div><b>{{ site.short }} · {{ t('exam.title') }}</b><br><span class="small dim">{{ cand.app_no }} · {{ cand.full_name }} · {{ lang|langname }}</span></div></div>
-    <div style="display:flex;gap:14px;align-items:center"><span class="small dim">{{ t('exam.time_left') }}</span><span class="timer" id="timer" aria-live="polite">--:--</span></div>
+    <div class="brand"><img class="exam-mark" src="{{ url_for('static', filename='img/kts-mark.png') }}" alt="" width="42" height="42"><div><b><bdi>{{ site.short }}</bdi> · {{ t('exam.title') }}</b><br><span class="small dim"><bdi>{{ cand.app_no }}</bdi> · <bdi>{{ cand.full_name }}</bdi> · {{ qlang|langnative }}</span></div></div>
+    <div style="display:flex;gap:14px;align-items:center"><span class="small dim">{{ t('exam.time_left') }}</span><span class="timer" id="timer" aria-live="polite" dir="ltr">--:--</span></div>
   </div>
 </div>
 <main class="wrap section" id="exam-app" data-remaining="{{ remaining }}" data-save="{{ url_for('candidate.save') }}" data-csrf="{{ csrf_token() }}" data-total="{{ questions|length }}" data-confirm="{{ t('exam.confirm_submit') }}">
   <div class="exam-shell">
-    <div {% if dir == 'rtl' %}dir="rtl"{% endif %}>
+    <div>
       {% for q in questions %}
       <div class="q" id="q{{ q.no }}">
         <div class="qno">{{ t('exam.question') }} {{ q.no }} {{ t('exam.of') }} {{ questions|length }}</div>
-        <div class="qtext">{{ q.text }}</div>
-        <div class="opts">
+        <div class="qtext" dir="auto" lang="{{ qlang }}">{{ q.text }}</div>
+        <div class="opts" dir="{{ qdir }}" lang="{{ qlang }}">
           {% for letter, text in q.options %}
-          <label class="opt {{ 'on' if answers.get(q.id|string) == letter }}"><input type="radio" name="q{{ q.id }}" value="{{ letter }}" {{ 'checked' if answers.get(q.id|string) == letter }}><span class="letter">{{ loop.index }}.</span><span>{{ text }}</span></label>
+          <label class="opt {{ 'on' if answers.get(q.id|string) == letter }}"><input type="radio" name="q{{ q.id }}" value="{{ letter }}" {{ 'checked' if answers.get(q.id|string) == letter }}><span class="letter">{{ loop.index }}.</span><span dir="auto">{{ text }}</span></label>
           {% endfor %}
         </div>
       </div>
@@ -39,7 +39,7 @@
       <div class="sticky-side card">
         <div class="small dim"><b id="answered">{{ answers|length }}</b> / {{ questions|length }} {{ t('exam.answered') }}</div>
         <div class="saved-state" id="save-state">&nbsp;</div>
-        <div class="palette" style="margin-top:10px">
+        <div class="palette" style="margin-top:10px" dir="ltr">
           {% for q in questions %}<a href="#q{{ q.no }}" data-q="{{ q.id }}" class="{{ 'done' if answers.get(q.id|string) }}">{{ q.no }}</a>{% endfor %}
         </div>
         <p class="small muted" style="margin:12px 0 0">{{ t('exam.g2') }}</p>
@@ -47,6 +47,7 @@
     </aside>
   </div>
 </main>
-<script src="{{ url_for('static', filename='js/portal.js') }}?v=3" defer></script>
+<script type="application/json" id="i18n">{{ js_strings|tojson }}</script>
+<script src="{{ url_for('static', filename='js/portal.js') }}?v=8" defer></script>
 </body>
 </html>

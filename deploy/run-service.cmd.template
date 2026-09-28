@@ -13,7 +13,7 @@ set PYTHONUNBUFFERED=1
 rem Outgoing mail (optional):
 rem set KTS_SMTP_HOST=smtp.example.gov.in
 rem set KTS_SMTP_PORT=587
-rem set KTS_SMTP_USER=kts5@cict.in
+rem set KTS_SMTP_USER=office@cict.in
 rem set KTS_SMTP_PASSWORD=
-rem set KTS_SMTP_FROM=kts5@cict.in
+rem set KTS_SMTP_FROM=office@cict.in
 "__PYTHON__" "__HOME__\serve.py" >> "__HOME__\logs\service.log" 2>&1

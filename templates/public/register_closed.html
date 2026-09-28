@@ -8,6 +8,7 @@
     {% if state == 'not_yet' %}
       <h2>{{ t('reg.not_yet') }} {{ dates.reg_start|date }}</h2>
       <p class="dim">{{ t('reg.intro') }}</p>
+      <p class="stipend-note" style="margin:0 0 14px"><span class="amt">₹10,000</span><span>{{ t('home.stipend') }}</span></p>
       <p class="small muted">{{ t('reg.closes_on') }}: {{ dates.reg_end|date }}</p>
     {% else %}
       <h2>{{ t('reg.closed') }}</h2>

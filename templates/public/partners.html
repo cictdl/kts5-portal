@@ -8,10 +8,11 @@
   <div class="grid grid-2">
     {% for a in rows %}
     <div class="card {{ 'accent' if a.code == 'CICT' else 'flat' }}">
-      <span class="pill grey">{{ a.kind }}</span>
-      <h3 style="margin-top:8px">{{ a.name }}</h3>
-      <p class="dim small">{{ a.role_desc }}</p>
-      {% if a.website %}<a class="small" href="{{ a.website }}" rel="noopener">{{ a.website|replace('https://', '')|replace('http://', '') }}</a>{% endif %}
+      {% set lg = agency_logo(a.code) %}{% if lg %}<img class="agency-logo" src="{{ url_for('static', filename=lg) }}" alt="">{% endif %}
+      <span class="pill grey">{{ tag(a.kind) }}</span>
+      <h3 style="margin-top:8px" dir="{{ agency_dir(a, 'name') }}">{{ agency_text(a, 'name') }}</h3>
+      <p class="dim small" dir="{{ agency_dir(a, 'role') }}">{{ agency_text(a, 'role') }}</p>
+      {% if a.website %}<a class="small" href="{{ a.website }}" rel="noopener" dir="ltr">{{ a.website|replace('https://', '')|replace('http://', '') }}</a>{% endif %}
     </div>
     {% endfor %}
   </div>

@@ -47,25 +47,42 @@ def to_ist(value):
     return dt.astimezone(IST) if dt else None
 
 
-def fmt_date(value):
-    dt = to_ist(value) if isinstance(value, str) and len(value) > 10 else None
-    if dt is None:
+def _as_datetime(value):
+    """datetime for an ISO string, a date or a datetime; None when it cannot be read."""
+    if isinstance(value, datetime):
+        return value.astimezone(IST) if value.tzinfo else value
+    if hasattr(value, "year") and hasattr(value, "month"):  # datetime.date
+        return datetime(value.year, value.month, value.day)
+    if isinstance(value, str):
+        if len(value) > 10:
+            return to_ist(value)
         try:
-            d = datetime.fromisoformat(value[:10])
-        except (TypeError, ValueError):
-            return value or ""
-        return d.strftime("%d %b %Y")
-    return dt.strftime("%d %b %Y")
+            return datetime.fromisoformat(value[:10])
+        except ValueError:
+            return None
+    return None
 
 
-def fmt_dt(value):
-    dt = to_ist(value)
-    return dt.strftime("%d %b %Y, %I:%M %p") if dt else (value or "")
+def fmt_date(value, numeric=False):
+    """25 Sep 2026; with numeric=True 25-09-2026, which reads the same in every language."""
+    dt = _as_datetime(value)
+    if dt is None:
+        return value or ""
+    return dt.strftime("%d-%m-%Y" if numeric else "%d %b %Y")
 
 
-def fmt_time(value):
-    dt = to_ist(value)
-    return dt.strftime("%I:%M %p") if dt else (value or "")
+def fmt_dt(value, numeric=False):
+    dt = _as_datetime(value)
+    if dt is None:
+        return value or ""
+    return dt.strftime("%d-%m-%Y, %H:%M" if numeric else "%d %b %Y, %I:%M %p")
+
+
+def fmt_time(value, numeric=False):
+    dt = _as_datetime(value)
+    if dt is None:
+        return value or ""
+    return dt.strftime("%H:%M" if numeric else "%I:%M %p")
 
 
 def registration_state(settings):
@@ -116,7 +133,7 @@ def check_csrf():
         return
     sent = request.form.get("_csrf") or request.headers.get("X-CSRF-Token")
     if not sent or not secrets.compare_digest(sent, session.get("_csrf", "")):
-        abort(400, "Invalid or missing CSRF token. Reload the page and try again.")
+        abort(400, "err.csrf")
 
 
 # ---- rate limiting ----------------------------------------------------------

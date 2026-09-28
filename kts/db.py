@@ -313,10 +313,24 @@ DEFAULT_SETTINGS = {
     "merit.wait_count": "300",
     "merit.note": "",
     "orientation.note": "Language-wise online orientation sessions (10 lectures + 20-minute live Q&A) will be scheduled after the merit list is published.",
-    "contact.email": "kts5@cict.in",
-    "contact.phone": "+91-44-2254 2781",
-    "contact.address": "Central Institute of Classical Tamil, 40 Institutional Area, Taramani, Chennai 600 113",
+    "contact.email": "office@cict.in",
+    "contact.phone": "044-22540125",
+    "contact.address": "Central Institute of Classical Tamil (CICT) – Main Office, Chemmozhi Salai, Perumbakkam, Chennai – 600100, India",
     "stats.public": "1",
+    "site.draft_note_on": "1",
+    "home.pm_on": "1",
+    "home.pm_quote": "Kashi Tamil Sangamam furthers the spirit of \u2018Ek Bharat, Shreshtha Bharat\u2019.",
+    "home.pm_quote_by": "Hon\u2019ble Prime Minister Shri Narendra Modi",
+    "home.pm_caption": "Hon\u2019ble Prime Minister Shri Narendra Modi presenting the Russian translation of the Thirukkural to the President of Russia, Mr Vladimir Putin, at the BRICS Summit 2026, Bharat Mandapam, New Delhi.",
+}
+
+
+# Defaults of earlier versions. A database that still holds one of them, unchanged by the
+# administrator, receives the present default when the portal starts.
+RETIRED_DEFAULTS = {
+    "contact.email": ["kts5@cict.in"],
+    "contact.phone": ["+91-44-2254 2781"],
+    "contact.address": ["Central Institute of Classical Tamil, 40 Institutional Area, Taramani, Chennai 600 113"],
 }
 
 
@@ -427,6 +441,10 @@ def init_db(app):
             "INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)",
             (key, value, now),
         )
+    for key, old_values in RETIRED_DEFAULTS.items():
+        for old in old_values:
+            conn.execute("UPDATE settings SET value = ?, updated_at = ? WHERE key = ? AND value = ?",
+                         (DEFAULT_SETTINGS[key], now, key, old))
 
     if conn.execute("SELECT COUNT(*) FROM agencies").fetchone()[0] == 0:
         seed_path = app.config["DATA_DIR"] / "agencies.json"

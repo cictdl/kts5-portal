@@ -36,14 +36,16 @@ portal, the vendored libraries, `web.config`, and empty `instance\`,
 
 ## 2. Create the subdomain in Plesk
 
-> **Where the files go on the CICT server.** Plesk for Windows here uses the subdomain's own folder as its document root: in the File Manager, `Home directory › kts5.digitalarchives.cict.in` (it contains an `App_Data` folder that Plesk created). There is no `httpdocs` inside it. The main domain's document root is the separate `httpdocs` folder at the top level, and nothing of the portal may be placed there.
+> **The portal's address is `kts.cict.in`.** The name already resolves to the CICT server and shows Plesk's default page, so the domain exists in Plesk; steps 2.2 and 2.3 are only needed on a new server.
+>
+> **Where the files go on the CICT server.** Open *Websites & Domains → kts.cict.in → Hosting Settings* and read **Document root**: that folder, and no other, receives the portal. On this server Plesk for Windows uses the subdomain's own folder as its document root: in the File Manager, `Home directory › kts.cict.in` (it contains an `App_Data` folder that Plesk created), with no `httpdocs` inside it. The `httpdocs` folder at the top level of a subscription belongs to the main domain, and nothing of the portal may be placed there.
 
 1. Log in to Plesk → **Websites & Domains**.
-2. **Add Subdomain**: name `kts5`, parent `cict.in`. Leave the document root
-   as `kts5.digitalarchives.cict.in (the subdomain folder itself)`. Create.
+2. **Add Subdomain**: name `kts`, parent `cict.in`. Leave the document root
+   as `kts.cict.in (the subdomain folder itself)`. Create.
    (If you prefer a separate domain, *Add Domain* works the same way.)
-3. If Plesk hosts the DNS of `cict.in`, the A record for `kts5.digitalarchives.cict.in` is
-   created automatically. Otherwise add an **A record `kts5` → the server's
+3. If Plesk hosts the DNS of `cict.in`, the A record for `kts.cict.in` is
+   created automatically. Otherwise add an **A record `kts` → the server's
    IP** at your DNS provider now; Let's Encrypt in step 5 needs it to resolve.
 4. Open the subdomain's **Hosting Settings**: leave PHP/ASP.NET/Python
    scripting support **unticked** (the portal brings its own runtime) and
@@ -51,11 +53,11 @@ portal, the vendored libraries, `web.config`, and empty `instance\`,
 
 ## 3. Probe the server (2 minutes)
 
-1. **Files** (File Manager) → open `kts5.digitalarchives.cict.in (the subdomain folder itself)`. Delete whatever
+1. **Files** (File Manager) → open `kts.cict.in (the subdomain folder itself)`. Delete whatever
    Plesk placed there (index.html, web.config if present).
 2. Upload the three files from `deploy\plesk\probe\` on this PC:
    `web.config`, `probe.cmd`, `probe.py`.
-3. Open `http://kts5.digitalarchives.cict.in/` in a browser (once DNS resolves).
+3. Open `http://kts.cict.in/` in a browser (once DNS resolves).
 
 | You see | Meaning | What to do |
 |---|---|---|
@@ -67,14 +69,14 @@ portal, the vendored libraries, `web.config`, and empty `instance\`,
 
 ## 4. Upload the portal
 
-1. File Manager → `kts5.digitalarchives.cict.in (the subdomain folder itself)` → delete the three probe files
+1. File Manager → `kts.cict.in (the subdomain folder itself)` → delete the three probe files
    (and `probe-result.txt`, `probe-stdout*` if present).
 2. **Upload** `kts5-portal-plesk-<date>.zip` into `httpdocs`.
 3. Tick the zip → **Extract Files** (into the current folder). You should now
    see `web.config`, `serve.py`, `kts\`, `lib\`, `static\`, `templates\`,
    `data\`, `instance\`, `uploads\`, `logs\` … directly inside `httpdocs`.
    Delete the zip afterwards.
-4. Open `http://kts5.digitalarchives.cict.in/healthz`. Expected: `{"ok": true, "time": "…"}`.
+4. Open `http://kts.cict.in/healthz`. Expected: `{"ok": true, "time": "…"}`.
    First start takes 10–20 seconds (it creates the database).
 5. If you get **502.3** instead, open `web.config` in the File Manager editor
    and replace the two values with the ones the probe printed:
@@ -90,13 +92,13 @@ portal, the vendored libraries, `web.config`, and empty `instance\`,
    "www"). Requires the DNS A record from step 2.
 2. Back in **Hosting Settings**: tick *Permanent SEO-safe 301 redirect from
    HTTP to HTTPS*, and set the certificate. Apply.
-3. `web.config` already has `KTS_HTTPS=1` and `KTS_BASE_URL=https://kts5.digitalarchives.cict.in`
+3. `web.config` already has `KTS_HTTPS=1` and `KTS_BASE_URL=https://kts.cict.in`
    (edit the base URL if you used another name). Session cookies are marked
    Secure, so **sign-in only works over https** from here on.
 
 ## 6. First sign-in and configuration
 
-1. `https://kts5.digitalarchives.cict.in/console/login` → `admin@kts5.local` / `Admin@KTS5`.
+1. `https://kts.cict.in/console/login` → `admin@kts5.local` / `Admin@KTS5`.
    You are forced to set a new password; do it, then *Users & roles* → create
    personal accounts for the secretariat and deactivate the default one.
 2. **Settings**: registration window, test date and login window, duration,
@@ -116,12 +118,12 @@ The repository <https://github.com/cictdl/kts5-portal> is laid out to run as
 is: `web.config`, `serve.py`, vendored `lib\`, and the data folders are all at
 the root. With Plesk's Git feature the subdomain becomes a checkout:
 
-1. *Websites & Domains* → **kts5.digitalarchives.cict.in** → **Git** → *Add
+1. *Websites & Domains* → **kts.cict.in** → **Git** → *Add
    repository*.
 2. *Remote Git hosting* → repository URL `https://github.com/cictdl/kts5-portal.git`,
    branch `main`.
 3. Deployment: target the subdomain's document root (the folder
-   `kts5.digitalarchives.cict.in` itself), mode *Automatic*.
+   `kts.cict.in` itself), mode *Automatic*.
 4. Plesk clones the repository into the folder. Existing runtime files
    (`instance\kts5.sqlite3`, `uploads\`) are left alone because they are not
    tracked in git.

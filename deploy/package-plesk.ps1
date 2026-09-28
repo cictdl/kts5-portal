@@ -14,7 +14,7 @@
 param(
   [string]$OutDir = "",
   [string]$Python = "python",
-  [string]$BaseUrl = "https://kts5.digitalarchives.cict.in"
+  [string]$BaseUrl = "https://kts.cict.in"
 )
 $ErrorActionPreference = "Stop"
 $root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path

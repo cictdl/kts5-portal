@@ -39,7 +39,7 @@ zip in, for example, `C:\temp\`.
    (for Proxy mode instead: URL Rewrite and ARR from iis.net, then enable the
    proxy in ARR; the script does the enabling).
 3. Decide the address:
-   * **Own host name** `kts5.cict.in` (recommended): add an A record pointing
+   * **Own host name** `kts.cict.in` (recommended): add an A record pointing
      to the server, and obtain a certificate for it (the existing wildcard or
      a new one; `win-acme` gives a free Let's Encrypt certificate on IIS).
    * **Or a path under the existing site**, e.g.
@@ -57,7 +57,7 @@ cd C:\temp\kts5-unpack\deploy
 Own host name:
 
 ```powershell
-.\setup-iis.ps1 -Package C:\temp\kts5-portal-20260925-1300.zip -HostName kts5.cict.in -CertThumbprint <thumbprint>
+.\setup-iis.ps1 -Package C:\temp\kts5-portal-20260925-1300.zip -HostName kts.cict.in -CertThumbprint <thumbprint>
 ```
 
 Under the existing site (replace the site name with the one shown in IIS
@@ -70,7 +70,7 @@ Manager):
 Proxy mode (when HttpPlatformHandler cannot be installed):
 
 ```powershell
-.\setup-iis.ps1 -Package C:\temp\kts5-portal-20260925-1300.zip -HostName kts5.cict.in -Mode Proxy
+.\setup-iis.ps1 -Package C:\temp\kts5-portal-20260925-1300.zip -HostName kts.cict.in -Mode Proxy
 ```
 
 The script prints a health check (`HTTP 200 {"ok": true, ...}`) at the end.
@@ -78,7 +78,7 @@ The default install folder is `C:\inetpub\kts5` (`-InstallDir` to change).
 
 ## 5. First sign-in
 
-1. Open `https://kts5.cict.in/console/login` (or `/kts5/console/login`).
+1. Open `https://kts.cict.in/console/login` (or `/kts5/console/login`).
 2. Sign in as `admin@kts5.local` / `Admin@KTS5`; you are forced to set a new
    password. Then create named accounts for the secretariat (Users and roles)
    and disable or rename the default one.
@@ -136,4 +136,4 @@ start the pool.
 
 If the IIS server cannot run Python, the same package runs on any Linux VPS:
 `pip install -r requirements.txt`, `gunicorn -w 4 -b 127.0.0.1:8905 'kts:create_app()'`
-behind nginx with `KTS_BEHIND_PROXY=1`, and point `kts5.cict.in` at that VPS.
+behind nginx with `KTS_BEHIND_PROXY=1`, and point `kts.cict.in` at that VPS.

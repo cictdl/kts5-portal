@@ -49,16 +49,36 @@ def create_app(config_object=Config):
         return resp
 
     # ---- template helpers -------------------------------------------------
-    app.jinja_env.filters["date"] = utils.fmt_date
-    app.jinja_env.filters["datetime"] = utils.fmt_dt
-    app.jinja_env.filters["time"] = utils.fmt_time
+    # Dates carry English month names only in the English interface; every other language gets
+    # 25-09-2026 and the 24-hour clock, which need no translation.
+    def _numeric():
+        return i18n.get_lang() != "en"
+
+    def _ltr(text):
+        # In a right-to-left sentence the parts of 25-09-2026 would change places; the invisible
+        # marks U+2066 and U+2069 keep the date together, left to right.
+        if text and i18n.LANG_INFO[i18n.get_lang()]["dir"] == "rtl":
+            return f"⁦{text}⁩"
+        return text
+
+    app.jinja_env.filters["date"] = lambda value: _ltr(utils.fmt_date(value, _numeric()))
+    app.jinja_env.filters["datetime"] = lambda value: _ltr(utils.fmt_dt(value, _numeric()))
+    app.jinja_env.filters["time"] = lambda value: _ltr(utils.fmt_time(value, _numeric()))
     app.jinja_env.filters["size"] = utils.human_size
     app.jinja_env.filters["langname"] = lambda code: (K.lang_info(code) or {}).get("name", code)
     app.jinja_env.filters["langnative"] = lambda code: (K.lang_info(code) or {}).get("native", code)
 
+    logos_dir = Path(app.static_folder) / "img" / "logos"
+
+    def agency_logo(code):
+        """Static path of an agency's logo (static/img/logos/<code>.png), or None when there is none."""
+        name = (code or "").strip().lower()
+        return f"img/logos/{name}.png" if name and (logos_dir / f"{name}.png").is_file() else None
+
     @app.context_processor
     def _globals():
         return {
+            "agency_logo": agency_logo,
             "csrf_token": utils.csrf_token,
             "site": {
                 "name": app.config["SITE_NAME"], "short": app.config["SITE_SHORT"],
@@ -71,30 +91,31 @@ def create_app(config_object=Config):
         }
 
     # ---- errors ---------------------------------------------------------
+    def _error(code, text=None):
+        return render_template("error.html", code=code, title=i18n.t(f"err.{code}.t"),
+                               text=text or i18n.t(f"err.{code}.d")), code
+
     @app.errorhandler(403)
     def _forbidden(_e):
-        return render_template("error.html", code=403, title="Not allowed",
-                               text="Your account does not have permission for this page."), 403
+        return _error(403)
 
     @app.errorhandler(404)
     def _not_found(_e):
-        return render_template("error.html", code=404, title="Page not found",
-                               text="The page you asked for does not exist or has moved."), 404
+        return _error(404)
 
     @app.errorhandler(413)
     def _too_large(_e):
-        return render_template("error.html", code=413, title="File too large",
-                               text="The uploaded file exceeds the size limit. Reduce it and try again."), 413
+        return _error(413)
 
     @app.errorhandler(400)
     def _bad(e):
-        return render_template("error.html", code=400, title="Request could not be processed",
-                               text=getattr(e, "description", "")), 400
+        # the description of a 400 raised by the portal is the key of its message
+        key = getattr(e, "description", "") or ""
+        return _error(400, i18n.t(key) if key.startswith("err.") else key)
 
     @app.errorhandler(500)
     def _server(_e):
-        return render_template("error.html", code=500, title="Something went wrong",
-                               text="The error has been logged. Please try again in a moment."), 500
+        return _error(500)
 
     # ---- hosting: reverse proxy headers and URL prefix -------------------
     if app.config.get("BEHIND_PROXY"):

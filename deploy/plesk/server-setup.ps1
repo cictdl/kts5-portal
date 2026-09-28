@@ -22,17 +22,17 @@
   Nothing else on the server is changed. Existing sites keep working; the module is
   only used by sites whose web.config asks for it.
 
-.PARAMETER HostName   Host name of the portal site (default kts5.digitalarchives.cict.in).
+.PARAMETER HostName   Host name of the portal site (default kts.cict.in).
 .PARAMETER SitePath   Physical folder of the site; auto-detected from IIS when empty.
 .EXAMPLE
   .\server-setup.ps1
 .EXAMPLE
-  .\server-setup.ps1 -HostName kts5.digitalarchives.cict.in -SitePath "C:\Inetpub\vhosts\digitalarchives.cict.in\kts5.digitalarchives.cict.in"
+  .\server-setup.ps1 -HostName kts.cict.in -SitePath "C:\Inetpub\vhosts\cict.in\kts.cict.in"
 #>
 #Requires -RunAsAdministrator
 [CmdletBinding()]
 param(
-  [string]$HostName = "kts5.digitalarchives.cict.in",
+  [string]$HostName = "kts.cict.in",
   [string]$SitePath = "",
   [switch]$SkipPython,
   [switch]$SkipHandler,

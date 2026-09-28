@@ -146,7 +146,7 @@ def exam():
             rng = random.Random(f"{cand['id']}-{utcnow()}")
             paper = _build_paper(cand["pref_lang"], n_q, rng)
             if not paper:
-                flash("No questions are available for your language yet. Please contact the helpdesk.", "error")
+                flash(t("exam.no_questions"), "error")
                 return redirect(url_for("candidate.home"))
             started = now_ist()
             deadline = started + timedelta(minutes=duration)
@@ -226,9 +226,10 @@ def paper():
     questions = _load_paper(exam)
     answers = json.loads(exam["answers_json"] or "{}")
     remaining = int((parse_iso(exam["deadline_at"]) - now_ist()).total_seconds())
+    info = K.lang_info(exam["lang"]) or {}
     return render_template("candidate/exam_paper.html", cand=cand, exam=exam, questions=questions,
-                           answers=answers, remaining=max(0, remaining), lang=exam["lang"],
-                           dir="rtl" if exam["lang"] in ("ur", "ksn") else "ltr")
+                           answers=answers, remaining=max(0, remaining), qlang=exam["lang"],
+                           qdir=info.get("dir", "ltr"))
 
 
 @bp.route("/exam/save", methods=["POST"])

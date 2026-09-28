@@ -33,9 +33,9 @@
         <!-- Outgoing mail: fill in and restart the application pool.
         <environmentVariable name="KTS_SMTP_HOST" value="smtp.example.gov.in" />
         <environmentVariable name="KTS_SMTP_PORT" value="587" />
-        <environmentVariable name="KTS_SMTP_USER" value="kts5@cict.in" />
+        <environmentVariable name="KTS_SMTP_USER" value="office@cict.in" />
         <environmentVariable name="KTS_SMTP_PASSWORD" value="" />
-        <environmentVariable name="KTS_SMTP_FROM" value="kts5@cict.in" />
+        <environmentVariable name="KTS_SMTP_FROM" value="office@cict.in" />
         -->
       </environmentVariables>
     </httpPlatform>

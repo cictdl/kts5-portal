@@ -754,7 +754,11 @@ def user_form(uid=None):
 # ---- settings / audit / outbox ----------------------------------------------
 
 SETTING_GROUPS = [
-    ("Site", [("site.banner", "Banner text", "text"), ("site.banner_on", "Show banner", "bool"), ("stats.public", "Show live counts on the home page", "bool")]),
+    ("Site", [("site.banner", "Banner text", "text"), ("site.banner_on", "Show banner", "bool"), ("stats.public", "Show live counts on the home page", "bool"),
+              ("site.draft_note_on", "Show the note “this translation is a draft” in interface languages that are not yet reviewed", "bool")]),
+    ("Home page", [("home.pm_on", "Show the Prime Minister's photograph and quotation", "bool"),
+                   ("home.pm_quote", "Quotation (without quotation marks)", "text"),
+                   ("home.pm_quote_by", "Attribution", "text"), ("home.pm_caption", "Photograph caption", "text")]),
     ("Registration", [("reg.open", "Registration enabled", "bool"), ("reg.start", "Opens on (YYYY-MM-DD)", "date"), ("reg.end", "Closes on (YYYY-MM-DD)", "date")]),
     ("Online test", [("exam.date", "Test date (YYYY-MM-DD)", "date"), ("exam.start_time", "Login window opens (HH:MM IST)", "text"),
                      ("exam.end_time", "Login window closes (HH:MM IST)", "text"), ("exam.duration_min", "Duration in minutes", "number"),

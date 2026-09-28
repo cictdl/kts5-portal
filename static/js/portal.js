@@ -2,6 +2,11 @@
 (function () {
   "use strict";
 
+  // ---- interface strings in the language of the page ----------------------
+  var MSG = {};
+  try { MSG = JSON.parse(document.getElementById("i18n").textContent) || {}; } catch (e) { MSG = {}; }
+  function text(key, fallback) { return MSG[key] && MSG[key] !== key ? MSG[key] : fallback; }
+
   // ---- mobile navigation ---------------------------------------------------
   var toggle = document.querySelector(".nav .toggle");
   if (toggle) {
@@ -50,14 +55,15 @@
     inp.addEventListener("change", function () {
       var max = parseInt(inp.dataset.max, 10), f = inp.files[0], msg = inp.parentElement.querySelector(".file-msg");
       if (!msg) { msg = document.createElement("div"); msg.className = "file-msg small"; inp.parentElement.appendChild(msg); }
-      if (f && f.size > max) { msg.textContent = "File is " + (f.size / 1024).toFixed(0) + " KB; the limit is " + (max / 1024).toFixed(0) + " KB."; msg.style.color = "var(--kumkum)"; }
+      if (msg) msg.dir = "auto";
+      if (f && f.size > max) { msg.textContent = text("js.file_big", "This file is too large.") + " " + (f.size / 1024).toFixed(0) + " KB > " + (max / 1024).toFixed(0) + " KB"; msg.style.color = "var(--kumkum)"; }
       else if (f) { msg.textContent = f.name + " · " + (f.size / 1024).toFixed(0) + " KB"; msg.style.color = "var(--green)"; }
     });
   });
   document.querySelectorAll("form[data-once]").forEach(function (f) {
     f.addEventListener("submit", function () {
       var b = f.querySelector("button[type=submit]");
-      if (b) { b.disabled = true; b.textContent = b.dataset.busy || "Please wait…"; }
+      if (b) { b.disabled = true; b.textContent = b.dataset.busy || text("js.wait", "Please wait…"); }
     });
   });
 
@@ -92,16 +98,16 @@
     function save() {
       if (saving || submitted) { scheduleSave(); return; }
       var payload = dirty; dirty = {}; if (!Object.keys(payload).length) return;
-      saving = true; setState("Saving…");
+      saving = true; setState(text("js.saving", "Saving…"));
       fetch(saveUrl, { method: "POST", headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf }, body: JSON.stringify({ answers: payload }) })
         .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
         .then(function (res) {
           saving = false;
-          if (res.ok && res.j.ok) { setState("Saved · " + res.j.saved + " answered"); if (typeof res.j.remaining === "number") remaining = Math.min(remaining, res.j.remaining); }
+          if (res.ok && res.j.ok) { setState(text("js.saved", "Saved") + " · " + res.j.saved + " " + text("exam.answered", "answered")); if (typeof res.j.remaining === "number") remaining = Math.min(remaining, res.j.remaining); }
           else if (res.j && res.j.reason === "expired") { finish(); }
-          else { setState("Not saved – retrying"); Object.keys(payload).forEach(function (k) { dirty[k] = payload[k]; }); scheduleSave(); }
+          else { setState(text("js.not_saved", "Not saved. Trying again…")); Object.keys(payload).forEach(function (k) { dirty[k] = payload[k]; }); scheduleSave(); }
         })
-        .catch(function () { saving = false; setState("Offline – retrying"); Object.keys(payload).forEach(function (k) { dirty[k] = payload[k]; }); setTimeout(scheduleSave, 3000); });
+        .catch(function () { saving = false; setState(text("js.offline", "No internet connection. Trying again…")); Object.keys(payload).forEach(function (k) { dirty[k] = payload[k]; }); setTimeout(scheduleSave, 3000); });
     }
     function setState(t) { var s = document.getElementById("save-state"); if (s) s.textContent = t; }
     function finish() {
@@ -122,8 +128,8 @@
       if (submitted) return;
       e.preventDefault();
       var n = Object.keys(answers).length, total = parseInt(exam.dataset.total, 10);
-      var msg = exam.dataset.confirm + (n < total ? "\n(" + (total - n) + " unanswered)" : "");
-      if (window.confirm(msg)) finish();
+      var question = exam.dataset.confirm + (n < total ? "\n(" + (total - n) + " " + text("js.unanswered", "not answered") + ")" : "");
+      if (window.confirm(question)) finish();
     });
     window.onbeforeunload = function () { return "The test is in progress."; };
     window.addEventListener("keydown", function (e) { if (e.key === "F5" || (e.ctrlKey && e.key.toLowerCase() === "r")) e.preventDefault(); });

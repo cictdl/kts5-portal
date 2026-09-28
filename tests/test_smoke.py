@@ -8,33 +8,8 @@ takes the test, the selection runs and the merit list is published.
 """
 import io
 import json
-import os
-import sys
-import tempfile
-from pathlib import Path
 
-import pytest
-
-ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT))
-
-
-@pytest.fixture(scope="module")
-def client():
-    tmp = tempfile.mkdtemp(prefix="kts5-test-")
-    os.environ["KTS_DATABASE"] = str(Path(tmp) / "test.sqlite3")
-    os.environ["KTS_UPLOAD_DIR"] = str(Path(tmp) / "uploads")
-    os.environ["KTS_ADMIN_PASSWORD"] = "Admin@KTS5"
-    from config import Config
-    from kts import create_app
-    app = create_app(Config)
-    app.config["TESTING"] = True
-    with app.app_context():
-        from kts.db import set_setting
-        set_setting("reg.start", "2026-01-01")
-        set_setting("reg.end", "2030-12-31")
-    with app.test_client() as c:
-        yield c
+# The `client` fixture and the throw-away database come from tests/conftest.py.
 
 
 def _csrf(client):
