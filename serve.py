@@ -22,7 +22,21 @@ from waitress import serve  # noqa: E402
 
 from kts import create_app  # noqa: E402
 
+
+def port():
+    """
+    The port to listen on: KTS_PORT, or the port that the web server chose when it started the
+    portal (HTTP_PLATFORM_PORT under IIS's HttpPlatformHandler, ASPNETCORE_PORT under IIS's
+    ASP.NET Core Module, PORT elsewhere), else 8905.
+    """
+    for name in ("KTS_PORT", "HTTP_PLATFORM_PORT", "ASPNETCORE_PORT", "PORT"):
+        value = (os.environ.get(name) or "").strip()
+        if value.isdigit():
+            return int(value)
+    return 8905
+
+
 if __name__ == "__main__":
     app = create_app()
-    serve(app, host=os.environ.get("KTS_HOST", "0.0.0.0"), port=int(os.environ.get("KTS_PORT", "8905")),
+    serve(app, host=os.environ.get("KTS_HOST", "0.0.0.0"), port=port(),
           threads=int(os.environ.get("KTS_THREADS", "8")), url_scheme="https" if os.environ.get("KTS_HTTPS") == "1" else "http")

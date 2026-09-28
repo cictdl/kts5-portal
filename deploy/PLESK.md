@@ -28,34 +28,58 @@ afterwards (step 5 below).
 
 ### Without Remote Desktop: let Plesk run it
 
-The same file can be started by Plesk itself. With the option `-Unattended`
-it asks nothing, waits for no key and stops without changing anything if it
-has no administrator rights.
+The same file can be started by Plesk itself, with the option `-Unattended`
+(it asks nothing and waits for no key). Plesk runs such a task as the system
+user of the subscription, who is no administrator; the installer notices that
+and installs **without installing anything on the server**:
+
+* the portal is copied into the folder of the site as usual;
+* Python is not installed but unpacked into `python\` inside that folder
+  (the "embeddable package" of python.org, 10 MB);
+* IIS starts the portal through the **ASP.NET Core Module**, which Plesk has
+  installed for its .NET hosting and which starts any program given to it;
+* write access to `instance\`, `uploads\` and `logs\` is given to the IIS
+  account of the site;
+* before IIS is involved, the portal is started once by itself, so that a
+  fault of the portal and a fault of IIS can be told apart;
+* if IIS refuses all three forms of `web.config` that are tried, the previous
+  `web.config` and start page are put back and IIS's explanation is shown.
+
+Only the folder of `kts.cict.in` is written to. Found on the CICT server on
+28 Sep 2026 (Windows Server 2019): no HttpPlatformHandler, no Python, but the
+ASP.NET Core runtimes 2.1 to 10.0, URL Rewrite, ARR and iisnode.
 
 1. Plesk, as administrator: *Tools & Settings* → **Scheduled Tasks** →
    **Add Task**.
-2. Task type **Run a command**, and as the command this one line (if Plesk
-   shows one box for the program and one for its arguments, the path of
-   `powershell.exe` goes into the first and the rest into the second):
+2. Task type **Run a command**. The form has two boxes, and each part must go
+   into its own: Plesk puts quotation marks around the first box, so a whole
+   command line pasted there is taken for the name of a program ("… is not
+   recognized as an internal or external command").
+
+   **Command** (the program only):
 
    ```
-   C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol='Tls12'; $f=Join-Path $env:TEMP 'kts-install.bat'; (New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/cictdl/kts5-portal/main/deploy/plesk/kts-install.bat', $f); & cmd.exe /c $f -Unattended; exit $LASTEXITCODE"
+   C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
    ```
 
-3. *System user*: the administrator entry. Schedule: anything, the task is
-   removed again after use.
-4. **Run Now**. The first run downloads Python and the IIS module and can
-   take ten minutes. Plesk shows what the installer wrote.
-5. **Remove the task**, so that it never runs by itself.
+   **Arguments** (one line):
+
+   ```
+   -NoProfile -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol='Tls12';$f=Join-Path $env:TEMP 'kts-install.bat';(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/cictdl/kts5-portal/main/deploy/plesk/kts-install.bat',$f);& cmd.exe /c $f -Unattended;exit $LASTEXITCODE"
+   ```
+
+3. *System user*: the system user of `kts.cict.in`. Schedule: anything, the
+   task is removed again after use.
+4. **Run Now**. The run takes a few minutes. Plesk shows what the installer
+   wrote.
+5. **Remove the task**, so that it never runs by itself. To update the portal
+   later, add the task again and run it.
 6. The record of the run is in *Files* → `kts.cict.in` → `logs` →
    `install-<date>.log`.
 
-If the output is "STOPPED: this run has no administrator rights", Plesk runs
-its tasks with a restricted account on this server, and Remote Desktop is the
-only way. To let the installer restart the whole of IIS (needed at times
-after the IIS module was installed for the first time), add ` -RestartIIS`
-after `-Unattended`; every website on the server then stops for about ten
-seconds.
+Do not connect a folder installed this way to Git in Plesk: the `web.config`
+of the repository is written for a server with the HttpPlatformHandler module
+and would replace the one the installer wrote.
 
 The rest of this guide describes the same installation step by step, for
 servers without Remote Desktop access and without administrator rights in
