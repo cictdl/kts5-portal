@@ -25,6 +25,7 @@
   <span class="eyebrow">{{ t('reg.subtitle') }}</span>
   <h1>{{ t('reg.title') }}</h1>
   <p class="lead dim" style="max-width:70ch">{{ t('reg.intro') }}</p>
+  <p class="alert info" style="max-width:70ch"><b>{{ t('reg.english_note') }}</b></p>
   <p class="stipend-note" style="margin:0 0 14px"><span class="amt">₹10,000</span><span>{{ t('home.stipend') }}</span></p>
   <p><span class="pill green">{{ t('reg.closes_on') }}: {{ dates.reg_end|date }}</span></p>
 
@@ -35,7 +36,7 @@
     <div class="form-section">
       <h2>{{ t('reg.sec_personal') }}</h2>
       <div class="fields">
-        {{ field('full_name', t('reg.full_name'), True, wide=True, attrs='autocomplete="name" maxlength="120" dir="auto"') }}
+        {{ field('full_name', t('reg.full_name'), True, wide=True, attrs='autocomplete="name" maxlength="120" dir="ltr" lang="en"') }}
         <div class="field {{ 'has-err' if errors.get('gender') }}">
           <label>{{ t('reg.gender') }} <span class="req">*</span></label>
           <div class="radio-row">
@@ -62,9 +63,10 @@
           {% if errors.get('whatsapp') %}<span class="err">{{ errors['whatsapp'] }}</span>{% endif %}
         </div>
         {{ field('email', t('reg.email'), True, t('reg.email_help'), type='email', wide=True, attrs='autocomplete="email" maxlength="120" dir="ltr"') }}
-        <div class="field wide"><label for="address">{{ t('reg.address') }}</label><textarea id="address" name="address" rows="2" maxlength="400" dir="auto">{{ data.get('address', '') }}</textarea></div>
+        <div class="field wide {{ 'has-err' if errors.get('address') }}"><label for="address">{{ t('reg.address') }}</label><textarea id="address" name="address" rows="2" maxlength="400" dir="ltr" lang="en">{{ data.get('address', '') }}</textarea>
+          {% if errors.get('address') %}<span class="err">{{ errors['address'] }}</span>{% endif %}</div>
         {{ select('state', t('reg.state'), ref.all_states, True, places=True) }}
-        {{ field('district', t('reg.district'), attrs='maxlength="80" dir="auto"') }}
+        {{ field('district', t('reg.district'), attrs='maxlength="80" dir="ltr" lang="en"') }}
         {{ field('pincode', t('reg.pincode'), attrs='inputmode="numeric" maxlength="6" dir="ltr"') }}
       </div>
     </div>
@@ -73,16 +75,16 @@
       <h2>{{ t('reg.sec_college') }}</h2>
       <p class="hint">{{ t('reg.college_help') }}</p>
       <div class="fields">
-        {{ field('college_name', t('reg.college_name'), True, wide=True, attrs='maxlength="200" dir="auto"') }}
-        {{ field('aishe_code', t('reg.aishe'), False, t('reg.aishe_help'), attrs='maxlength="20" dir="ltr"') }}
+        {{ field('college_name', t('reg.college_name'), True, wide=True, attrs='maxlength="200" dir="ltr" lang="en"') }}
+        {{ field('aishe_code', t('reg.aishe'), False, t('reg.aishe_help'), attrs='maxlength="20" dir="ltr" lang="en"') }}
         {{ select('college_type', t('reg.college_type'), ref.college_types, True, prefix='opt.ctype') }}
         {{ select('college_state', t('reg.college_state'), ref.all_states, True, places=True) }}
-        {{ field('college_district', t('reg.college_district'), attrs='maxlength="80" dir="auto"') }}
-        {{ field('university', t('reg.university'), wide=True, attrs='maxlength="200" dir="auto"') }}
+        {{ field('college_district', t('reg.college_district'), attrs='maxlength="80" dir="ltr" lang="en"') }}
+        {{ field('university', t('reg.university'), wide=True, attrs='maxlength="200" dir="ltr" lang="en"') }}
         {{ select('course_level', t('reg.course_level'), ref.course_levels, True, prefix='opt.level') }}
-        {{ field('discipline', t('reg.discipline'), attrs='maxlength="120" dir="auto" placeholder="B.A. Economics, B.Tech CSE, M.Sc Physics…"') }}
+        {{ field('discipline', t('reg.discipline'), attrs='maxlength="120" dir="ltr" lang="en" placeholder="B.A. Economics, B.Tech CSE, M.Sc Physics…"') }}
         {{ select('year_of_study', t('reg.year'), ref.years, True, prefix='opt.year') }}
-        {{ field('roll_no', t('reg.roll'), attrs='maxlength="40" dir="ltr"') }}
+        {{ field('roll_no', t('reg.roll'), attrs='maxlength="40" dir="ltr" lang="en"') }}
       </div>
     </div>
 
@@ -110,8 +112,8 @@
       <h2>{{ t('reg.sec_mentor') }} <span class="muted small">({{ t('common.optional') }})</span></h2>
       <p class="hint">{{ t('reg.mentor_intro') }}</p>
       <div class="fields">
-        {{ field('mentor_name', t('reg.mentor_name'), attrs='maxlength="120" dir="auto"') }}
-        {{ field('mentor_designation', t('reg.mentor_designation'), attrs='maxlength="120" dir="auto"') }}
+        {{ field('mentor_name', t('reg.mentor_name'), attrs='maxlength="120" dir="ltr" lang="en"') }}
+        {{ field('mentor_designation', t('reg.mentor_designation'), attrs='maxlength="120" dir="ltr" lang="en"') }}
         {{ field('mentor_email', t('reg.mentor_email'), type='email', attrs='maxlength="120" dir="ltr"') }}
         {{ field('mentor_phone', t('reg.mentor_phone'), type='tel', attrs='inputmode="numeric" maxlength="10" dir="ltr"') }}
       </div>

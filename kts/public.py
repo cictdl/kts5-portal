@@ -15,8 +15,8 @@ from .db import all_settings, audit, execute, get_setting, query, utcnow
 from . import i18n
 from .i18n import get_lang, t
 from .utils import (DOC_EXT, IMAGE_EXT, age_on, check_captcha, client_ip, college_key, csv_bytes,
-                    exam_window, fmt_date, limiter, make_app_no, new_captcha, now_ist, qr_data_uri,
-                    registration_state, save_upload, send_mail, valid_email, valid_mobile,
+                    exam_window, fmt_date, limiter, make_app_no, new_captcha, now_ist, plain_english,
+                    qr_data_uri, registration_state, save_upload, send_mail, valid_email, valid_mobile,
                     valid_pincode)
 from .version import VERSION
 
@@ -156,12 +156,19 @@ FIELDS = [
 ]
 REQUIRED = ["full_name", "gender", "dob", "mobile", "email", "state", "college_name",
             "college_type", "college_state", "course_level", "year_of_study", "pref_lang"]
+# Written by the applicant; every applicant fills them in English, whatever the language of the page
+ENGLISH = ["full_name", "address", "district", "college_name", "aishe_code", "college_district", "university",
+           "discipline", "roll_no", "mentor_name", "mentor_designation"]
 
 
 def _validate(form, files):
     errors = {}
     data = {f: (form.get(f) or "").strip() for f in FIELDS}
     data["pwd"] = 1 if form.get("pwd") == "1" else 0
+    for f in ENGLISH:
+        data[f], english = plain_english(data[f])
+        if not english:
+            errors[f] = t("reg.err_english")
     for f in REQUIRED:
         if not data[f]:
             errors[f] = t("reg.err_required")

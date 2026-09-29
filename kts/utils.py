@@ -317,6 +317,23 @@ def age_on(dob, on=None):
     return on.year - d.year - ((on.month, on.day) < (d.month, d.day))
 
 
+# ---- English entries ----------------------------------------------------------
+
+# Marks that phone keyboards put in by themselves, and their plain forms
+_PLAIN = str.maketrans({"\u2018": "'", "\u2019": "'", "\u201c": '"', "\u201d": '"', "\u2013": "-",
+                        "\u2014": "-", "\u2026": "...", "\u00a0": " "})
+
+
+def plain_english(value):
+    """
+    (text, is_english): the text with the curly quotes and dashes of phone keyboards made plain,
+    and whether it is written in English, that is in letters A-Z, digits, spaces and the usual
+    punctuation, nothing else.
+    """
+    text = (value or "").translate(_PLAIN)
+    return text, all(" " <= c <= "~" or c in "\r\n\t" for c in text)
+
+
 # ---- captcha (arithmetic, no third party) -----------------------------------
 
 def new_captcha():

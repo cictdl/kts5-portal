@@ -1,2 +1,2 @@
 """Version of the portal: /healthz reports it and the installer compares it after an update."""
-VERSION = "1.1.0"
+VERSION = "1.1.1"
