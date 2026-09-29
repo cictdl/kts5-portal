@@ -160,7 +160,7 @@
   "reg.mentor_phone": "Mentor phone",
   "reg.photo": "Passport-size photograph",
   "reg.photo_help": "JPG or PNG, up to 600 KB, plain background.",
-  "reg.idproof": "College ID card",
+  "reg.idproof": "College ID card or bonafide certificate",
   "reg.idproof_help": "PDF, JPG or PNG, up to 2 MB.",
   "reg.declare_true": "I declare that the information given above is true and that I am a bona fide student of the institution named.",
   "reg.declare_participate": "I will take the online test and, if selected, attend the online orientation and deliver a Thirukkural presentation in my college.",
