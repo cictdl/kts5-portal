@@ -8,8 +8,11 @@ takes the test, the selection runs and the merit list is published.
 """
 import io
 import json
+import os
 
-# The `client` fixture and the throw-away database come from tests/conftest.py.
+# The `client` fixture and the throw-away database come from tests/conftest.py, the first
+# password of the administrator as well.
+FIRST_PASSWORD = os.environ["KTS_ADMIN_PASSWORD"]
 
 
 def _csrf(client):
@@ -71,10 +74,10 @@ def test_register_and_status(client):
 
 def test_admin_flow(client):
     token = _csrf(client)
-    r = client.post("/console/login", data={"_csrf": token, "email": "admin@kts5.local", "password": "Admin@KTS5"}, follow_redirects=True)
+    r = client.post("/console/login", data={"_csrf": token, "email": "admin@kts5.local", "password": FIRST_PASSWORD}, follow_redirects=True)
     assert r.status_code == 200
     # forced password change
-    r = client.post("/console/password", data={"_csrf": token, "current": "Admin@KTS5", "new": "Sangamam2026X", "confirm": "Sangamam2026X"}, follow_redirects=True)
+    r = client.post("/console/password", data={"_csrf": token, "current": FIRST_PASSWORD, "new": "Sangamam2026X", "confirm": "Sangamam2026X"}, follow_redirects=True)
     assert b"Password updated" in r.data
     assert client.get("/console/").status_code == 200
     # verify the application
@@ -106,7 +109,7 @@ def test_candidate_exam(client):
     from kts.db import query
     exam = query("SELECT * FROM exam_sessions WHERE application_id = ?", (cid,), one=True)
     paper = json.loads(exam["paper_json"])
-    assert len(paper) == 25
+    assert len(paper) == 50
     qid = str(paper[0]["q"])
     r = client.post("/candidate/exam/save", data=json.dumps({"answers": {qid: "A"}}), content_type="application/json", headers={"X-CSRF-Token": token})
     assert r.get_json()["ok"] is True

@@ -72,7 +72,10 @@ function Get-DetailedIisError($exception) {
   $resp = $exception.Response
   if (-not $resp) { return "" }
   try {
-    $sr = New-Object System.IO.StreamReader($resp.GetResponseStream())
+    # Invoke-WebRequest has read an answer that names its length to the end already
+    $stream = $resp.GetResponseStream()
+    if ($stream.CanSeek) { $stream.Position = 0 }
+    $sr = New-Object System.IO.StreamReader($stream)
     $html = $sr.ReadToEnd()
     $text = [regex]::Replace($html, "<script.*?</script>|<style.*?</style>", " ", "Singleline, IgnoreCase")
     $text = [regex]::Replace($text, "<[^>]+>", " ")
@@ -269,4 +272,9 @@ Write-Host ""
 Write-Host "================ Summary ================" -ForegroundColor Cyan
 $report | ForEach-Object { Write-Host "  $_" }
 Write-Host ""
-Write-Host "Next: open https://$HostName/healthz in a browser, then https://$HostName/console/login (admin@kts5.local / Admin@KTS5, change it at once)."
+Write-Host "Next: open https://$HostName/healthz in a browser, then https://$HostName/console/login ."
+if ($SitePath -and (Test-Path (Join-Path $SitePath "instance\first-admin.txt"))) {
+  Write-Host "The account and its first password are in $SitePath\instance\first-admin.txt; the portal asks for a new password at once and removes the file afterwards."
+} else {
+  Write-Host "If the portal wrote a file instance\first-admin.txt in the site folder, it holds the account and its first password; without the file the administrator password has already been set."
+}

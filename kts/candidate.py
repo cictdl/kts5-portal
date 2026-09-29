@@ -23,17 +23,28 @@ bp = Blueprint("candidate", __name__, url_prefix="/candidate")
 def login():
     error = None
     if request.method == "POST":
-        if not limiter.allow("cand_login", client_ip(), current_app.config["RATE_LOGIN_PER_15MIN"], 15 * 60):
+        # Only failed attempts are counted: per address, and per application number and address
+        # together. Application numbers are consecutive, so a count per number alone would let
+        # anybody close the sign-in of any candidate with a few wrong attempts during the hour
+        # of the test. Counted with the address, an outsider closes a number for himself only.
+        ip = client_ip()
+        app_no = (request.form.get("app_no") or "").strip().upper()
+        number_here = f"{app_no[:32]}|{ip}"
+        cfg = current_app.config
+        if limiter.blocked("cand_login", ip, cfg["RATE_CAND_FAILS_IP_PER_15MIN"], 15 * 60) \
+                or limiter.blocked("cand_app", number_here, cfg["RATE_CAND_FAILS_APP_PER_15MIN"], 15 * 60):
             error = t("reg.err_rate")
         else:
-            app_no = (request.form.get("app_no") or "").strip().upper()
             dob = (request.form.get("dob") or "").strip()
             last4 = (request.form.get("last4") or "").strip()
             row = query("SELECT * FROM applications WHERE app_no = ? AND dob = ? AND substr(mobile, -4) = ?",
                         (app_no, dob, last4), one=True)
             if row is None:
+                limiter.hit("cand_login", ip, 15 * 60)
+                limiter.hit("cand_app", number_here, 15 * 60)
                 error = t("status.not_found")
-                audit("candidate_login_failed", "application", None, detail=app_no, ip=client_ip())
+                # what was typed may be of any length; a real number has 16 characters
+                audit("candidate_login_failed", "application", None, detail=app_no[:32], ip=client_ip())
             else:
                 session.pop("uid", None)
                 session["cand_id"] = row["id"]
@@ -141,7 +152,7 @@ def exam():
             flash(t("exam.not_open"), "error")
             return redirect(url_for("candidate.home"))
         if exam is None:
-            n_q = int(settings.get("exam.questions", "25"))
+            n_q = int(settings.get("exam.questions", "50"))
             duration = int(settings.get("exam.duration_min", "30"))
             rng = random.Random(f"{cand['id']}-{utcnow()}")
             paper = _build_paper(cand["pref_lang"], n_q, rng)
@@ -189,7 +200,7 @@ def _finalise(exam, reason="submitted"):
     marks = ",".join("?" * len(ids))
     correct = {r["id"]: r["correct"] for r in query(f"SELECT id, correct FROM questions WHERE id IN ({marks})", ids)}
     settings = all_settings()
-    per_q = float(settings.get("exam.marks_per_q", "4"))
+    per_q = float(settings.get("exam.marks_per_q", "2"))
     neg = float(settings.get("exam.negative", "0"))
     right = wrong = 0
     for qid in ids:
@@ -293,4 +304,4 @@ def result():
     total = len(json.loads(exam["paper_json"]))
     return render_template("candidate/exam_done.html", cand=cand, exam=exam, settings=settings, total=total,
                            show_score=settings.get("exam.show_score") == "1",
-                           max_score=total * float(settings.get("exam.marks_per_q", "4")))
+                           max_score=total * float(settings.get("exam.marks_per_q", "2")))

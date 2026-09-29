@@ -31,7 +31,7 @@
         <div>
           <div class="tamil ta" dir="ltr" lang="ta">{{ k.l1 }}<br>{{ k.l2 }}</div>
           {% if stream != 'ta' %}
-            {% if ln %}<div class="trans" dir="{{ stream_dir }}" lang="{{ stream }}">{% for line in ln %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}</div>{% else %}<div class="trans muted small">—</div>{% endif %}
+            {% if ln %}<div class="trans" dir="{{ stream_dir }}" lang="{{ stream|langtag }}">{% for line in ln %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}</div>{% else %}<div class="trans muted small">—</div>{% endif %}
           {% elif k.tr.tac %}<div class="trans ta" dir="ltr" lang="ta">{{ k.tr.tac[0] }}</div>{% endif %}
           {% if stream == 'en' and k.tl %}<div class="tl" dir="ltr">{{ k.tl|join(' · ') }}</div>{% endif %}
         </div>

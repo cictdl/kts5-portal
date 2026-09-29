@@ -20,7 +20,7 @@
     {% for info, ln in streams %}
     <div class="stream">
       <div class="lang"><bdi>{{ info.native }}</bdi><small dir="ltr">{{ info.name }} · {{ info.script }}</small></div>
-      <div dir="{{ info.dir }}" lang="{{ info.code }}">{% for line in ln %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}</div>
+      <div dir="{{ info.dir }}" lang="{{ info.code|langtag }}">{% for line in ln %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}</div>
     </div>
     {% endfor %}
   </div>

@@ -9,6 +9,12 @@ logs/*
 *.sqlite3-wal
 *.sqlite3-shm
 secret.key
+# the first password of the administrator and the settings of an installation
+# (mail password), wherever the instance folder lies
+first-admin.txt
+portal.env
+# the page that the installer shows while it restarts the portal
+app_offline.htm
 # build output
 dist/
 venv/

@@ -78,8 +78,11 @@ html[lang="ur"] h1, html[lang="ur"] h2, html[lang="ur"] h3, html[lang="ur"] h4, 
 html[lang="ur"] .btn, html[lang="ks"] .btn, html[lang="ur"] .masthead .name, html[lang="ks"] .masthead .name { line-height: 1.9; }
 html[lang="sat"] { --font: "Noto Sans Ol Chiki", "Nirmala UI", "Noto Sans", "Segoe UI", system-ui, sans-serif; }
 html[lang="mni"], html[lang="bn"], html[lang="as"] { --font: "Noto Sans Bengali", "Nirmala UI", "Vrinda", "Noto Sans", "Segoe UI", system-ui, sans-serif; }
-[lang="ur"], [lang="ksn"] { font-family: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq", "Urdu Typesetting", "Noto Naskh Arabic", "Segoe UI", Tahoma, sans-serif; }
-[lang="mei"] { font-family: "Noto Sans Meetei Mayek", "Nirmala UI", var(--font); }
+/* streams of the Thirukkural carry the tag of kts/kural.py lang_tag(): ks-Arab is the Kashmiri stream in
+   Nastaliq, mni-Mtei the Manipuri one in Meetei Mayek. The values are matched as a whole: ks-Deva and
+   mni-Beng get neither font, and html[lang="ks"] above is the Kashmiri interface only. */
+[lang="ur"], [lang="ks-Arab"] { font-family: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq", "Urdu Typesetting", "Noto Naskh Arabic", "Segoe UI", Tahoma, sans-serif; }
+[lang="mni-Mtei"] { font-family: "Noto Sans Meetei Mayek", "Nirmala UI", var(--font); }
 [lang="ta"] { font-family: "Nirmala UI", "Noto Sans Tamil", "Latha", var(--font); }
 bdi, [dir="ltr"], [dir="auto"] { unicode-bidi: isolate; }
 [dir="ltr"] { direction: ltr; }

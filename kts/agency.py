@@ -5,6 +5,7 @@ status updates, shared documents and the programme calendar.
 Agency users see their own agency's tasks and the documents shared with
 them; CICT administrators see everything and can assign work.
 """
+import posixpath
 from pathlib import Path
 
 from flask import (Blueprint, abort, current_app, flash, g, redirect, render_template, request,
@@ -278,6 +279,8 @@ def calendar():
 @bp.route("/files/<path:relpath>")
 @login_required("coord.view")
 def hub_file(relpath):
+    # the folder is tested on the path as it will be opened
+    relpath = posixpath.normpath(relpath)
     if not relpath.startswith(("tasks/", "documents/")):
         abort(404)
     return send_from_directory(Path(current_app.config["UPLOAD_DIR"]), relpath)

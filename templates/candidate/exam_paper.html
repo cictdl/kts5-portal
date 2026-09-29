@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ t('exam.title') }} · {{ cand.app_no }}</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=8">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=9">
 <meta name="robots" content="noindex">
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 </head>
@@ -21,8 +21,8 @@
       {% for q in questions %}
       <div class="q" id="q{{ q.no }}">
         <div class="qno">{{ t('exam.question') }} {{ q.no }} {{ t('exam.of') }} {{ questions|length }}</div>
-        <div class="qtext" dir="auto" lang="{{ qlang }}">{{ q.text }}</div>
-        <div class="opts" dir="{{ qdir }}" lang="{{ qlang }}">
+        <div class="qtext" dir="auto" lang="{{ qlang|langtag }}">{{ q.text }}</div>
+        <div class="opts" dir="{{ qdir }}" lang="{{ qlang|langtag }}">
           {% for letter, text in q.options %}
           <label class="opt {{ 'on' if answers.get(q.id|string) == letter }}"><input type="radio" name="q{{ q.id }}" value="{{ letter }}" {{ 'checked' if answers.get(q.id|string) == letter }}><span class="letter">{{ loop.index }}.</span><span dir="auto">{{ text }}</span></label>
           {% endfor %}
@@ -48,6 +48,6 @@
   </div>
 </main>
 <script type="application/json" id="i18n">{{ js_strings|tojson }}</script>
-<script src="{{ url_for('static', filename='js/portal.js') }}?v=8" defer></script>
+<script src="{{ url_for('static', filename='js/portal.js') }}?v=9" defer></script>
 </body>
 </html>

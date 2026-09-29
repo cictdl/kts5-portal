@@ -35,6 +35,16 @@
   document.querySelectorAll("form[data-confirm]").forEach(function (f) {
     f.addEventListener("submit", function (e) { if (!window.confirm(f.getAttribute("data-confirm"))) e.preventDefault(); });
   });
+  // one button of a form with several: a refusal stops the click, and with it the form.
+  // Buttons and links only: #exam-app keeps the question of the test in the same attribute.
+  document.querySelectorAll("button[data-confirm], a[data-confirm]").forEach(function (b) {
+    b.addEventListener("click", function (e) { if (!window.confirm(b.getAttribute("data-confirm"))) e.preventDefault(); });
+  });
+
+  // ---- print buttons (the pages carry no script of their own) -------------
+  document.querySelectorAll("[data-print]").forEach(function (b) {
+    b.addEventListener("click", function () { window.print(); });
+  });
 
   // ---- auto-submit selects (language/chapter pickers) --------------------
   document.querySelectorAll("select[data-autosubmit]").forEach(function (s) {

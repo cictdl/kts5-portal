@@ -41,6 +41,20 @@ def test_translation_file(code):
 
 
 @pytest.mark.parametrize("code", ["en"] + CODES)
+def test_refusal_promises_no_time(code):
+    """
+    reg.err_rate is shown where the door opens again after 15 minutes (sign-in of the candidates,
+    status page) and where it opens after an hour (registration, contact form): one sentence,
+    which names no time. The marks: full stop, danda, Arabic full stop, mucaad of Ol Chiki.
+    """
+    value = json.loads((I18N / f"{code}.json").read_text(encoding="utf-8"))["reg.err_rate"]
+    assert [ch for ch in value if ch in ".।۔᱾"] == [value[-1]], value
+    assert not re.search(r"\d", value) and value == value.strip(), value
+    if code == "en":
+        assert value == "Too many attempts from this connection."
+
+
+@pytest.mark.parametrize("code", ["en"] + CODES)
 def test_pages_render(client, code):
     from kts.i18n import LANG_INFO
     r = client.get(f"/lang/{code}")

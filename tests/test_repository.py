@@ -1,0 +1,102 @@
+"""
+Entries of the repository that every installation carries (data/resources.json).
+
+    python -m pytest tests -q
+"""
+import json
+
+from conftest import ROOT, make_app
+
+SEEDS = json.loads((ROOT / "data" / "resources.json").read_text(encoding="utf-8"))
+PLAY = "https://play.google.com/store/apps/details?id=in.cict.kural"
+WEB = "https://cictdl.github.io/index.html/kural-app/"
+CORPUS = "https://www.digitalarchives.cict.in/#ground-truth"
+ARCHIVES = "https://www.digitalarchives.cict.in/#archives"
+ALL = [PLAY, WEB, CORPUS, ARCHIVES]
+
+
+def _restart(app):
+    """The portal started again on the same database and the same folders."""
+    return make_app(**{name: app.config[name] for name in ("INSTANCE_DIR", "DATABASE", "UPLOAD_DIR")})
+
+
+def _rows(app):
+    from kts.db import query
+    with app.app_context():
+        return [dict(r) for r in query("SELECT * FROM resources ORDER BY id")]
+
+
+def test_the_seed_file_is_complete():
+    assert [s["url"] for s in SEEDS] == ALL
+    assert [s["category"] for s in SEEDS] == ["app", "app", "corpus", "corpus"]
+    for s in SEEDS:
+        assert s["key"] and s["title"] and s["description"]
+    assert len({s["key"] for s in SEEDS}) == len(SEEDS)
+
+
+def test_a_new_installation_carries_the_app():
+    app = make_app(ADMIN_PASSWORD=None)
+    rows = _rows(app)
+    assert [r["url"] for r in rows] == ALL
+    assert all(r["published"] == 1 and r["featured"] == 1 for r in rows)
+    client = app.test_client()
+    page = client.get("/resources").get_data(as_text=True)
+    for s in SEEDS:
+        assert s["title"] in page
+    home = client.get("/").get_data(as_text=True)
+    assert "Tirukkural Multilingual (Android)" in home
+    # the card on the home page ends at a word, not inside one
+    assert "with the In<" not in home and "Institute's published translations into the 22 languages" not in home
+    r = client.get(f"/resources/{rows[0]['id']}")
+    assert r.status_code == 302 and r.headers["Location"] == PLAY
+    r = client.get(f"/resources/{rows[1]['id']}")
+    assert r.status_code == 302 and r.headers["Location"] == WEB
+    for row, url in zip(rows, ALL):
+        r = client.get(f"/resources/{row['id']}")
+        assert r.status_code == 302 and r.headers["Location"] == url
+    # the names keep their diacritics
+    assert "Kathiraivēṟpiḷḷai" in page and "Yāpparuṅkalakkārikai" in page
+    # the corpus has a tab of its own
+    assert "Thirukkural Palm-Leaf" in client.get("/resources?cat=corpus").get_data(as_text=True)
+    assert "Thirukkural Palm-Leaf" not in client.get("/resources?cat=app").get_data(as_text=True)
+
+
+def test_the_app_is_listed_in_every_language():
+    app = make_app(ADMIN_PASSWORD=None)
+    client = app.test_client()
+    for lang in ("ta", "hi", "ur", "sat"):
+        page = client.get(f"/resources?lang={lang}").get_data(as_text=True)
+        assert "Tirukkural Multilingual (Android)" in page, lang
+
+
+def test_an_entry_is_put_in_once():
+    app = make_app(ADMIN_PASSWORD=None)
+    again = _restart(_restart(app))
+    assert [r["url"] for r in _rows(again)] == ALL
+
+
+def test_a_deleted_entry_does_not_come_back():
+    from kts.db import execute
+    app = make_app(ADMIN_PASSWORD=None)
+    with app.app_context():
+        execute("DELETE FROM resources WHERE url = ?", (PLAY,))
+    again = _restart(app)
+    assert [r["url"] for r in _rows(again)] == ALL[1:]
+
+
+def test_an_entry_added_by_hand_is_not_doubled():
+    import sqlite3
+    from kts.db import utcnow
+    # a database of before the seed, in which an administrator had entered the Play link himself
+    app = make_app(ADMIN_PASSWORD=None)
+    conn = sqlite3.connect(str(app.config["DATABASE"]))
+    conn.execute("DELETE FROM resources")
+    conn.execute("DELETE FROM settings WHERE key LIKE 'seed.resource.%'")
+    conn.execute("INSERT INTO resources(title, category, url, created_at, updated_at) VALUES(?,?,?,?,?)",
+                 ("Our app", "app", PLAY, utcnow(), utcnow()))
+    conn.commit()
+    conn.close()
+    again = _restart(app)
+    rows = _rows(again)
+    assert [r["url"] for r in rows] == ALL
+    assert rows[0]["title"] == "Our app"

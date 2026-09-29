@@ -15,9 +15,9 @@
       </form>
       <span class="eyebrow"><bdi>{{ day|date }}</bdi> · {{ t('common.verse') }} {{ k.n }} · <span class="ta" lang="ta">{{ k.chapter_name }}</span>{% if lang == 'en' %} · {{ k.chapter_name_en }}{% endif %}</span>
       <div class="big-kural ta" dir="ltr" lang="ta">{{ k.l1 }}<br>{{ k.l2 }}</div>
-      {% if stream != 'ta' %}<div style="margin-top:10px;font-size:1.15rem" dir="{{ stream_dir }}" lang="{{ stream }}">{% for line in lines %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}</div>
+      {% if stream != 'ta' %}<div style="margin-top:10px;font-size:1.15rem" dir="{{ shown_dir }}" lang="{{ shown|langtag }}">{% for line in lines %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}</div>
       {% elif k.tr.tac %}<p class="ta" style="margin-top:10px" dir="ltr" lang="ta">{{ k.tr.tac[0] }}</p>{% endif %}
-      <div class="btn-row" style="margin-top:12px"><a class="btn sm secondary" href="{{ url_for('public.kural_single', n=k.n) }}">{{ t('home.kotd_more') }}</a><button class="btn sm ghost" onclick="window.print()">{{ t('common.print') }}</button></div>
+      <div class="btn-row" style="margin-top:12px"><a class="btn sm secondary" href="{{ url_for('public.kural_single', n=k.n) }}">{{ t('home.kotd_more') }}</a><button class="btn sm ghost" type="button" data-print>{{ t('common.print') }}</button></div>
     </div>
     <div class="card">
       <h3>{{ t('res.daily_calendar') }}</h3>

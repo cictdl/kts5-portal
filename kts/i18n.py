@@ -13,6 +13,7 @@ wrong scripts and lost numbers.
 import json
 import re
 from pathlib import Path
+from urllib.parse import parse_qsl, urlencode
 
 from flask import g, request, session
 
@@ -228,6 +229,28 @@ def agency_dir(row, field, lang=None):
     return LANG_INFO[lang]["dir"] if _agency(row, field, lang)[1] else "auto"
 
 
+def alternates():
+    """
+    (hreflang, address) of the page in every language, for <link rel="alternate">: the address
+    asked for with all its parameters except 'lang', plus lang=<code>; "x-default" is the address
+    without lang. Nothing for a request other than GET or HEAD, for an address that is no page of
+    the portal, and for the areas behind a sign-in.
+    """
+    if request.method not in ("GET", "HEAD") or not request.endpoint:
+        return []
+    if request.path.startswith(("/candidate", "/console", "/hub")):
+        return []
+    # read from the address itself, which keeps the order also of a parameter given twice
+    asked = parse_qsl(request.query_string.decode("utf-8", "replace"), keep_blank_values=True)
+    args = [(name, value) for name, value in asked if name != "lang"]
+
+    def address(*more):
+        query = urlencode(args + list(more))
+        return request.base_url + ("?" + query if query else "")
+
+    return [(info["code"], address(("lang", info["code"]))) for info in available()] + [("x-default", address())]
+
+
 def js_strings(lang=None):
     """The few strings the browser script needs."""
     lang = lang or get_lang()
@@ -258,6 +281,7 @@ def register(app):
             "lang_draft": lang not in REVIEWED,
             "LANG_NAMES": LANG_NAMES,
             "LANGUAGES": available(),
+            "alternates": alternates,
             "js_strings": js_strings(lang),
             "tag": tag,
             "place": place,

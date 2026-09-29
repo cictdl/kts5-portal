@@ -29,6 +29,14 @@ SCHEDULED = [
 VARIANTS = {"ks": "ksn", "kok": "gom", "mni": "mei"}
 EXTRA = ["en", "bho"]
 
+# Language tag (BCP 47) for the lang attribute, where the code of a stream is not one. ksn and mei
+# are the codes of other languages. The other streams are written in a script that is not the
+# usual one of their language, which the tag says (script as in meta.json and in the text itself).
+LANG_TAGS = {
+    "ks": "ks-Deva", "ksn": "ks-Arab", "kok": "kok-Knda", "gom": "kok-Deva", "mni": "mni-Beng",
+    "mei": "mni-Mtei", "sat": "sat-Deva", "sd": "sd-Deva", "tac": "ta", "ena": "en", "enm": "en",
+}
+
 # Languages in which the orientation series and the test are offered:
 # the 21 scheduled languages other than Tamil, plus English.
 ORIENTATION_LANGS = ["en"] + [c for c in SCHEDULED if c != "ta"]
@@ -61,11 +69,19 @@ def corpus():
     return {"meta": meta, "chapters": chapters, "kurals": kurals}
 
 
-def languages():
-    """Ordered list of (code, display name, native name) for the picker."""
+def languages(variants=False):
+    """
+    Ordered list of (code, display name, native name) for the picker. With variants=True each
+    script variant stands directly after its language.
+    """
     meta = corpus()["meta"]["languages"]
-    out = []
+    codes = []
     for code in ["ta"] + [c for c in SCHEDULED if c != "ta"] + EXTRA:
+        codes.append(code)
+        if variants and code in VARIANTS:
+            codes.append(VARIANTS[code])
+    out = []
+    for code in codes:
         info = meta.get(code)
         if info:
             out.append({"code": code, "name": info["name"], "native": info["native"],
@@ -76,6 +92,11 @@ def languages():
 
 def lang_info(code):
     return corpus()["meta"]["languages"].get(code)
+
+
+def lang_tag(stream):
+    """Value of the lang attribute for text of a stream: ks-Arab for ksn, hi for hi."""
+    return LANG_TAGS.get(stream, stream)
 
 
 def lang_label(code):
@@ -158,7 +179,8 @@ def calendar_rows(lang, start=None, days=200):
             "chapter": k["chapter_name"],
             "chapter_en": k["chapter_name_en"],
             "tamil": " / ".join([k["l1"], k["l2"]]),
-            "translation": " / ".join(lines(k, lang)),
+            # a couplet without text in this stream gets a dash, as in the chapter browser
+            "translation": " / ".join(lines(k, lang)) or "—",
             "prose_en": (k.get("prose") or {}).get("en", "") if isinstance(k.get("prose"), dict) else "",
         })
     return rows

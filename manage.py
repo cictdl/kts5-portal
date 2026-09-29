@@ -3,7 +3,7 @@ Command-line management for the KTS 5.0 portal.
 
     python manage.py init-db
     python manage.py create-user --email x@cict.in --name "Name" --role admin [--agency CICT]
-    python manage.py gen-questions --langs en,hi,ta --count 60
+    python manage.py gen-questions --langs en,hi,ta --count 150
     python manage.py seed-demo [--applications 80]
     python manage.py run-selection --select 1000 --wait 300
     python manage.py export-applications out.xlsx
@@ -209,7 +209,7 @@ def main():
     c.set_defaults(fn=cmd_create_user)
     g = sub.add_parser("gen-questions")
     g.add_argument("--langs", default="en,hi,ta", help="comma-separated codes or 'all'")
-    g.add_argument("--count", type=int, default=60)
+    g.add_argument("--count", type=int, default=150)
     g.add_argument("--seed", default="kts5")
     g.set_defaults(fn=cmd_gen_questions)
     s = sub.add_parser("seed-demo")

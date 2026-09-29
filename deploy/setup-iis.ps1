@@ -177,7 +177,15 @@ Write-Host ""
 Write-Host "Done. Next steps:" -ForegroundColor Cyan
 Write-Host "  1. DNS: point $HostName to this server (A record) if it is a new host name."
 Write-Host "  2. TLS: bind a certificate (re-run with -CertThumbprint, or use win-acme for Let's Encrypt)."
-Write-Host "  3. Sign in at $BaseUrl/console/login as admin@kts5.local (password Admin@KTS5) and change the password immediately."
+if (Test-Path (Join-Path $InstallDir "instance\first-admin.txt")) {
+  Write-Host "  3. Sign in at $BaseUrl/console/login . The account and its first password are in $InstallDir\instance\first-admin.txt;"
+  Write-Host "     the portal asks for a new password at once and removes the file afterwards."
+} else {
+  Write-Host "  3. Sign in at $BaseUrl/console/login . There is no instance\first-admin.txt: the administrator password has already been set."
+}
 Write-Host "  4. Settings: registration and test dates, banner, helpdesk contact; then generate the question bank."
-Write-Host "  5. Mail: fill the KTS_SMTP_* variables in $InstallDir\web.config (or run-service.cmd) and restart the pool."
+# the portal reads portal.env when it starts; in Proxy mode it is not the pool that runs it
+$how = "restart the pool"
+if ($Mode -eq "Proxy") { $how = "restart the service KTS5Portal (without NSSM: end and run the start-up task KTS5Portal in Task Scheduler)" }
+Write-Host "  5. Mail: enter the KTS_SMTP_* settings in $InstallDir\instance\portal.env (NAME=value, one on a line) and $how."
 Write-Host "  6. Back up $InstallDir\instance and $InstallDir\uploads (see deploy\DEPLOY.md)."

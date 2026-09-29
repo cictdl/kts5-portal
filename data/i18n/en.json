@@ -180,7 +180,7 @@
   "reg.err_declare": "Please accept all three declarations.",
   "reg.err_captcha": "The security answer is wrong.",
   "reg.err_pincode": "Enter a valid 6-digit PIN code.",
-  "reg.err_rate": "Too many attempts from this connection. Please try again after an hour.",
+  "reg.err_rate": "Too many attempts from this connection.",
   "reg.err_fix": "Please correct the highlighted fields.",
   "status.title": "Application status",
   "status.intro": "Enter your application number, date of birth and the last four digits of your registered mobile number.",

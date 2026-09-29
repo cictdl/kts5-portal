@@ -79,15 +79,25 @@ The default install folder is `C:\inetpub\kts5` (`-InstallDir` to change).
 ## 5. First sign-in
 
 1. Open `https://kts.cict.in/console/login` (or `/kts5/console/login`).
-2. Sign in as `admin@kts5.local` / `Admin@KTS5`; you are forced to set a new
-   password. Then create named accounts for the secretariat (Users and roles)
-   and disable or rename the default one.
+2. The account of the first administrator is `admin@kts5.local`. Its first
+   password was made by the portal at the first start and is in the file
+   `C:\inetpub\kts5\instance\first-admin.txt`, together with the address of
+   the sign-in page; it is written nowhere else. Sign in with it; you are
+   forced to set a new password, and the portal then removes the file. Then
+   create named accounts for the secretariat (Users and roles) and disable or
+   rename the first one.
 3. Settings: registration window, test date and login window, banner text,
    helpdesk contact, public counts.
 4. Question bank → Generate from the corpus (all languages) and review.
-5. Mail: edit the `KTS_SMTP_*` lines in `C:\inetpub\kts5\web.config`
-   (Proxy mode: `run-service.cmd`) and recycle the application pool; until
-   then mails wait in Console → Mail outbox.
+5. Mail: enter the `KTS_SMTP_*` settings in
+   `C:\inetpub\kts5\instance\portal.env`, one `NAME=value` on a line (the file
+   survives updates; a value in `web.config` or `run-service.cmd` wins over
+   it), and restart the portal, which reads the file when it starts: recycle
+   the application pool. In Proxy mode the pool does not run the portal:
+   restart the service `KTS5Portal` there or, where NSSM was not installed,
+   end and run the start-up task `KTS5Portal` in Task Scheduler. Until then
+   mails wait in Console → Mail outbox. The limits (`KTS_RATE_*`) are set in
+   the same file; the README lists the names.
 6. Optional demo data for a walkthrough: `venv\Scripts\python.exe manage.py seed-demo`
    (never on the live database once registration opens).
 
@@ -125,8 +135,11 @@ start the pool.
 
 ## 9. Security checklist before going live
 
-* Change the default administrator password; create personal accounts.
-* Serve only over https (`KTS_HTTPS=1` marks cookies Secure).
+* Sign in with the first password from `instance\first-admin.txt` and set
+  your own; the file must be gone afterwards. Create personal accounts.
+* Serve only over https (`KTS_HTTPS=1` marks cookies Secure). Switch on HSTS
+  only after the real certificate is installed, either in the web server or
+  with `KTS_HSTS=1`, never in both places.
 * Keep `instance\secret.key` private (it signs sessions); it is generated on first start.
 * Restrict RDP/admin access to the server; the portal itself needs no inbound
   port other than 80/443.
@@ -135,5 +148,11 @@ start the pool.
 ## 10. Alternative host
 
 If the IIS server cannot run Python, the same package runs on any Linux VPS:
-`pip install -r requirements.txt`, `gunicorn -w 4 -b 127.0.0.1:8905 'kts:create_app()'`
-behind nginx with `KTS_BEHIND_PROXY=1`, and point `kts.cict.in` at that VPS.
+`pip install -r requirements.txt`, `python serve.py` (Waitress, on
+`127.0.0.1:8905`) behind nginx with `KTS_HOST=127.0.0.1`,
+`KTS_BEHIND_PROXY=1` and `KTS_HTTPS=1`, and point `kts.cict.in` at that VPS.
+Without `KTS_HOST` the portal listens on every address of the machine. nginx
+must hand on the name of the website (`proxy_set_header Host $host;`), from
+which the portal takes its own name, and add the visitor's address
+(`proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;`); `serve.py`
+believes the last entry of that header and no other forwarded header.

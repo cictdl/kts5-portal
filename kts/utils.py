@@ -4,13 +4,14 @@ Shared helpers: CSRF, rate limiting, uploads, exports, mail, dates.
 import base64
 import csv
 import io
+import ipaddress
 import re
 import secrets
 import smtplib
 import threading
 import time
 import unicodedata
-from collections import defaultdict, deque
+from collections import deque
 from datetime import datetime, timedelta, timezone
 from email.message import EmailMessage
 from pathlib import Path
@@ -139,32 +140,94 @@ def check_csrf():
 # ---- rate limiting ----------------------------------------------------------
 
 class RateLimiter:
-    """Tiny in-process sliding-window limiter keyed by (bucket, ip)."""
+    """
+    Tiny in-process sliding-window limiter keyed by (bucket, key); the key is an address or,
+    where the details of a candidate are asked, an application number with the address.
 
-    def __init__(self):
-        self._hits = defaultdict(deque)
+    allow() checks and counts in one step. Where only failures count (sign-in, status look-up)
+    blocked() is asked first and hit() is called after a failure.
+    """
+    SWEEP_EVERY = 60  # seconds between two clearances of the whole table
+
+    def __init__(self, clock=time.monotonic):
+        self._hits = {}  # (bucket, key) -> [window_sec, deque of times]
         self._lock = threading.Lock()
+        self._clock = clock
+        self._swept = clock()
+
+    def _count(self, bucket, key, window_sec, now):
+        """Hits inside the window. A key without any is removed, so the table does not grow for ever."""
+        entry = self._hits.get((bucket, key))
+        if entry is None:
+            return 0
+        q = entry[1]
+        while q and now - q[0] > window_sec:
+            q.popleft()
+        if not q:
+            del self._hits[(bucket, key)]
+        return len(q)
+
+    def _add(self, bucket, key, window_sec, now):
+        entry = self._hits.setdefault((bucket, key), [window_sec, deque()])
+        entry[0] = window_sec
+        entry[1].append(now)
+        if now - self._swept > self.SWEEP_EVERY:
+            # addresses that did not come back: their last hit is older than their window
+            self._swept = now
+            for name in [n for n, (window, q) in self._hits.items() if now - q[-1] > window]:
+                del self._hits[name]
+
+    def blocked(self, bucket, key, limit, window_sec):
+        """True when the limit is reached. Nothing is counted."""
+        with self._lock:
+            return self._count(bucket, key, window_sec, self._clock()) >= limit
+
+    def hit(self, bucket, key, window_sec):
+        """Count one event."""
+        with self._lock:
+            self._add(bucket, key, window_sec, self._clock())
 
     def allow(self, bucket, key, limit, window_sec):
-        now = time.monotonic()
+        """False when the limit is reached; otherwise the event is counted."""
         with self._lock:
-            q = self._hits[(bucket, key)]
-            while q and now - q[0] > window_sec:
-                q.popleft()
-            if len(q) >= limit:
+            now = self._clock()
+            if self._count(bucket, key, window_sec, now) >= limit:
                 return False
-            q.append(now)
+            self._add(bucket, key, window_sec, now)
             return True
 
 
 limiter = RateLimiter()
 
 
+def plain_address(value):
+    """
+    An address without port and brackets, in one spelling: '198.51.100.7:51234' -> '198.51.100.7',
+    '[2001:db8::7]:40112' -> '2001:db8::7', '::ffff:198.51.100.7' -> '198.51.100.7'.
+    Anything that is not an address comes back as it is, cut to 64 characters.
+    """
+    text = (value or "").strip()
+    host = text
+    if text.startswith("["):
+        inner, _, rest = text[1:].partition("]")
+        if rest == "" or (rest[0] == ":" and rest[1:].isdigit()):
+            host = inner
+    elif text.count(":") == 1 and text.rsplit(":", 1)[1].isdigit():
+        host = text.rsplit(":", 1)[0]
+    try:
+        ip = ipaddress.ip_address(host)
+    except ValueError:
+        return text[:64]
+    return str(getattr(ip, "ipv4_mapped", None) or ip)
+
+
 def client_ip():
-    fwd = request.headers.get("X-Forwarded-For", "")
-    if fwd:
-        return fwd.split(",")[0].strip()[:64]
-    return (request.remote_addr or "")[:64]
+    """
+    The visitor's address, for the rate limits and the audit log. Behind a proxy Waitress has
+    put it into REMOTE_ADDR (server_options() in serve.py); a header is never read here, because
+    a visitor can write one himself.
+    """
+    return plain_address(request.remote_addr)
 
 
 # ---- uploads ----------------------------------------------------------------

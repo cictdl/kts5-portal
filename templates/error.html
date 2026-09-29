@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ code }} · {{ title }}{% endblock %}
+{# an error page has no versions in other languages to point to #}
+{% block alternates %}{% endblock %}
 {% block content %}
 <div class="wrap-narrow section">
   <div class="card accent">

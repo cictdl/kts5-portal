@@ -2,8 +2,10 @@
 Public site: home, programme, registration, status, repository, notices.
 """
 import json
+import posixpath
 from datetime import date, datetime
 from pathlib import Path
+from urllib.parse import unquote_plus, urlsplit
 
 from flask import (Blueprint, Response, abort, current_app, flash, g, redirect, render_template,
                    request, send_from_directory, session, url_for)
@@ -16,8 +18,12 @@ from .utils import (DOC_EXT, IMAGE_EXT, age_on, check_captcha, client_ip, colleg
                     exam_window, fmt_date, limiter, make_app_no, new_captcha, now_ist, qr_data_uri,
                     registration_state, save_upload, send_mail, valid_email, valid_mobile,
                     valid_pincode)
+from .version import VERSION
 
 bp = Blueprint("public", __name__)
+
+# Dates that may be typed into the address of the Daily Kural and its calendar.
+FIRST_DAY, LAST_DAY = date(2020, 1, 1), date(2100, 12, 31)
 
 
 def _states():
@@ -47,16 +53,59 @@ def _stream(requested=None):
     return stream, info.get("dir", "ltr")
 
 
+def _day(value):
+    """The date asked for; today when there is none or it cannot be read or is out of range."""
+    try:
+        day = date.fromisoformat(value) if value else date.today()
+    except ValueError:
+        return date.today()
+    return day if FIRST_DAY <= day <= LAST_DAY else date.today()
+
+
+def _page_before():
+    """
+    Path and query of the page on which the language was chosen, or None. Only a page of the
+    portal itself counts, and never more than path and query is taken from the Referer header.
+    'lang' is taken out of the query: left there it would win over the language just chosen.
+    """
+    try:
+        ref = urlsplit(request.referrer or "")
+    except ValueError:
+        return None
+    # Behind a web server that sets a Host header of its own (ARR, nginx) the visitor names the
+    # portal as BASE_URL does, not as request.host.
+    hosts = {request.host.lower()}
+    try:
+        hosts.add(urlsplit(current_app.config["BASE_URL"]).netloc.lower())
+    except ValueError:
+        pass
+    if ref.scheme not in ("http", "https") or not ref.netloc or ref.netloc.lower() not in hosts:
+        return None
+    path = ref.path or "/"
+    if not path.startswith("/") or path.startswith(("//", "/\\")):
+        return None
+    if any(ord(c) < 32 for c in path + ref.query):
+        return None
+    root = request.script_root  # the path prefix, when the portal is served under one
+    if root and path != root and not path.startswith(root + "/"):
+        return None
+    own = url_for("public.set_lang")
+    if path == own or path.startswith(own + "/"):
+        return None
+    kept = [part for part in ref.query.split("&") if part and unquote_plus(part.split("=", 1)[0]) != "lang"]
+    return path + ("?" + "&".join(kept) if kept else "")
+
+
 @bp.route("/lang")
 @bp.route("/lang/<code>")
 def set_lang(code=None):
     """Choose the interface language: /lang/bn, or /lang?code=bn from the menu."""
     code = code or request.args.get("code") or ""
-    target = request.referrer or url_for("public.home")
-    resp = redirect(target)
+    resp = redirect(_page_before() or url_for("public.home"))
     if i18n.offered(code):
         session["lang"] = code
-        resp.set_cookie("lang", code, max_age=60 * 60 * 24 * 365, samesite="Lax")
+        resp.set_cookie("lang", code, max_age=60 * 60 * 24 * 365, path="/", samesite="Lax", httponly=True,
+                        secure=current_app.config["SESSION_COOKIE_SECURE"])
     return resp
 
 
@@ -145,6 +194,17 @@ def _validate(form, files):
     return data, errors
 
 
+def _discard(*saved):
+    """Remove what save_upload has stored for a request that is refused after all."""
+    folder = Path(current_app.config["UPLOAD_DIR"])
+    for item in saved:
+        if item:
+            try:
+                (folder / item[0]).unlink()
+            except OSError:
+                pass
+
+
 @bp.route("/register", methods=["GET", "POST"])
 def register():
     settings = all_settings()
@@ -167,8 +227,10 @@ def register():
                 errors["email"] = t("reg.err_dup_email")
             if query("SELECT 1 FROM applications WHERE mobile = ? AND status != 'withdrawn'", (data["mobile"],), one=True):
                 errors["mobile"] = t("reg.err_dup_mobile")
+        # asked before a file is stored: a refused request leaves nothing in the upload folder
+        refused = not errors and limiter.blocked("register", ip, current_app.config["RATE_REGISTER_PER_HOUR"], 3600)
         photo = idproof = None
-        if not errors:
+        if not errors and not refused:
             try:
                 photo = save_upload(request.files.get("photo"), "photos", IMAGE_EXT, current_app.config["PHOTO_MAX_BYTES"])
             except ValueError:
@@ -177,10 +239,11 @@ def register():
                 idproof = save_upload(request.files.get("idproof"), "idproofs", DOC_EXT, current_app.config["IDPROOF_MAX_BYTES"])
             except ValueError:
                 errors["idproof"] = t("reg.err_idproof")
-        if not errors and not limiter.allow("register", ip, current_app.config["RATE_REGISTER_PER_HOUR"], 3600):
-            errors["captcha"] = t("reg.err_rate")
-        if errors:
-            flash(t("reg.err_fix"), "error")
+            if errors:
+                _discard(photo, idproof)
+        if errors or refused:
+            # the limit is no mistake of the applicant: it is said at the top and no field is marked
+            flash(t("reg.err_rate") if refused else t("reg.err_fix"), "error")
             ctx.update(data=data, errors=errors, captcha=new_captcha())
             return render_template("public/register.html", **ctx), 400
 
@@ -191,6 +254,7 @@ def register():
         row_id = execute(f"INSERT INTO applications({', '.join(cols)}) VALUES({', '.join('?' * len(cols))})", values)
         app_no = make_app_no(row_id)
         execute("UPDATE applications SET app_no = ? WHERE id = ?", (app_no, row_id))
+        limiter.hit("register", ip, 3600)  # only applications that were stored are counted
         audit("application_submitted", "application", row_id, detail=app_no, ip=ip)
         send_mail(
             data["email"],
@@ -233,15 +297,23 @@ def status():
     settings = all_settings()
     result = error = None
     if request.method == "POST":
-        if not limiter.allow("status", client_ip(), 30, 15 * 60):
+        # Only look-ups that found nothing are counted: per address, and per application number
+        # and address together as at the candidates' sign-in, whose details this page compares
+        # as well. The bucket is the page's own: mistakes made here do not close the sign-in.
+        ip = client_ip()
+        app_no = (request.form.get("app_no") or "").strip().upper()
+        number_here = f"{app_no[:32]}|{ip}"
+        if (limiter.blocked("status", ip, current_app.config["RATE_STATUS_FAILS_PER_15MIN"], 15 * 60)
+                or limiter.blocked("status_app", number_here, current_app.config["RATE_CAND_FAILS_APP_PER_15MIN"], 15 * 60)):
             error = t("reg.err_rate")
         else:
-            app_no = (request.form.get("app_no") or "").strip().upper()
             dob = (request.form.get("dob") or "").strip()
             last4 = (request.form.get("last4") or "").strip()
             row = query("SELECT * FROM applications WHERE app_no = ? AND dob = ? AND substr(mobile, -4) = ?",
                         (app_no, dob, last4), one=True)
             if row is None:
+                limiter.hit("status", ip, 15 * 60)
+                limiter.hit("status_app", number_here, 15 * 60)
                 error = t("status.not_found")
             else:
                 exam = query("SELECT * FROM exam_sessions WHERE application_id = ?", (row["id"],), one=True)
@@ -346,6 +418,8 @@ def resource_open(rid):
 @bp.route("/files/<path:relpath>")
 def public_file(relpath):
     """Public attachments (notices, resources, shared documents marked public)."""
+    # the folder is tested on the path as it will be opened: "notices/../photos/x" is "photos/x"
+    relpath = posixpath.normpath(relpath)
     if not (relpath.startswith("notices/") or relpath.startswith("resources/")):
         abort(404)
     return send_from_directory(Path(current_app.config["UPLOAD_DIR"]), relpath)
@@ -372,7 +446,8 @@ def kural_single(n):
     if k is None:
         abort(404)
     streams = []
-    for info in K.languages():
+    # the script variants too: the Kashmiri and Konkani interfaces show exactly those in the browser
+    for info in K.languages(variants=True):
         ln = K.lines(k, info["code"])
         if ln:
             streams.append((info, ln))
@@ -383,25 +458,21 @@ def kural_single(n):
 @bp.route("/daily-kural")
 def daily_kural():
     stream, stream_dir = _stream(request.args.get("l"))
-    day_s = request.args.get("d")
-    try:
-        day = date.fromisoformat(day_s) if day_s else date.today()
-    except ValueError:
-        day = date.today()
+    day = _day(request.args.get("d"))
     k = K.daily(day)
+    # `stream` stays the choice in the menu; the text falls back to English as on the home page
+    shown, shown_dir = stream, stream_dir
+    if not K.lines(k, shown):
+        shown, shown_dir = "en", "ltr"
     return render_template("public/daily.html", k=k, day=day, stream=stream, stream_dir=stream_dir,
-                           lines=K.lines(k, stream), langs=K.languages(), variants=K.VARIANTS,
-                           n=K.daily_number(day))
+                           shown=shown, shown_dir=shown_dir, lines=K.lines(k, shown),
+                           langs=K.languages(), variants=K.VARIANTS, n=K.daily_number(day))
 
 
 @bp.route("/daily-kural/calendar.csv")
 def daily_calendar():
     lang, _ = _stream(request.args.get("l"))
-    start_s = request.args.get("start")
-    try:
-        start = date.fromisoformat(start_s) if start_s else date.today()
-    except ValueError:
-        start = date.today()
+    start = _day(request.args.get("start"))
     rows = K.calendar_rows(lang, start, 200)
     data = csv_bytes(["Day", "Date", "Kural No", "Chapter (Tamil)", "Chapter (English)", "Tamil", f"Translation ({K.lang_info(lang)['name']})"],
                      [(r["day"], r["date"], r["kural"], r["chapter"], r["chapter_en"], r["tamil"], r["translation"]) for r in rows])
@@ -482,9 +553,11 @@ def contact():
             errors["body"] = t("reg.err_required")
         if not check_captcha(request.form.get("captcha")) or request.form.get("website"):
             errors["captcha"] = t("reg.err_captcha")
-        if not errors and not limiter.allow("contact", client_ip(), 5, 3600):
-            errors["captcha"] = t("reg.err_rate")
-        if not errors:
+        refused = not errors and not limiter.allow("contact", client_ip(), current_app.config["RATE_CONTACT_PER_HOUR"], 3600)
+        if refused:
+            # the limit is no mistake of the visitor: it is said at the top and no field is marked
+            flash(t("reg.err_rate"), "error")
+        elif not errors:
             execute("INSERT INTO messages(name, email, phone, subject, body, topic, ip, created_at) VALUES(?,?,?,?,?,?,?,?)",
                     (data["name"], data["email"], data["phone"], data["subject"], data["body"],
                      data["topic"] or "general", client_ip(), utcnow()))
@@ -497,9 +570,18 @@ def contact():
 @bp.route("/healthz")
 def healthz():
     query("SELECT 1")
-    return {"ok": True, "time": utcnow()}
+    return {"ok": True, "time": utcnow(), "version": VERSION}
 
 
 @bp.route("/robots.txt")
 def robots():
-    return Response("User-agent: *\nDisallow: /console/\nDisallow: /candidate/\nDisallow: /hub/\n", mimetype="text/plain")
+    # /lang/<code> only switches the language and leads back to the page the visitor came from
+    return Response("User-agent: *\nDisallow: /console/\nDisallow: /candidate/\nDisallow: /hub/\nDisallow: /lang\n",
+                    mimetype="text/plain")
+
+
+@bp.route("/favicon.ico")
+def favicon():
+    """Browsers and crawlers ask for this address by themselves; the pages name static/img/favicon.png."""
+    return send_from_directory(Path(current_app.static_folder) / "img", "favicon.png", mimetype="image/png",
+                               max_age=24 * 60 * 60)

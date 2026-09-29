@@ -5,9 +5,19 @@ import logging
 import os
 from pathlib import Path
 
-from flask import Flask, render_template, request
+from flask import Flask, make_response, render_template, request
+from jinja2 import pass_context
+from werkzeug.routing import IntegerConverter
 
 from config import Config
+
+
+class _RowNumber(IntegerConverter):
+    """
+    <int:...> in an address: 1 to 18 digits. A longer number is no row of the database, which
+    holds numbers up to 9223372036854775807, and answers 404 like any address that does not exist.
+    """
+    regex = r"\d{1,18}"
 
 
 def create_app(config_object=Config):
@@ -16,7 +26,24 @@ def create_app(config_object=Config):
     app.config.from_object(config_object)
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
+    # /about/ is served like /about; set before the blueprints bring their routes
+    app.url_map.strict_slashes = False
+    # the same for the numbers: a route reads its converter when it is added
+    app.url_map.converters["int"] = _RowNumber
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+
+    unused = app.config.get("SETTINGS_UNUSED_LINES")
+    if unused:
+        # the numbers of the lines, never their text: a line that went wrong may hold a password
+        app.logger.warning("%s: no setting could be read from %s %s. A setting is written NAME=value.",
+                           Path(app.config["INSTANCE_DIR"]) / "portal.env", "line" if len(unused) == 1 else "lines",
+                           ", ".join(str(n) for n in unused))
+    unusable = app.config.get("SETTINGS_UNUSABLE")
+    if unusable:
+        # the names, never the values; the value may come from the environment or from the file
+        app.logger.warning("These settings have a value that cannot be used (a limit is a whole number above "
+                           "zero, a switch is 1 or 0): %s. In portal.env nothing may follow the value on its line.",
+                           ", ".join(unusable))
 
     from . import admin, agency, auth, candidate, db, i18n, public, utils
     from . import kural as K
@@ -44,8 +71,20 @@ def create_app(config_object=Config):
         resp.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
         resp.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
         resp.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
-        if request.path.startswith(("/console", "/candidate", "/hub")):
+        # Scripts, styles, fonts and frames come from the portal alone; the QR code is a data: image
+        # and the templates carry style attributes. No template may have a script or an onclick.
+        # For pages and SVG pictures only: a PDF that the browser shows in its own viewer must not
+        # carry the policy. An SVG picture that is opened by itself is a document of the portal,
+        # and an uploaded one may hold a script.
+        if resp.mimetype in ("text/html", "image/svg+xml"):
+            resp.headers.setdefault("Content-Security-Policy",
+                                    "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
+                                    "script-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; "
+                                    "frame-ancestors 'self'")
+        if request.path.startswith(("/console", "/candidate", "/hub", "/register", "/status", "/contact")):
             resp.headers["Cache-Control"] = "no-store"
+        if app.config.get("HSTS") and app.config.get("SESSION_COOKIE_SECURE"):
+            resp.headers.setdefault("Strict-Transport-Security", "max-age=31536000")
         return resp
 
     # ---- template helpers -------------------------------------------------
@@ -61,12 +100,28 @@ def create_app(config_object=Config):
             return f"⁦{text}⁩"
         return text
 
-    app.jinja_env.filters["date"] = lambda value: _ltr(utils.fmt_date(value, _numeric()))
-    app.jinja_env.filters["datetime"] = lambda value: _ltr(utils.fmt_dt(value, _numeric()))
-    app.jinja_env.filters["time"] = lambda value: _ltr(utils.fmt_time(value, _numeric()))
+    # Jinja works out a filter on a literal ({{ '2022-11-16'|date }}) once, when it compiles the
+    # template, and the language of that moment would stay in the page. A filter that takes the
+    # context is never worked out in advance.
+    @pass_context
+    def _date(_ctx, value):
+        return _ltr(utils.fmt_date(value, _numeric()))
+
+    @pass_context
+    def _datetime(_ctx, value):
+        return _ltr(utils.fmt_dt(value, _numeric()))
+
+    @pass_context
+    def _time(_ctx, value):
+        return _ltr(utils.fmt_time(value, _numeric()))
+
+    app.jinja_env.filters["date"] = _date
+    app.jinja_env.filters["datetime"] = _datetime
+    app.jinja_env.filters["time"] = _time
     app.jinja_env.filters["size"] = utils.human_size
     app.jinja_env.filters["langname"] = lambda code: (K.lang_info(code) or {}).get("name", code)
     app.jinja_env.filters["langnative"] = lambda code: (K.lang_info(code) or {}).get("native", code)
+    app.jinja_env.filters["langtag"] = K.lang_tag
 
     logos_dir = Path(app.static_folder) / "img" / "logos"
 
@@ -91,8 +146,8 @@ def create_app(config_object=Config):
         }
 
     # ---- errors ---------------------------------------------------------
-    def _error(code, text=None):
-        return render_template("error.html", code=code, title=i18n.t(f"err.{code}.t"),
+    def _error(code, text=None, title=None):
+        return render_template("error.html", code=code, title=title or i18n.t(f"err.{code}.t"),
                                text=text or i18n.t(f"err.{code}.d")), code
 
     @app.errorhandler(403)
@@ -102,6 +157,16 @@ def create_app(config_object=Config):
     @app.errorhandler(404)
     def _not_found(_e):
         return _error(404)
+
+    @app.errorhandler(405)
+    def _method(e):
+        # a GET on an address that takes POST only, such as /console/logout: there is no page
+        # to show at this address, so the page says what the 404 page says
+        page, _code = _error(405, i18n.t("err.404.d"), i18n.t("err.404.t"))
+        resp = make_response(page, 405)
+        if getattr(e, "valid_methods", None):
+            resp.headers["Allow"] = ", ".join(e.valid_methods)
+        return resp
 
     @app.errorhandler(413)
     def _too_large(_e):
@@ -117,10 +182,9 @@ def create_app(config_object=Config):
     def _server(_e):
         return _error(500)
 
-    # ---- hosting: reverse proxy headers and URL prefix -------------------
-    if app.config.get("BEHIND_PROXY"):
-        from werkzeug.middleware.proxy_fix import ProxyFix
-        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+    # ---- hosting: URL prefix ---------------------------------------------
+    # No forwarding header is read here. Behind a proxy (KTS_BEHIND_PROXY=1) Waitress puts the
+    # visitor's address into REMOTE_ADDR, see server_options() in serve.py.
     prefix = app.config.get("URL_PREFIX")
     if prefix:
         app.wsgi_app = _PrefixMiddleware(app.wsgi_app, prefix)

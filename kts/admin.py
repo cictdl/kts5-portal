@@ -5,6 +5,7 @@ monitoring, selection and merit list, content, users, settings, audit.
 import csv
 import io
 import json
+import posixpath
 import secrets
 from datetime import timedelta
 from pathlib import Path
@@ -217,7 +218,14 @@ def applications_bulk():
 @login_required("dashboard")
 def staff_file(relpath):
     user = _user()
-    if relpath.startswith(("photos/", "idproofs/")) and not has_perm(user, "apps.view"):
+    # the folder is tested on the path as it will be opened
+    relpath = posixpath.normpath(relpath)
+    # the folders that exist, by their names as the portal writes them: Windows would open
+    # "Photos" or "photos." as the folder photos
+    folder = relpath.partition("/")[0]
+    if folder not in ("photos", "idproofs", "notices", "resources", "tasks", "documents"):
+        abort(404)
+    if folder in ("photos", "idproofs") and not has_perm(user, "apps.view"):
         abort(403)
     return send_from_directory(Path(current_app.config["UPLOAD_DIR"]), relpath)
 

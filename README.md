@@ -49,7 +49,7 @@ portal/
   tools/make_logo.py  rebuilds the logo set from the originals in tools/logo-src/
   tools/check_i18n.py checks the translations (missing keys, wrong script, lost numbers)
   data/             kurals/ (133 chapter files + meta.json from the CICT app) · i18n/ (one file per interface language) · agencies.json · states.json
-  instance/         kts5.sqlite3 (created on first start)
+  instance/         kts5.sqlite3 (created on first start) · portal.env (settings) · first-admin.txt (first password, until it is changed)
   uploads/          photos/ idproofs/ resources/ notices/ documents/ tasks/
   tests/            pytest smoke test of the whole flow
 ```
@@ -62,9 +62,34 @@ python -m pip install -r requirements.txt
 python run.py                      # http://127.0.0.1:8905
 ```
 
-First start creates the database and the first administrator
-(`admin@kts5.local` / `Admin@KTS5`, or `KTS_ADMIN_EMAIL` / `KTS_ADMIN_PASSWORD`).
-Sign in at `/console/login`; you are asked to set a new password at once.
+First start creates the database and the first administrator,
+`admin@kts5.local` (or `KTS_ADMIN_EMAIL`). No password is published: the
+portal makes a random one and writes it, with the account and the sign-in
+page, to `instance/first-admin.txt`. Sign in at `/console/login` with what
+the file says; you are asked to set a new password at once, and the portal
+then removes the file. (If `KTS_ADMIN_PASSWORD` is set, that password is used
+and no file is written. A portal that is started without `KTS_BASE_URL` names
+the sign-in page in general words; the first start that knows the address
+writes it into the file.)
+
+**Updating from a version before 1.1.0.** Those versions were published with
+a first password. At the first start of version 1.1.0 every active account
+that still has that password receives a new first password, written to
+`instance/first-admin.txt`, and the published one no longer works. This
+holds whether or not the account had gone through the change form before:
+the change form of earlier versions accepted the published password as the
+new one. If the installer says "The administrator password has already been
+set" although nobody of the institute has signed in yet, somebody else has.
+Then create an account of your own,
+
+```bash
+python manage.py create-user --email name@cict.in --name "Name" --role superadmin
+```
+
+(on the server through a scheduled task of Plesk, or ask the engineer of the
+server; [deploy/PLESK.md](deploy/PLESK.md), *First sign-in*, has the entry),
+sign in with it, deactivate the old account, and read *Users & roles* and
+the *Audit log*.
 
 Useful commands:
 
@@ -97,15 +122,90 @@ python -m pytest tests -q
 
 ## Configuration (environment variables)
 
-| Variable | Purpose |
-|---|---|
-| `KTS_SECRET_KEY` | **Required in production.** Session signing key. |
-| `KTS_BASE_URL` | Public URL used in mails and QR codes, e.g. `https://kts.cict.in` |
-| `KTS_DATABASE`, `KTS_UPLOAD_DIR`, `KTS_INSTANCE_DIR` | Storage locations |
-| `KTS_HTTPS=1` | Mark cookies Secure (behind TLS) |
-| `KTS_SMTP_HOST`, `KTS_SMTP_PORT`, `KTS_SMTP_USER`, `KTS_SMTP_PASSWORD`, `KTS_SMTP_FROM`, `KTS_SMTP_TLS` | Outgoing mail; without them mails stay in the outbox for manual sending |
-| `KTS_ADMIN_EMAIL`, `KTS_ADMIN_PASSWORD` | First administrator (created only when no user exists) |
-| `KTS_HOST`, `KTS_PORT`, `KTS_THREADS` | Server binding |
+| Variable | Default | Purpose |
+|---|---|---|
+| `KTS_SECRET_KEY` | a key made at first start, kept in `instance/secret.key` | Session signing key |
+| `KTS_BASE_URL` | `http://localhost:8905` | Public URL used in mails and QR codes, e.g. `https://kts.cict.in` |
+| `KTS_DATABASE`, `KTS_UPLOAD_DIR`, `KTS_INSTANCE_DIR` | `instance/kts5.sqlite3`, `uploads/`, `instance/` | Storage locations (environment only, not read from `portal.env`) |
+| `KTS_HTTPS` | `0` | `1`: the site is served over https; cookies are marked Secure and every link is written with https |
+| `KTS_BEHIND_PROXY` | `0` | `1`: a web server on the same machine stands in front of the portal (see *Behind a web server*) |
+| `KTS_TRUSTED_PROXY` | `127.0.0.1` | The address from which that web server connects to the portal |
+| `KTS_HSTS` | `0` | `1`: send `Strict-Transport-Security`. Only after the real certificate is installed, and only if the web server (Plesk) does not send the header already: never in both places. Needs `KTS_HTTPS=1` |
+| `KTS_URL_PREFIX` | none | Path such as `/kts5` when the portal is an application inside another site |
+| `KTS_SMTP_HOST`, `KTS_SMTP_PORT`, `KTS_SMTP_USER`, `KTS_SMTP_PASSWORD`, `KTS_SMTP_FROM`, `KTS_SMTP_TLS` | no mail server, port `587`, TLS `1` | Outgoing mail; without them mails stay in the outbox for manual sending |
+| `KTS_ADMIN_EMAIL`, `KTS_ADMIN_PASSWORD` | `admin@kts5.local`, no password | First administrator (created only when no user exists). Without a password the portal makes one and writes it to `instance/first-admin.txt` |
+| `KTS_RATE_REGISTER_PER_HOUR` | `100` | Registrations from one address in an hour |
+| `KTS_RATE_CONTACT_PER_HOUR` | `10` | Messages of the contact form from one address in an hour |
+| `KTS_RATE_STATUS_FAILS` | `300` | Failed status checks from one address in 15 minutes |
+| `KTS_RATE_LOGIN_FAILS` | `12` | Failed staff sign-ins from one address in 15 minutes |
+| `KTS_RATE_CANDIDATE_FAILS_IP` | `600` | Failed candidate sign-ins from one address in 15 minutes |
+| `KTS_RATE_CANDIDATE_FAILS_APP` | `6` | Failed attempts for one application number from one address in 15 minutes; counted for the candidate sign-in and, apart from it, for the status check |
+| `KTS_HOST`, `KTS_PORT`, `KTS_THREADS` | `0.0.0.0`, `8905`, `8` | Server binding. `KTS_PORT` is read from the environment only, not from `portal.env`; when IIS starts the portal, the port is the one that IIS hands over |
+
+**The settings file `instance/portal.env`.** A name of this table that the
+environment does not define, other than the storage names and `KTS_PORT`, is
+read from this file: one setting on a line, written `NAME=value`; a line that
+begins with `#` is a comment. Names in capital letters. Nothing may follow
+the value on its line: no comment, no semicolon.
+
+```
+KTS_SMTP_HOST=smtp.example.gov.in
+KTS_SMTP_PORT=587
+KTS_RATE_REGISTER_PER_HOUR=200
+```
+
+The environment wins over the file. The file is read when the portal starts,
+so restart the portal after a change. It lies in `instance/`, which no update
+replaces and which is neither served to visitors nor committed to git; on the
+server it is the place for the mail settings and the limits. The installer
+`deploy\plesk\kts-install.bat` creates it with comment lines only.
+
+## Behind a web server
+
+In production a web server (IIS, nginx) receives the visitors and hands each
+request to the portal on the same machine, so every connection that the
+portal sees comes from that web server. `KTS_BEHIND_PROXY=1` tells the portal
+so:
+
+* The **visitor's address** is taken from the last entry of
+  `X-Forwarded-For`: the entry that the web server named in
+  `KTS_TRUSTED_PROXY` (default `127.0.0.1`) wrote itself. Whatever stands
+  before it was sent by the visitor and is not believed.
+* **No other forwarded header is trusted.** `X-Forwarded-Proto`, `-Host`,
+  `-Port` and `Forwarded` never reach the portal as a visitor wrote them.
+* The **scheme comes from `KTS_HTTPS`**, the host name from the `Host` header
+  and a path prefix from `KTS_URL_PREFIX`.
+
+Without `KTS_BEHIND_PROXY` the address of the connection itself is used and
+`X-Forwarded-For` is ignored. The address found this way is the one written
+to the audit log and the one the limits count by.
+
+**Limits.** Registration and the contact form are limited per address and
+hour; the status check, the staff sign-in and the candidate sign-in count
+*failed* attempts in 15 minutes, so that nobody who signs in correctly is
+held up. The limits are counted **per address** because that is all the
+portal knows of a visitor who has not signed in; they are generous (600
+failed candidate sign-ins, 300 failed status checks) because the students of
+one college reach the portal through one public address, and on the day of
+the test a computer room full of candidates must not be locked out by the
+typing errors of its neighbours. A college that registers more than 100
+students within an hour through one connection (a computer room, or a campus
+behind one address) needs `KTS_RATE_REGISTER_PER_HOUR` raised in
+`instance/portal.env` before the drive, and the portal restarted; on the
+server, run the task of Plesk again.
+
+The candidate sign-in and the status check count, each for itself, **per
+application number and address** as well: 6 failed attempts in 15 minutes.
+Application numbers are consecutive. Counted per number alone, six wrong
+attempts from anywhere on the internet would close the sign-in of any
+candidate during the hour of the test; counted per number and address, an
+outsider closes it for his own address only. The price: guesses against one
+application number are bounded per address, not in total. Somebody who
+guesses from many addresses has six attempts from each of them. Attempts
+that arrive at the same moment are compared before the first of them is
+counted: a limit for failed attempts can be passed by up to `KTS_THREADS` - 1
+(7 as delivered) in one window. All values can be changed in
+`instance/portal.env`.
 
 ## Deployment
 
@@ -119,6 +219,19 @@ Windows service), sets permissions and runs a health check. The portal can
 also live under an existing site as an application (`-AppPath /kts5`); the app
 honours `KTS_URL_PREFIX`, `KTS_BEHIND_PROXY` and `KTS_HTTPS` for that.
 
+**Plesk, one file (how `kts.cict.in` is installed).**
+[deploy/PLESK.md](deploy/PLESK.md): `deploy\plesk\kts-install.bat`, started by
+a scheduled task of Plesk, needs no administrator rights and installs nothing
+on the server. It downloads the portal, unpacks a Python of its own into the
+site folder, lets the ASP.NET Core Module of IIS start `serve.py`, writes
+`web.config` and makes sure that the version answering at `/healthz` is the
+version of the files. Running the task again updates the portal; `instance\`
+(database, keys, `portal.env`, `first-admin.txt`), `uploads\` and `logs\` are
+never touched. While the files are replaced visitors see a page "The portal
+is being updated"; a run that stops after it has replaced files puts the
+files of before back from its safety copy, so that the website runs the
+version it ran. *Releasing an update* in the guide says what to look at.
+
 **Plesk (no shell on the server).** [deploy/PLESK.md](deploy/PLESK.md):
 `deploy\package-plesk.ps1` builds a self-contained zip (Python libraries
 vendored in `lib\`, Plesk `web.config`) that is uploaded and extracted into
@@ -126,7 +239,9 @@ the subdomain's `httpdocs` with the Plesk File Manager; a three-file probe
 (`deploy\plesk\probe`) first confirms that the server has Python 3.11+ and
 the HttpPlatformHandler module.
 
-**Straight from git (Plesk Git, recommended).** The repository root *is* the
+**Straight from git (Plesk Git; for a server with Python and the
+HttpPlatformHandler module, not for a folder installed by
+`kts-install.bat`).** The repository root *is* the
 site: `web.config` (HttpPlatformHandler), `serve.py`, the vendored Python
 libraries in `lib\`, and the empty `instance\`, `uploads\`, `logs\` folders.
 In Plesk: *Websites & Domains* → the subdomain → **Git** → *Add repository* →
@@ -139,8 +254,17 @@ The server itself needs Python 3.11+ and the HttpPlatformHandler module once:
 `requirements.txt`, refresh the vendored libraries with
 `powershell -File tools\vendor.ps1` and commit `lib\`.
 
-**Linux.** `gunicorn -w 4 -b 127.0.0.1:8905 'kts:create_app()'` (or Waitress)
-behind nginx; nginx serves `/static/` directly and proxies the rest.
+**Linux.** `python serve.py` (Waitress) on `127.0.0.1:8905` behind nginx, with
+`KTS_HOST=127.0.0.1`, `KTS_BEHIND_PROXY=1` and `KTS_HTTPS=1` (without
+`KTS_HOST` the portal listens on every address of the machine); nginx serves
+`/static/` directly, proxies the rest, hands on the name of the website
+(`proxy_set_header Host $host;`) and adds the visitor's address
+(`proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;`). The portal
+takes its own name from the `Host` header: without the first line the pages
+would name `127.0.0.1:8905` where they name the website. It is `serve.py`
+that reads the second header: under another WSGI server every visitor would
+appear with the address of nginx, and the limits would count all visitors as
+one.
 
 **Backups.** Copy `instance/kts5.sqlite3` (WAL mode: use `sqlite3 ... ".backup"`
 or stop the service first) and the `uploads/` folder. Both are small: ~1 KB
@@ -156,11 +280,16 @@ a network share.
 * Every POST is CSRF-protected; sessions are HttpOnly/SameSite=Lax cookies.
 * Passwords are hashed with Werkzeug (scrypt/pbkdf2); temporary passwords
   force a change at first sign-in.
+* No password is built in or published. The first administrator receives a
+  random password, written to `instance/first-admin.txt` and nowhere else; the
+  file is removed when that password has been changed.
 * Uploads are type-sniffed, size-limited, renamed randomly and served only to
   the owner (candidate) or staff with the right role. Agency users never see
   participant data.
-* Rate limits on registration, status checks, contact and sign-in; honeypot
-  and arithmetic captcha on public forms (no third-party services).
+* Rate limits on registration, status checks, contact and sign-in, counted
+  per address and, for the candidate sign-in and the status check, per
+  application number and address as well (see *Behind a web server*);
+  honeypot and arithmetic captcha on public forms (no third-party services).
 * Security headers (nosniff, frame-options, referrer-policy); console and
   candidate pages are `no-store`.
 * All staff actions are written to the audit log with actor and IP.
