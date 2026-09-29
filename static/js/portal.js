@@ -46,6 +46,14 @@
     b.addEventListener("click", function () { window.print(); });
   });
 
+  // ---- chapter list of the Thirukkural browser: opened at the chapter shown -----
+  document.querySelectorAll(".chapter-list").forEach(function (list) {
+    var on = list.querySelector("a.on");
+    if (on && list.scrollHeight > list.clientHeight + 4) {
+      list.scrollTop = Math.max(0, on.offsetTop - list.clientHeight / 2 + on.offsetHeight / 2);
+    }
+  });
+
   // ---- auto-submit selects (language/chapter pickers) --------------------
   document.querySelectorAll("select[data-autosubmit]").forEach(function (s) {
     s.addEventListener("change", function () { s.form.submit(); });

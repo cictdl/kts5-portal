@@ -343,11 +343,19 @@ table.table td.num, table.table th.num { text-align: end; font-variant-numeric: 
 .kural-row .trans { color: var(--dim); margin-top: 4px; }
 .kural-row .tl { color: var(--mute); font-size: .82rem; font-style: italic; }
 .chapter-nav { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
-.chapter-list { columns: 3; column-gap: 24px; font-size: .92rem; }
-@media (max-width: 899px) { .chapter-list { columns: 2; } }
+/* Thirukkural browser: the couplets, and beside them the list of the 133 chapters. Beside the couplets
+   the list has one chapter a line and scrolls in its own box (Tamil names do not fit narrow columns);
+   below them, on tablets and phones, it runs in two columns, and in one on small phones. */
+.two-col.kural-layout { grid-template-columns: minmax(0, 1fr) 300px; align-items: start; }
+@media (max-width: 899px) { .two-col.kural-layout { grid-template-columns: minmax(0, 1fr); } }
+.chapter-list { position: relative; font-size: .92rem; max-height: 34rem; overflow-y: auto; overscroll-behavior: contain; padding-right: 6px; }
+@media (max-width: 899px) { .chapter-list { columns: 2; column-gap: 24px; max-height: none; overflow: visible; } }
 @media (max-width: 599px) { .chapter-list { columns: 1; } }
-.chapter-list a { display: block; padding: 3px 0; break-inside: avoid; }
+.chapter-list a { display: flex; gap: .45em; padding: 4px 0; line-height: 1.45; break-inside: avoid; }
+.chapter-list a .no { flex: 0 0 2.4em; text-align: right; color: var(--mute); }
+.chapter-list a .ta { min-width: 0; overflow-wrap: anywhere; }
 .chapter-list a.on { font-weight: 800; color: var(--kumkum); }
+.chapter-list a.on .no { color: inherit; }
 .stream { padding: 12px 0; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 180px 1fr; gap: 12px; }
 @media (max-width: 599px) { .stream { grid-template-columns: 1fr; } }
 .stream .lang { font-weight: 700; color: var(--indigo); }

@@ -968,10 +968,10 @@ def test_version_of_style_sheet_and_script():
     for path in TEMPLATES:
         for name, version in re.findall(r"filename='((?:css|js)/portal\.(?:css|js))'\) \}\}\?v=(\d+)", path.read_text(encoding="utf-8")):
             linked.setdefault(path.relative_to(ROOT / "templates").as_posix(), []).append((name, version))
-    assert linked == {name: [("css/portal.css", "9"), ("js/portal.js", "9")]
+    assert linked == {name: [("css/portal.css", "10"), ("js/portal.js", "10")]
                       for name in ("base.html", "candidate/exam_paper.html", "console/base.html")}
     for path in TEMPLATES:
-        assert not re.search(r"portal\.(css|js)'\) \}\}(?!\?v=9\")", path.read_text(encoding="utf-8")), path
+        assert not re.search(r"portal\.(css|js)'\) \}\}(?!\?v=10\")", path.read_text(encoding="utf-8")), path
 
 
 # ---- B9 · alt texts of the logos ----------------------------------------------------------------

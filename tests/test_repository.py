@@ -12,7 +12,9 @@ PLAY = "https://play.google.com/store/apps/details?id=in.cict.kural"
 WEB = "https://cictdl.github.io/index.html/kural-app/"
 CORPUS = "https://www.digitalarchives.cict.in/#ground-truth"
 ARCHIVES = "https://www.digitalarchives.cict.in/#archives"
-ALL = [PLAY, WEB, CORPUS, ARCHIVES]
+RUN = "https://www.digitalarchives.cict.in/kural-run.html"
+CROSSWORD = "https://cictdl.github.io/index.html/kural-app/kattam/index.html"
+ALL = [PLAY, WEB, CORPUS, ARCHIVES, RUN, CROSSWORD]
 
 
 def _restart(app):
@@ -28,7 +30,7 @@ def _rows(app):
 
 def test_the_seed_file_is_complete():
     assert [s["url"] for s in SEEDS] == ALL
-    assert [s["category"] for s in SEEDS] == ["app", "app", "corpus", "corpus"]
+    assert [s["category"] for s in SEEDS] == ["app", "app", "corpus", "corpus", "app", "app"]
     for s in SEEDS:
         assert s["key"] and s["title"] and s["description"]
     assert len({s["key"] for s in SEEDS}) == len(SEEDS)
@@ -100,3 +102,23 @@ def test_an_entry_added_by_hand_is_not_doubled():
     rows = _rows(again)
     assert [r["url"] for r in rows] == ALL
     assert rows[0]["title"] == "Our app"
+
+
+def test_entries_added_later_reach_a_database_that_has_the_first_ones():
+    # the live site: its database got the first four entries with version 1.1.0, the next two come later
+    import sqlite3
+    app = make_app(ADMIN_PASSWORD=None)
+    conn = sqlite3.connect(str(app.config["DATABASE"]))
+    conn.execute("DELETE FROM resources WHERE url IN (?, ?)", (RUN, CROSSWORD))
+    conn.execute("DELETE FROM settings WHERE key IN ('seed.resource.kural-run', 'seed.resource.kural-crossword')")
+    conn.commit()
+    conn.close()
+    assert [r["url"] for r in _rows(app)] == ALL[:4]
+    again = _restart(app)
+    rows = _rows(again)
+    assert [r["url"] for r in rows] == ALL
+    assert [r["title"] for r in rows[4:]] == ["குறள் ஓட்டம் · Kural Run", "குறள் குறுக்கெழுத்து · Kural Crossword"]
+    # shown in the order of sort_order: the apps first, the corpus and the archives after them
+    page = again.test_client().get("/resources?lang=en").get_data(as_text=True)
+    order = [page.find(s["title"]) for s in sorted(SEEDS, key=lambda s: s["sort_order"])]
+    assert all(o > 0 for o in order) and order == sorted(order)

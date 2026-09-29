@@ -10,5 +10,11 @@
    "url": "https://www.digitalarchives.cict.in/#ground-truth", "featured": 1, "sort_order": 20},
   {"key": "digital-archives", "title": "Digital Archives", "category": "corpus", "lang": "",
    "description": "Seventeen indispensable companion tools — the searchable Sangam concordance, the comprehensive Classical Tamil lexicon, the audio edition of the historic Madras University Tamil Lexicon, digital editions of the two classical nikaṇṭu thesauri Piṅkala Nigaṇṭu and the earliest Sēndan Tivākaram, T. V. Gopal Iyer's seventeen-volume Tamil Grammatical Encyclopaedia, a complete word-by-word concordance of the Tirukkural, the twelfth-century treatise on poetical ornaments Tantiyalaṅkāram, the standard classical grammar Naṉṉūl with its medieval commentaries, Ārumuka Nāvalar's concise grammar Ilakkaṇac Curukkam, the foundational 41 Classical Tamil Texts digital archive, a digital archive of Classical Tamil poetry Pāṭṭum Tokaiyum, Mahāvidvān Nā. Kathiraivēṟpiḷḷai's monolingual Tamil-to-Tamil dictionary Tamiḻ Moḻi Akarāti, and the Tolkāppiyam, the oldest extant grammar of the Tamil language, with original text and commentary, the eleventh-century prosody treatise Yāpparuṅkalakkārikai (mūlam by Amitacākarar with Guṇacākarar's commentary), and the multilingual Tirukkuṟaḷ app (all 1,330 kurals in the 22 scheduled languages of India, with audio, word-by-word grammar, and metre-aware recitation practice) — all maintained as open scholarly resources alongside the manuscript collection.",
-   "url": "https://www.digitalarchives.cict.in/#archives", "featured": 1, "sort_order": 30}
+   "url": "https://www.digitalarchives.cict.in/#archives", "featured": 1, "sort_order": 30},
+  {"key": "kural-run", "title": "குறள் ஓட்டம் · Kural Run", "category": "app", "lang": "",
+   "description": "CICT Tamil Typing Trainer — InScript",
+   "url": "https://www.digitalarchives.cict.in/kural-run.html", "featured": 1, "sort_order": 12},
+  {"key": "kural-crossword", "title": "குறள் குறுக்கெழுத்து · Kural Crossword", "category": "app", "lang": "",
+   "description": "A daily Tamil crossword in which every answer is a word from the Kural — a 7x7 mini each day and a larger weekly grid, the couplet itself as the clue, an on-screen Tamil keyboard, hints, and a grammar note for every answer. Part of the Tirukkural multilingual app; plays offline.",
+   "url": "https://cictdl.github.io/index.html/kural-app/kattam/index.html", "featured": 1, "sort_order": 13}
 ]

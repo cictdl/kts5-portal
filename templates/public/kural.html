@@ -21,7 +21,7 @@
     {% if chapter.adhigaram < 133 %}<a class="btn sm secondary" href="{{ url_for('public.kural_browser', ch=chapter.adhigaram + 1, l=stream) }}">{{ t('common.next') }} {{ fwd }}</a>{% endif %}
   </form>
 
-  <div class="two-col" style="grid-template-columns: 1fr 300px; align-items:start">
+  <div class="two-col kural-layout">
     <div class="card">
       <span class="eyebrow" dir="ltr">{{ chapter.pal }} · {{ chapter.palEn }} › {{ chapter.iyal }} · {{ chapter.iyalEn }}</span>
       <h2 dir="ltr"><span class="ta" lang="ta">{{ chapter.adhigaram }}. {{ chapter.name }}</span> <span class="dim" style="font-weight:500">· {{ chapter.nameEn }}</span></h2>
@@ -41,7 +41,7 @@
     <div class="card flat">
       <h3>{{ t('common.chapters') }}</h3>
       <div class="chapter-list" dir="ltr">
-        {% for c in chapters %}<a href="{{ url_for('public.kural_browser', ch=c.adhigaram, l=stream) }}" class="{{ 'on' if c.adhigaram == chapter.adhigaram }}">{{ c.adhigaram }}. <span class="ta" lang="ta">{{ c.name }}</span></a>{% endfor %}
+        {% for c in chapters %}<a href="{{ url_for('public.kural_browser', ch=c.adhigaram, l=stream) }}" class="{{ 'on' if c.adhigaram == chapter.adhigaram }}"><span class="no">{{ c.adhigaram }}.</span><span class="ta" lang="ta">{{ c.name }}</span></a>{% endfor %}
       </div>
     </div>
   </div>
