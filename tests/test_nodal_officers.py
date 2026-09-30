@@ -23,7 +23,7 @@ def test_the_two_officers_stand_under_the_institute():
     with app.app_context():
         assert [(o["name"], o["designation"], o["email"], o["phone"]) for o in nodal_officers()] == OFFICERS
     card = _card(app.test_client().get("/contact?lang=en").get_data(as_text=True))
-    assert "Nodal Officers of KTS 5.0" in card
+    assert "Nodal Officers from CICT for KTS 5.0" in card
     for name, designation, email, phone in OFFICERS:
         assert name in card and designation in card
         assert f'href="mailto:{email}"' in card and f'href="tel:{phone}"' in card
