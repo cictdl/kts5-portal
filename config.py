@@ -158,6 +158,7 @@ class Config:
     SITE_THEME_EN = "Thirukkural Payilvom – Thirukkural Abhyas Karen"
     SITE_THEME_TA = "திருக்குறள் பயில்வோம்"
     SITE_THEME_HI = "तिरुक्कुरल अभ्यास करें"
+    SITE_THEME_MEANING = "Let's Learn Thirukkural"
     ORGANISER = "Central Institute of Classical Tamil (CICT), Chennai"
     MINISTRY = "Ministry of Education, Government of India"
     BASE_URL = _env("KTS_BASE_URL", DEFAULT_BASE_URL)

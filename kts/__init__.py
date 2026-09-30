@@ -138,7 +138,8 @@ def create_app(config_object=Config):
             "site": {
                 "name": app.config["SITE_NAME"], "short": app.config["SITE_SHORT"],
                 "theme_en": app.config["SITE_THEME_EN"], "theme_ta": app.config["SITE_THEME_TA"],
-                "theme_hi": app.config["SITE_THEME_HI"], "organiser": app.config["ORGANISER"],
+                "theme_hi": app.config["SITE_THEME_HI"], "theme_meaning": app.config["SITE_THEME_MEANING"],
+                "organiser": app.config["ORGANISER"],
                 "ministry": app.config["MINISTRY"], "base_url": app.config["BASE_URL"],
             },
             "get_setting": db.get_setting,

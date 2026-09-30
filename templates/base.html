@@ -41,7 +41,7 @@
     <a class="mark-link" href="{{ url_for('public.home') }}"><img class="mark" src="{{ url_for('static', filename='img/kts-logo.png') }}" alt="{{ t('site.name') }}" height="80"></a>
     <div class="titles">
       <div class="name">{{ t('site.name') }}</div>
-      <div class="theme" dir="ltr"><b class="ta">{{ site.theme_ta }}</b> · <b>{{ site.theme_en }}</b> · <b class="hi">{{ site.theme_hi }}</b></div>
+      <div class="theme" dir="ltr"><b class="ta">{{ site.theme_ta }}</b> · <b>{{ site.theme_en }}</b> · <b class="hi">{{ site.theme_hi }}</b> · <b lang="en">{{ site.theme_meaning }}</b></div>
       <div class="org">{{ t('site.organiser') }} · {{ t('site.ministry') }}</div>
     </div>
     <img class="gov-logo moe" src="{{ url_for('static', filename='img/logos/moe.png') }}" alt="{{ t('site.ministry') }}" height="46">
