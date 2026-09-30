@@ -16,7 +16,7 @@ from werkzeug.security import generate_password_hash
 
 from . import kural as K
 from .auth import PERMS, ROLES, current_user, has_perm, login_required
-from .db import (DEFAULT_SETTINGS, all_settings, audit, execute, executemany, get_setting, query,
+from .db import (DEFAULT_SETTINGS, SOCIAL_LINKS, all_settings, audit, execute, executemany, get_setting, query,
                  set_setting, utcnow)
 from .public import CATEGORIES
 from .utils import (RESOURCE_EXT, client_ip, csv_bytes, exam_window, now_ist, paginate, parse_iso,
@@ -255,7 +255,7 @@ def questions():
     rows = query("SELECT *" + sql + " ORDER BY id DESC LIMIT ? OFFSET ?", args + [pg["per_page"], pg["offset"]])
     counts = query("SELECT lang, SUM(active) AS active, COUNT(*) AS n FROM questions GROUP BY lang ORDER BY lang")
     return render_template("console/questions.html", rows=rows, f=f, pg=pg, counts=counts,
-                           langs=["ta"] + K.ORIENTATION_LANGS, qtypes=["complete", "chapter", "section", "gk", "manual"])
+                           langs=K.ORIENTATION_LANGS, qtypes=["complete", "chapter", "section", "gk", "manual"])
 
 
 @bp.route("/questions/new", methods=["GET", "POST"])
@@ -282,7 +282,7 @@ def question_form(qid=None):
                 audit("question_created", "question", qid, user=_user(), ip=client_ip())
             flash("Question saved.", "success")
             return redirect(url_for("admin.questions", lang=d["lang"]))
-    return render_template("console/question_form.html", q=row, langs=["ta"] + K.ORIENTATION_LANGS,
+    return render_template("console/question_form.html", q=row, langs=K.ORIENTATION_LANGS,
                            qtypes=["manual", "complete", "chapter", "section", "gk"])
 
 
@@ -299,7 +299,7 @@ def questions_generate():
     langs = request.form.getlist("langs") or []
     count = min(max(safe_int(request.form.get("count"), 40), 5), 300)
     if "all" in langs:
-        langs = ["ta"] + K.ORIENTATION_LANGS
+        langs = list(K.ORIENTATION_LANGS)
     made = 0
     for lang in langs:
         if not K.lang_info(lang):
@@ -637,7 +637,7 @@ def event_form(eid=None):
             flash("Event saved.", "success")
             return redirect(url_for("admin.events"))
     return render_template("console/event_form.html", e=row, kinds=EVENT_KINDS, agencies=agencies,
-                           langs=["", "ta"] + K.ORIENTATION_LANGS)
+                           langs=[""] + K.ORIENTATION_LANGS)
 
 
 @bp.route("/events/<int:eid>/delete", methods=["POST"])
@@ -777,6 +777,7 @@ SETTING_GROUPS = [
                     ("merit.wait_count", "Waitlist size", "number"), ("merit.note", "Note shown above the merit list", "text")]),
     ("Orientation", [("orientation.note", "Note shown on the orientation page", "text")]),
     ("Contact", [("contact.email", "Helpdesk email", "text"), ("contact.phone", "Helpdesk phone", "text"), ("contact.address", "Postal address", "text")]),
+    ("Social media (an empty address hides the link)", [(key, name, "text") for key, name, _address in SOCIAL_LINKS]),
 ]
 
 

@@ -14,7 +14,9 @@ CORPUS = "https://www.digitalarchives.cict.in/#ground-truth"
 ARCHIVES = "https://www.digitalarchives.cict.in/#archives"
 RUN = "https://www.digitalarchives.cict.in/kural-run.html"
 CROSSWORD = "https://cictdl.github.io/index.html/kural-app/kattam/index.html"
-ALL = [PLAY, WEB, CORPUS, ARCHIVES, RUN, CROSSWORD]
+YAPPU = "/static/yappu/app/index.html"
+GUIDE = "/static/yappu/yappu-quick-guide.pdf"
+ALL = [PLAY, WEB, CORPUS, ARCHIVES, RUN, CROSSWORD, YAPPU, GUIDE]
 
 
 def _restart(app):
@@ -30,7 +32,7 @@ def _rows(app):
 
 def test_the_seed_file_is_complete():
     assert [s["url"] for s in SEEDS] == ALL
-    assert [s["category"] for s in SEEDS] == ["app", "app", "corpus", "corpus", "app", "app"]
+    assert [s["category"] for s in SEEDS] == ["app", "app", "corpus", "corpus", "app", "app", "app", "study"]
     for s in SEEDS:
         assert s["key"] and s["title"] and s["description"]
     assert len({s["key"] for s in SEEDS}) == len(SEEDS)
@@ -40,7 +42,9 @@ def test_a_new_installation_carries_the_app():
     app = make_app(ADMIN_PASSWORD=None)
     rows = _rows(app)
     assert [r["url"] for r in rows] == ALL
-    assert all(r["published"] == 1 and r["featured"] == 1 for r in rows)
+    assert all(r["published"] == 1 for r in rows)
+    # six on the home page, which shows six; the two of the prosody app are in the repository only
+    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0]
     client = app.test_client()
     page = client.get("/resources").get_data(as_text=True)
     for s in SEEDS:
@@ -109,16 +113,54 @@ def test_entries_added_later_reach_a_database_that_has_the_first_ones():
     import sqlite3
     app = make_app(ADMIN_PASSWORD=None)
     conn = sqlite3.connect(str(app.config["DATABASE"]))
-    conn.execute("DELETE FROM resources WHERE url IN (?, ?)", (RUN, CROSSWORD))
-    conn.execute("DELETE FROM settings WHERE key IN ('seed.resource.kural-run', 'seed.resource.kural-crossword')")
+    later = ["kural-run", "kural-crossword", "yappu-kalam", "yappu-quick-guide"]
+    conn.execute("DELETE FROM resources WHERE url IN (?, ?, ?, ?)", (RUN, CROSSWORD, YAPPU, GUIDE))
+    conn.execute("DELETE FROM settings WHERE key IN (%s)" % ", ".join("?" * len(later)), ["seed.resource." + k for k in later])
     conn.commit()
     conn.close()
     assert [r["url"] for r in _rows(app)] == ALL[:4]
     again = _restart(app)
     rows = _rows(again)
     assert [r["url"] for r in rows] == ALL
-    assert [r["title"] for r in rows[4:]] == ["குறள் ஓட்டம் · Kural Run", "குறள் குறுக்கெழுத்து · Kural Crossword"]
-    # shown in the order of sort_order: the apps first, the corpus and the archives after them
+    assert [r["title"] for r in rows[4:6]] == ["குறள் ஓட்டம் · Kural Run", "குறள் குறுக்கெழுத்து · Kural Crossword"]
+    # shown with the featured entries first, each group in the order of sort_order
     page = again.test_client().get("/resources?lang=en").get_data(as_text=True)
-    order = [page.find(s["title"]) for s in sorted(SEEDS, key=lambda s: s["sort_order"])]
+    order = [page.find(s["title"]) for s in sorted(SEEDS, key=lambda s: (-s["featured"], s["sort_order"]))]
     assert all(o > 0 for o in order) and order == sorted(order)
+
+
+def test_the_prosody_app_is_served_by_the_portal_itself():
+    app = make_app(ADMIN_PASSWORD=None)
+    client = app.test_client()
+    rows = {r["url"]: r for r in _rows(app)}
+    r = client.get(f"/resources/{rows[YAPPU]['id']}")
+    assert r.status_code == 302 and r.headers["Location"] == YAPPU
+    page = client.get(YAPPU)
+    assert page.status_code == 200 and page.mimetype == "text/html"
+    html = page.get_data(as_text=True)
+    assert "யாப்புக் கலம்" in html
+    # nothing is loaded from another host, and the policy of the portal stands on the page
+    assert "script-src 'self'" in page.headers["Content-Security-Policy"]
+    for host in ("googleapis", "gstatic", "jsdelivr", "http://", "https://"):
+        assert host not in html, host
+    import re
+    scripts = re.findall(r'<script src="([^"]+)"></script>', html)
+    assert scripts == ["yappu.js", "lessons.js", "faq.js", "checks.js", "app.js", "game.js"]
+    assert "<script>" not in html and not re.search(r"\son[a-z]+=", html)
+    for name in scripts:
+        r = client.get("/static/yappu/app/" + name)
+        assert r.status_code == 200 and len(r.data) > 1000, name
+        r.close()
+    r = client.get(GUIDE)
+    assert r.status_code == 200 and r.mimetype == "application/pdf" and r.data[:5] == b"%PDF-"
+    assert "Content-Security-Policy" not in r.headers
+    r.close()
+    sheet = client.get("/static/yappu/reference/sheet.html").get_data(as_text=True)
+    assert "googleapis" not in sheet and "<script" not in sheet
+
+
+def test_an_address_of_the_portal_keeps_its_prefix():
+    app = make_app(ADMIN_PASSWORD=None, URL_PREFIX="/kts5")
+    rid = {r["url"]: r["id"] for r in _rows(app)}[GUIDE]
+    r = app.test_client().get(f"/kts5/resources/{rid}")
+    assert r.status_code == 302 and r.headers["Location"] == "/kts5" + GUIDE

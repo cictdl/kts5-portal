@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ta">
+<head>
+<meta charset="utf-8">
+<title>யாப்பு விரைவுக் கையேடு</title>
+<style>
+@page { size: A4; margin: 9mm 9mm 8mm; }
+:root{
+  --ink:#111827; --muted:#6B7280; --rule:#E5E7EB; --sunk:#F3F4F6;
+  --accent:#EA580C; --accent-ink:#C2410C; --accent-bg:#FFF1E8;
+  --ner:#0F766E; --ner-bg:#E3F6F3; --nirai:#BE123C; --nirai-bg:#FFE8EE;
+  --ven:#15803D; --asi:#1D4ED8; --kali:#B45309; --vanji:#6D28D9;
+  --display:"Anek Tamil","Nirmala UI","Latha",sans-serif;
+  --body:"Noto Sans Tamil","Nirmala UI","Latha",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;color:var(--ink);font-family:var(--body);font-size:7.3pt;line-height:1.32;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1.5pt solid var(--accent);padding-bottom:4px;margin-bottom:6px}
+.brand{display:flex;align-items:center;gap:7px}
+.logo{width:24px;height:24px;border-radius:7px;background:linear-gradient(140deg,#FB923C,#EA580C 70%);color:#fff;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:11pt}
+h1{font-family:var(--display);font-weight:800;font-size:15pt;margin:0;letter-spacing:-.01em}
+h1 b{color:var(--accent-ink)}
+header p{margin:0;color:var(--muted);font-size:7.2pt;text-align:right}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.box{border:0.8pt solid var(--rule);border-radius:7px;padding:5px 7px 6px;break-inside:avoid}
+.span2{grid-column:span 2}
+.span3{grid-column:1 / -1}
+h2{font-family:var(--display);font-weight:800;font-size:9.6pt;margin:0 0 3px;display:flex;align-items:baseline;gap:5px}
+h2 .n{display:inline-grid;place-items:center;width:13px;height:13px;border-radius:50%;background:var(--accent-bg);color:var(--accent-ink);font-size:7pt;font-weight:800}
+table{border-collapse:collapse;width:100%}
+th,td{padding:1.1px 3px;text-align:left;vertical-align:top;border-bottom:0.5pt solid var(--rule)}
+tr:last-child td{border-bottom:0}
+th{font-size:6.6pt;color:var(--muted);font-weight:700}
+.t{font-family:var(--display);font-weight:600;font-size:8.2pt}
+.ner{color:var(--ner);font-weight:700}
+.nirai{color:var(--nirai);font-weight:700}
+.chip{display:inline-block;border-radius:99px;padding:0 5px;font-weight:700;font-size:6.8pt}
+.chip.ner{background:var(--ner-bg)} .chip.nirai{background:var(--nirai-bg)}
+.ven{color:var(--ven);font-weight:700}.asi{color:var(--asi);font-weight:700}.kali{color:var(--kali);font-weight:700}.vanji{color:var(--vanji);font-weight:700}
+.mnemonic{margin:4px 0 0;padding:3px 6px;border-radius:6px;background:var(--accent-bg);color:var(--accent-ink);font-family:var(--display);font-weight:700;font-size:8.6pt;text-align:center}
+.note{color:var(--muted);font-size:6.8pt;margin:3px 0 0}
+ul,ol{margin:0;padding-left:12px}
+li{margin:0.5px 0}
+.pat{font-family:var(--display);font-weight:600}
+.matrix td,.matrix th{text-align:center;padding:2.5px 3px}
+.matrix td:first-child{font-family:var(--display);font-weight:700;font-size:8.4pt;text-align:left}
+.two{display:grid;grid-template-columns:1fr 1.15fr;gap:8px}
+.two tr:not(:last-child) td:first-child{white-space:nowrap}
+.box{min-width:0;overflow:hidden}
+footer{margin-top:5px;color:var(--muted);font-size:6.4pt;display:flex;justify-content:space-between;gap:8px}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="logo">யா</span><h1>யாப்பு <b>விரைவுக் கையேடு</b></h1></div>
+  <p>எழுத்து → அசை → சீர் → தளை → அடி → தொடை → பா<br>யாப்புக் கலம் · “கவி பாடலாம்” நூலைத் தழுவியது</p>
+</header>
+
+<div class="grid">
+
+  <!-- 1 எழுத்து -->
+  <section class="box">
+    <h2><span class="n">1</span>எழுத்து</h2>
+    <table>
+      <tr><th>வகை</th><th>எழுத்துகள்</th><th>மாத்திரை</th></tr>
+      <tr><td>குறில்</td><td class="t">அ இ உ எ ஒ · க கி கு</td><td>1</td></tr>
+      <tr><td>நெடில்</td><td class="t">ஆ ஈ ஊ ஏ ஐ ஓ ஔ · கா கை</td><td>2</td></tr>
+      <tr><td>ஒற்று</td><td class="t">க் ங் … ன் · ஃ</td><td>½</td></tr>
+    </table>
+    <ul class="note" style="margin-top:3px">
+      <li><b>ஒற்றுக்குத் தனி அலகு இல்லை</b>; முன் அசையோடு சேரும்.</li>
+      <li><b>ஐகாரக் குறுக்கம்</b>: சொல்லிடை / இறுதி ஐ → குறில் (வாழையடி = வா|ழய|டி).</li>
+      <li><b>குற்றியலுகரம்</b>: வல்லின உகர ஈறு (காசு, உலகு) → வெண்பா ஈற்றில் காசு / பிறப்பு.</li>
+    </ul>
+  </section>
+
+  <!-- 2 அசை -->
+  <section class="box">
+    <h2><span class="n">2</span>அசை</h2>
+    <table>
+      <tr><th>அசை</th><th>அமைப்பு</th><th>எ.கா.</th></tr>
+      <tr><td rowspan="2"><span class="chip ner">நேர்</span></td><td>குறில் / நெடில் தனித்து</td><td class="t">க · கா</td></tr>
+      <tr><td>அவை + ஒற்று</td><td class="t">கல் · கால்</td></tr>
+      <tr><td rowspan="2"><span class="chip nirai">நிரை</span></td><td>குறில் + குறில் / நெடில்</td><td class="t">பல · பலா</td></tr>
+      <tr><td>அவை + ஒற்று</td><td class="t">பலம் · பலாம்</td></tr>
+    </table>
+    <ol class="note" style="margin-top:3px;color:var(--ink)">
+      <li>நெடில் → தனியே <span class="ner">நேர்</span>; அதன் பின் எதுவும் சேராது.</li>
+      <li>குறில் + அடுத்த உயிர்மெய் → <span class="nirai">நிரை</span>; குறில் + ஒற்று / முடிவு → <span class="ner">நேர்</span>.</li>
+      <li>பின்வரும் ஒற்றுகளை அதே அசையில் சேர்க்க. அசை சீர் எல்லையைக் கடக்காது.</li>
+    </ol>
+    <p class="note">கற்பவை = கற் | பவை = நேர் நிரை · மாமலராள் = மா | மல | ராள்</p>
+  </section>
+
+  <!-- 3 அடி -->
+  <section class="box">
+    <h2><span class="n">3</span>அடி (சீர் எண்ணிக்கை)</h2>
+    <table>
+      <tr><th>சீர்</th><th>அடி</th><th>முதன்மையாக வருவது</th></tr>
+      <tr><td>2</td><td class="t">குறளடி</td><td>வஞ்சிப்பா, வஞ்சித்துறை</td></tr>
+      <tr><td>3</td><td class="t">சிந்தடி</td><td>வெண்பா ஈற்றடி, வஞ்சி விருத்தம்</td></tr>
+      <tr><td>4</td><td class="t">அளவடி</td><td>வெண்பா, அகவல், கலிவிருத்தம்</td></tr>
+      <tr><td>5</td><td class="t">நெடிலடி</td><td>கலித்துறை</td></tr>
+      <tr><td>6+</td><td class="t">கழிநெடிலடி</td><td>ஆசிரிய விருத்தம்</td></tr>
+    </table>
+    <p class="note"><b>பா அடி எல்லை:</b> வெண்பா 2+ · ஆசிரியப்பா 3+ · கலிப்பா 4+ · வஞ்சிப்பா 3+ (அரிதாக 2)</p>
+  </section>
+
+  <!-- 4 வாய்பாடு -->
+  <section class="box span2">
+    <h2><span class="n">4</span>சீர் வாய்பாடுகள்</h2>
+    <div class="two">
+      <table>
+        <tr><th>அசைகள்</th><th>வாய்பாடு</th><th>இனம்</th></tr>
+        <tr><td><span class="ner">நேர்</span></td><td class="t">நாள்</td><td rowspan="2">ஓரசை — வெண்பா ஈற்றில்</td></tr>
+        <tr><td><span class="nirai">நிரை</span></td><td class="t">மலர்</td></tr>
+        <tr><td><span class="ner">நேர்</span> + உ</td><td class="t">காசு</td><td rowspan="2">குற்றியலுகர ஈறு (ஈற்றில் மட்டும்)</td></tr>
+        <tr><td><span class="nirai">நிரை</span> + உ</td><td class="t">பிறப்பு</td></tr>
+        <tr><td><span class="ner">நேர்</span> <span class="ner">நேர்</span></td><td class="t">தேமா</td><td rowspan="2"><b>மா</b> — இயற்சீர், நேரீறு</td></tr>
+        <tr><td><span class="nirai">நிரை</span> <span class="ner">நேர்</span></td><td class="t">புளிமா</td></tr>
+        <tr><td><span class="ner">நேர்</span> <span class="nirai">நிரை</span></td><td class="t">கூவிளம்</td><td rowspan="2"><b>விளம்</b> — இயற்சீர், நிரையீறு</td></tr>
+        <tr><td><span class="nirai">நிரை</span> <span class="nirai">நிரை</span></td><td class="t">கருவிளம்</td></tr>
+      </table>
+      <table>
+        <tr><th>முதல் இரண்டு அசை</th><th>+ <span class="ner">நேர்</span> → <b>காய்</b></th><th>+ <span class="nirai">நிரை</span> → <b>கனி</b></th></tr>
+        <tr><td><span class="ner">நேர் நேர்</span></td><td class="t">தேமாங்காய்</td><td class="t">தேமாங்கனி</td></tr>
+        <tr><td><span class="nirai">நிரை</span> <span class="ner">நேர்</span></td><td class="t">புளிமாங்காய்</td><td class="t">புளிமாங்கனி</td></tr>
+        <tr><td><span class="ner">நேர்</span> <span class="nirai">நிரை</span></td><td class="t">கூவிளங்காய்</td><td class="t">கூவிளங்கனி</td></tr>
+        <tr><td><span class="nirai">நிரை நிரை</span></td><td class="t">கருவிளங்காய்</td><td class="t">கருவிளங்கனி</td></tr>
+        <tr><td colspan="3" style="padding-top:3px"><b>நாலசை (பொதுச்சீர், 16):</b> தேமா / புளிமா / கூவிள / கருவிள + <span class="t">ந்தண்பூ</span> (<span class="ner">நேர் நேர்</span>) · <span class="t">ந்தண்ணிழல்</span> (<span class="ner">நேர்</span> <span class="nirai">நிரை</span>) · <span class="t">நறும்பூ</span> (<span class="nirai">நிரை</span> <span class="ner">நேர்</span>) · <span class="t">நறுநிழல்</span> (<span class="nirai">நிரை நிரை</span>)</td></tr>
+      </table>
+    </div>
+    <p class="note">காய் = வெண்சீர் (வெண்பா உரிச்சீர்) · கனி = வஞ்சி உரிச்சீர் · “கலிச்சீர்” என ஒன்று இல்லை.</p>
+  </section>
+
+  <!-- 5 தளை -->
+  <section class="box">
+    <h2><span class="n">5</span>தளை</h2>
+    <table class="matrix">
+      <tr><th style="text-align:left">நின்ற சீர்</th><th>வரும் <span class="ner">நேர்</span></th><th>வரும் <span class="nirai">நிரை</span></th></tr>
+      <tr><td>மா</td><td class="asi">நேரொன்று ஆசிரியம்</td><td class="ven">இயற்சீர் வெண்டளை</td></tr>
+      <tr><td>விளம்</td><td class="ven">இயற்சீர் வெண்டளை</td><td class="asi">நிரையொன்று ஆசிரியம்</td></tr>
+      <tr><td>காய்</td><td class="ven">வெண்சீர் வெண்டளை</td><td class="kali">கலித்தளை</td></tr>
+      <tr><td>கனி</td><td class="vanji">ஒன்றாத வஞ்சி</td><td class="vanji">ஒன்றிய வஞ்சி</td></tr>
+    </table>
+    <p class="mnemonic">மாமுன் நிரை · விளமுன் நேர் · காய்முன் நேர்</p>
+    <p class="note">= வெண்டளை. நின்ற சீரின் ஈறும் வரும் சீரின் முதலசையும் மட்டும் பார்க்க. அடி கடந்தும் தளை உண்டு. ஓரசை ≈ மா/விளம்; நாலசை ≈ காய்/கனி.</p>
+  </section>
+
+  <!-- 6 தொடை -->
+  <section class="box">
+    <h2><span class="n">6</span>மோனை, எதுகை</h2>
+    <p style="margin:0"><b>மோனை</b> — முதல் எழுத்து ஒன்றுதல். இனக் கூட்டங்கள்:</p>
+    <p class="t" style="margin:1px 0 2px">அ ஆ ஐ ஔ · இ ஈ எ ஏ · உ ஊ ஒ ஓ · ச–த · ஞ–ந · ம–வ</p>
+    <p style="margin:0"><b>எதுகை</b> — இரண்டாம் எழுத்தின் மெய் ஒன்றுதல்; முதலெழுத்து அளவு (குறில்/நெடில்) ஒத்திருக்க வேண்டும்: <span class="t">பட்டு–கட்டு ✓ · பட்டு–பாட்டு ✗</span></p>
+    <table style="margin-top:3px">
+      <tr><th>பெயர்</th><th>சீர்கள்</th><th>பெயர்</th><th>சீர்கள்</th></tr>
+      <tr><td class="t">இணை</td><td>1 2</td><td class="t">மேற்கதுவாய்</td><td>1 3 4</td></tr>
+      <tr><td class="t">பொழிப்பு</td><td>1 3</td><td class="t">கீழ்க்கதுவாய்</td><td>1 2 4</td></tr>
+      <tr><td class="t">ஒரூஉ</td><td>1 4</td><td class="t">முற்று</td><td>1 2 3 4</td></tr>
+      <tr><td class="t">கூழை</td><td>1 2 3</td><td class="t">அடி</td><td>அடிதோறும் முதற்சீர்</td></tr>
+    </table>
+    <p class="note">மோனை இடம்: நாற்சீரில் 3ஆம் சீர் · அறுசீரில் 4 · எழு/எண்சீரில் 5. அடியெதுகை கட்டாயம் போல.</p>
+  </section>
+
+  <!-- 7 நால்வகைப் பா -->
+  <section class="box">
+    <h2><span class="n">7</span>நால்வகைப் பா</h2>
+    <table>
+      <tr><th>பா</th><th>ஓசை</th><th>சீர் / தளை</th></tr>
+      <tr><td class="t">வெண்பா</td><td>செப்பல்</td><td>ஈரசை, காய் · <span class="ven">வெண்டளை மட்டும்</span></td></tr>
+      <tr><td class="t">ஆசிரியப்பா</td><td>அகவல்</td><td>ஈரசை மிகுதி · <span class="asi">ஆசிரியத்தளை மிகுதி</span></td></tr>
+      <tr><td class="t">கலிப்பா</td><td>துள்ளல்</td><td>காய் மிகுதி · <span class="kali">கலித்தளை மிகுதி</span></td></tr>
+      <tr><td class="t">வஞ்சிப்பா</td><td>தூங்கல்</td><td>கனி மிகுதி · <span class="vanji">வஞ்சித்தளை மிகுதி</span></td></tr>
+    </table>
+    <p class="note"><b>ஆசிரியப்பா</b>: நிலைமண்டிலம் (எல்லாம் 4 சீர்) · நேரிசை (ஈற்றயலடி 3) · இணைக்குறள் (இடையில் 2–3) · ஏகார ஈறு பெருவழக்கு. <b>பாவினம்</b>: தாழிசை, துறை, விருத்தம்; <b>மருட்பா</b> = வெண்பா அடி + ஆசிரிய அடி.</p>
+  </section>
+
+  <!-- 8 வெண்பா -->
+  <section class="box">
+    <h2><span class="n">8</span>வெண்பா சரிபார்ப்பு</h2>
+    <ol style="margin:0">
+      <li>ஈரசைச் சீரும் காய்ச்சீரும் மட்டும் — கனி, நாலசை வாரா.</li>
+      <li>எல்லா இணைப்பிலும் <span class="ven">வெண்டளை</span> (அடி கடந்தும்).</li>
+      <li>ஈற்றடி 3 சீர்; மற்றவை 4 சீர்.</li>
+      <li>ஈற்றுச்சீர்: <span class="t">நாள் · மலர் · காசு · பிறப்பு</span>.</li>
+    </ol>
+    <table style="margin-top:3px">
+      <tr><th>அடி</th><th>வகை</th></tr>
+      <tr><td>2</td><td class="t">குறள் வெண்பா</td></tr>
+      <tr><td>3</td><td class="t">சிந்தியல் வெண்பா</td></tr>
+      <tr><td>4</td><td><span class="t">நேரிசை</span> (2ஆம் அடி 4ஆம் சீர் தனிச்சொல்; 1–2 விகற்பம்) · <span class="t">இன்னிசை</span> (மற்றவை)</td></tr>
+      <tr><td>5–12</td><td class="t">பஃறொடை வெண்பா</td></tr>
+      <tr><td>13+</td><td class="t">கலிவெண்பா</td></tr>
+    </table>
+  </section>
+
+  <!-- 9 விருத்தம் -->
+  <section class="box span3">
+    <h2><span class="n">9</span>விருத்த அமைப்புகள் <span class="note" style="font-family:var(--body);font-weight:500;margin:0">— விருத்தம் = அளவொத்த நான்கடி; ஓரடியில் இன்ன இடத்தில் இன்ன சீர் என்பது நான்கடிக்கும் பொது.</span></h2>
+    <div class="grid" style="gap:10px">
+      <table>
+        <tr><td>அறுசீர் ①</td><td class="pat">விளம் மா தேமா ×2</td><td class="note" style="margin:0">மோனை 1, 4</td></tr>
+        <tr><td>அறுசீர் ②</td><td class="pat">மா மா காய் ×2</td><td class="note" style="margin:0">மோனை 1, 4</td></tr>
+        <tr><td>அறுசீர் ③</td><td class="pat">காய் ×4 · மா தேமா</td><td class="note" style="margin:0">மோனை 1, 5</td></tr>
+      </table>
+      <table>
+        <tr><td>எழுசீர்</td><td class="pat">விளம் மா விளம் மா · விளம் விளம் மா</td></tr>
+        <tr><td>எண்சீர் ①</td><td class="pat">காய் காய் மா தேமா ×2</td></tr>
+        <tr><td>எண்சீர் ②</td><td class="pat">காய் காய் காய் மா ×2</td></tr>
+      </table>
+      <table>
+        <tr><td>கலிவிருத்தம்</td><td class="pat">புளிமா கூவிளம் கூவிளம் கூவிளம்</td></tr>
+        <tr><td>கலித்துறை</td><td class="pat">மா விளம் விளம் விளம் மா</td></tr>
+        <tr><td>வஞ்சி விருத்தம்</td><td class="pat">முச்சீரடி நான்கு</td></tr>
+      </table>
+    </div>
+    <p class="note" style="color:var(--ink)"><b>கட்டளைக் கலித்துறை</b>: 5 சீர் · அடிக்குள் வெண்டளை · ஈற்றுச்சீர் கூவிளங்காய் / கருவிளங்காய் (இடையில் காய் வந்தால் மாங்காய் மட்டும்) · ஒற்று நீக்கி நேர் முதல் <b>16</b>, நிரை முதல் <b>17</b> எழுத்து · ஏகார ஈறு.</p>
+  </section>
+
+</div>
+
+<footer>
+  <span>உதாரணம்: <span class="t">அகர முதல எழுத்தெல்லாம் ஆதி / பகவன் முதற்றே உலகு</span> — புளிமா புளிமா புளிமாங்காய் தேமா / புளிமா புளிமா பிறப்பு → குறள் வெண்பா</span>
+  <span>கி.வா. ஜகந்நாதன், “கவி பாடலாம்” நூலின் அமைப்பைத் தழுவிச் சுருக்கியது</span>
+</footer>
+</body>
+</html>

@@ -126,6 +126,13 @@
       </ul>
     </div>
   </div>
+  {% set social = social_links() %}
+  {% if social %}
+  <div class="langs social"><div class="wrap">
+    <span class="lbl">{{ t('site.follow') }}</span>
+    <ul dir="ltr">{% for name, address in social %}<li><a href="{{ address }}" target="_blank" rel="noopener noreferrer">{{ name }}</a></li>{% endfor %}</ul>
+  </div></div>
+  {% endif %}
   <div class="langs"><div class="wrap">
     <span class="lbl">{{ t('site.lang_menu') }}</span>
     <ul dir="ltr">{% for L in LANGUAGES %}<li><a href="{{ url_for('public.set_lang', code=L.code) }}" hreflang="{{ L.code }}" lang="{{ L.code }}" title="{{ L.name }}" class="{{ 'on' if L.code == lang }}">{{ L.native }}</a></li>{% endfor %}</ul>

@@ -23,7 +23,7 @@ WORKSTREAMS = [
     ("portal", "Portal and registration"),
     ("publicity", "Pan-India publicity"),
     ("exam", "Examination and selection"),
-    ("orientation", "Online orientation (21 languages)"),
+    ("orientation", "Online orientation (22 languages and English)"),
     ("internship", "Internship and campus presentations"),
     ("repository", "Digital repository and apps"),
     ("video", "Educational videos, audiobooks, films, reels"),

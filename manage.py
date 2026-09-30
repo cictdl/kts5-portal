@@ -52,7 +52,7 @@ def cmd_create_user(args):
 
 
 def cmd_gen_questions(args):
-    langs = ["ta"] + K.ORIENTATION_LANGS if args.langs == "all" else args.langs.split(",")
+    langs = list(K.ORIENTATION_LANGS) if args.langs == "all" else args.langs.split(",")
     with app.app_context():
         total = 0
         for lang in langs:
@@ -87,7 +87,7 @@ def cmd_seed_demo(args):
                 ("Call for applications: Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom",
                  "The Central Institute of Classical Tamil invites applications from students enrolled in colleges and universities across India for KTS 5.0. One thousand student delegates, one per institution, will be selected through an online test and will take part in a ten-lecture orientation on the Thirukkural in their own language.\n\nRegister on this portal before the closing date. Keep your application number safe.", "registration", 1),
                 ("Online selection test: date and pattern", "The online test will be held on the date announced on the Examination page. It has 25 objective questions drawn from the Thirukkural study material, four marks each, no negative marking, thirty minutes.", "examination", 0),
-                ("Orientation lecture series in 21 languages", "The ten-part academic lecture series is being dubbed and subtitled with the Central Institute of Indian Languages. Language-wise session dates will be published after the merit list.", "orientation", 0),
+                ("Orientation lecture series in 22 languages", "The ten-part academic lecture series is being dubbed and subtitled with the Central Institute of Indian Languages. Language-wise session dates will be published after the merit list.", "orientation", 0),
             ]:
                 execute("INSERT INTO notices(title, body, category, lang, pinned, published, created_at, updated_at) VALUES(?,?,?,?,?,1,?,?)",
                         (title, body, cat, "en", pinned, now, now))
@@ -120,7 +120,7 @@ def cmd_seed_demo(args):
             tasks = [
                 ("Circulate the call for applications to all universities", "publicity", ag["UGC"], "in_progress", "high", 10),
                 ("Circular to AICTE-approved institutions", "publicity", ag["AICTE"], "open", "normal", 12),
-                ("Dub the ten orientation lectures into 21 languages", "orientation", ag["CIIL"], "in_progress", "urgent", 45),
+                ("Dub the ten orientation lectures into 22 languages", "orientation", ag["CIIL"], "in_progress", "urgent", 45),
                 ("Finalise the question bank in every language", "exam", ag["CICT"], "in_progress", "urgent", 30),
                 ("Couplet display slots on station information systems", "displays", ag["IRCTC"], "open", "normal", 60),
                 ("Airport signage locations and formats", "displays", ag["AAI"], "blocked", "normal", 60),

@@ -296,6 +296,21 @@ LATER_COLUMNS = [
     ("applications", "admit_card_no", "TEXT"),
 ]
 
+# CICT on social media: (setting, name of the service, address). The links stand in the footer of
+# every page and on the contact page; an administrator can change an address or empty it (the
+# link then disappears) under Settings.
+SOCIAL_LINKS = [
+    ("social.x", "X", "https://x.com/cictofficial"),
+    ("social.instagram", "Instagram", "https://instagram.com/cict_chennai/"),
+    ("social.youtube", "YouTube", "https://youtube.com/@cicttamil"),
+    ("social.facebook", "Facebook", "https://facebook.com/chennaicict"),
+    ("social.threads", "Threads", "https://threads.com/@cict_chennai"),
+    ("social.whatsapp", "WhatsApp", "https://whatsapp.com/channel/0029Vb0wjUvGOj9r7LmmgU0e"),
+    ("social.linkedin", "LinkedIn", "https://linkedin.com/in/central-institute-of-classical-tamil-chennai-1b735a367/"),
+    ("social.telegram", "Telegram", "https://t.me/Classicaltamil"),
+    ("social.arattai", "Arattai", "https://aratt.ai/@cict_chennai"),
+]
+
 DEFAULT_SETTINGS = {
     "site.banner": "Applications for KTS 5.0 — Thirukkural Payilvom are open. One student from every college in India.",
     "site.banner_on": "1",
@@ -320,6 +335,7 @@ DEFAULT_SETTINGS = {
     "contact.email": "office@cict.in",
     "contact.phone": "044-22540125",
     "contact.address": "Central Institute of Classical Tamil (CICT) – Main Office, Chemmozhi Salai, Perumbakkam, Chennai – 600100, India",
+    **{key: address for key, _name, address in SOCIAL_LINKS},
     "stats.public": "1",
     "site.draft_note_on": "1",
     "home.pm_on": "1",
@@ -338,6 +354,12 @@ RETIRED_DEFAULTS = {
     # the pattern of the test up to version 1.1.0: 25 questions of 4 marks, now 50 of 2 (100 marks either way)
     "exam.questions": ["25"],
     "exam.marks_per_q": ["4"],
+}
+
+
+# Roles of agencies as earlier versions seeded them (data/agencies.json of that time).
+RETIRED_AGENCY_ROLES = {
+    "CICT": ["Implementing institute for KTS 5.0: runs this portal, the student registration and selection, the 21-language orientation, the digital repository and all Thirukkural content."],
 }
 
 
@@ -412,6 +434,18 @@ def all_settings():
     for row in query("SELECT key, value FROM settings"):
         data[row["key"]] = row["value"]
     return data
+
+
+def social_links():
+    """[(name, address), ...] of CICT on social media: the settings that hold a web address, in their order."""
+    settings = all_settings()
+    links = []
+    for key, name, _address in SOCIAL_LINKS:
+        address = (settings.get(key) or "").strip()
+        # only a web address becomes a link, whatever was typed into the setting
+        if address.lower().startswith(("https://", "http://")):
+            links.append((name, address))
+    return links
 
 
 def set_setting(key, value):
@@ -687,6 +721,16 @@ def init_db(app):
                      r.get("featured", 0), r.get("sort_order", 100), now, now),
                 )
             conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
+
+    # The role of an agency as seeded by an earlier version becomes the present wording, so that
+    # the partner page keeps finding its translation; wording changed in the console is left alone.
+    seed_path = app.config["DATA_DIR"] / "agencies.json"
+    if seed_path.exists():
+        roles = {a["code"]: a["role"] for a in json.loads(seed_path.read_text(encoding="utf-8"))}
+        for code, old_roles in RETIRED_AGENCY_ROLES.items():
+            for old in old_roles:
+                if roles.get(code):
+                    conn.execute("UPDATE agencies SET role_desc = ? WHERE code = ? AND role_desc = ?", (roles[code], code, old))
 
     try:
         _first_passwords(app, conn, now)

@@ -16,5 +16,11 @@
    "url": "https://www.digitalarchives.cict.in/kural-run.html", "featured": 1, "sort_order": 12},
   {"key": "kural-crossword", "title": "குறள் குறுக்கெழுத்து · Kural Crossword", "category": "app", "lang": "",
    "description": "A daily Tamil crossword in which every answer is a word from the Kural — a 7x7 mini each day and a larger weekly grid, the couplet itself as the clue, an on-screen Tamil keyboard, hints, and a grammar note for every answer. Part of the Tirukkural multilingual app; plays offline.",
-   "url": "https://cictdl.github.io/index.html/kural-app/kattam/index.html", "featured": 1, "sort_order": 13}
+   "url": "https://cictdl.github.io/index.html/kural-app/kattam/index.html", "featured": 1, "sort_order": 13},
+  {"key": "yappu-kalam", "title": "யாப்புக் கலம் · Yappu Kalam", "category": "app", "lang": "ta",
+   "description": "யாப்பு இலக்கணம் கற்கவும், பாடல்களை அலகிடவும், மரபுக் கவிதை எழுதிப் பழகவும் ஒரு தளம். Learn Tamil prosody: scan a verse into அசை, சீர் and தளை, follow the lessons, write metrical verse with guidance, and practise with exercises and a word game.",
+   "url": "/static/yappu/app/index.html", "featured": 0, "sort_order": 14},
+  {"key": "yappu-quick-guide", "title": "யாப்பு விரைவுக் கையேடு · Prosody quick reference", "category": "study", "lang": "ta",
+   "description": "எழுத்து → அசை → சீர் → தளை → அடி → தொடை → பா. The rules of Tamil prosody on one page, to print (PDF).",
+   "url": "/static/yappu/yappu-quick-guide.pdf", "featured": 0, "sort_order": 15}
 ]

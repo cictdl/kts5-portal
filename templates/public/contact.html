@@ -31,6 +31,15 @@
         <p>{{ t('site.organiser') }}<br><span class="dim"><bdi>{{ settings['contact.address'] }}</bdi></span></p>
         <p><a href="mailto:{{ settings['contact.email'] }}"><bdi>{{ settings['contact.email'] }}</bdi></a><br><bdi>{{ settings['contact.phone'] }}</bdi></p>
       </div>
+      {% set social = social_links() %}
+      {% if social %}
+      <div class="card" style="margin-top:14px">
+        <h3>{{ t('site.follow') }}</h3>
+        <div class="btn-row" dir="ltr" style="flex-wrap:wrap;gap:8px">
+          {% for name, address in social %}<a class="btn xs secondary" href="{{ address }}" target="_blank" rel="noopener noreferrer">{{ name }}</a>{% endfor %}
+        </div>
+      </div>
+      {% endif %}
       <div class="card" style="margin-top:14px">
         <h3>{{ t('nav.status') }}</h3>
         <p class="small dim">{{ t('contact.check_first') }}</p>

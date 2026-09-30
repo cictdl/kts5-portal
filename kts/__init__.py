@@ -142,6 +142,7 @@ def create_app(config_object=Config):
                 "ministry": app.config["MINISTRY"], "base_url": app.config["BASE_URL"],
             },
             "get_setting": db.get_setting,
+            "social_links": db.social_links,
             "now_ist": utils.now_ist,
         }
 

@@ -418,7 +418,8 @@ def resource_open(rid):
         folder = Path(current_app.config["UPLOAD_DIR"])
         return send_from_directory(folder, row["file_path"], as_attachment=False, download_name=row["file_name"] or None)
     if row["url"]:
-        return redirect(row["url"])
+        # an address of the portal itself (written /static/...) keeps the path prefix of the portal
+        return redirect(request.script_root + row["url"] if row["url"].startswith("/") else row["url"])
     abort(404)
 
 

@@ -38,8 +38,8 @@ LANG_TAGS = {
 }
 
 # Languages in which the orientation series and the test are offered:
-# the 21 scheduled languages other than Tamil, plus English.
-ORIENTATION_LANGS = ["en"] + [c for c in SCHEDULED if c != "ta"]
+# English and the 22 scheduled languages, Tamil among them: 23 in all.
+ORIENTATION_LANGS = ["en"] + SCHEDULED
 
 PAL_NAMES = {
     1: ("அறத்துப்பால்", "Virtue", "अरत्तुप्पाल (धर्म)"),
