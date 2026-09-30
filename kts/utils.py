@@ -79,6 +79,14 @@ def fmt_dt(value, numeric=False):
     return dt.strftime("%d-%m-%Y, %H:%M" if numeric else "%d %b %Y, %I:%M %p")
 
 
+def fmt_when(value, numeric=False):
+    """Day and time of an event; the day alone when it has no time of day (00:00)."""
+    dt = _as_datetime(value)
+    if dt is not None and (dt.hour, dt.minute) == (0, 0):
+        return fmt_date(value, numeric)
+    return fmt_dt(value, numeric)
+
+
 def fmt_time(value, numeric=False):
     dt = _as_datetime(value)
     if dt is None:

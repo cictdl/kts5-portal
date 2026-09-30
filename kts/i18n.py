@@ -223,6 +223,23 @@ def _agency(row, field, lang=None):
     return value, False
 
 
+# English wording of the timeline -> its key
+TIMELINE_KEYS = {wording: key for key, wording in CATALOG["en"].items() if key.startswith("timeline.")}
+
+
+def event_text(row, field, lang=None):
+    """
+    Title ('title') or description ('description') of an event of the schedule. The translation is
+    used while the event holds the wording of the timeline the portal came with; wording entered
+    in the console is shown as it is.
+    """
+    value = row[field] or ""
+    key = TIMELINE_KEYS.get(value)
+    if key:
+        return text(key, lang or get_lang())
+    return value
+
+
 def agency_dir(row, field, lang=None):
     """Direction of that text: the interface's for a translation, "auto" for wording from the console."""
     lang = lang or get_lang()
@@ -288,6 +305,7 @@ def register(app):
             "st": setting_text,
             "st_dir": setting_dir,
             "agency_text": agency_text,
+            "event_text": event_text,
             "agency_dir": agency_dir,
             # arrows of "next" and "previous" links follow the direction of reading
             "fwd": "←" if rtl else "→",

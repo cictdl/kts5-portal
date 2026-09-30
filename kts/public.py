@@ -41,7 +41,44 @@ def _key_dates(settings):
         "exam_start": start,
         "exam_end": end,
         "reg_state": registration_state(settings),
+        "kts_start": _iso_day(settings.get("kts.start")),
+        "kts_end": _iso_day(settings.get("kts.end")),
     }
+
+
+def _iso_day(value):
+    """The day as YYYY-MM-DD, or None when the setting is empty or cannot be read."""
+    try:
+        return datetime.fromisoformat((value or "")[:10]).strftime("%Y-%m-%d")
+    except ValueError:
+        return None
+
+
+def _timeline(settings):
+    """
+    (upcoming, past) of the programme: the published events, and with them the dates that are
+    kept as settings (registration opens and closes, the test, the Sangamam begins and ends), so
+    that each of those stands in one place only. An event of several days is upcoming until its
+    last day is over.
+    """
+    rows = [dict(r) for r in query("SELECT e.*, a.short_name AS agency FROM events e LEFT JOIN agencies a "
+                                   "ON a.id = e.agency_id WHERE e.published = 1 ORDER BY e.starts_at, e.id")]
+    fixed = [(key, kind, day + "T00:00", None)
+             for key, kind, day in (("timeline.reg_open", "registration", _iso_day(settings.get("reg.start"))),
+                                    ("timeline.reg_close", "registration", _iso_day(settings.get("reg.end"))),
+                                    ("timeline.inauguration", "general", _iso_day(settings.get("kts.start"))),
+                                    ("timeline.valedictory", "general", _iso_day(settings.get("kts.end")))) if day]
+    start, end, _ = exam_window(settings)
+    if start and end:
+        fixed.append(("timeline.exam", "examination", start.strftime("%Y-%m-%dT%H:%M"), end.strftime("%Y-%m-%dT%H:%M")))
+    for key, kind, starts_at, ends_at in fixed:
+        rows.append({"id": None, "title": i18n.text(key, "en"), "description": "", "kind": kind, "lang": "",
+                     "starts_at": starts_at, "ends_at": ends_at, "venue": "", "link": "", "agency": None})
+    rows.sort(key=lambda r: r["starts_at"])
+    today = now_ist().strftime("%Y-%m-%dT00:00")
+    upcoming = [r for r in rows if (r["ends_at"] or r["starts_at"]) >= today]
+    past = [r for r in rows if (r["ends_at"] or r["starts_at"]) < today]
+    return upcoming, past[::-1][:50]
 
 
 def _stream(requested=None):
@@ -115,9 +152,7 @@ def home():
     lang = get_lang()
     notices = query("SELECT * FROM notices WHERE published = 1 AND (publish_at IS NULL OR publish_at <= ?) "
                     "ORDER BY pinned DESC, created_at DESC LIMIT 5", (utcnow(),))
-    events = query("SELECT e.*, a.short_name AS agency FROM events e LEFT JOIN agencies a ON a.id = e.agency_id "
-                   "WHERE e.published = 1 AND e.starts_at >= ? ORDER BY e.starts_at LIMIT 4",
-                   (now_ist().strftime("%Y-%m-%dT00:00"),))
+    events = _timeline(settings)[0][:4]
     agencies = query("SELECT * FROM agencies WHERE active = 1 ORDER BY sort_order, name")
     stats = None
     if settings.get("stats.public") == "1":
@@ -530,13 +565,10 @@ def notice(nid):
 
 @bp.route("/schedule")
 def schedule():
-    today = now_ist().strftime("%Y-%m-%dT00:00")
-    upcoming = query("SELECT e.*, a.short_name AS agency FROM events e LEFT JOIN agencies a ON a.id = e.agency_id "
-                     "WHERE e.published = 1 AND e.starts_at >= ? ORDER BY e.starts_at", (today,))
-    past = query("SELECT e.*, a.short_name AS agency FROM events e LEFT JOIN agencies a ON a.id = e.agency_id "
-                 "WHERE e.published = 1 AND e.starts_at < ? ORDER BY e.starts_at DESC LIMIT 50", (today,))
-    return render_template("public/schedule.html", upcoming=upcoming, past=past, settings=all_settings(),
-                           dates=_key_dates(all_settings()))
+    settings = all_settings()
+    upcoming, past = _timeline(settings)
+    return render_template("public/schedule.html", upcoming=upcoming, past=past, settings=settings,
+                           dates=_key_dates(settings))
 
 
 @bp.route("/partners")

@@ -27,6 +27,7 @@ PERMS = {
     "apps.view":     {"superadmin", "admin", "verifier", "viewer"},
     "apps.verify":   {"superadmin", "admin", "verifier"},
     "apps.export":   {"superadmin", "admin", "verifier"},
+    "apps.delete":   {"superadmin", "admin"},
     "exam.manage":   {"superadmin", "admin"},
     "exam.view":     {"superadmin", "admin", "verifier", "viewer"},
     "selection":     {"superadmin", "admin"},

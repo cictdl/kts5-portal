@@ -112,11 +112,16 @@ def create_app(config_object=Config):
         return _ltr(utils.fmt_dt(value, _numeric()))
 
     @pass_context
+    def _when(_ctx, value):
+        return _ltr(utils.fmt_when(value, _numeric()))
+
+    @pass_context
     def _time(_ctx, value):
         return _ltr(utils.fmt_time(value, _numeric()))
 
     app.jinja_env.filters["date"] = _date
     app.jinja_env.filters["datetime"] = _datetime
+    app.jinja_env.filters["when"] = _when
     app.jinja_env.filters["time"] = _time
     app.jinja_env.filters["size"] = utils.human_size
     app.jinja_env.filters["langname"] = lambda code: (K.lang_info(code) or {}).get("name", code)
@@ -129,6 +134,17 @@ def create_app(config_object=Config):
         """Static path of an agency's logo (static/img/logos/<code>.png), or None when there is none."""
         name = (code or "").strip().lower()
         return f"img/logos/{name}.png" if name and (logos_dir / f"{name}.png").is_file() else None
+
+    def banner_state():
+        """
+        What the banner says: "own" for wording of the administrator. The wording the portal came
+        with announces that applications are open, so with it the banner follows the registration:
+        "open", "not_yet" (it names the first day) or "closed".
+        """
+        settings = db.all_settings()
+        if settings.get("site.banner") != db.DEFAULT_SETTINGS["site.banner"]:
+            return "own"
+        return utils.registration_state(settings)
 
     @app.context_processor
     def _globals():
@@ -143,6 +159,7 @@ def create_app(config_object=Config):
                 "ministry": app.config["MINISTRY"], "base_url": app.config["BASE_URL"],
             },
             "get_setting": db.get_setting,
+            "banner_state": banner_state,
             "social_links": db.social_links,
             "nodal_officers": db.nodal_officers,
             "now_ist": utils.now_ist,

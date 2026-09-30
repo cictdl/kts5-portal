@@ -324,9 +324,10 @@ DEFAULT_SETTINGS = {
     "site.banner": "Applications for KTS 5.0 — Thirukkural Payilvom are open. One student from every college in India.",
     "site.banner_on": "1",
     "reg.open": "1",
-    "reg.start": "2026-09-25",
-    "reg.end": "2026-11-15",
-    "exam.date": "2026-11-29",
+    # the dates of the tentative timeline of KTS 5.0 (28.11.2026 – 12.12.2026)
+    "reg.start": "2026-10-10",
+    "reg.end": "2026-10-16",
+    "exam.date": "2026-10-19",
     "exam.start_time": "11:00",
     "exam.end_time": "12:00",
     "exam.duration_min": "30",
@@ -346,6 +347,9 @@ DEFAULT_SETTINGS = {
     "contact.address": "Central Institute of Classical Tamil (CICT) – Main Office, Chemmozhi Salai, Perumbakkam, Chennai – 600100, India",
     **{key: address for key, _name, address in SOCIAL_LINKS},
     **{f"{prefix}.{field}": value for prefix, officer in NODAL_OFFICERS for field, value in officer.items()},
+    "kts.start": "2026-11-28",
+    "kts.end": "2026-12-12",
+    "schedule.tentative": "1",
     "stats.public": "1",
     "site.draft_note_on": "1",
     "home.pm_on": "1",
@@ -364,6 +368,10 @@ RETIRED_DEFAULTS = {
     # the pattern of the test up to version 1.1.0: 25 questions of 4 marks, now 50 of 2 (100 marks either way)
     "exam.questions": ["25"],
     "exam.marks_per_q": ["4"],
+    # the dates up to version 1.1.4, before the timeline of the programme was fixed
+    "reg.start": ["2026-09-25"],
+    "reg.end": ["2026-11-15"],
+    "exam.date": ["2026-11-29"],
 }
 
 
@@ -740,6 +748,26 @@ def init_db(app):
                     "created_at, updated_at) VALUES(?,?,?,?,?,1,?,?,?,?)",
                     (r["title"], r["description"], r["category"], r.get("lang", ""), r["url"],
                      r.get("featured", 0), r.get("sort_order", 100), now, now),
+                )
+            conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
+
+    # The timeline of the programme (data/timeline.json), as events of the schedule. Each is put
+    # in once for each database, as the entries of the repository are, and not at all when an
+    # event with the same title is there already. The dates kept as settings (registration, the
+    # test, the Sangamam itself) are not among them: the schedule takes those from the settings.
+    seed_path = app.config["DATA_DIR"] / "timeline.json"
+    if seed_path.exists():
+        for e in json.loads(seed_path.read_text(encoding="utf-8")):
+            mark = f"seed.event.{e['key']}"
+            if conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
+                continue
+            if not conn.execute("SELECT 1 FROM events WHERE title = ?", (e["title"],)).fetchone():
+                agency = conn.execute("SELECT id FROM agencies WHERE code = ?", (e.get("agency", ""),)).fetchone()
+                conn.execute(
+                    "INSERT INTO events(title, description, kind, starts_at, ends_at, agency_id, published, created_at, updated_at) "
+                    "VALUES(?,?,?,?,?,?,1,?,?)",
+                    (e["title"], e.get("description", ""), e["kind"], e["starts"] + "T00:00",
+                     e["ends"] + "T00:00" if e.get("ends") else None, agency[0] if agency else None, now, now),
                 )
             conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
 

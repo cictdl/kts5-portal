@@ -181,6 +181,20 @@ def application(aid):
                     (now, note, now, aid))
             audit("application_withdrawn", "application", aid, detail=note, user=user, ip=client_ip())
             flash("Application withdrawn.", "success")
+        elif action == "delete":
+            if not has_perm(user, "apps.delete"):
+                abort(403)
+            reason = (request.form.get("reason") or "").strip()[:200]
+            if (request.form.get("confirm_no") or "").strip().upper() != row["app_no"]:
+                flash("Nothing was deleted: type the application number exactly as shown to confirm.", "error")
+            elif query("SELECT 1 FROM merit_list WHERE application_id = ?", (aid,), one=True):
+                flash("This application stands in the selection list and cannot be deleted. Withdraw it instead.", "error")
+            else:
+                _delete_application(row)
+                # the number and the reason only: nothing of the person stays behind
+                audit("application_deleted", "application", aid, detail=f"{row['app_no']} {reason}".strip(), user=user, ip=client_ip())
+                flash(f"Application {row['app_no']} was deleted with its uploaded files.", "success")
+                return redirect(url_for("admin.applications"))
         elif action == "reset_exam" and has_perm(user, "exam.manage"):
             execute("DELETE FROM exam_sessions WHERE application_id = ?", (aid,))
             execute("UPDATE applications SET exam_score = NULL, exam_rank = NULL, updated_at = ? WHERE id = ?", (now, aid))
@@ -195,6 +209,24 @@ def application(aid):
     merit = query("SELECT * FROM merit_list WHERE application_id = ?", (aid,), one=True)
     return render_template("console/application.html", a=row, exam=exam, same_college=same_college, history=history,
                            verifier=verifier, merit=merit, lang_name=K.lang_label(row["pref_lang"]))
+
+
+def _delete_application(row):
+    """
+    Remove an application for good: its test attempt, its row and the photograph and ID uploaded
+    with it. For a trial entry or one made by mistake; its number is not given again.
+    """
+    execute("DELETE FROM exam_sessions WHERE application_id = ?", (row["id"],))
+    execute("DELETE FROM applications WHERE id = ?", (row["id"],))
+    folder = Path(current_app.config["UPLOAD_DIR"]).resolve()
+    for rel in (row["photo_path"], row["idproof_path"]):
+        path = (folder / rel).resolve() if rel else None
+        if path is None or folder not in path.parents:
+            continue
+        try:
+            path.unlink(missing_ok=True)
+        except OSError as exc:
+            current_app.logger.warning("An uploaded file of the deleted application %s stays on the disk (%s).", row["app_no"], exc)
 
 
 @bp.route("/applications/bulk", methods=["POST"])
@@ -773,6 +805,8 @@ SETTING_GROUPS = [
                      ("exam.questions", "Questions per paper", "number"), ("exam.marks_per_q", "Marks per question", "number"),
                      ("exam.negative", "Negative marks per wrong answer", "number"), ("exam.show_score", "Show score to candidates", "bool"),
                      ("exam.open", "Window mode: auto | 1 (force open) | 0 (force closed)", "text"), ("exam.instructions_url", "Link to the official instructions PDF", "text")]),
+    ("Kashi Tamil Sangamam 5.0", [("kts.start", "Inauguration (YYYY-MM-DD)", "date"), ("kts.end", "Valedictory programme (YYYY-MM-DD)", "date"),
+                                  ("schedule.tentative", "Show the note “tentative timeline” on the schedule page", "bool")]),
     ("Merit list", [("merit.published", "Merit list published", "bool"), ("merit.select_count", "Number to select", "number"),
                     ("merit.wait_count", "Waitlist size", "number"), ("merit.note", "Note shown above the merit list", "text")]),
     ("Orientation", [("orientation.note", "Note shown on the orientation page", "text")]),

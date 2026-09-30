@@ -5,7 +5,7 @@
   <div class="watermark" aria-hidden="true">குறள்</div>
   <div class="wrap">
     <div>
-      <span class="kicker">{{ t('home.kicker') }}</span>
+      <span class="kicker">{% if dates.kts_start and dates.kts_end %}<bdi>{{ dates.kts_start|date }} – {{ dates.kts_end|date }}</bdi>{% else %}{{ t('home.kicker') }}{% endif %}</span>
       <h1>{{ t('site.name') }}</h1>
       <div class="theme-lines" dir="ltr"><span class="ta">{{ site.theme_ta }}</span><span>{{ site.theme_en }}</span><span class="hi">{{ site.theme_hi }}</span><span lang="en">{{ site.theme_meaning }}</span></div>
       <p class="lead">{{ t('home.hero_sub') }}</p>
@@ -111,7 +111,7 @@
       {% if events %}
       <ul class="notice-list">
         {% for e in events %}
-        <li><div><b><bdi>{{ e.title }}</bdi></b>{% if e.lang %} <span class="pill">{{ e.lang|langnative }}</span>{% endif %}<div class="meta"><bdi>{{ e.venue or e.agency or '' }}</bdi></div></div><span class="meta">{{ e.starts_at|datetime }}</span></li>
+        <li><div><b><bdi>{{ event_text(e, 'title') }}</bdi></b>{% if e.lang %} <span class="pill">{{ e.lang|langnative }}</span>{% endif %}<div class="meta"><bdi>{{ e.venue or e.agency or '' }}</bdi></div></div><span class="meta">{{ e.starts_at|when }}</span></li>
         {% endfor %}
       </ul>
       {% else %}<p class="muted">{{ t('common.none') }}</p>{% endif %}

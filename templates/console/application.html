@@ -71,6 +71,19 @@
       </form>
     </div>
     {% endif %}
+    {% if has_perm(current_user, 'apps.delete') %}
+    <div class="card" style="margin-top:14px">
+      <h3>Delete this application</h3>
+      <p class="small muted">For a trial entry or one made by mistake. The application, its test attempt and the uploaded photograph and ID are removed for good and cannot be brought back; the number is not given again. The application of a real candidate is withdrawn, not deleted.</p>
+      <form method="post" data-confirm="Delete application {{ a.app_no }} for good?">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="delete">
+        <div class="field"><label for="confirm_no">Type {{ a.app_no }} to confirm</label><input id="confirm_no" name="confirm_no" autocomplete="off" required></div>
+        <div class="field"><label for="reason">Reason (kept in the audit log)</label><input id="reason" name="reason" maxlength="200"></div>
+        <div class="btn-row" style="margin-top:10px"><button class="btn sm danger">Delete for good</button></div>
+      </form>
+    </div>
+    {% endif %}
     <div class="card" style="margin-top:14px">
       <h3>Same institution ({{ same_college|length }})</h3>
       {% if same_college %}<ul class="notice-list">{% for s in same_college %}<li><div><a href="{{ url_for('admin.application', aid=s.id) }}">{{ s.app_no }}</a> {{ s.full_name }}</div><span><span class="status-chip st-{{ s.status }}">{{ s.status.replace('_', ' ') }}</span>{% if s.exam_score is not none %} {{ s.exam_score|int }}{% endif %}</span></li>{% endfor %}</ul>

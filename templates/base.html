@@ -70,7 +70,8 @@
   </div>
 </nav>
 {% if get_setting('site.banner_on') == '1' and get_setting('site.banner') %}
-<div class="banner"><div class="wrap"><span class="dot" aria-hidden="true"></span><span dir="{{ st_dir('site.banner') }}">{{ st('site.banner') }}</span></div></div>
+{% set banner = banner_state() %}
+<div class="banner"><div class="wrap"><span class="dot" aria-hidden="true"></span>{% if banner == 'not_yet' %}<span>{{ t('reg.not_yet') }} {{ get_setting('reg.start')|date }}</span>{% elif banner == 'closed' %}<span>{{ t('reg.closed') }}</span>{% else %}<span dir="{{ st_dir('site.banner') }}">{{ st('site.banner') }}</span>{% endif %}</div></div>
 {% endif %}
 {% if lang_draft and get_setting('site.draft_note_on') == '1' %}
 <div class="draft-note"><div class="wrap"><span>{{ t('site.draft_note') }}</span> <a href="{{ url_for('public.set_lang', code='en') }}" hreflang="en" lang="en" dir="ltr">English</a></div></div>

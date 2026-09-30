@@ -5,6 +5,7 @@
   <span class="eyebrow">{{ t('home.kicker') }}</span>
   <h1>{{ t('schedule.title') }}</h1>
   <p class="dim" style="max-width:70ch">{{ t('schedule.intro') }}</p>
+  {% if settings['schedule.tentative'] == '1' %}<p><span class="pill saffron">{{ t('schedule.tentative') }}</span></p>{% endif %}
   <div class="dates" style="margin-bottom:24px">
     <div class="date-tile"><div class="lbl">{{ t('home.reg_window') }}</div><div class="val"><bdi>{{ dates.reg_start|date }} – {{ dates.reg_end|date }}</bdi></div></div>
     <div class="date-tile"><div class="lbl">{{ t('home.exam_date') }}</div><div class="val">{{ dates.exam_date|date }}</div><div class="sub"><bdi>{{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST</bdi></div></div>
@@ -14,12 +15,12 @@
   <h2>{{ t('schedule.upcoming') }}</h2>
   <div class="table-wrap"><table class="table">
     <thead><tr><th>{{ t('common.date') }}</th><th>{{ t('common.event') }}</th><th>{{ t('common.category') }}</th><th>{{ t('common.language') }}</th><th>{{ t('common.venue') }}</th><th>{{ t('common.agency') }}</th></tr></thead>
-    <tbody>{% for e in upcoming %}<tr><td style="white-space:nowrap">{{ e.starts_at|datetime }}{% if e.ends_at %}<br><span class="muted small">– {{ e.ends_at|datetime }}</span>{% endif %}</td><td><b><bdi>{{ e.title }}</bdi></b>{% if e.description %}<div class="small dim" dir="auto">{{ e.description }}</div>{% endif %}</td><td><span class="pill grey">{{ tag(e.kind) }}</span></td><td>{{ e.lang|langnative if e.lang else '' }}</td><td><bdi>{{ e.venue }}</bdi>{% if e.link %} <a href="{{ e.link }}" rel="noopener">🔗</a>{% endif %}</td><td><bdi>{{ e.agency or '' }}</bdi></td></tr>
+    <tbody>{% for e in upcoming %}<tr><td style="white-space:nowrap">{{ e.starts_at|when }}{% if e.ends_at %}<br><span class="muted small">– {{ e.ends_at|when }}</span>{% endif %}</td><td><b><bdi>{{ event_text(e, 'title') }}</bdi></b>{% if e.description %}<div class="small dim" dir="auto">{{ event_text(e, 'description') }}</div>{% endif %}</td><td><span class="pill grey">{{ tag(e.kind) }}</span></td><td>{{ e.lang|langnative if e.lang else '' }}</td><td><bdi>{{ e.venue }}</bdi>{% if e.link %} <a href="{{ e.link }}" rel="noopener">🔗</a>{% endif %}</td><td><bdi>{{ e.agency or '' }}</bdi></td></tr>
     {% else %}<tr><td colspan="6" class="muted">{{ t('common.none') }}</td></tr>{% endfor %}</tbody></table></div>
   {% if past %}
   <h2 style="margin-top:28px">{{ t('schedule.past') }}</h2>
   <div class="table-wrap"><table class="table">
-    <tbody>{% for e in past %}<tr><td style="white-space:nowrap">{{ e.starts_at|datetime }}</td><td><b><bdi>{{ e.title }}</bdi></b></td><td><span class="pill grey">{{ tag(e.kind) }}</span></td><td><bdi>{{ e.venue }}</bdi></td></tr>{% endfor %}</tbody></table></div>
+    <tbody>{% for e in past %}<tr><td style="white-space:nowrap">{{ e.starts_at|when }}</td><td><b><bdi>{{ event_text(e, 'title') }}</bdi></b></td><td><span class="pill grey">{{ tag(e.kind) }}</span></td><td><bdi>{{ e.venue }}</bdi></td></tr>{% endfor %}</tbody></table></div>
   {% endif %}
 </div>
 {% endblock %}
