@@ -144,6 +144,7 @@ def create_app(config_object=Config):
             },
             "get_setting": db.get_setting,
             "social_links": db.social_links,
+            "nodal_officers": db.nodal_officers,
             "now_ist": utils.now_ist,
         }
 

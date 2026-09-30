@@ -1001,7 +1001,7 @@ def test_alt_texts_use_keys_that_exist():
         for code in _codes():
             assert CATALOG[code].get(key), (code, key)
     # 540 texts, and the two that ask for English entries in the registration form
-    assert len(CATALOG["en"]) == 543
+    assert len(CATALOG["en"]) == 544
 
 
 def test_chapter_names_keep_the_english(app):

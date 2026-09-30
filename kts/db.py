@@ -311,6 +311,15 @@ SOCIAL_LINKS = [
     ("social.arattai", "Arattai", "https://aratt.ai/@cict_chennai"),
 ]
 
+# The nodal officers of KTS 5.0 at CICT, shown on the contact page under the institute. Each has
+# four settings (name, designation, e-mail, phone) that an administrator can change; an officer
+# whose name is empty is not shown.
+NODAL_OFFICERS = [
+    ("nodal.1", {"name": "Dr. R. Bhuvaneshwari", "designation": "Registrar", "email": "registrar@cict.in", "phone": "9790325518"}),
+    ("nodal.2", {"name": "Dr. R. Akilan", "designation": "Programmer", "email": "akilan.r@cict.in", "phone": "9965734497"}),
+]
+NODAL_FIELDS = [("name", "Name"), ("designation", "Designation"), ("email", "E-mail"), ("phone", "Phone")]
+
 DEFAULT_SETTINGS = {
     "site.banner": "Applications for KTS 5.0 — Thirukkural Payilvom are open. One student from every college in India.",
     "site.banner_on": "1",
@@ -336,6 +345,7 @@ DEFAULT_SETTINGS = {
     "contact.phone": "044-22540125",
     "contact.address": "Central Institute of Classical Tamil (CICT) – Main Office, Chemmozhi Salai, Perumbakkam, Chennai – 600100, India",
     **{key: address for key, _name, address in SOCIAL_LINKS},
+    **{f"{prefix}.{field}": value for prefix, officer in NODAL_OFFICERS for field, value in officer.items()},
     "stats.public": "1",
     "site.draft_note_on": "1",
     "home.pm_on": "1",
@@ -434,6 +444,17 @@ def all_settings():
     for row in query("SELECT key, value FROM settings"):
         data[row["key"]] = row["value"]
     return data
+
+
+def nodal_officers():
+    """The nodal officers with a name, as dicts name/designation/email/phone, in their order."""
+    settings = all_settings()
+    officers = []
+    for prefix, _officer in NODAL_OFFICERS:
+        officer = {field: (settings.get(f"{prefix}.{field}") or "").strip() for field, _label in NODAL_FIELDS}
+        if officer["name"]:
+            officers.append(officer)
+    return officers
 
 
 def social_links():

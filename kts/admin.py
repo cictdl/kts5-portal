@@ -16,7 +16,7 @@ from werkzeug.security import generate_password_hash
 
 from . import kural as K
 from .auth import PERMS, ROLES, current_user, has_perm, login_required
-from .db import (DEFAULT_SETTINGS, SOCIAL_LINKS, all_settings, audit, execute, executemany, get_setting, query,
+from .db import (DEFAULT_SETTINGS, NODAL_FIELDS, NODAL_OFFICERS, SOCIAL_LINKS, all_settings, audit, execute, executemany, get_setting, query,
                  set_setting, utcnow)
 from .public import CATEGORIES
 from .utils import (RESOURCE_EXT, client_ip, csv_bytes, exam_window, now_ist, paginate, parse_iso,
@@ -778,6 +778,9 @@ SETTING_GROUPS = [
     ("Orientation", [("orientation.note", "Note shown on the orientation page", "text")]),
     ("Contact", [("contact.email", "Helpdesk email", "text"), ("contact.phone", "Helpdesk phone", "text"), ("contact.address", "Postal address", "text")]),
     ("Social media (an empty address hides the link)", [(key, name, "text") for key, name, _address in SOCIAL_LINKS]),
+    ("Nodal officers of KTS 5.0 (shown on the contact page; an empty name hides the officer)",
+     [(f"{prefix}.{field}", f"Officer {n}: {label}", "text") for n, (prefix, _officer) in enumerate(NODAL_OFFICERS, start=1)
+      for field, label in NODAL_FIELDS]),
 ]
 
 
