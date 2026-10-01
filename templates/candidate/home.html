@@ -22,6 +22,16 @@
           {% if cand.status in ('verified', 'selected', 'waitlisted', 'not_selected') %}<a class="btn sm secondary" href="{{ url_for('candidate.admit_card') }}">{{ t('cand.admit') }}</a>{% endif %}</div>
       </div>
 
+      {% if bank %}
+      <div class="card green" style="margin-top:14px" id="bank-card">
+        <div class="section-head" style="margin-bottom:8px"><h3>{{ t('bank.title') }}</h3><span class="pill {{ {'returned': 'saffron', 'approved': 'green', 'paid': 'green', 'submitted': ''}.get(bank, 'grey') }}">{{ t('bank.st_' ~ bank) }}</span></div>
+        {# the line says what the state means; "give the details" only while there is none #}
+        {% set bank_text = {'submitted': 'bank.submitted_text', 'returned': 'bank.returned_text', 'approved': 'bank.approved_text', 'paid': 'bank.paid_text', 'closed': 'bank.closed'} %}
+        <p class="small dim">{{ t(bank_text.get(bank, 'bank.card_text')) }}{% if bank == 'not_open' or (bank == 'returned' and settings['stipend.open'] != '1') %} {{ t('bank.not_open') }}{% endif %}</p>
+        <a class="btn sm {{ 'saffron' if bank in ('form', 'returned') else 'secondary' }}" href="{{ url_for('candidate.bank') }}">{{ t('bank.open') }} {{ fwd }}</a>
+      </div>
+      {% endif %}
+
       <div class="card" style="margin-top:14px">
         <h3>{{ t('exam.title') }}</h3>
         <p class="small dim"><b>{{ t('cand.exam_window') }}:</b> <bdi>{{ settings['exam.date']|date }}, {{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST</bdi> · {{ settings['exam.duration_min'] }} {{ t('exam.minutes') }} · {{ settings['exam.questions'] }} {{ t('exam.pattern_text') }}</p>

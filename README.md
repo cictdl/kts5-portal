@@ -42,6 +42,8 @@ portal/
     public.py       public site + registration + repository
     candidate.py    candidate portal + online test
     admin.py        console
+    stipend.py      stipend: the bank details of the selected students, both sides
+    secure.py       seals the account and Aadhaar numbers (key instance/stipend.key)
     agency.py       coordination hub
     auth.py         staff login, roles, permissions
     utils.py        CSRF, rate limiting, uploads, exports, mail, dates
@@ -50,8 +52,8 @@ portal/
   tools/make_logo.py  rebuilds the logo set from the originals in tools/logo-src/
   tools/check_i18n.py checks the translations (missing keys, wrong script, lost numbers)
   data/             kurals/ (133 chapter files + meta.json from the CICT app) · i18n/ (one file per interface language) · agencies.json · states.json
-  instance/         kts5.sqlite3 (created on first start) · portal.env (settings) · first-admin.txt (first password, until it is changed)
-  uploads/          photos/ idproofs/ resources/ notices/ documents/ tasks/
+  instance/         kts5.sqlite3 (created on first start) · stipend.key (the key of the stipend module: in every backup with the database) · portal.env (settings) · first-admin.txt (first password, until it is changed)
+  uploads/          photos/ idproofs/ bankproofs/ resources/ notices/ documents/ tasks/
   tests/            pytest smoke test of the whole flow
 ```
 
@@ -120,6 +122,256 @@ python -m pytest tests -q
 7. **Orientation** → create `orientation` events per language with the meeting
    link; upload/link the ten lectures as `video` resources tagged by language.
    Each candidate's portal shows only their language.
+8. **Stipend** → open the form for the bank details (*Settings → Stipend*),
+   check every entry against its proof, approve it, export a payment list
+   for the bank, and mark that list as paid when the bank has made the
+   transfers. See the next section.
+
+## Stipend: bank details of the selected students
+
+Each of the 1,000 selected students receives a stipend (setting
+`stipend.amount`, Rs. 10,000) by bank transfer to his or her own account.
+The module was added in version 1.2.0 (`kts/stipend.py`, `kts/secure.py`).
+
+**What the student does.** Once the merit list is published
+(`merit.published = 1`) and the form is open (`stipend.open = 1`), a student
+whose application has the status *selected* finds a card *Bank details for the
+stipend* on the candidate page, with the state of the entry in a word and a
+line that says what the state means, and the form at `/candidate/bank`: name
+of the account holder (with the registered name above it for comparison),
+account number typed twice (9 to 18 digits), IFSC, bank, branch, type of
+account, the Aadhaar number (when it is asked for), a photo or PDF of a
+cancelled cheque or of the first page of the passbook (PDF, JPG or PNG up to
+2 MB; a JPEG that Windows saved as `.jfif` is taken as well, the name of the
+file may be in any script, and both at once: a `.jfif` named in Tamil is a
+JPEG) and three declarations. Everything is typed in English; spaces in the
+IFSC and in the Aadhaar number are removed. Anybody else who signs in as a
+candidate is told that the form is for the students of the final selected
+list, and sees nothing else; only a payment made before a student left that
+list stays on his or her page (see below). The form closes after
+`stipend.last_date` for students who have sent nothing; an entry that the
+staff returned may be sent again after that date too. `stipend.open = 0`
+stops every entry.
+
+**Once sent, an entry is locked.** The student sees it with the last four
+digits only (`XXXXXX1234`) and the state: being checked, returned for
+correction (with the remark of the staff and the form again; the two numbers
+are typed again, the proof may be kept or replaced), approved, paid (with date
+and reference; the sum that was paid stands in the mail of the payment and on
+the console, not on the student's page, since no text key of the module
+carries an amount). Every submission and
+every change of state is mailed to the registered e-mail address, with the
+last four digits of the account only and the request to write to CICT at once
+if the student did not send it. The sign-in of a candidate is weak (a
+classmate may know application number, date of birth and mobile number),
+which is why nobody but the staff can change an entry once it is sent, why
+nothing is paid without the staff's approval against the proof, and why the
+mails go out. At most 10 submissions per hour are taken from one application
+and address. A student whose entry is paid sees the paid state on
+`/candidate/bank` and on the card of the candidate page whatever the status
+of the application has become since (withdrawn, or waitlisted after a
+selection that was run again); an entry in any other state is shown to a
+student of the selected list only.
+
+**What the staff do** (*Console → Stipend*, permission `stipend`: superadmin
+and admin only). The list shows every selected student with the state of the
+entry, the masked account number and the IFSC; counts, a filter by state and
+a search by name, application number or college, 100 to a page. An account
+number that is also given for another application is marked *same account*.
+The page of one entry shows the registered name beside the name of the account
+holder, the full account number, IFSC, bank, branch, type, the full Aadhaar
+number, the link to the proof, the other applications with the same account,
+the number of the payment list the entry stands in, and the history: the
+changes of state and, apart from them, how often the staff opened the entry
+and the proof. From there: **Approve** (from submitted), **Return to the
+student** (from submitted or approved; the remark is required and is mailed),
+**Mark as paid** (from approved; reference and date required), **Undo 'paid'**
+(superadmin only). Every action is mailed to the student. Three rules guard
+the actions:
+
+* *One stipend for one account.* An entry is not approved while another entry
+  with the same account number is approved or paid: the page says so, and the
+  staff return the wrong one first. No payment list holds one account twice.
+  The comparison is by the digits of the number alone (zeros in front left
+  out), so the same digits at another bank, under another IFSC, count as the
+  same account and are refused as well: two students of two banks whose
+  numbers happen to share the digits cannot both be approved through the
+  portal. A known limit, rare among 1,000 students, and the page names the
+  other application with its IFSC so that the staff see what is happening.
+* *No action from an old page.* Every action form carries the version of the
+  entry as the page showed it. When the entry was changed in the meantime (a
+  colleague returned it and the student sent it again, say), the action is
+  refused with "The entry was changed in the meantime. Nothing was done: check
+  it again."
+* *No number in a remark or a reference.* A remark or a payment reference that
+  holds the account or Aadhaar number of the entry is refused, because both
+  are mailed and shown to the student. The check reads the digits alone:
+  whatever stands between groups of digits (spaces, hyphens, dots, slashes,
+  commas, underscores or any other mark) is taken out first, as statements
+  and passbooks print long numbers, while letters keep two numbers apart, and
+  the number counts with and without its zeros in front. The reference of a
+  payment list is checked against every entry of that list, also against
+  those that are left out when the list is paid.
+
+Entries of students who are no longer in the selected list (withdrawn, or a
+selection that was run again) are not approved, put in a payment list or paid
+any more. An entry that was paid before the student left the list stays paid:
+it is counted, it stays in the exports of paid entries, its page says so, and
+the student still sees the payment.
+
+**How the staff pay: payment lists.** A download of *Approved, not yet paid*
+(the `due` export) that has rows makes a numbered payment list (table
+`stipend_batches`: which entries went into the file and in which version, the
+amount per student at that moment, who made it and when). It is the download
+that makes the list: a HEAD request, with which a download manager asks for
+the headers of the file, makes none, and an export without rows makes none.
+The number stands in the name of the file
+(`KTS5-stipend-due-list<N>-<date>.xlsx`) and in the audit row `bank_exported`.
+The stipend page shows the lists that are not settled yet as a small table:
+number, made on, by whom, rows, amount, and *Excel* and *CSV* to download the
+list again (`/console/stipend/list/<N>.xlsx` or `.csv`): the same entries in
+the order of the list, as they are now and at the amount the list went out
+with, without the Aadhaar column and with a last column *Changed since the
+list* that says *yes* where an entry was changed after the list went out
+(returned, sent again, approved again, paid one by one) and *no longer
+selected* where the student left the list, an audit row `bank_exported` with
+the number of the list, and no new list. A second download of the export, on
+the other hand, makes a list of its own: to have the file again, download the
+list, not the export. The staff send the file to the bank; when the bank has
+made the transfers, *Mark a payment list as paid* on the stipend page (the
+list, one reference and one date) marks the entries of that list as paid:
+only those that are unchanged since the export (still approved, in the same
+version), at the amount recorded with the list, whatever the setting says by
+then; that amount is mailed to each of them, and the page says how many were
+left out. The select offers every list that is not settled, newest first,
+however many downloads came after it, each with its number, date and time,
+rows and amount per student, and none is chosen in advance: pick the number
+that stands in the name of the file the bank received. The list is then
+settled, once: when two staff mark the same list at the same moment, the
+second is told "Payment list N was marked as paid a moment ago by somebody
+else. Nothing was done." (or "was discarded a moment ago") and no entry is
+touched. Nothing else can be marked paid in bulk: an entry approved after the
+export waits for the next list, a returned entry goes into a later list once
+it is approved again, an entry paid one by one is left out, and a paid entry
+never enters a list again. A list that did not go to the bank (a look at the
+due list, a download made twice) is **discarded** with the button beside the
+select, after a question: the list is settled with the reference `discarded`
+and nothing marked paid, an audit row `bank_list_discarded` is written, and
+its entries no longer name that list and go into the next one. An entry that
+stands in a list that is not settled yet (approved, or paid one by one since)
+is shown with the number of that list on its page; returning it needs the
+ticked confirmation that the bank has not paid this entry from payment list
+no. N, and so does the undo of a payment made one by one while the entry
+stands in such a list: the audit row says so in both cases, and after the
+undo the entry still names its list, because the file at the bank holds its
+account. The mails of a payment list are queued in the outbox and sent by a
+thread of their own.
+
+Two limits are known and left as they are. The version of an entry in a list
+is the second in which it was last changed: an entry returned, sent again
+with another account and approved again within the same second as the
+approval that went into the list would still count as unchanged. Two members
+of staff and a student cannot do that by hand; a script could, and the audit
+rows would show it. And, as said above, the same digits at another bank count
+as one account.
+
+**The exports** (`/console/stipend/export.xlsx` or `.csv`, with
+`?which=due`, `paid`, `all` or `none`): *due* (the default) is approved and
+not yet paid, of students in the selected list, and its download makes a
+payment list when it has rows; *paid* is the paid entries, also those of
+students who have since left the list; *all* is both; *none* is the selected
+students who have not submitted, with e-mail and mobile and no bank column,
+for a reminder. Never an entry that has not been approved. Columns: serial
+number, application number, name, account holder, account number, IFSC, bank,
+branch, account type, amount, college, State, e-mail, mobile, status, payment
+reference, payment date, approved by, approved on, and the Aadhaar number, as
+the last column, only when *Include Aadhaar numbers* is ticked; a payment
+list downloaded again has *Changed since the list* there instead, and never
+the Aadhaar column. The amount of
+a paid row is the amount that was paid (kept with the entry as
+`paid_amount`: for a payment list the amount of that list, for an entry
+marked as paid one by one the amount of the list it stands in while that
+list is not settled, else the setting of the day); a row still to pay shows the setting, which the payment list
+then records. An entry whose numbers cannot be read with the key in use is
+left out, with a message that names it and `left_out` in the audit row; the
+rest of the list is exported all the same. The audit row `bank_exported`
+holds the number of rows, the total, what was chosen and, for a payment
+list, its number, also when the list is downloaded again; the sheet holds
+data rows only, so that an upload at the bank takes nothing else for a payee.
+In the Excel file the account numbers are text cells in the format Text: the
+zeros in front stay and no digit is lost. A CSV file cannot say that a column
+is text; the account and Aadhaar numbers are written there as
+`="000123456789"`, which Excel shows as the text `000123456789`. Opened in
+another program, the cell shows the characters `="…"` around the number. Use
+the Excel file for the bank. A cell that a student typed and that begins with
+`=`, `+`, `-` or `@` gets an apostrophe in front in the CSV file, so that no
+spreadsheet takes it for a formula.
+
+**What is stored and how.** Table `bank_details`, one row per application,
+with the amount paid (`paid_amount`) once the entry is paid; table
+`stipend_batches`, one row per payment list (the entries and their versions,
+the number of rows, the amount per student when the list went out, who made
+it and when, and the reference, date and time of its settlement, or
+`discarded`). The account number and the Aadhaar number are sealed
+(`kts/secure.py`, standard library only: HMAC-SHA256 key stream with a random
+16-byte nonce and an HMAC-SHA256 tag that is checked before anything is
+opened); in plain text stand the last four digits of each. A keyed look-up
+value of the account number (zeros in front left out) finds one account given
+twice without reading the numbers. Full numbers are shown only on the page of
+one entry and in the export, to superadmin and admin, and each time a row is
+written to the audit log (`bank_viewed`, `bank_exported`, `bank_proof_opened`
+when the proof is opened). The rows `bank_*` of the audit log are shown on
+the application page and on the dashboard to users with the permission only.
+No full number goes into the audit log, a log line, a message, a mail or an
+address. The proofs lie in `uploads/bankproofs/` and are served only through
+`/console/files/bankproofs/<file>` to the same two roles, only under the
+exact name that an entry holds and always whole (no partial requests), so
+that every opening is one row `bank_proof_opened`.
+
+**The key: `instance/stipend.key`.** 64 random bytes, made by the portal the
+first time a number is sealed: written whole under a name of its own and only
+then named `stipend.key`, so that no half-written key file ever exists, and
+never over a file that is there. Instead of the file, the setting
+`KTS_STIPEND_KEY` (128 hex digits, in the environment or in
+`instance/portal.env`) may hold the key: before the first entry, or the key
+in use written as the 128 hex digits of its 64 bytes. **The key is bound to
+the stored entries.** Before a number is sealed, the portal checks that the
+key in use opens the entry stored last or, when that one fails, one of the
+three stored before it (an entry that is being sent again does not count: what
+is sealed now takes its place); the key counts as wrong only when every entry
+tried fails, so that one damaged entry does not close the form for everybody
+(the staff clear it by returning that entry). When a single entry stands in the
+way, nothing tells a damaged entry from another key: the log then names the
+application number of that entry instead of blaming the key, and says to
+return it to the student if the key is the right one. When the key is wrong
+(the file is missing or
+damaged, the setting names another key, a key file of another installation
+was put in its place), the portal makes no new key and seals nothing: the
+form answers HTTP 503 with "Your details cannot be saved at the moment",
+nothing is stored, the uploaded proof is not kept, and the log names the file
+and the setting to put back. The entries stored before show on the console
+as unreadable, cannot be approved or paid, and are left out of the exports.
+To recover, put the old key back: the file from the backup, or remove or
+correct the setting. **The database and this key belong together in every
+backup: without the key the numbers cannot be read, by anybody.** The file
+lies in `instance/`, which is never served (the `web.config` of the site
+hides the folder, and the installer gives the folder a `web.config` of its
+own that serves nothing), never committed (`.gitignore`) and never touched by
+the installer's update; the safety copy of the database that the installer
+keeps at each update (`kts5-setup\before-<date>`) holds no key.
+
+**Settings** (*Settings → Stipend*): `stipend.open` (the form is open; `0`
+when the portal is installed), `stipend.last_date` (optional, `YYYY-MM-DD`),
+`stipend.amount` (`10000`; a payment list records the amount of the day it
+went out and is paid at that amount), `stipend.aadhaar` (`1`: ask for the
+Aadhaar number; `0` switches the question and its consent line off, and an
+entry that is sent again afterwards drops the number it had; numbers given
+before are kept and shown as before).
+
+**Languages.** The texts of the form are the keys `bank.*` of
+`data/i18n/en.json`, translated into the 22 other interface languages (each
+translation read by a second reader); `tools/check_i18n.py` reports no
+missing key.
 
 ## Configuration (environment variables)
 
@@ -141,6 +393,7 @@ python -m pytest tests -q
 | `KTS_RATE_LOGIN_FAILS` | `12` | Failed staff sign-ins from one address in 15 minutes |
 | `KTS_RATE_CANDIDATE_FAILS_IP` | `600` | Failed candidate sign-ins from one address in 15 minutes |
 | `KTS_RATE_CANDIDATE_FAILS_APP` | `6` | Failed attempts for one application number from one address in 15 minutes; counted for the candidate sign-in and, apart from it, for the status check |
+| `KTS_STIPEND_KEY` | a key made at first need, kept in `instance/stipend.key` | 128 hex digits: the key that seals the account and Aadhaar numbers of the stipend module. Once entries exist it must be the key of `instance/stipend.key` written as hex, or unset: under any other key the portal accepts no entry (see *Stipend*). Kept with every backup of the database |
 | `KTS_HOST`, `KTS_PORT`, `KTS_THREADS` | `0.0.0.0`, `8905`, `8` | Server binding. `KTS_PORT` is read from the environment only, not from `portal.env`; when IIS starts the portal, the port is the one that IIS hands over |
 
 **The settings file `instance/portal.env`.** A name of this table that the
@@ -269,7 +522,11 @@ one.
 
 **Backups.** Copy `instance/kts5.sqlite3` (WAL mode: use `sqlite3 ... ".backup"`
 or stop the service first) and the `uploads/` folder. Both are small: ~1 KB
-per application plus the photo and ID upload.
+per application plus the photo and ID upload. Copy `instance/stipend.key` with
+the database, every time: without it the bank account and Aadhaar numbers of
+the stipend cannot be read again. The safety copy that
+`deploy\plesk\kts-install.bat` keeps at each update holds the database, not
+the key.
 
 **Scale.** SQLite in WAL mode with Waitress threads comfortably serves the
 expected load (tens of thousands of applications; a few thousand concurrent
@@ -294,6 +551,9 @@ a network share.
 * Security headers (nosniff, frame-options, referrer-policy); console and
   candidate pages are `no-store`.
 * All staff actions are written to the audit log with actor and IP.
+* Bank account and Aadhaar numbers of the stipend are sealed in the database
+  and shown in full to superadmin and admin only, each time with a row in the
+  audit log (see *Stipend*).
 
 ## Languages
 

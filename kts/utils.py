@@ -19,7 +19,7 @@ from pathlib import Path
 from flask import abort, current_app, request, session
 from werkzeug.utils import secure_filename
 
-from .db import execute, utcnow
+from .db import execute, get_db, utcnow
 
 IST = timezone(timedelta(hours=5, minutes=30))
 
@@ -242,6 +242,8 @@ def client_ip():
 
 IMAGE_EXT = {"jpg", "jpeg", "png"}
 DOC_EXT = {"pdf", "jpg", "jpeg", "png"}
+# the other extensions of a JPEG, taken wherever a jpg is allowed
+JPEG_NAMES = ("jfif", "pjpeg", "pjp")
 RESOURCE_EXT = {"pdf", "jpg", "jpeg", "png", "webp", "mp3", "mp4", "m4a", "zip", "docx", "pptx", "xlsx", "csv", "epub", "svg", "txt"}
 
 
@@ -266,6 +268,17 @@ def save_upload(file, subdir, allowed_ext, max_bytes):
         raise ValueError("missing")
     name = secure_filename(file.filename)
     ext = name.rsplit(".", 1)[-1].lower() if "." in name else ""
+    if "jpg" in allowed_ext:
+        # other names of a JPEG: browsers on Windows save photos as .jfif; kept as .jpg. Before the
+        # next step, so that a name wholly in another script with such an extension is taken as
+        # well: 'புகைப்படம்.jfif' is 'jfif' once the script is dropped
+        if ext in JPEG_NAMES:
+            ext = "jpg"
+        elif not ext and name.lower() in JPEG_NAMES:
+            ext, name = "jpg", f"file.{name.lower()}"
+    if not ext and name.lower() in allowed_ext:
+        # a name wholly in another script keeps only its extension: 'காசோலை.pdf' becomes 'pdf'
+        ext, name = name.lower(), f"file.{name.lower()}"
     if ext not in allowed_ext:
         raise ValueError("type")
     head = file.stream.read(16)
@@ -314,6 +327,58 @@ def valid_email(value):
 def valid_pincode(value):
     value = (value or "").strip()
     return value == "" or bool(re.fullmatch(r"[1-9]\d{5}", value))
+
+
+def valid_ifsc(value):
+    """The IFSC of a bank branch, in capitals: four letters, a zero, six letters or digits."""
+    return bool(re.fullmatch(r"[A-Z]{4}0[A-Z0-9]{6}", value or ""))
+
+
+def valid_account(value):
+    """A bank account number: 9 to 18 digits 0-9 (no digits of other scripts), not all of them zero."""
+    value = value or ""
+    return bool(re.fullmatch(r"[0-9]{9,18}", value)) and value.strip("0") != ""
+
+
+# The Verhoeff scheme, which gives the Aadhaar number its last digit: it finds every single
+# wrong digit and every two neighbours that changed places.
+_VERHOEFF_D = ((0, 1, 2, 3, 4, 5, 6, 7, 8, 9), (1, 2, 3, 4, 0, 6, 7, 8, 9, 5), (2, 3, 4, 0, 1, 7, 8, 9, 5, 6),
+               (3, 4, 0, 1, 2, 8, 9, 5, 6, 7), (4, 0, 1, 2, 3, 9, 5, 6, 7, 8), (5, 9, 8, 7, 6, 0, 4, 3, 2, 1),
+               (6, 5, 9, 8, 7, 1, 0, 4, 3, 2), (7, 6, 5, 9, 8, 2, 1, 0, 4, 3), (8, 7, 6, 5, 9, 3, 2, 1, 0, 4),
+               (9, 8, 7, 6, 5, 4, 3, 2, 1, 0))
+_VERHOEFF_P = ((0, 1, 2, 3, 4, 5, 6, 7, 8, 9), (1, 5, 7, 6, 2, 8, 3, 0, 9, 4), (5, 8, 0, 3, 7, 9, 6, 1, 4, 2),
+               (8, 9, 1, 6, 0, 4, 3, 5, 2, 7), (9, 4, 5, 3, 1, 2, 6, 8, 7, 0), (4, 2, 8, 6, 5, 7, 3, 9, 0, 1),
+               (2, 7, 9, 3, 8, 0, 6, 4, 1, 5), (7, 0, 4, 6, 9, 1, 3, 2, 5, 8))
+_VERHOEFF_INV = (0, 4, 3, 2, 1, 5, 6, 7, 8, 9)
+
+
+def _verhoeff(digits, start):
+    c = 0
+    for i, ch in enumerate(reversed(digits), start=start):
+        c = _VERHOEFF_D[c][_VERHOEFF_P[i % 8][int(ch)]]
+    return c
+
+
+def verhoeff_digit(digits):
+    """The check digit that the Verhoeff scheme puts behind a row of digits 0-9."""
+    return str(_VERHOEFF_INV[_verhoeff(digits, 1)])
+
+
+def valid_aadhaar(value):
+    """An Aadhaar number: 12 digits 0-9, the first of them 2 to 9, the last the Verhoeff check digit."""
+    value = value or ""
+    return bool(re.fullmatch(r"[2-9][0-9]{11}", value)) and _verhoeff(value, 0) == 0
+
+
+def rupees(value):
+    """'10,000' and '1,25,000': an amount in whole rupees with the commas as they are set in India."""
+    digits = str(safe_int(value))
+    head, tail = digits[:-3], digits[-3:]
+    groups = []
+    while len(head) > 2:
+        groups.insert(0, head[-2:])
+        head = head[:-2]
+    return ",".join(([head] if head else []) + groups + [tail])
 
 
 def age_on(dob, on=None):
@@ -366,17 +431,27 @@ def csv_bytes(headers, rows):
     return ("﻿" + buf.getvalue()).encode("utf-8")
 
 
-def xlsx_bytes(headers, rows, sheet="Sheet1"):
+def xlsx_bytes(headers, rows, sheet="Sheet1", text_cols=()):
+    """
+    text_cols: the columns (numbers from 0) that are text whatever they look like. Their cells
+    are written as strings in the format Text: an account number keeps its zeros in front and
+    all its digits, and what a student typed is never taken for a formula or a link.
+    """
     import xlsxwriter
     buf = io.BytesIO()
     wb = xlsxwriter.Workbook(buf, {"in_memory": True})
     ws = wb.add_worksheet(sheet[:31])
     bold = wb.add_format({"bold": True, "bg_color": "#EDE7DB", "border": 1})
+    as_text = wb.add_format({"num_format": "@"})
+    text_cols = set(text_cols)
     for c, h in enumerate(headers):
         ws.write(0, c, h, bold)
     for r, row in enumerate(rows, start=1):
         for c, v in enumerate(row):
-            ws.write(r, c, "" if v is None else v)
+            if c in text_cols:
+                ws.write_string(r, c, "" if v is None else str(v), as_text)
+            else:
+                ws.write(r, c, "" if v is None else v)
     ws.freeze_panes(1, 0)
     ws.autofilter(0, 0, max(len(rows), 1), max(len(headers) - 1, 0))
     for c, h in enumerate(headers):
@@ -415,9 +490,43 @@ def send_mail(to_addr, subject, body):
         "INSERT INTO outbox(to_addr, subject, body, status, created_at) VALUES(?,?,?,?,?)",
         (to_addr, subject, body, "queued", utcnow()),
     )
+    if current_app.config.get("SMTP_HOST"):
+        _deliver(row_id, to_addr, subject, body)
+    return row_id
+
+
+def send_later(messages):
+    """
+    Many messages at once, each (address, subject, body): all of them are queued in the outbox
+    together and, where SMTP is configured, sent one after the other by a thread of their own,
+    so that the page that caused them does not wait for a thousand deliveries. Gives the
+    thread, or None when nothing is sent.
+    """
+    conn = get_db()
+    now = utcnow()
+    queued = []
+    for to_addr, subject, body in messages:
+        cur = conn.execute("INSERT INTO outbox(to_addr, subject, body, status, created_at) VALUES(?,?,?,?,?)",
+                           (to_addr, subject, body, "queued", now))
+        queued.append((cur.lastrowid, to_addr, subject, body))
+    conn.commit()
+    if not queued or not current_app.config.get("SMTP_HOST"):
+        return None
+    app = current_app._get_current_object()
+
+    def run():
+        with app.app_context():
+            for item in queued:
+                _deliver(*item)
+
+    thread = threading.Thread(target=run, name="kts-mail", daemon=True)
+    thread.start()
+    return thread
+
+
+def _deliver(row_id, to_addr, subject, body):
+    """One message of the outbox over SMTP; its row says afterwards whether it went."""
     cfg = current_app.config
-    if not cfg.get("SMTP_HOST"):
-        return row_id
     try:
         msg = EmailMessage()
         msg["From"] = cfg["SMTP_FROM"]
@@ -433,7 +542,6 @@ def send_mail(to_addr, subject, body):
         execute("UPDATE outbox SET status='sent', sent_at=? WHERE id=?", (utcnow(), row_id))
     except Exception as exc:  # noqa: BLE001 - record and move on
         execute("UPDATE outbox SET status='failed', error=? WHERE id=?", (str(exc)[:500], row_id))
-    return row_id
 
 
 # ---- misc -------------------------------------------------------------------

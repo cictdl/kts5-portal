@@ -121,6 +121,24 @@ def test_an_application_of_the_selection_list_is_not_deleted():
     assert "selection list" in admin.get(f"/console/applications/{aid}").get_data(as_text=True)
 
 
+def test_an_application_with_bank_details_is_not_deleted():
+    """The bank details of the stipend, and the record of a payment, stay with their application."""
+    from kts.db import execute, utcnow
+    app = make_app(ADMIN_PASSWORD=None)
+    aid, number = _application(app)
+    with app.app_context():
+        execute("INSERT INTO bank_details(application_id, holder_name, account_enc, account_last4, account_hash, ifsc, bank_name, "
+                "branch, account_type, status, submitted_at, created_at, updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                (aid, "Trial Entry 1", "sealed", "0001", "hash-1", "SBIN0000001", "Test Bank", "Main", "savings", "paid",
+                 utcnow(), utcnow(), utcnow()))
+    admin = _staff(app, "admin@tests.example", "admin")
+    r = _post(admin, aid, confirm_no=number)
+    assert r.status_code == 302 and r.headers["Location"] == f"/console/applications/{aid}"
+    assert _count(app, "applications", "id = ?", (aid,)) == 1 and _count(app, "bank_details", "application_id = ?", (aid,)) == 1
+    assert (Path(app.config["UPLOAD_DIR"]) / PHOTO).exists()
+    assert "bank details for the stipend" in admin.get(f"/console/applications/{aid}").get_data(as_text=True)
+
+
 def test_a_file_outside_the_upload_folder_is_not_touched():
     app = make_app(ADMIN_PASSWORD=None)
     outside = Path(app.config["UPLOAD_DIR"]).parent / "outside.txt"

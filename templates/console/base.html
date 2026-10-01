@@ -30,6 +30,9 @@
     {% if has_perm(u, 'selection') %}
     <a class="item {{ 'active' if ep.startswith('admin.selection') }}" href="{{ url_for('admin.selection') }}">🏅 Selection &amp; merit list</a>
     {% endif %}
+    {% if has_perm(u, 'stipend') %}
+    <a class="item {{ 'active' if ep.startswith('admin.stipend') }}" href="{{ url_for('admin.stipend') }}">🏦 Stipend</a>
+    {% endif %}
     {% if has_perm(u, 'content') %}
     <div class="group">Content</div>
     <a class="item {{ 'active' if ep.startswith('admin.notice') }}" href="{{ url_for('admin.notices') }}">📣 Notices</a>

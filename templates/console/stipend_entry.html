@@ -1,0 +1,96 @@
+{% extends "console/base.html" %}
+{% block title %}Stipend · {{ a.app_no }}{% endblock %}
+{% block heading %}Stipend · {{ a.app_no }} · {{ a.full_name }}{% if b %} <span class="pill {{ {'returned': 'saffron', 'approved': 'green', 'paid': 'green'}.get(b.status, '') }}">{{ b.status }}</span>{% endif %}{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('admin.stipend') }}">← Stipend</a> · <a href="{{ url_for('admin.application', aid=a.id) }}">Application</a></p>
+{% if a.status != 'selected' %}<div class="alert error">This student is not in the selected list (status: {{ a.status.replace('_', ' ') }}).{% if b and b.status == 'paid' %} The stipend was paid on {{ b.paid_on|date }} (reference {{ b.paid_ref }}), before the student left the list; nothing more is paid.{% else %} Nothing is approved or paid for this application.{% endif %}</div>{% endif %}
+{% if not b %}
+<div class="card"><p class="muted" style="margin:0">No bank details have been submitted for this application.</p></div>
+{% else %}
+<div class="two-col" style="grid-template-columns: 1.4fr 1fr">
+  <div>
+    <div class="card accent detail">
+      <h3>Whose account</h3>
+      <div class="grid grid-2" style="margin-bottom:10px">
+        <div><div class="small muted">Name in the application</div><div style="font-size:1.25rem;font-weight:700">{{ a.full_name }}</div></div>
+        <div><div class="small muted">Account holder, as the student typed it</div><div style="font-size:1.25rem;font-weight:700">{{ b.holder_name }}</div></div>
+      </div>
+      {% if not same_name %}<div class="alert warning">The two names are not written alike. Compare them with the name on the proof before approving.</div>{% endif %}
+      {% if not readable %}<div class="alert error">The numbers of this entry cannot be read with the key of this installation (<code>instance\stipend.key</code> or <code>KTS_STIPEND_KEY</code>). Put back the key that was in use when the entry was made. The entry cannot be approved or paid until then.</div>{% endif %}
+      <dl>
+        <dt>Account number</dt><dd>{% if readable %}<code style="font-size:1.2rem;letter-spacing:.06em">{{ account }}</code> <span class="small muted">({{ account|length }} digits)</span>{% else %}<code>XXXXXX{{ b.account_last4 }}</code>{% endif %}</dd>
+        <dt>IFSC</dt><dd><code style="font-size:1.1rem">{{ b.ifsc }}</code></dd>
+        <dt>Bank · branch</dt><dd>{{ b.bank_name }} · {{ b.branch }}</dd>
+        <dt>Type of account</dt><dd>{{ b.account_type }}</dd>
+        <dt>Aadhaar number</dt><dd>{% if not b.aadhaar_enc %}<span class="muted">not given</span>{% elif readable %}<code>{{ aadhaar[:4] }} {{ aadhaar[4:8] }} {{ aadhaar[8:] }}</code>{% else %}<code>XXXX XXXX {{ b.aadhaar_last4 }}</code>{% endif %}</dd>
+        <dt>Proof</dt><dd>{% if b.proof_path %}<a href="{{ url_for('admin.staff_file', relpath=b.proof_path) }}" target="_blank" rel="noopener">Open the cheque or passbook ↗</a> <span class="small muted">{{ b.proof_name }} · {{ b.proof_size|size }}</span>{% else %}–{% endif %}</dd>
+        <dt>Submitted</dt><dd>{{ b.submitted_at|datetime }} · IP {{ b.ip }}</dd>
+        {% if b.reviewed_at %}<dt>Checked</dt><dd>{{ staff.get(b.reviewed_by, '–') }} · {{ b.reviewed_at|datetime }}</dd>{% endif %}
+        {% if listed %}<dt>Payment list</dt><dd>In payment list no. {{ listed }}, which is not yet marked as paid{% if b.status == 'paid' %} (this entry is marked as paid already, not through this list){% endif %}</dd>{% endif %}
+        {% if b.remark %}<dt>Last remark</dt><dd>{{ b.remark }}</dd>{% endif %}
+        {% if b.status == 'paid' %}<dt>Paid</dt><dd>{{ b.paid_on|date }} · reference <code>{{ b.paid_ref }}</code> · Rs. {{ amount }} · by {{ staff.get(b.paid_by, '–') }}</dd>{% endif %}
+      </dl>
+      <p class="small muted" style="margin:10px 0 0">Registered: {{ a.email }} · {{ a.mobile }} · {{ a.college_name }}, {{ a.college_state or a.state }}</p>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h3>Same account for other applications ({{ others|length }})</h3>
+      {% if others %}
+      <div class="alert error">This account number is also given for the applications below. At most one of them can be the owner.</div>
+      <ul class="notice-list">{% for o in others %}<li><div><a href="{{ url_for('admin.stipend_entry', aid=o.id) }}"><code>{{ o.app_no }}</code></a> {{ o.full_name }} · holder {{ o.holder_name }}<div class="meta">{{ o.college_name }} · IFSC {{ o.ifsc }}{% if o.app_status != 'selected' %} · {{ o.app_status.replace('_', ' ') }}{% endif %}</div></div><span class="pill {{ {'returned': 'saffron', 'approved': 'green', 'paid': 'green'}.get(o.status, '') }}">{{ o.status }}</span></li>{% endfor %}</ul>
+      {% else %}<p class="muted small" style="margin:0">No other application gives this account.</p>{% endif %}
+    </div>
+  </div>
+
+  <div>
+    <div class="card accent">
+      <h3>Action</h3>
+      {% if b.status == 'submitted' and a.status == 'selected' and readable %}
+      <form method="post" style="margin-bottom:14px">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <input type="hidden" name="seen" value="{{ seen }}">
+        <p class="small dim" style="margin-top:0">Approve only after comparing name, account number and IFSC with the proof.</p>
+        <button class="btn sm" name="action" value="approve" type="submit"{% if others or not same_name %} data-confirm="{{ 'Another application gives the same account. ' if others }}{{ 'The names are not written alike. ' if not same_name }}Approve all the same?"{% endif %}>✓ Approve</button>
+      </form>
+      {% endif %}
+      {% if b.status in ('submitted', 'approved') %}
+      <form method="post" style="margin-bottom:14px">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <input type="hidden" name="seen" value="{{ seen }}">
+        <div class="field"><label for="remark">Remark to the student (what to correct; mailed and shown to the student)</label><textarea id="remark" name="remark" rows="3" maxlength="500" required></textarea></div>
+        {% if listed %}<label class="check" style="margin-top:8px"><input type="checkbox" name="not_paid" value="1" required> The bank has not paid this entry from payment list no. {{ listed }} (a returned entry, sent again and approved again, goes into the next list)</label>{% endif %}
+        <button class="btn sm ghost" name="action" value="return" type="submit" style="margin-top:8px">Return to the student</button>
+      </form>
+      {% endif %}
+      {% if b.status == 'approved' and a.status == 'selected' and readable %}
+      <form method="post" style="margin-bottom:14px">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <input type="hidden" name="seen" value="{{ seen }}">
+        <div class="fields">
+          <div class="field"><label for="paid_ref">Payment reference</label><input type="text" id="paid_ref" name="paid_ref" maxlength="80" required autocomplete="off"></div>
+          <div class="field"><label for="paid_on">Date of payment</label><input type="date" id="paid_on" name="paid_on" max="{{ today }}" required></div>
+        </div>
+        <button class="btn sm" name="action" value="paid" type="submit" style="margin-top:8px">Mark as paid</button>
+      </form>
+      {% endif %}
+      {% if b.status == 'paid' and current_user.role == 'superadmin' %}
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <input type="hidden" name="seen" value="{{ seen }}">
+        {% if listed %}<label class="check" style="margin-bottom:8px"><input type="checkbox" name="not_paid" value="1" required> The bank has not paid this entry from payment list no. {{ listed }} (approved again, the entry stays in that list and would go into the next one as well)</label>{% endif %}
+        <button class="btn sm danger" name="action" value="unpaid" type="submit" data-confirm="Take the mark 'paid' back? The entry becomes approved again and the student gets a mail.">Undo 'paid'</button>
+      </form>
+      {% endif %}
+      {% if b.status == 'returned' %}<p class="small muted" style="margin:0">Returned to the student; the student corrects it and sends it again.</p>{% endif %}
+      {% if b.status == 'paid' and current_user.role != 'superadmin' %}<p class="small muted" style="margin:0">Paid. Only a superadmin can take the mark back.</p>{% endif %}
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3>History</h3>
+      {% for h in history %}<div class="audit-row"><span class="muted">{{ h.created_at|datetime }}</span><span><code>{{ h.action }}</code> <span class="muted">{{ h.actor }}</span> <span class="dim">{{ h.detail|truncate(90) }}</span></span></div>{% else %}<p class="muted small" style="margin:0">–</p>{% endfor %}
+      <h4 style="margin:14px 0 4px">Opened by the staff: {{ looked }}{% if looked > looks|length %} (the last {{ looks|length }} below){% endif %}</h4>
+      {% for h in looks %}<div class="audit-row"><span class="muted">{{ h.created_at|datetime }}</span><span><code>{{ h.action }}</code> <span class="muted">{{ h.actor }}</span></span></div>{% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

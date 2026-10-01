@@ -70,7 +70,9 @@ def dashboard():
     overdue = query("SELECT COUNT(*) AS n FROM tasks WHERE status NOT IN ('done') AND due_date IS NOT NULL AND due_date < ?",
                     (now_ist().strftime("%Y-%m-%d"),), one=True)["n"]
     messages = query("SELECT COUNT(*) AS n FROM messages WHERE handled = 0", one=True)["n"]
-    recent = query("SELECT * FROM audit_log ORDER BY id DESC LIMIT 12")
+    # the rows of the bank details are for those who may open them
+    hide = "" if has_perm(user, "stipend") else " WHERE action NOT LIKE 'bank_%'"
+    recent = query("SELECT * FROM audit_log" + hide + " ORDER BY id DESC LIMIT 12")
     start, end, is_open = exam_window(settings)
     return render_template("console/dashboard.html", settings=settings, by_status=by_status, total=total,
                            colleges=colleges, states=states, days=days, max_day=max_day, top_states=top_states,
@@ -189,6 +191,9 @@ def application(aid):
                 flash("Nothing was deleted: type the application number exactly as shown to confirm.", "error")
             elif query("SELECT 1 FROM merit_list WHERE application_id = ?", (aid,), one=True):
                 flash("This application stands in the selection list and cannot be deleted. Withdraw it instead.", "error")
+            elif query("SELECT 1 FROM bank_details WHERE application_id = ?", (aid,), one=True):
+                # the bank details and the record of a payment stay with the application
+                flash("This application has bank details for the stipend and cannot be deleted. Withdraw it instead.", "error")
             else:
                 _delete_application(row)
                 # the number and the reason only: nothing of the person stays behind
@@ -204,11 +209,21 @@ def application(aid):
     exam = query("SELECT * FROM exam_sessions WHERE application_id = ?", (aid,), one=True)
     same_college = query("SELECT id, app_no, full_name, status, exam_score FROM applications WHERE college_key = ? AND id != ? ORDER BY id",
                          (row["college_key"], aid))
-    history = query("SELECT * FROM audit_log WHERE entity = 'application' AND entity_id = ? ORDER BY id DESC LIMIT 30", (aid,))
+    # the rows of the bank details are for those who may open them; the looks at the full numbers
+    # stand on the stipend page, here they would push the history off
+    hide = ("" if has_perm(user, "stipend") else " AND action NOT LIKE 'bank_%'") \
+        + " AND action NOT IN ('bank_viewed', 'bank_proof_opened')"
+    history = query("SELECT * FROM audit_log WHERE entity = 'application' AND entity_id = ?" + hide +
+                    " ORDER BY id DESC LIMIT 30", (aid,))
     verifier = query("SELECT name FROM users WHERE id = ?", (row["verified_by"],), one=True) if row["verified_by"] else None
     merit = query("SELECT * FROM merit_list WHERE application_id = ?", (aid,), one=True)
+    # the state of the bank details of a selected student, for those who may open them
+    bank = None
+    if row["status"] == "selected" and has_perm(user, "stipend"):
+        entry = query("SELECT status FROM bank_details WHERE application_id = ?", (aid,), one=True)
+        bank = entry["status"] if entry else "none"
     return render_template("console/application.html", a=row, exam=exam, same_college=same_college, history=history,
-                           verifier=verifier, merit=merit, lang_name=K.lang_label(row["pref_lang"]))
+                           verifier=verifier, merit=merit, bank=bank, lang_name=K.lang_label(row["pref_lang"]))
 
 
 def _delete_application(row):
@@ -255,10 +270,21 @@ def staff_file(relpath):
     # the folders that exist, by their names as the portal writes them: Windows would open
     # "Photos" or "photos." as the folder photos
     folder = relpath.partition("/")[0]
-    if folder not in ("photos", "idproofs", "notices", "resources", "tasks", "documents"):
+    if folder not in ("photos", "idproofs", "bankproofs", "notices", "resources", "tasks", "documents"):
         abort(404)
     if folder in ("photos", "idproofs") and not has_perm(user, "apps.view"):
         abort(403)
+    if folder == "bankproofs":
+        if not has_perm(user, "stipend"):
+            abort(403)
+        # the proof shows the account number in full: only the name an entry keeps is served
+        # (Windows opens "x.pdf." or "X.PDF" as x.pdf), and every opening is written down. The
+        # whole file goes each time, without parts on request, so no part is read unrecorded
+        entry = query("SELECT application_id FROM bank_details WHERE proof_path = ?", (relpath,), one=True)
+        if entry is None:
+            abort(404)
+        audit("bank_proof_opened", "application", entry["application_id"], detail=relpath, user=user, ip=client_ip())
+        return send_from_directory(Path(current_app.config["UPLOAD_DIR"]), relpath, conditional=False)
     return send_from_directory(Path(current_app.config["UPLOAD_DIR"]), relpath)
 
 
@@ -809,6 +835,10 @@ SETTING_GROUPS = [
                                   ("schedule.tentative", "Show the note “tentative timeline” on the schedule page", "bool")]),
     ("Merit list", [("merit.published", "Merit list published", "bool"), ("merit.select_count", "Number to select", "number"),
                     ("merit.wait_count", "Waitlist size", "number"), ("merit.note", "Note shown above the merit list", "text")]),
+    ("Stipend", [("stipend.open", "Form for the bank details of the selected students is open", "bool"),
+                 ("stipend.last_date", "Last date for first entries (YYYY-MM-DD; empty: none)", "date"),
+                 ("stipend.amount", "Stipend in rupees", "number"),
+                 ("stipend.aadhaar", "Ask for the Aadhaar number", "bool")]),
     ("Orientation", [("orientation.note", "Note shown on the orientation page", "text")]),
     ("Contact", [("contact.email", "Helpdesk email", "text"), ("contact.phone", "Helpdesk phone", "text"), ("contact.address", "Postal address", "text")]),
     ("Social media (an empty address hides the link)", [(key, name, "text") for key, name, _address in SOCIAL_LINKS]),

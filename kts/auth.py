@@ -31,6 +31,8 @@ PERMS = {
     "exam.manage":   {"superadmin", "admin"},
     "exam.view":     {"superadmin", "admin", "verifier", "viewer"},
     "selection":     {"superadmin", "admin"},
+    # bank details of the selected students: full numbers are shown to these two roles only
+    "stipend":       {"superadmin", "admin"},
     "content":       {"superadmin", "admin", "content"},
     "coord.view":    {"superadmin", "admin", "content", "verifier", "viewer", "agency"},
     "coord.edit":    {"superadmin", "admin", "agency"},

@@ -288,12 +288,68 @@ CREATE TABLE IF NOT EXISTS audit_log (
     created_at  TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_audit_time ON audit_log(created_at);
+
+-- Stipend: the bank details of a selected student, one row for each application. The account
+-- number and the Aadhaar number are sealed (kts/secure.py); in plain text stand their last four
+-- digits only. account_hash is the keyed look-up value that finds one account given twice.
+CREATE TABLE IF NOT EXISTS bank_details (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    application_id  INTEGER NOT NULL UNIQUE REFERENCES applications(id),
+    holder_name     TEXT NOT NULL,
+    account_enc     TEXT NOT NULL,
+    account_last4   TEXT NOT NULL,
+    account_hash    TEXT NOT NULL,
+    ifsc            TEXT NOT NULL,
+    bank_name       TEXT NOT NULL,
+    branch          TEXT NOT NULL DEFAULT '',
+    account_type    TEXT NOT NULL DEFAULT 'savings',
+    aadhaar_enc     TEXT NOT NULL DEFAULT '',
+    aadhaar_last4   TEXT NOT NULL DEFAULT '',
+    proof_path      TEXT NOT NULL DEFAULT '',
+    proof_name      TEXT NOT NULL DEFAULT '',
+    proof_size      INTEGER NOT NULL DEFAULT 0,
+    status          TEXT NOT NULL DEFAULT 'submitted',
+    remark          TEXT NOT NULL DEFAULT '',
+    submitted_at    TEXT NOT NULL,
+    reviewed_by     INTEGER REFERENCES users(id),
+    reviewed_at     TEXT,
+    paid_ref        TEXT NOT NULL DEFAULT '',
+    paid_on         TEXT NOT NULL DEFAULT '',
+    paid_by         INTEGER REFERENCES users(id),
+    ip              TEXT DEFAULT '',
+    created_at      TEXT NOT NULL,
+    updated_at      TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_bank_status ON bank_details(status);
+CREATE INDEX IF NOT EXISTS idx_bank_account ON bank_details(account_hash);
+
+-- Stipend: every payment list (the export of the entries approved and not yet paid) as it went
+-- out: the entries in it, each with its updated_at, as JSON [[id, updated_at], ...], and the
+-- amount per student of that day (column amount, added in LATER_COLUMNS). 'Paid' for a list
+-- marks those entries only, and only those that have not changed since, at that amount; the
+-- list is then settled (paid_ref 'discarded' for a list that never went to the bank). No number
+-- of an account stands here.
+CREATE TABLE IF NOT EXISTS stipend_batches (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    entries     TEXT NOT NULL,
+    rows        INTEGER NOT NULL,
+    created_by  INTEGER REFERENCES users(id),
+    created_at  TEXT NOT NULL,
+    paid_ref    TEXT NOT NULL DEFAULT '',
+    paid_on     TEXT NOT NULL DEFAULT '',
+    settled_at  TEXT
+);
 """
 
 # Columns added after the first release: (table, column, DDL type/default)
 LATER_COLUMNS = [
     ("applications", "withdrawn_at", "TEXT"),
     ("applications", "admit_card_no", "TEXT"),
+    # the stipend as it was paid: the setting stipend.amount may change afterwards
+    ("bank_details", "paid_amount", "INTEGER"),
+    # the stipend per student as a payment list went out: the list is paid at that sum, not at the
+    # setting of the day it is marked
+    ("stipend_batches", "amount", "INTEGER"),
 ]
 
 # CICT on social media: (setting, name of the service, address). The links stand in the footer of
@@ -345,6 +401,11 @@ DEFAULT_SETTINGS = {
     "merit.select_count": "1000",
     "merit.wait_count": "300",
     "merit.note": "",
+    # the form for the bank details of the selected students; closed until an administrator opens it
+    "stipend.open": "0",
+    "stipend.last_date": "",
+    "stipend.amount": "10000",
+    "stipend.aadhaar": "1",
     "orientation.note": "Language-wise online orientation sessions (10 lectures + 20-minute live Q&A) will be scheduled after the merit list is published.",
     "contact.email": "office@cict.in",
     "contact.phone": "044-22540125",
@@ -512,6 +573,22 @@ def audit(action, entity="", entity_id=None, detail="", user=None, ip=""):
             user["email"] if user else "public",
             action, entity, entity_id, detail or "", ip or "", utcnow(),
         ),
+    )
+
+
+def audit_rows(action, entity, rows, user=None, ip=""):
+    """
+    The rows of the audit log for one action on many entries, rows = [(entity_id, detail), ...].
+    They are written on the connection of the request and not committed here: the caller
+    commits them together with the change that they describe.
+    """
+    now = utcnow()
+    get_db().executemany(
+        "INSERT INTO audit_log(user_id, actor, action, entity, entity_id, detail, ip, created_at) "
+        "VALUES(?,?,?,?,?,?,?,?)",
+        [(user["id"] if user else None, user["email"] if user else "public", action, entity, entity_id,
+          json.dumps(detail, ensure_ascii=False) if isinstance(detail, (dict, list)) else (detail or ""),
+          ip or "", now) for entity_id, detail in rows],
     )
 
 

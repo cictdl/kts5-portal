@@ -1,0 +1,88 @@
+{% extends "console/base.html" %}
+{% block title %}Stipend: bank details{% endblock %}
+{% set chip = {'submitted': '', 'returned': 'saffron', 'approved': 'green', 'paid': 'green'} %}
+{% set words = {'none': 'Not yet submitted', 'submitted': 'Submitted, to check', 'returned': 'Returned', 'approved': 'Approved, to pay', 'paid': 'Paid', 'same': 'Same account as another application', 'off': 'Not in the selected list'} %}
+{% block content %}
+<div class="kpis">
+  <div class="kpi"><div class="lbl">Selected students</div><div class="num">{{ '{:,}'.format(selected) }}</div><div class="sub">stipend Rs. {{ amount }} each</div></div>
+  <div class="kpi"><div class="lbl">Not yet submitted</div><div class="num">{{ '{:,}'.format(counts.get('none', 0)) }}</div></div>
+  <div class="kpi"><div class="lbl">Submitted</div><div class="num">{{ '{:,}'.format(counts.get('submitted', 0)) }}</div><div class="sub">to be checked</div></div>
+  <div class="kpi"><div class="lbl">Returned</div><div class="num">{{ '{:,}'.format(counts.get('returned', 0)) }}</div><div class="sub">with the students</div></div>
+  <div class="kpi"><div class="lbl">Approved</div><div class="num">{{ '{:,}'.format(counts.get('approved', 0)) }}</div><div class="sub">to pay: Rs. {{ due }}</div></div>
+  <div class="kpi"><div class="lbl">Paid</div><div class="num">{{ '{:,}'.format(counts.get('paid', 0)) }}</div>{% if off_paid %}<div class="sub">and {{ off_paid }} paid to students no longer selected</div>{% endif %}</div>
+</div>
+{% if settings['stipend.open'] != '1' %}<div class="alert warning">The form is closed for the students. Open it under <a href="{{ url_for('admin.settings_page') }}">Settings → Stipend</a> once the merit list is published.</div>
+{% elif settings['merit.published'] != '1' %}<div class="alert warning">The merit list is not published: no student can open the form yet.</div>
+{% else %}<div class="alert info">The form is open for the selected students{% if last_date %} until {{ last_date|date }} (returned entries may be sent again after that date){% endif %}.{% if settings['stipend.aadhaar'] == '1' %} The Aadhaar number is asked for.{% endif %}</div>{% endif %}
+{% if same %}<div class="alert error">{{ same|length }} account(s) are given for more than one application. <a href="{{ url_for('admin.stipend', state='same') }}">Show them</a>; check each one against its proof before approving it.</div>{% endif %}
+{% if off_list %}<div class="alert warning">{{ off_list }} entr{{ 'y belongs to a student who is' if off_list == 1 else 'ies belong to students who are' }} no longer in the selected list: not approved, paid or put in a payment list any more.{% if off_paid %} Of these, {{ off_paid }} {{ 'was paid before and stays' if off_paid == 1 else 'were paid before and stay' }} in the list of paid entries.{% endif %} <a href="{{ url_for('admin.stipend', state='off') }}">Show them</a>.</div>{% endif %}
+
+<form method="get" class="filters">
+  <div class="field grow"><label for="q">Search</label><input type="search" id="q" name="q" value="{{ f.q }}" placeholder="Name, application no or college"></div>
+  <div class="field"><label for="state">Bank details</label><select id="state" name="state"><option value="">All selected students</option>{% for s in ['none'] + states + ['same', 'off'] %}<option value="{{ s }}" {{ 'selected' if f.state == s }}>{{ words[s] }}</option>{% endfor %}</select></div>
+  <div class="field"><button class="btn" type="submit">Filter</button></div>
+</form>
+
+<div class="two-col" style="margin-bottom:16px">
+  <form method="get" class="card" action="{{ url_for('admin.stipend_export', fmt='xlsx') }}">
+    <h3>Payment list</h3>
+    <p class="small dim">Only entries that have been approved against their proof, of students in the selected list; a payment made before a student left the list stays in the list of paid entries. Every export of 'Approved, not yet paid' is a numbered payment list, to be marked as paid below once the bank has carried it out. Account numbers are written as text. Every export is written to the audit log.</p>
+    <div class="fields">
+      <div class="field"><label for="which">Entries</label><select id="which" name="which"><option value="due">Approved, not yet paid</option><option value="paid">Paid</option><option value="all">Approved and paid</option></select></div>
+      <div class="field"><label>&nbsp;</label><label class="check"><input type="checkbox" name="aadhaar" value="1"> Include Aadhaar numbers</label></div>
+    </div>
+    <div class="btn-row" style="margin-top:10px"><button class="btn secondary" type="submit">Excel</button><button class="btn secondary" type="submit" formaction="{{ url_for('admin.stipend_export', fmt='csv') }}">CSV</button></div>
+  </form>
+  <form method="post" class="card" action="{{ url_for('admin.stipend_paid_all') }}">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <h3>Mark a payment list as paid</h3>
+    <p class="small dim">After the bank has carried out the transfers of a payment list (an export of 'Approved, not yet paid'): one reference (the batch or the sanction order) and the date for the entries of that list, which are marked paid at the amount the list went out with. Entries approved after it, or changed since, are left out and named. A list that never went to the bank is discarded: nothing is marked paid and its entries go into the next list.</p>
+    <div class="fields">
+      <div class="field"><label for="bulk_batch">Payment list (its number stands in the name of the file)</label><select id="bulk_batch" name="batch" required>{% if batches %}<option value="" disabled selected>Choose the list</option>{% endif %}{% for b in batches %}<option value="{{ b.id }}">No. {{ b.id }} · {{ b.created_at|datetime }} · {{ b.rows }} entr{{ 'y' if b.rows == 1 else 'ies' }} · Rs. {{ b.each }} each</option>{% else %}<option value="">No payment list is waiting</option>{% endfor %}</select></div>
+      <div class="field"><label for="bulk_ref">Payment reference</label><input type="text" id="bulk_ref" name="paid_ref" maxlength="80" required autocomplete="off"></div>
+      <div class="field"><label for="bulk_on">Date of payment</label><input type="date" id="bulk_on" name="paid_on" max="{{ today }}" required></div>
+    </div>
+    {# the button that pays stands first: Enter in a field submits through it, never through 'Discard' #}
+    <div class="btn-row" style="margin-top:10px"><button class="btn" type="submit" {{ 'disabled' if not batches }} data-confirm="Mark the entries of this payment list as paid with this reference and date? Every student in it gets a mail.">Mark this list as paid</button><button class="btn ghost" type="submit" formaction="{{ url_for('admin.stipend_discard') }}" formnovalidate {{ 'disabled' if not batches }} data-confirm="Discard the chosen payment list? Do this only when the bank did not receive its file: nothing is marked as paid, and the entries of the list go into the next one.">Discard the chosen list</button></div>
+  </form>
+</div>
+
+{% if batches %}
+<div class="card" style="margin-bottom:16px">
+  <h3>Payment lists not yet marked as paid</h3>
+  <p class="small dim">The file of a list again, with its entries as they stand now and a last column 'Changed since the list' where an entry has changed since it went out (returned, sent again, approved again, paid one by one) or the student is no longer selected: 'paid' for the list would leave those out. No new list is made; the download is written to the audit log.</p>
+  <div class="table-wrap"><table class="table">
+    <thead><tr><th class="num">No.</th><th>Made on</th><th>By</th><th class="num">Entries</th><th class="num">Rs. each</th><th>Download again</th></tr></thead>
+    <tbody>{% for b in batches %}
+    <tr><td class="num">{{ b.id }}</td><td>{{ b.created_at|datetime }}</td><td>{{ b.made_by or '–' }}</td><td class="num">{{ b.rows }}</td><td class="num">{{ b.each }}</td><td><a href="{{ url_for('admin.stipend_list', bid=b.id, fmt='xlsx') }}">Excel</a> · <a href="{{ url_for('admin.stipend_list', bid=b.id, fmt='csv') }}">CSV</a></td></tr>
+    {% endfor %}</tbody>
+  </table></div>
+</div>
+{% endif %}
+
+<p class="small muted">{{ '{:,}'.format(pg.total) }} student(s){% if f.state %} · {{ words.get(f.state, f.state) }}{% endif %} · page {{ pg.page }} of {{ pg.pages }}{% if f.state == 'none' and counts.get('none') %} · with e-mail and mobile, for a reminder: <a href="{{ url_for('admin.stipend_export', fmt='xlsx', which='none') }}">Excel</a> · <a href="{{ url_for('admin.stipend_export', fmt='csv', which='none') }}">CSV</a>{% endif %}</p>
+<div class="table-wrap"><table class="table">
+  <thead><tr><th class="num">Rank</th><th>App no</th><th>Name</th><th>College</th><th>State</th><th>Bank details</th><th>Account</th><th>IFSC</th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+  <tr>
+    <td class="num">{{ r.exam_rank or '–' }}</td>
+    <td><a href="{{ url_for('admin.stipend_entry', aid=r.id) }}"><code>{{ r.app_no }}</code></a></td>
+    <td>{{ r.full_name }}</td>
+    <td>{{ r.college_name|truncate(48) }}</td>
+    <td>{{ r.college_state or r.state }}</td>
+    <td>{% if r.bank_status %}<span class="pill {{ chip.get(r.bank_status, '') }}">{{ r.bank_status }}</span>{% else %}<span class="pill grey">not yet</span>{% endif %}
+      {% if r.account_hash in same %} <span class="pill kumkum" title="The same account is given for another application">⚠ same account</span>{% endif %}</td>
+    <td>{% if r.account_last4 %}<code>{{ mask(r.account_last4) }}</code>{% else %}–{% endif %}</td>
+    <td>{% if r.ifsc %}<code>{{ r.ifsc }}</code>{% else %}–{% endif %}</td>
+  </tr>
+  {% else %}<tr><td colspan="8" class="muted">No student matches.</td></tr>{% endfor %}
+  </tbody></table></div>
+{% if pg.pages > 1 %}
+<div class="pagination">
+  {% if pg.has_prev %}<a href="{{ url_for('admin.stipend', page=pg.page - 1, **f) }}">← Prev</a>{% endif %}
+  <span class="cur">{{ pg.page }}</span><span>of {{ pg.pages }}</span>
+  {% if pg.has_next %}<a href="{{ url_for('admin.stipend', page=pg.page + 1, **f) }}">Next →</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

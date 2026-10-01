@@ -47,6 +47,8 @@ def create_app(config_object=Config):
 
     from . import admin, agency, auth, candidate, db, i18n, public, utils
     from . import kural as K
+    # the stipend module adds its pages to the blueprints of the candidates and of the console
+    from . import stipend  # noqa: F401
 
     db.init_app(app)
     i18n.register(app)

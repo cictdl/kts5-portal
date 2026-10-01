@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}{{ t('bank.title') }}{% endblock %}
+{# Every entry is typed in English: the inputs run left to right also in Urdu and Kashmiri. The two
+   numbers (account, Aadhaar) never come back into the page: they carry no value attribute. #}
+{% macro field(name, label, help='', attrs='', wide=False) %}
+<div class="field {{ 'wide' if wide }} {{ 'has-err' if errors.get(name) }}">
+  <label for="{{ name }}">{{ label }} <span class="req">*</span></label>
+  <input type="text" id="{{ name }}" name="{{ name }}" value="{{ data.get(name, '') }}" required dir="ltr" lang="en" {{ attrs|safe }}{% if errors.get(name) %} aria-invalid="true" aria-describedby="{{ name }}-err"{% endif %}>
+  {% if errors.get(name) %}<span class="err" id="{{ name }}-err">{{ errors[name] }}</span>{% elif help %}<span class="help">{{ help }}</span>{% endif %}
+</div>
+{% endmacro %}
+{% macro secret(name, label, help='', attrs='') %}
+<div class="field {{ 'has-err' if errors.get(name) }}">
+  <label for="{{ name }}">{{ label }} <span class="req">*</span></label>
+  <input type="text" id="{{ name }}" name="{{ name }}" required autocomplete="off" inputmode="numeric" spellcheck="false" dir="ltr" lang="en" {{ attrs|safe }}{% if errors.get(name) %} aria-invalid="true" aria-describedby="{{ name }}-err"{% endif %}>
+  {% if errors.get(name) %}<span class="err" id="{{ name }}-err">{{ errors[name] }}</span>{% elif help %}<span class="help">{{ help }}</span>{% endif %}
+</div>
+{% endmacro %}
+{% set chip = {'form': 'grey', 'not_open': 'grey', 'closed': 'grey', 'submitted': '', 'returned': 'saffron', 'approved': 'green', 'paid': 'green'} %}
+{% block content %}
+<div class="wrap-narrow section">
+  <span class="eyebrow"><bdi>{{ cand.app_no }}</bdi> · <bdi>{{ cand.full_name }}</bdi></span>
+  <h1>{{ t('bank.title') }}</h1>
+  {% if state == 'not_for_you' %}
+  <div class="alert info">{{ t('bank.only_selected') }}</div>
+  {% else %}
+
+  {% if entry and not form %}
+  <div class="card accent detail" style="margin-bottom:16px">
+    <div class="section-head" style="margin-bottom:10px"><h3>{{ t('bank.open') }}</h3><span class="pill {{ chip.get(state, '') }}">{{ t('bank.st_' ~ state) }}</span></div>
+    {% if state == 'submitted' %}<div class="alert info">{{ t('bank.submitted_text') }}</div>
+    {% elif state == 'approved' %}<div class="alert success">{{ t('bank.approved_text') }}</div>
+    {% elif state == 'paid' %}<div class="alert success">{{ t('bank.paid_text') }}</div>
+    {% elif state == 'returned' %}<div class="alert warning">{{ t('bank.returned_text') }} {{ t('bank.not_open') }}</div>
+      {% if entry.remark %}<p><b>{{ t('bank.staff_note') }}:</b> <bdi>{{ entry.remark }}</bdi></p>{% endif %}
+    {% endif %}
+    <dl>
+      <dt>{{ t('bank.holder') }}</dt><dd><bdi>{{ entry.holder_name }}</bdi></dd>
+      <dt>{{ t('bank.account') }}</dt><dd><bdi dir="ltr">{{ masked.account }}</bdi></dd>
+      <dt>{{ t('bank.ifsc') }}</dt><dd><bdi dir="ltr">{{ entry.ifsc }}</bdi></dd>
+      <dt>{{ t('bank.bank_name') }}</dt><dd><bdi>{{ entry.bank_name }}</bdi>{% if entry.branch %}, <bdi>{{ entry.branch }}</bdi>{% endif %}</dd>
+      <dt>{{ t('bank.type') }}</dt><dd>{{ t('bank.type_' ~ entry.account_type) }}</dd>
+      {% if masked.aadhaar %}<dt>{{ t('bank.aadhaar') }}</dt><dd><bdi dir="ltr">{{ masked.aadhaar }}</bdi></dd>{% endif %}
+      <dt>{{ t('common.submitted') }}</dt><dd>{{ entry.submitted_at|datetime }}</dd>
+      {% if state == 'paid' %}
+      <dt>{{ t('bank.paid_on') }}</dt><dd>{{ entry.paid_on|date }}</dd>
+      <dt>{{ t('bank.paid_ref') }}</dt><dd><bdi dir="ltr">{{ entry.paid_ref }}</bdi></dd>
+      {% endif %}
+    </dl>
+    <p class="small dim" style="margin:12px 0 0">{{ t('bank.not_you') }}</p>
+  </div>
+  {% elif state == 'not_open' %}
+  <div class="alert info">{{ t('bank.not_open') }}</div>
+  {% elif state == 'closed' %}
+  <div class="alert warning">{{ t('bank.closed') }}{% if last_date %} <b>{{ t('bank.last_date') }}: {{ last_date|date }}</b>{% endif %}</div>
+  {% endif %}
+
+  {% if form %}
+  <p class="stipend-note" style="margin:0 0 14px"><span class="amt" dir="ltr">Rs. {{ amount }}</span><span>{{ t('bank.notice_pay') }}</span></p>
+  <ul class="prose small" style="margin:0 0 16px">
+    <li>{{ t('bank.notice_english') }}</li>
+    <li>{{ t('bank.notice_locked') }}</li>
+    {% if state == 'form' and last_date %}<li>{{ t('bank.last_date') }}: <b>{{ last_date|date }}</b></li>{% endif %}
+  </ul>
+  {% if state == 'returned' %}
+  <div class="alert warning">{{ t('bank.returned_text') }}{% if entry.remark %}<br><b>{{ t('bank.staff_note') }}:</b> <bdi>{{ entry.remark }}</bdi>{% endif %}</div>
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data" novalidate data-once>
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <div class="form-section">
+      <h2>{{ t('bank.sec_account') }}</h2>
+      <p class="hint">{{ t('bank.registered_name') }}: <b><bdi>{{ cand.full_name }}</bdi></b></p>
+      <div class="fields">
+        {{ field('holder_name', t('bank.holder'), t('bank.holder_help'), 'autocomplete="off" maxlength="120"', wide=True) }}
+        {# the inputs leave room for the spaces that the server removes: a value cut off by the browser would be refused #}
+        {{ secret('account', t('bank.account'), t('bank.account_help'), 'maxlength="20"') }}
+        {{ secret('account_again', t('bank.account_again'), '', 'maxlength="20"') }}
+        {{ field('ifsc', t('bank.ifsc'), t('bank.ifsc_help'), 'autocomplete="off" maxlength="14" autocapitalize="characters" spellcheck="false"') }}
+        <div class="field {{ 'has-err' if errors.get('account_type') }}">
+          <label id="account_type-label">{{ t('bank.type') }} <span class="req">*</span></label>
+          <div class="radio-row" role="radiogroup" aria-labelledby="account_type-label" aria-required="true"{% if errors.get('account_type') %} aria-invalid="true" aria-describedby="account_type-err"{% endif %}>
+            {% for kind in types %}<label><input type="radio" name="account_type" value="{{ kind }}" {{ 'checked' if data.get('account_type') == kind }}> {{ t('bank.type_' ~ kind) }}</label>
+            {% endfor %}
+          </div>
+          {% if errors.get('account_type') %}<span class="err" id="account_type-err">{{ errors['account_type'] }}</span>{% endif %}
+        </div>
+        {{ field('bank_name', t('bank.bank_name'), '', 'maxlength="120"') }}
+        {{ field('branch', t('bank.branch'), '', 'maxlength="120"') }}
+        {% if ask_aadhaar %}{{ secret('aadhaar', t('bank.aadhaar'), t('bank.aadhaar_help'), 'maxlength="14"') }}{% endif %}
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>{{ t('bank.sec_proof') }}</h2>
+      <div class="fields">
+        <div class="field wide {{ 'has-err' if errors.get('proof') }}"><label for="proof">{{ t('bank.proof') }}{% if not (entry and entry.proof_path) %} <span class="req">*</span>{% endif %}</label>
+          <input type="file" id="proof" name="proof" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" {{ 'required' if not (entry and entry.proof_path) }} data-max="{{ proof_max }}"{% if errors.get('proof') %} aria-invalid="true" aria-describedby="proof-err"{% endif %}>
+          {% if errors.get('proof') %}<span class="err" id="proof-err">{{ errors['proof'] }}</span>{% else %}<span class="help">{{ t('bank.proof_help') }}{% if entry and entry.proof_path %} {{ t('bank.proof_kept') }}{% endif %}</span>{% endif %}</div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>{{ t('bank.sec_declare') }}</h2>
+      {% set declare_err = ' aria-describedby="declare-err"' if errors.get('declare') else '' %}
+      <div style="display:grid;gap:10px">
+        <label class="check"><input type="checkbox" name="declare_own" value="1" required{{ declare_err|safe }}> {{ t('bank.declare_own') }}</label>
+        <label class="check"><input type="checkbox" name="declare_correct" value="1" required{{ declare_err|safe }}> {{ t('bank.declare_correct') }}</label>
+        <label class="check"><input type="checkbox" name="declare_consent" value="1" required{{ declare_err|safe }}> {{ t('bank.declare_consent_aadhaar') if ask_aadhaar else t('bank.declare_consent') }}</label>
+        {% if errors.get('declare') %}<span class="err" id="declare-err" style="color:var(--kumkum);font-weight:600">{{ errors['declare'] }}</span>{% endif %}
+      </div>
+    </div>
+    <div class="btn-row"><button class="btn saffron" type="submit" data-confirm="{{ t('bank.confirm') }}" data-busy="{{ t('reg.submitting') }}">{{ t('bank.submit') }}</button></div>
+  </form>
+  {% endif %}
+  {% endif %}
+  <p style="margin-top:16px"><a href="{{ url_for('candidate.home') }}">{{ back }} {{ t('cand.title') }}</a></p>
+</div>
+{% endblock %}

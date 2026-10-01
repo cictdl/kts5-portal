@@ -51,6 +51,7 @@
       </dl>
       <a class="btn xs secondary" href="{{ url_for('admin.exam_session', sid=exam.id) }}">View answers</a>
       {% else %}<p class="muted small" style="margin:0">Not taken.</p>{% endif %}
+      {% if bank %}<p class="small" style="margin:10px 0 0"><b>Bank details for the stipend:</b> <span class="pill {{ {'returned': 'saffron', 'approved': 'green', 'paid': 'green', 'none': 'grey'}.get(bank, '') }}">{{ 'not yet submitted' if bank == 'none' else bank }}</span> · <a href="{{ url_for('admin.stipend_entry', aid=a.id) }}">Stipend page</a></p>{% endif %}
     </div>
   </div>
 

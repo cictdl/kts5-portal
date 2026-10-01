@@ -9,6 +9,9 @@ logs/*
 *.sqlite3-wal
 *.sqlite3-shm
 secret.key
+# the key that seals the account and Aadhaar numbers of the stipend module (kts/secure.py):
+# it goes with every backup of the database, never into git, wherever the instance folder lies
+stipend.key
 # the first password of the administrator and the settings of an installation
 # (mail password), wherever the instance folder lies
 first-admin.txt

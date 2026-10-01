@@ -141,9 +141,9 @@ the portal, also when nothing has changed: the page "being updated" stops the
 program while the files are replaced, and `web.config` is written anew. This
 is what makes the files of the run the ones in use.
 
-**What an update never touches.** `instance\` (the database, the keys,
-`portal.env`, `first-admin.txt` and the `web.config` of that folder),
-`uploads\` and `logs\`. The `web.config` of the site is written anew by
+**What an update never touches.** `instance\` (the database, the keys
+`secret.key` and `stipend.key`, `portal.env`, `first-admin.txt` and the
+`web.config` of that folder), `uploads\` and `logs\`. The `web.config` of the site is written anew by
 every run, so nothing should be entered there by hand; mail settings that
 somebody did enter there are carried over to `portal.env` by the next run.
 
@@ -163,6 +163,27 @@ connection (a computer room, or a campus behind one address) needs
 drive, and the task run again so that the portal restarts. A student over
 the limit is told "Too many attempts from this connection", and nothing of
 his form is stored.
+
+**Stipend (from version 1.2.0).** The selected students give their bank
+details at `/candidate/bank` once the merit list is published and the form is
+opened in *Console* → *Settings* → *Stipend*; the staff check, approve and pay
+in *Console* → *Stipend* (superadmin and admin only). Every download of the
+approved entries still to pay is a numbered payment list, kept in the
+database with the amount of the day, to be marked as paid once the bank has
+carried it out (at that amount) or discarded if it never went to the bank.
+The account and Aadhaar numbers are sealed with the key `instance\stipend.key`,
+which the portal makes the first time: keep this file with every copy of
+`instance\kts5.sqlite3`, because without it the numbers cannot be read by
+anybody. The copy of the database that the installer keeps in
+`kts5-setup\before-<date>` holds no key: the key stays in `instance\`, which
+no run touches. Once entries exist, the portal accepts new entries only under
+the key that sealed them, checked against the entries stored last (so that
+one damaged entry does not stop the form): a `KTS_STIPEND_KEY` in
+`portal.env` must then be that same key (the 64 bytes of `stipend.key`
+written as 128 hex digits), and under any other key, or without the file, the
+form answers "cannot be saved at the moment" and the entries stored before
+cannot be read. Put the old key back (the file from the backup, or remove the
+setting) and the module works again.
 
 **First sign-in.** The portal has no built-in password. At its first start it
 creates the account `admin@kts5.local` with a random password and writes the
@@ -225,7 +246,7 @@ then the task of Plesk (steps 1 to 5 above).
    page "The portal is being updated"; a form that is sent in those seconds
    is not stored and has to be sent again.
 3. **Read step 2 of the output.** It must read
-   `complete: portal version 1.1.6 with 23 interface languages`, with the
+   `complete: portal version 1.2.0 with 23 interface languages`, with the
    number that `kts\version.py` of the release names. If the line names no
    version, the old installer ran. Nothing is lost and the portal works, with
    the new code; wait ten minutes and run the task once more. That run does
@@ -337,7 +358,7 @@ portal, the vendored libraries, `web.config`, and empty `instance\`,
    `data\`, `instance\`, `uploads\`, `logs\` … directly inside `httpdocs`.
    Delete the zip afterwards.
 4. Open `http://kts.cict.in/healthz`. Expected:
-   `{"ok": true, "time": "…", "version": "1.1.6"}`.
+   `{"ok": true, "time": "…", "version": "1.2.0"}`.
    First start takes 10–20 seconds (it creates the database).
 5. If you get **502.3** instead, open `web.config` in the File Manager editor
    and replace the two values with the ones the probe printed:
@@ -449,7 +470,8 @@ untouched; saving `web.config` (or the extraction itself) restarts the app.
 In Plesk: **Backup & Restore** → schedule a daily backup of the subscription
 (it includes `httpdocs\instance\kts5.sqlite3` and `uploads\`). Additionally
 download `instance\kts5.sqlite3` and `uploads\` before the test day and after
-the merit list is published.
+the merit list is published. From version 1.2.0 download `instance\stipend.key`
+with the database every time: the bank details cannot be read without it.
 
 ## 9. Things that can go wrong
 

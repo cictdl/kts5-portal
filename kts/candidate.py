@@ -78,9 +78,14 @@ def home():
                       (cand["pref_lang"],))
     merit = query("SELECT * FROM merit_list WHERE application_id = ?", (cand["id"],), one=True) \
         if settings.get("merit.published") == "1" else None
+    # the card of the bank details: for a student of the final list, once that list is published,
+    # and for a payment made before the student left that list
+    from .stipend import entry_of, may_use, page_state
+    entry = entry_of(cand["id"])
+    bank = page_state(settings, entry) if may_use(cand, settings, entry) else None
     return render_template("candidate/home.html", cand=cand, settings=settings, start=start, end=end,
                            is_open=is_open, exam=exam, sessions=sessions, materials=materials, merit=merit,
-                           lang_name=K.lang_info(cand["pref_lang"])["name"])
+                           bank=bank, lang_name=K.lang_info(cand["pref_lang"])["name"])
 
 
 @bp.route("/acknowledgement")

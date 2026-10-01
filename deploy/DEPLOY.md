@@ -10,8 +10,8 @@ automated by `deploy\setup-iis.ps1`.
 | **HttpPlatform** (recommended) | IIS itself starts `serve.py` (Waitress) on a private port and forwards requests to it; the app restarts with the app pool | Python 3.11+, the free Microsoft **HttpPlatformHandler** IIS module |
 | **Proxy** | The portal runs as a Windows service on `127.0.0.1:8905`; IIS forwards to it with URL Rewrite + Application Request Routing | Python 3.11+, **URL Rewrite** and **ARR** modules (NSSM optional) |
 
-Both modes keep the data (`instance\kts5.sqlite3`, `uploads\`) inside the
-install folder and preserve it across updates.
+Both modes keep the data (`instance\kts5.sqlite3`, `instance\stipend.key`,
+`uploads\`) inside the install folder and preserve it across updates.
 
 ## 1. Build the package (on this PC)
 
@@ -109,18 +109,25 @@ app pool is recycled. Roll back by re-running with the previous zip.
 
 ## 7. Backups
 
-The whole state is `instance\kts5.sqlite3` (WAL mode) plus `uploads\`.
-Nightly job (Task Scheduler, run as SYSTEM):
+The whole state is `instance\kts5.sqlite3` (WAL mode), `instance\stipend.key`
+(from version 1.2.0: the key of the bank account and Aadhaar numbers of the
+stipend, made the first time a student sends them) plus `uploads\`. The
+database and the key belong together in every backup: without the key the
+numbers cannot be read, by anybody. Nightly job (Task Scheduler, run as
+SYSTEM):
 
 ```powershell
 $d = "D:\backups\kts5\" + (Get-Date -Format yyyyMMdd)
 New-Item -ItemType Directory -Force $d | Out-Null
 C:\inetpub\kts5\venv\Scripts\python.exe -c "import sqlite3; s=sqlite3.connect(r'C:\inetpub\kts5\instance\kts5.sqlite3'); d=sqlite3.connect(r'$d\kts5.sqlite3'); s.backup(d); d.close()"
+if (Test-Path C:\inetpub\kts5\instance\stipend.key) { Copy-Item C:\inetpub\kts5\instance\stipend.key $d }
 robocopy C:\inetpub\kts5\uploads "$d\uploads" /MIR /NFL /NDL /NJH /NJS
 ```
 
-Keep copies off the server. Restore = stop the app pool, put the files back,
-start the pool.
+Keep copies off the server, and the key as private as the database. Restore =
+stop the app pool, put `kts5.sqlite3` and `stipend.key` back into
+`instance\` and `uploads\` into its place, start the pool. Where the key is
+set as `KTS_STIPEND_KEY` instead of the file, keep that value with the backup.
 
 ## 8. Troubleshooting
 
@@ -141,6 +148,8 @@ start the pool.
   only after the real certificate is installed, either in the web server or
   with `KTS_HSTS=1`, never in both places.
 * Keep `instance\secret.key` private (it signs sessions); it is generated on first start.
+* Keep `instance\stipend.key` private and in every backup of the database
+  (it seals the bank account and Aadhaar numbers of the stipend).
 * Restrict RDP/admin access to the server; the portal itself needs no inbound
   port other than 80/443.
 * Test the backup restore once.
