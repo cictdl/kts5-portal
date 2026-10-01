@@ -1,6 +1,6 @@
 """
 Certificates signed by the Director of CICT: of recognition, for every student who registers,
-and of merit, for the students selected in the published merit list.
+and of merit, for the students of the published merit list, selected or waitlisted.
 
 A certificate is a page of the portal, laid out as an A4 sheet (landscape) that the student
 prints or saves as PDF: /certificate/<application number>/<seal> and
@@ -34,6 +34,8 @@ SIGNATURE_NAME = "certificate-signature"
 SIGNATURE_TYPES = {"png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg"}
 SIGNATURE_MAX_BYTES = 1024 * 1024
 ORGANISER = "Central Institute of Classical Tamil, Chennai"
+# the students of the merit list who receive a certificate of merit
+MERIT_OUTCOMES = ("selected", "waitlisted")
 # the two kinds: the code in the number of a certificate, and what its seal is made from
 KINDS = {"recognition": ("CR", "kts5-certificate"), "merit": ("CM", "kts5-merit")}
 
@@ -64,11 +66,11 @@ def certificate_link(app, external=False):
 def merit_issued(app, settings=None):
     """
     True when this application has a certificate of merit: issuing is on, the merit list is
-    published and the student is selected in it (not waitlisted, not withdrawn since).
+    published and the student stands in it, selected or waitlisted (and not withdrawn since).
     """
     settings = settings if settings is not None else all_settings()
     return (settings.get("cert.merit_on") == "1" and settings.get("merit.published") == "1"
-            and bool(app["app_no"]) and app["status"] == "selected")
+            and bool(app["app_no"]) and app["status"] in MERIT_OUTCOMES)
 
 
 def merit_link(app, external=False):
@@ -116,13 +118,13 @@ def _long_date(value):
         return ""
 
 
-def _sheet(name, college, place, number, issued_on, link, kind="recognition", rank=None):
+def _sheet(name, college, place, number, issued_on, link, kind="recognition", rank=None, waitlisted=False):
     """The certificate page for these details."""
     settings = all_settings()
     selected = str(settings.get("merit.select_count") or "").strip()
     return render_template(
         "public/certificate.html", name=name, college=college, place=place, number=number, issued_on=issued_on,
-        kind=kind, rank=rank, test_date=_long_date(settings.get("exam.date")),
+        kind=kind, rank=rank, waitlisted=waitlisted, test_date=_long_date(settings.get("exam.date")),
         selected="{:,}".format(int(selected)) if selected.isdigit() and int(selected) > 0 else "",
         kts_start=_long_date(settings.get("kts.start")), kts_end=_long_date(settings.get("kts.end")),
         qr=qr_data_uri(link), link=link, host=urlsplit(link).netloc, signature=signature_data(),
@@ -154,7 +156,8 @@ def merit_certificate(app_no, seal):
     issued_on = fmt_date(to_ist(entry["created_at"])) if entry else fmt_date(now_ist())
     response = current_app.make_response(_sheet(
         app["full_name"], app["college_name"], app["college_state"] or app["state"], number_of(app_no, "merit"),
-        issued_on, merit_link(app, external=True), kind="merit", rank=(entry["rank"] if entry else app["exam_rank"])))
+        issued_on, merit_link(app, external=True), kind="merit", rank=(entry["rank"] if entry else app["exam_rank"]),
+        waitlisted=app["status"] == "waitlisted"))
     response.headers["X-Robots-Tag"] = "noindex, nofollow"
     response.headers["Cache-Control"] = "private, no-store"
     return response
@@ -204,7 +207,7 @@ def certificate_settings():
         return redirect(url_for("admin.certificate_settings"))
     settings = all_settings()
     counts = query("SELECT COUNT(*) AS n FROM applications WHERE status NOT IN ('rejected', 'withdrawn')", one=True)
-    selected = query("SELECT COUNT(*) AS n FROM applications WHERE status = 'selected'", one=True)
+    selected = query("SELECT COUNT(*) AS n FROM applications WHERE status IN ('selected', 'waitlisted')", one=True)
     return render_template("console/certificate.html", on=settings.get("cert.on") == "1", signature=signature_data(),
                            signatory=settings.get("director.name") or "", designation=settings.get("director.designation") or "",
                            count=counts["n"], merit_on=settings.get("cert.merit_on") == "1",
@@ -218,6 +221,7 @@ def certificate_sample():
     kind = "merit" if request.args.get("kind") == "merit" else "recognition"
     response = current_app.make_response(_sheet(
         "Sample Student Name", "Government Arts College, Sample Town", "Tamil Nadu", f"KTS5/{KINDS[kind][0]}/2026/000000",
-        fmt_date(now_ist()), current_app.config["BASE_URL"].rstrip("/") + "/", kind=kind, rank=1 if kind == "merit" else None))
+        fmt_date(now_ist()), current_app.config["BASE_URL"].rstrip("/") + "/", kind=kind, rank=1 if kind == "merit" else None,
+        waitlisted=request.args.get("waitlisted") == "1"))
     response.headers["Cache-Control"] = "private, no-store"
     return response

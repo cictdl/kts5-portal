@@ -22,9 +22,8 @@ body { background: #e7e2d8; color: #1f2937; font-family: "Noto Sans", "Segoe UI"
   color: #1f2937; }
 
 .bg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.watermark { position: absolute; left: 0; right: 0; top: 36cqw; text-align: center; font-size: 19cqw; font-weight: 800;
-  line-height: 1; color: #1f3a5f; opacity: .022; font-family: "Nirmala UI", "Noto Sans Tamil", "Latha", sans-serif;
-  pointer-events: none; }
+.valluvar-bg { position: absolute; left: 50%; top: 12.5cqw; height: 55cqw; width: auto; transform: translateX(-50%);
+  opacity: .18; pointer-events: none; }
 .frame { position: absolute; inset: 2.4cqw; border: .14cqw solid #c9a227; }
 .frame::after { content: ""; position: absolute; inset: .5cqw; border: .06cqw solid rgba(201, 162, 39, .55); }
 

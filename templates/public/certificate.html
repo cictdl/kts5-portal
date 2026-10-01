@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <title>{{ t('cert.merit_title' if kind == 'merit' else 'cert.title') }} · {{ name }}</title>
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/certificate.css') }}?v=2">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/certificate.css') }}?v=3">
 </head>
 <body>
 <div class="toolbar">
@@ -26,7 +26,8 @@
     <path d="M297,210 H45 C135,207 215,202 297,188 Z" fill="#bfe1c8" opacity=".6"/>
     <path d="M297,210 H95 C170,208 235,204 297,196 Z" fill="url(#green)"/>
   </svg>
-  <div class="watermark" aria-hidden="true" lang="ta">குறள்</div>
+  {# Thiruvalluvar, faint, behind the text: an ink-wash version of static/img/thiruvalluvar.jpg #}
+  <img class="valluvar-bg" src="{{ url_for('static', filename='img/thiruvalluvar-watermark.png') }}" alt="" aria-hidden="true">
   <div class="frame" aria-hidden="true"></div>
 
   <header class="logos">
@@ -43,7 +44,7 @@
     <div class="sub"><span></span>{{ 'OF MERIT' if kind == 'merit' else 'OF RECOGNITION' }}<span></span></div>
     {% if kts_start and kts_end %}<p class="when">Kashi Tamil Sangamam 5.0 &middot; {{ kts_start }} &ndash; {{ kts_end }}</p>{% endif %}
     {% if kind == 'merit' %}
-    <div class="pill">&#9733; Merit List{% if rank %} &middot; Rank {{ rank }}{% endif %} &#9733;</div>
+    <div class="pill">&#9733; Merit List{% if waitlisted %} &middot; Waiting List{% endif %}{% if rank %} &middot; Rank {{ rank }}{% endif %} &#9733;</div>
     <p class="certify">This certificate is awarded to</p>
     {% else %}
     <div class="pill">&#9733; Congratulations! &#9733;</div>
@@ -51,7 +52,12 @@
     {% endif %}
     <div class="name{{ ' long' if name|length > 30 }}">{{ name }}</div>
     {% if college %}<p class="college">{{ college }}{% if place %}, {{ place }}{% endif %}</p>{% endif %}
-    {% if kind == 'merit' %}
+    {% if kind == 'merit' and waitlisted %}
+    <p class="text">for securing a place on the waiting list of the merit list of
+      <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural Payilvom</b>, through the online test on the
+      Thirukkural{% if test_date %} held on {{ test_date }}{% endif %} among students of colleges across India, in the spirit
+      of <b>Ek Bharat Shreshtha Bharat</b>.</p>
+    {% elif kind == 'merit' %}
     <p class="text">for being selected in the merit list of <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural Payilvom</b>,
       as one of the {{ selected or '1,000' }} students chosen from colleges across India through the online test on the
       Thirukkural{% if test_date %} held on {{ test_date }}{% endif %}, in the spirit of <b>Ek Bharat Shreshtha Bharat</b>.</p>

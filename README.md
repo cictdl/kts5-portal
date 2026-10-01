@@ -131,11 +131,12 @@ python -m pytest tests -q
 
 Every student who registers receives a certificate of recognition, signed by
 the head of the institute (from version 1.2.2, `kts/certificate.py`). Every
-student selected in the published merit list receives, in addition, a
+student of the published merit list, selected or waitlisted, receives, in addition, a
 certificate of merit with the rank (from 1.2.3): the same sheet in gold,
 `/certificate/merit/<application number>/<seal>`, number `KTS5/CM/…`, issued
 on the day of the selection, linked from the status page and the candidate
-portal, none for waitlisted students or after a withdrawal, none while
+portal; that of a waitlisted student says "waiting list" and has no number
+of students chosen (from 1.2.4); none after a withdrawal, none while
 `cert.merit_on` is `0`. It is a
 page of the portal laid out as an A4 sheet on its side, which the student
 prints or saves as PDF: `/certificate/<application number>/<seal>`, where the

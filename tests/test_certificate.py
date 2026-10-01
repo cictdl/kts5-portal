@@ -85,6 +85,11 @@ def test_a_registered_student_has_a_certificate_signed_by_the_director():
     assert "<script>" not in page and not re.search(r"\son[a-z]+=", page)
     # without a signature uploaded, the line stays empty
     assert 'alt="Signature"' not in page
+    # Thiruvalluvar, faint, in the background
+    assert 'class="valluvar-bg" src="/static/img/thiruvalluvar-watermark.png"' in page
+    r = app.test_client().get("/static/img/thiruvalluvar-watermark.png")
+    assert r.status_code == 200 and r.mimetype == "image/png"
+    r.close()
 
 
 def test_the_student_finds_the_certificate_after_registering_in_the_mail_on_the_status_page_and_in_the_portal():
@@ -153,7 +158,6 @@ def test_the_days_of_the_sangamam_stand_in_one_line_under_the_heading():
     line = '<p class="when">Kashi Tamil Sangamam 5.0 &middot; 28 November 2026 &ndash; 12 December 2026</p>'
     assert line in page
     assert page.index("OF RECOGNITION") < page.index(line) < page.index("Congratulations!")
-    assert "thiruvalluvar" not in page.lower()
     # the days are those of the settings, and without them the line is left out
     _set(app, "kts.start", "2026-11-30")
     page = app.test_client().get(_link(app, row)).get_data(as_text=True)
@@ -307,8 +311,8 @@ def test_the_student_finds_the_certificate_of_merit_on_the_status_page_and_in_th
     assert "merit_link(cand)" in home.read_text(encoding="utf-8")
 
 
-@pytest.mark.parametrize("outcome, published", [("selected", "0"), ("waitlisted", "1"), ("not_selected", "1")])
-def test_no_certificate_of_merit_before_the_list_is_published_or_outside_the_selected(outcome, published):
+@pytest.mark.parametrize("outcome, published", [("selected", "0"), ("waitlisted", "0"), ("not_selected", "1")])
+def test_no_certificate_of_merit_before_the_list_is_published_or_outside_the_list(outcome, published):
     app = make_app(ADMIN_PASSWORD=None)
     _client, row = _registered(app)
     _selected(app, row, outcome=outcome, published=published)
@@ -319,6 +323,27 @@ def test_no_certificate_of_merit_before_the_list_is_published_or_outside_the_sel
     assert app.test_client().get(f"/certificate/merit/{row['app_no']}/{seal}").status_code == 404
     # the certificate of recognition is not touched
     assert app.test_client().get(_link(app, row)).status_code == 200
+
+
+def test_a_waitlisted_student_has_a_certificate_of_merit_that_names_the_waiting_list():
+    app = make_app(ADMIN_PASSWORD=None)
+    _client, row = _registered(app)
+    _selected(app, row, rank=1042, outcome="waitlisted")
+    link = _merit_link(app, row)
+    assert link and link.startswith(f"/certificate/merit/{row['app_no']}/")
+    page = app.test_client().get(link).get_data(as_text=True)
+    assert "OF MERIT" in page and "&#9733; Merit List &middot; Waiting List &middot; Rank 1042 &#9733;" in page
+    assert "for securing a place on the waiting list of the merit list of" in page and "held on 19 October 2026" in page
+    # a waitlisted student is not said to be one of the students chosen
+    assert "students chosen" not in page and "for being selected" not in page
+    number = "KTS5/CM/" + "/".join(row["app_no"].split("-")[1:])
+    assert f"Certificate No. <b>{number}</b>" in page
+    # moved up into the selected list, the same address gives the certificate of the selected
+    from kts.db import execute
+    with app.app_context():
+        execute("UPDATE applications SET status = 'selected' WHERE id = ?", (row["id"],))
+    page = app.test_client().get(link).get_data(as_text=True)
+    assert "for being selected in the merit list of" in page and "Waiting List" not in page
 
 
 def test_a_withdrawal_after_the_selection_ends_the_certificate_of_merit():
@@ -339,7 +364,7 @@ def test_certificates_of_merit_are_switched_off_and_on_and_a_sample_is_shown():
     link = _merit_link(app, row)
     admin = _staff(app, "admin@tests.example", "admin")
     page = admin.get("/console/certificate").get_data(as_text=True)
-    assert "Certificates of merit" in page and "to 1 selected student(s)" in page
+    assert "Certificates of merit" in page and "to 1 selected or waitlisted student(s)" in page
     with admin.session_transaction() as s:
         token = s["_csrf"]
     admin.post("/console/certificate", data={"_csrf": token, "action": "merit_off"})
@@ -349,6 +374,8 @@ def test_certificates_of_merit_are_switched_off_and_on_and_a_sample_is_shown():
     admin.post("/console/certificate", data={"_csrf": token, "action": "merit_on"})
     assert app.test_client().get(link).status_code == 200
     sample = admin.get("/console/certificate/sample?kind=merit").get_data(as_text=True)
-    assert "OF MERIT" in sample and "Rank 1" in sample and "KTS5/CM/2026/000000" in sample
+    assert "OF MERIT" in sample and "Rank 1" in sample and "KTS5/CM/2026/000000" in sample and "Waiting List" not in sample
+    sample = admin.get("/console/certificate/sample?kind=merit&waitlisted=1").get_data(as_text=True)
+    assert "Waiting List" in sample and "for securing a place on the waiting list" in sample
     sample = admin.get("/console/certificate/sample").get_data(as_text=True)
     assert "OF RECOGNITION" in sample and "KTS5/CR/2026/000000" in sample
