@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ t('stip.title') }}{% endblock %}
+{% macro step(n, title) %}
+  <div class="programme-item">
+    <div class="no">{{ n }}</div>
+    <div><h3>{{ t(title) }}</h3>
+      {{ caller() }}</div>
+  </div>
+{% endmacro %}
+{% block content %}
+<div class="wrap-narrow section">
+  <span class="eyebrow">{{ t('home.kicker') }}</span>
+  <h1>{{ t('stip.title') }}</h1>
+  <p class="lead" style="max-width:70ch">{{ t('stip.intro') }}</p>
+  {% if state == 'open' %}
+  <div class="alert success">{{ t('stip.state_open') }}{% if last_date %} <b>{{ t('bank.last_date') }}: {{ last_date|date }}</b>{% endif %}</div>
+  {% elif state == 'closed' %}
+  <div class="alert warning">{{ t('bank.closed') }}{% if last_date %} <b>{{ t('bank.last_date') }}: {{ last_date|date }}</b>{% endif %}</div>
+  {% else %}
+  <div class="alert info">{{ t('stip.state_wait') }}</div>
+  {% endif %}
+
+  {% call step(1, 'stip.s1_t') %}
+      <p>{{ t('stip.s1') }}</p>
+      <p><a class="btn sm secondary" href="{{ url_for('public.merit') }}">{{ t('nav.merit') }}</a> <a class="btn sm secondary" href="{{ url_for('public.status') }}">{{ t('nav.status') }}</a></p>
+  {% endcall %}
+  {% call step(2, 'stip.s2_t') %}
+      <p>{{ t('stip.s2') }}</p>
+      <ul class="prose">
+        <li>{{ t('stip.need_account') }}</li>
+        <li>{{ t('stip.need_bank') }}</li>
+        {% if aadhaar %}<li>{{ t('stip.need_aadhaar') }}</li>{% endif %}
+        <li>{{ t('stip.need_proof') }}</li>
+      </ul>
+  {% endcall %}
+  {% call step(3, 'stip.s3_t') %}
+      <p>{{ t('stip.s3') }} <b>{{ t('bank.title') }}</b></p>
+      <p><a class="btn sm {{ 'saffron' if state == 'open' else 'secondary' }}" href="{{ url_for('candidate.login') }}">{{ t('nav.candidate') }}</a></p>
+  {% endcall %}
+  {% call step(4, 'stip.s4_t') %}<p>{{ t('stip.s4') }}</p>{% endcall %}
+  {% call step(5, 'stip.s5_t') %}<p>{{ t('stip.s5') }}</p>{% endcall %}
+  {% call step(6, 'stip.s6_t') %}<p>{{ t('stip.s6') }}</p>{% endcall %}
+
+  <div class="card kumkum" style="margin-top:20px">
+    <h3>{{ t('stip.warn_t') }}</h3>
+    <ul class="prose">
+      <li>{{ t('stip.warn_one') }}</li>
+      <li><b>{{ t('stip.warn_secret') }}</b></li>
+      <li>{{ t('stip.warn_help') }} <a href="{{ url_for('public.contact') }}">{{ t('nav.contact') }}</a></li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

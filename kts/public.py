@@ -180,6 +180,25 @@ def programme():
     return render_template("public/programme.html", settings=all_settings())
 
 
+@bp.route("/stipend")
+def stipend_guide():
+    """
+    How the selected students give their bank details for the stipend (the form itself is
+    /candidate/bank). The page says whether the form is open: it opens for the selected
+    students once the merit list is published and the setting stipend.open is on.
+    """
+    settings = all_settings()
+    last = _iso_day(settings.get("stipend.last_date"))
+    if settings.get("merit.published") != "1" or settings.get("stipend.open") != "1":
+        state = "wait"
+    elif last and now_ist().strftime("%Y-%m-%d") > last:
+        state = "closed"
+    else:
+        state = "open"
+    return render_template("public/stipend.html", state=state, last_date=last,
+                           aadhaar=settings.get("stipend.aadhaar") == "1")
+
+
 # ---- registration -----------------------------------------------------------
 
 FIELDS = [

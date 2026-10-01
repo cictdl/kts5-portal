@@ -61,6 +61,7 @@
     <li>{{ t('bank.notice_english') }}</li>
     <li>{{ t('bank.notice_locked') }}</li>
     {% if state == 'form' and last_date %}<li>{{ t('bank.last_date') }}: <b>{{ last_date|date }}</b></li>{% endif %}
+    <li><a href="{{ url_for('public.stipend_guide') }}">{{ t('stip.link') }}</a></li>
   </ul>
   {% if state == 'returned' %}
   <div class="alert warning">{{ t('bank.returned_text') }}{% if entry.remark %}<br><b>{{ t('bank.staff_note') }}:</b> <bdi>{{ entry.remark }}</bdi>{% endif %}</div>

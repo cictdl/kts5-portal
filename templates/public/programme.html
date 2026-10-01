@@ -30,7 +30,9 @@
   {% call item(5) %}
       <a class="btn sm secondary" href="{{ url_for('public.orientation') }}">{{ t('nav.orientation') }}</a>
   {% endcall %}
-  {% call item(6) %}{% endcall %}
+  {% call item(6) %}
+      <a class="btn sm secondary" href="{{ url_for('public.stipend_guide') }}">{{ t('stip.link') }}</a>
+  {% endcall %}
   {% call item(7) %}{% endcall %}
 
   <h2 style="margin-top:36px"><span class="pill kumkum">II</span> {{ t('prog.part2') }}</h2>

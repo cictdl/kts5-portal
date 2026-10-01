@@ -131,7 +131,9 @@ python -m pytest tests -q
 
 Each of the 1,000 selected students receives a stipend (setting
 `stipend.amount`, Rs. 10,000) by bank transfer to his or her own account.
-The module was added in version 1.2.0 (`kts/stipend.py`, `kts/secure.py`).
+The module was added in version 1.2.0 (`kts/stipend.py`, `kts/secure.py`). The public page
+`/stipend` (from 1.2.1) tells the students the steps, in every language of the portal, and
+whether the form is open; the home page, the programme page, the footer and the form link to it.
 
 **What the student does.** Once the merit list is published
 (`merit.published = 1`) and the form is open (`stipend.open = 1`), a student

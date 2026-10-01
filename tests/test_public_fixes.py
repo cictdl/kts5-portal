@@ -1002,8 +1002,9 @@ def test_alt_texts_use_keys_that_exist():
             assert CATALOG[code].get(key), (code, key)
     # 540 texts, the two that ask for English entries in the registration form, the heading of the
     # social-media links, the nodal officers, the 19 of the timeline (version 1.1.5) and the 59 of
-    # the bank details of the selected students (version 1.2.0)
-    assert len(CATALOG["en"]) == 622
+    # the bank details of the selected students (version 1.2.0), and the 25 of the page that explains
+    # them (1.2.1)
+    assert len(CATALOG["en"]) == 647
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1034,7 +1035,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.0" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.1" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 
