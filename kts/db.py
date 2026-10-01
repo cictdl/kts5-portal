@@ -417,6 +417,8 @@ DEFAULT_SETTINGS = {
     "schedule.tentative": "1",
     # every registered student receives a certificate of recognition (kts/certificate.py)
     "cert.on": "1",
+    # and every student selected in the published merit list a certificate of merit
+    "cert.merit_on": "1",
     "stats.public": "1",
     "site.draft_note_on": "1",
     "home.pm_on": "1",

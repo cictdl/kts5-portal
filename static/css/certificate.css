@@ -48,6 +48,14 @@ h1 { margin: .4cqw 0 0; font-family: Cambria, Georgia, "Times New Roman", serif;
   font-size: 1.55cqw; font-weight: 600; letter-spacing: .02cqw; }
 .pill::first-letter { color: #f2c14e; }
 
+/* the certificate of merit: the same sheet in gold */
+.merit .pill { background: linear-gradient(180deg, #c9a227, #9c7a12); color: #fff; }
+.merit .pill::first-letter { color: #fff6d5; }
+.merit .medal { width: 3cqw; height: 3cqw; stroke-width: 1.9; }
+.merit .sub { color: #8a6a0e; }
+.merit .sub span { background: #c9a227; }
+.merit .frame { border-width: .22cqw; }
+
 .certify { margin: 1.5cqw 0 0; font-size: 1.2cqw; color: #5b6472; font-style: italic; }
 .name { margin-top: .5cqw; padding: 0 2cqw .5cqw; border-bottom: .14cqw solid #c9a227; max-width: 66cqw;
   font-family: Cambria, Georgia, "Times New Roman", serif; font-size: 3.9cqw; line-height: 1.12; font-weight: 700;

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>{{ t('cert.title') }} · {{ name }}</title>
+<title>{{ t('cert.merit_title' if kind == 'merit' else 'cert.title') }} · {{ name }}</title>
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/certificate.css') }}?v=1">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/certificate.css') }}?v=2">
 </head>
 <body>
 <div class="toolbar">
@@ -15,7 +15,7 @@
   <a href="{{ url_for('public.home') }}">{{ t('nav.home') }}</a>
 </div>
 {# The sheet is in English, as the names on it are; it is an A4 page laid on its side. #}
-<main class="sheet" lang="en" dir="ltr">
+<main class="sheet {{ kind }}" lang="en" dir="ltr">
   <svg class="bg" viewBox="0 0 297 210" preserveAspectRatio="none" aria-hidden="true">
     <defs>
       <linearGradient id="saffron" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e8791a"/><stop offset="1" stop-color="#f6b25a"/></linearGradient>
@@ -40,16 +40,26 @@
   <div class="body">
     <svg class="medal" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="5.5"/><path d="M8.5 13.5 7 21l5-2.5 5 2.5-1.5-7.5"/></svg>
     <h1>CERTIFICATE</h1>
-    <div class="sub"><span></span>OF RECOGNITION<span></span></div>
+    <div class="sub"><span></span>{{ 'OF MERIT' if kind == 'merit' else 'OF RECOGNITION' }}<span></span></div>
     {% if kts_start and kts_end %}<p class="when">Kashi Tamil Sangamam 5.0 &middot; {{ kts_start }} &ndash; {{ kts_end }}</p>{% endif %}
+    {% if kind == 'merit' %}
+    <div class="pill">&#9733; Merit List{% if rank %} &middot; Rank {{ rank }}{% endif %} &#9733;</div>
+    <p class="certify">This certificate is awarded to</p>
+    {% else %}
     <div class="pill">&#9733; Congratulations! &#9733;</div>
-
     <p class="certify">This certificate is presented to</p>
+    {% endif %}
     <div class="name{{ ' long' if name|length > 30 }}">{{ name }}</div>
     {% if college %}<p class="college">{{ college }}{% if place %}, {{ place }}{% endif %}</p>{% endif %}
+    {% if kind == 'merit' %}
+    <p class="text">for being selected in the merit list of <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural Payilvom</b>,
+      as one of the {{ selected or '1,000' }} students chosen from colleges across India through the online test on the
+      Thirukkural{% if test_date %} held on {{ test_date }}{% endif %}, in the spirit of <b>Ek Bharat Shreshtha Bharat</b>.</p>
+    {% else %}
     <p class="text">for registering for <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural Payilvom</b> and joining the
       nationwide movement to learn the Thirukkural, the timeless classic of Tamil, in the spirit of
       <b>Ek Bharat Shreshtha Bharat</b>.</p>
+    {% endif %}
 
     <ul class="values">
       <li><span class="icon green"><svg viewBox="0 0 24 24"><path d="M3 5.5c2.6-1.4 5.6-1.4 9 .6 3.4-2 6.4-2 9-.6V19c-2.6-1.4-5.6-1.4-9 .6-3.4-2-6.4-2-9-.6Z"/><path d="M12 6.1v13.5"/></svg></span>Learn the Thirukkural</li>

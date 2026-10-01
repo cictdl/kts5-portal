@@ -329,6 +329,8 @@
   "cert.title": "Certificate of recognition",
   "cert.get": "Your certificate of recognition",
   "cert.save_hint": "To keep a copy, choose “Save as PDF” in the print window.",
+  "cert.merit_title": "Certificate of merit",
+  "cert.merit_get": "Your certificate of merit",
   "res.title": "Digital repository",
   "res.intro": "Learning materials and research assets for KTS 5.0: the Thirukkural in the languages of India, publications, the official apps, the palm-leaf ground-truth corpus, lectures, audiobooks, comics and posters.",
   "res.featured": "Featured",

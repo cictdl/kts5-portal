@@ -1,11 +1,13 @@
 """
-Certificate of recognition for every student who registers, signed by the Director of CICT.
+Certificates signed by the Director of CICT: of recognition, for every student who registers,
+and of merit, for the students selected in the published merit list.
 
-The certificate is a page of the portal, laid out as an A4 sheet (landscape) that the student
-prints or saves as PDF: /certificate/<application number>/<seal>. The seal is a keyed digest of
-the number, so nobody reaches the certificate of another student by changing the number in the
-address. The QR code on the sheet opens that same page on the portal: the page itself is the
-proof that the certificate is genuine.
+A certificate is a page of the portal, laid out as an A4 sheet (landscape) that the student
+prints or saves as PDF: /certificate/<application number>/<seal> and
+/certificate/merit/<application number>/<seal>. The seal is a keyed digest of the kind and the
+number, so nobody reaches the certificate of another student by changing the number in the
+address, nor a certificate of merit from the address of one of recognition. The QR code on the
+sheet opens that same page on the portal: the page itself is the proof that it is genuine.
 
 Who signs: the head of the institute in the settings (director.name, director.designation). The
 image of the signature is uploaded by an administrator in the console and kept in the instance
@@ -32,11 +34,13 @@ SIGNATURE_NAME = "certificate-signature"
 SIGNATURE_TYPES = {"png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg"}
 SIGNATURE_MAX_BYTES = 1024 * 1024
 ORGANISER = "Central Institute of Classical Tamil, Chennai"
+# the two kinds: the code in the number of a certificate, and what its seal is made from
+KINDS = {"recognition": ("CR", "kts5-certificate"), "merit": ("CM", "kts5-merit")}
 
 
-def _seal(app_no):
+def _seal(app_no, kind="recognition"):
     key = str(current_app.config["SECRET_KEY"]).encode("utf-8")
-    return hmac.new(key, f"kts5-certificate|{app_no}".encode("utf-8"), hashlib.sha256).hexdigest()[:20]
+    return hmac.new(key, f"{KINDS[kind][1]}|{app_no}".encode("utf-8"), hashlib.sha256).hexdigest()[:20]
 
 
 def issued(app, settings=None):
@@ -57,10 +61,30 @@ def certificate_link(app, external=False):
     return url_for("public.certificate", app_no=app["app_no"], seal=_seal(app["app_no"]))
 
 
-def number_of(app_no):
-    """KTS5-2026-000123 -> KTS5/CR/2026/000123."""
+def merit_issued(app, settings=None):
+    """
+    True when this application has a certificate of merit: issuing is on, the merit list is
+    published and the student is selected in it (not waitlisted, not withdrawn since).
+    """
+    settings = settings if settings is not None else all_settings()
+    return (settings.get("cert.merit_on") == "1" and settings.get("merit.published") == "1"
+            and bool(app["app_no"]) and app["status"] == "selected")
+
+
+def merit_link(app, external=False):
+    """Address of the certificate of merit of an application, or None when it has none."""
+    if app is None or not merit_issued(app):
+        return None
+    seal = _seal(app["app_no"], "merit")
+    if external:
+        return f"{current_app.config['BASE_URL'].rstrip('/')}/certificate/merit/{app['app_no']}/{seal}"
+    return url_for("public.merit_certificate", app_no=app["app_no"], seal=seal)
+
+
+def number_of(app_no, kind="recognition"):
+    """KTS5-2026-000123 -> KTS5/CR/2026/000123 (recognition) or KTS5/CM/2026/000123 (merit)."""
     parts = app_no.split("-")
-    return "/".join([parts[0], "CR"] + parts[1:]) if len(parts) == 3 else app_no
+    return "/".join([parts[0], KINDS[kind][0]] + parts[1:]) if len(parts) == 3 else app_no
 
 
 def _signature_file():
@@ -92,11 +116,14 @@ def _long_date(value):
         return ""
 
 
-def _sheet(name, college, place, number, issued_on, link):
+def _sheet(name, college, place, number, issued_on, link, kind="recognition", rank=None):
     """The certificate page for these details."""
     settings = all_settings()
+    selected = str(settings.get("merit.select_count") or "").strip()
     return render_template(
         "public/certificate.html", name=name, college=college, place=place, number=number, issued_on=issued_on,
+        kind=kind, rank=rank, test_date=_long_date(settings.get("exam.date")),
+        selected="{:,}".format(int(selected)) if selected.isdigit() and int(selected) > 0 else "",
         kts_start=_long_date(settings.get("kts.start")), kts_end=_long_date(settings.get("kts.end")),
         qr=qr_data_uri(link), link=link, host=urlsplit(link).netloc, signature=signature_data(),
         signatory=(settings.get("director.name") or "").strip(),
@@ -117,6 +144,22 @@ def certificate(app_no, seal):
     return response
 
 
+@public.route("/certificate/merit/<app_no>/<seal>")
+def merit_certificate(app_no, seal):
+    app = query("SELECT * FROM applications WHERE app_no = ?", (app_no,), one=True)
+    if app is None or not hmac.compare_digest(seal, _seal(app_no, "merit")) or not merit_issued(app):
+        abort(404)
+    entry = query("SELECT * FROM merit_list WHERE application_id = ? ORDER BY id DESC LIMIT 1", (app["id"],), one=True)
+    # issued on the day of the selection that put the student in the list
+    issued_on = fmt_date(to_ist(entry["created_at"])) if entry else fmt_date(now_ist())
+    response = current_app.make_response(_sheet(
+        app["full_name"], app["college_name"], app["college_state"] or app["state"], number_of(app_no, "merit"),
+        issued_on, merit_link(app, external=True), kind="merit", rank=(entry["rank"] if entry else app["exam_rank"])))
+    response.headers["X-Robots-Tag"] = "noindex, nofollow"
+    response.headers["Cache-Control"] = "private, no-store"
+    return response
+
+
 # ---- console ------------------------------------------------------------------
 
 @console.route("/certificate", methods=["GET", "POST"])
@@ -129,7 +172,13 @@ def certificate_settings():
         if action in ("on", "off"):
             set_setting("cert.on", "1" if action == "on" else "0")
             audit("certificate_" + action, "settings", None, user=user, ip=client_ip())
-            flash("Certificates are issued." if action == "on" else "Certificates are no longer issued.", "success")
+            flash("Certificates of recognition are issued." if action == "on"
+                  else "Certificates of recognition are no longer issued.", "success")
+        elif action in ("merit_on", "merit_off"):
+            set_setting("cert.merit_on", "1" if action == "merit_on" else "0")
+            audit("certificate_" + action, "settings", None, user=user, ip=client_ip())
+            flash("Certificates of merit are issued." if action == "merit_on"
+                  else "Certificates of merit are no longer issued.", "success")
         elif action == "signature":
             upload = request.files.get("signature")
             name = (upload.filename or "") if upload else ""
@@ -155,17 +204,20 @@ def certificate_settings():
         return redirect(url_for("admin.certificate_settings"))
     settings = all_settings()
     counts = query("SELECT COUNT(*) AS n FROM applications WHERE status NOT IN ('rejected', 'withdrawn')", one=True)
+    selected = query("SELECT COUNT(*) AS n FROM applications WHERE status = 'selected'", one=True)
     return render_template("console/certificate.html", on=settings.get("cert.on") == "1", signature=signature_data(),
                            signatory=settings.get("director.name") or "", designation=settings.get("director.designation") or "",
-                           count=counts["n"])
+                           count=counts["n"], merit_on=settings.get("cert.merit_on") == "1",
+                           published=settings.get("merit.published") == "1", selected=selected["n"])
 
 
 @console.route("/certificate/sample")
 @login_required("settings")
 def certificate_sample():
-    """The certificate as a student receives it, with the details of an invented student."""
+    """A certificate as a student receives it (?kind=merit for one of merit), with the details of an invented student."""
+    kind = "merit" if request.args.get("kind") == "merit" else "recognition"
     response = current_app.make_response(_sheet(
-        "Sample Student Name", "Government Arts College, Sample Town", "Tamil Nadu", "KTS5/CR/2026/000000",
-        fmt_date(now_ist()), current_app.config["BASE_URL"].rstrip("/") + "/"))
+        "Sample Student Name", "Government Arts College, Sample Town", "Tamil Nadu", f"KTS5/{KINDS[kind][0]}/2026/000000",
+        fmt_date(now_ist()), current_app.config["BASE_URL"].rstrip("/") + "/", kind=kind, rank=1 if kind == "merit" else None))
     response.headers["Cache-Control"] = "private, no-store"
     return response

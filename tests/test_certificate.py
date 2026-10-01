@@ -242,4 +242,113 @@ def test_the_toolbar_is_in_the_language_of_the_page_and_the_sheet_in_english():
     for lang in ("ta", "hi", "ur"):
         page = app.test_client().get(_link(app, row) + f"?lang={lang}").get_data(as_text=True)
         assert str(escape(CATALOG[lang]["cert.save_hint"])) in page
-        assert '<main class="sheet" lang="en" dir="ltr">' in page and "OF RECOGNITION" in page
+        assert '<main class="sheet recognition" lang="en" dir="ltr">' in page and "OF RECOGNITION" in page
+
+
+# ---- certificate of merit ------------------------------------------------------------------------
+
+def _selected(app, row, rank=7, outcome="selected", published="1"):
+    """The student stands in the merit list with this rank and outcome."""
+    from kts.db import execute, utcnow
+    with app.app_context():
+        execute("INSERT INTO merit_list(rank, application_id, score, college_key, outcome, run_id, created_at) VALUES(?,?,?,?,?,?,?)",
+                (rank, row["id"], 88, row["college_key"], outcome, "run-1", "2026-10-21T06:30:00+00:00"))
+        execute("UPDATE applications SET status = ?, exam_rank = ? WHERE id = ?", (outcome, rank, row["id"]))
+    _set(app, "merit.published", published)
+
+
+def _merit_link(app, row):
+    from kts.certificate import merit_link
+    from kts.db import query
+    with app.test_request_context():
+        with app.app_context():
+            return merit_link(query("SELECT * FROM applications WHERE id = ?", (row["id"],), one=True))
+
+
+def test_a_student_of_the_merit_list_has_a_certificate_of_merit():
+    app = make_app(ADMIN_PASSWORD=None)
+    client, row = _registered(app)
+    _selected(app, row)
+    link = _merit_link(app, row)
+    assert link and link.startswith(f"/certificate/merit/{row['app_no']}/")
+    r = app.test_client().get(link)
+    assert r.status_code == 200
+    page = r.get_data(as_text=True)
+    assert '<main class="sheet merit"' in page and "OF MERIT" in page and "OF RECOGNITION" not in page
+    assert "&#9733; Merit List &middot; Rank 7 &#9733;" in page and "This certificate is awarded to" in page
+    assert "Student Certificate 1" in page and "Government College Thrissur, Kerala" in page
+    assert "as one of the 1,000 students chosen from colleges across India" in page and "held on 19 October 2026" in page
+    number = "KTS5/CM/" + "/".join(row["app_no"].split("-")[1:])
+    assert f"Certificate No. <b>{number}</b>" in page and "Date of issue: 21 Oct 2026" in page
+    assert "<b>Prof. R. Chandrasekaran</b>" in page
+    assert r.headers["X-Robots-Tag"] == "noindex, nofollow"
+    # the certificate of recognition stays, and the two seals are not the same
+    recognition = _link(app, row)
+    assert recognition.rsplit("/", 1)[1] != link.rsplit("/", 1)[1]
+    assert app.test_client().get(recognition).status_code == 200
+    assert app.test_client().get(f"/certificate/merit/{row['app_no']}/{recognition.rsplit('/', 1)[1]}").status_code == 404
+    assert app.test_client().get(f"/certificate/{row['app_no']}/{link.rsplit('/', 1)[1]}").status_code == 404
+
+
+def test_the_student_finds_the_certificate_of_merit_on_the_status_page_and_in_the_portal():
+    app = make_app(ADMIN_PASSWORD=None)
+    client, row = _registered(app)
+    _selected(app, row)
+    link = _merit_link(app, row)
+    lookup = app.test_client()
+    lookup.get("/status")
+    with lookup.session_transaction() as s:
+        token = s["_csrf"]
+    status = lookup.post("/status", data={"_csrf": token, "app_no": row["app_no"], "dob": "2004-05-06",
+                                          "last4": row["mobile"][-4:]}).get_data(as_text=True)
+    assert f'href="{link}"' in status and f'href="{_link(app, row)}"' in status
+    assert status.index(link) < status.index(_link(app, row))
+    home = Path(__file__).resolve().parent.parent / "templates" / "candidate" / "home.html"
+    assert "merit_link(cand)" in home.read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("outcome, published", [("selected", "0"), ("waitlisted", "1"), ("not_selected", "1")])
+def test_no_certificate_of_merit_before_the_list_is_published_or_outside_the_selected(outcome, published):
+    app = make_app(ADMIN_PASSWORD=None)
+    _client, row = _registered(app)
+    _selected(app, row, outcome=outcome, published=published)
+    assert _merit_link(app, row) is None
+    from kts.certificate import _seal
+    with app.app_context():
+        seal = _seal(row["app_no"], "merit")
+    assert app.test_client().get(f"/certificate/merit/{row['app_no']}/{seal}").status_code == 404
+    # the certificate of recognition is not touched
+    assert app.test_client().get(_link(app, row)).status_code == 200
+
+
+def test_a_withdrawal_after_the_selection_ends_the_certificate_of_merit():
+    app = make_app(ADMIN_PASSWORD=None)
+    _client, row = _registered(app)
+    _selected(app, row)
+    link = _merit_link(app, row)
+    from kts.db import execute
+    with app.app_context():
+        execute("UPDATE applications SET status = 'withdrawn' WHERE id = ?", (row["id"],))
+    assert app.test_client().get(link).status_code == 404
+
+
+def test_certificates_of_merit_are_switched_off_and_on_and_a_sample_is_shown():
+    app = make_app(ADMIN_PASSWORD=None)
+    _client, row = _registered(app)
+    _selected(app, row)
+    link = _merit_link(app, row)
+    admin = _staff(app, "admin@tests.example", "admin")
+    page = admin.get("/console/certificate").get_data(as_text=True)
+    assert "Certificates of merit" in page and "to 1 selected student(s)" in page
+    with admin.session_transaction() as s:
+        token = s["_csrf"]
+    admin.post("/console/certificate", data={"_csrf": token, "action": "merit_off"})
+    assert app.test_client().get(link).status_code == 404
+    # the certificates of recognition go on
+    assert app.test_client().get(_link(app, row)).status_code == 200
+    admin.post("/console/certificate", data={"_csrf": token, "action": "merit_on"})
+    assert app.test_client().get(link).status_code == 200
+    sample = admin.get("/console/certificate/sample?kind=merit").get_data(as_text=True)
+    assert "OF MERIT" in sample and "Rank 1" in sample and "KTS5/CM/2026/000000" in sample
+    sample = admin.get("/console/certificate/sample").get_data(as_text=True)
+    assert "OF RECOGNITION" in sample and "KTS5/CR/2026/000000" in sample

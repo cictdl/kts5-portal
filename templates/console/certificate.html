@@ -1,10 +1,10 @@
 {% extends "console/base.html" %}
-{% block title %}Certificate of recognition{% endblock %}
+{% block title %}Certificates{% endblock %}
 {% block content %}
 <div class="two-col" style="align-items:start">
   <div>
     <div class="card accent">
-      <h3>Certificates</h3>
+      <h3>Certificates of recognition</h3>
       <p>Every student who registers receives a certificate of recognition, signed by the head of the institute.
         The student opens it from the page shown after registration, the registration e-mail, the status page and
         the candidate portal, and prints it or saves it as PDF. Rejected and withdrawn applications have none.</p>
@@ -14,6 +14,18 @@
         {% if on %}<button class="btn sm ghost" name="action" value="off" data-confirm="Stop issuing certificates? The links stop working until they are issued again.">Stop issuing</button>
         {% else %}<button class="btn sm" name="action" value="on">Issue certificates</button>{% endif %}
         <a class="btn sm secondary" href="{{ url_for('admin.certificate_sample') }}" target="_blank" rel="noopener">Open a sample certificate ↗</a>
+      </form>
+    </div>
+    <div class="card accent" style="margin-top:14px">
+      <h3>Certificates of merit</h3>
+      <p>Every student selected in the merit list receives a certificate of merit, with the rank, once the merit
+        list is published. Waitlisted students and students withdrawn after the selection have none.</p>
+      <p>{% if merit_on %}<span class="pill green">issued</span>{% if published %} to {{ '{:,}'.format(selected) }} selected student(s){% else %} once the merit list is published{% endif %}{% else %}<span class="pill grey">not issued</span>{% endif %}</p>
+      <form method="post" class="btn-row">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        {% if merit_on %}<button class="btn sm ghost" name="action" value="merit_off" data-confirm="Stop issuing certificates of merit? The links stop working until they are issued again.">Stop issuing</button>
+        {% else %}<button class="btn sm" name="action" value="merit_on">Issue certificates of merit</button>{% endif %}
+        <a class="btn sm secondary" href="{{ url_for('admin.certificate_sample', kind='merit') }}" target="_blank" rel="noopener">Open a sample certificate of merit ↗</a>
       </form>
     </div>
     <div class="card" style="margin-top:14px">
