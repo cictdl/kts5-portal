@@ -38,6 +38,7 @@
   </div>
   <div class="btn-row no-print" style="margin-top:16px;justify-content:center">
     <button class="btn" type="button" data-print>{{ t('common.print') }}</button>
+    {% set cert = certificate_link(app) %}{% if cert %}<a class="btn saffron" href="{{ cert }}">🏅 {{ t('cert.get') }}</a>{% endif %}
     <a class="btn secondary" href="{{ url_for('candidate.login') }}">{{ t('nav.candidate') }}</a>
     <a class="btn ghost" href="{{ url_for('public.home') }}">{{ t('nav.home') }}</a>
   </div>

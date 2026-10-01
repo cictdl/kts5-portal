@@ -317,6 +317,8 @@ def register():
         execute("UPDATE applications SET app_no = ? WHERE id = ?", (app_no, row_id))
         limiter.hit("register", ip, 3600)  # only applications that were stored are counted
         audit("application_submitted", "application", row_id, detail=app_no, ip=ip)
+        from .certificate import certificate_link
+        cert = certificate_link(query("SELECT * FROM applications WHERE id = ?", (row_id,), one=True), external=True)
         send_mail(
             data["email"],
             f"KTS 5.0 application received: {app_no}",
@@ -325,7 +327,9 @@ def register():
             f"Language chosen: {K.lang_info(data['pref_lang'])['name']}\n\n"
             f"Keep this number safe. Use it with your date of birth and mobile number to check your status "
             f"and to sign in for the online test at {current_app.config['BASE_URL']}/status\n\n"
-            f"Central Institute of Classical Tamil, Chennai",
+            + (f"Your certificate of recognition, signed by the Director of CICT, can be printed or saved as PDF "
+               f"from {cert}\n\n" if cert else "")
+            + "Central Institute of Classical Tamil, Chennai",
         )
         session["just_registered"] = row_id
         return redirect(url_for("public.register_done", app_no=app_no))

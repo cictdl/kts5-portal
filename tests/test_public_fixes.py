@@ -645,7 +645,8 @@ def test_templates_print_streams_through_the_filter():
         for value in re.findall(r'\slang="\{\{\s*(.*?)\s*\}\}"', path.read_text(encoding="utf-8")):
             printed.setdefault(value, set()).add(path.relative_to(ROOT / "templates").as_posix())
     plain = {value: where for value, where in printed.items() if not value.endswith("|langtag")}
-    assert plain == {"lang": {"base.html", "candidate/exam_paper.html"}, "L.code": {"base.html", "public/orientation.html"}}
+    assert plain == {"lang": {"base.html", "candidate/exam_paper.html", "public/certificate.html"},
+                     "L.code": {"base.html", "public/orientation.html"}}
     assert set(printed) - set(plain) == {"stream|langtag", "info.code|langtag", "shown|langtag", "kotd_lang|langtag",
                                          "qlang|langtag"}
 
@@ -938,7 +939,8 @@ def test_template_has_no_script_of_its_own(path):
     assert not re.search(r"javascript\s*:", source, re.I)
     # what a page loads comes from the portal itself
     for address in re.findall(r"""<(?:script|img|link)\b[^>]*?\b(?:src|href)=["']([^"']*)""", source):
-        assert address.startswith(("{{ url_for(", "{{ qr }}", "{{ address }}")), address
+        # a data address made by the portal: the QR code, the signature of the certificate
+        assert address.startswith(("{{ url_for(", "{{ qr }}", "{{ address }}", "{{ signature }}")), address
 
 
 def test_print_and_confirm_are_attributes():
@@ -968,8 +970,11 @@ def test_version_of_style_sheet_and_script():
     for path in TEMPLATES:
         for name, version in re.findall(r"filename='((?:css|js)/portal\.(?:css|js))'\) \}\}\?v=(\d+)", path.read_text(encoding="utf-8")):
             linked.setdefault(path.relative_to(ROOT / "templates").as_posix(), []).append((name, version))
-    assert linked == {name: [("css/portal.css", "10"), ("js/portal.js", "10")]
-                      for name in ("base.html", "candidate/exam_paper.html", "console/base.html")}
+    expected = {name: [("css/portal.css", "10"), ("js/portal.js", "10")]
+                for name in ("base.html", "candidate/exam_paper.html", "console/base.html")}
+    # the certificate has a style sheet of its own and the script for its print button
+    expected["public/certificate.html"] = [("js/portal.js", "10")]
+    assert linked == expected
     for path in TEMPLATES:
         assert not re.search(r"portal\.(css|js)'\) \}\}(?!\?v=10\")", path.read_text(encoding="utf-8")), path
 
@@ -1002,9 +1007,9 @@ def test_alt_texts_use_keys_that_exist():
             assert CATALOG[code].get(key), (code, key)
     # 540 texts, the two that ask for English entries in the registration form, the heading of the
     # social-media links, the nodal officers, the 19 of the timeline (version 1.1.5) and the 59 of
-    # the bank details of the selected students (version 1.2.0), and the 25 of the page that explains
-    # them (1.2.1)
-    assert len(CATALOG["en"]) == 647
+    # the bank details of the selected students (version 1.2.0), the 25 of the page that explains
+    # them (1.2.1) and the 3 of the certificate of recognition (1.2.2)
+    assert len(CATALOG["en"]) == 650
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1035,7 +1040,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.1" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.2" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

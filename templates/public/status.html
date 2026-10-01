@@ -28,7 +28,8 @@
       {% if a.exam_rank and settings['merit.published'] == '1' %}<dt>{{ t('status.rank') }}</dt><dd>{{ a.exam_rank }}</dd>{% endif %}
       {% if a.remarks and a.status == 'rejected' %}<dt>{{ t('common.remarks') }}</dt><dd><bdi>{{ a.remarks }}</bdi></dd>{% endif %}
     </dl></div>
-    <div class="btn-row" style="margin-top:14px"><a class="btn" href="{{ url_for('candidate.login') }}">{{ t('nav.candidate') }} {{ fwd }}</a></div>
+    <div class="btn-row" style="margin-top:14px"><a class="btn" href="{{ url_for('candidate.login') }}">{{ t('nav.candidate') }} {{ fwd }}</a>
+      {% set cert = certificate_link(a) %}{% if cert %}<a class="btn saffron" href="{{ cert }}">🏅 {{ t('cert.get') }}</a>{% endif %}</div>
   </div>
   {% endif %}
 </div>

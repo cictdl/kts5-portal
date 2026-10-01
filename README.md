@@ -127,6 +127,31 @@ python -m pytest tests -q
    for the bank, and mark that list as paid when the bank has made the
    transfers. See the next section.
 
+## Certificate of recognition
+
+Every student who registers receives a certificate of recognition, signed by
+the head of the institute (from version 1.2.2, `kts/certificate.py`). It is a
+page of the portal laid out as an A4 sheet on its side, which the student
+prints or saves as PDF: `/certificate/<application number>/<seal>`, where the
+seal is a keyed digest of the number (made with the secret key of the
+installation), so that nobody reaches the certificate of another student by
+changing the number. The QR code on the sheet opens that same page on the
+portal, which is the proof that the certificate is genuine. The page is kept
+out of search engines and shared caches.
+
+The student finds it on the page shown after registration, in the
+registration e-mail, on the status page and in the candidate portal.
+Rejected and withdrawn applications have none, and none is issued while the
+setting `cert.on` is `0` (*Console → Certificate*). The sheet is in English;
+the toolbar above it is in the language of the page.
+
+Signatory: the name and designation of the head of the institute in the
+settings (`director.name`, `director.designation`, also shown on the contact
+page). The image of the signature is uploaded in *Console → Certificate*
+(PNG or JPG under 1 MB) and kept as `instance/certificate-signature.png` (or
+`.jpg`), outside the web folder; it is written into each certificate page
+itself. Without it the certificates show the name above an empty line.
+
 ## Stipend: bank details of the selected students
 
 Each of the 1,000 selected students receives a stipend (setting

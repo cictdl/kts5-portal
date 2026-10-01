@@ -19,6 +19,7 @@
           {% if merit %}<dt>{{ t('status.rank') }}</dt><dd><b>{{ merit.rank }}</b> · {{ t('status.' ~ merit.outcome) }}</dd>{% endif %}
         </dl></div>
         <div class="btn-row" style="margin-top:12px"><a class="btn sm secondary" href="{{ url_for('candidate.ack') }}">{{ t('reg.ack') }}</a>
+          {% set cert = certificate_link(cand) %}{% if cert %}<a class="btn sm saffron" href="{{ cert }}">🏅 {{ t('cert.get') }}</a>{% endif %}
           {% if cand.status in ('verified', 'selected', 'waitlisted', 'not_selected') %}<a class="btn sm secondary" href="{{ url_for('candidate.admit_card') }}">{{ t('cand.admit') }}</a>{% endif %}</div>
       </div>
 

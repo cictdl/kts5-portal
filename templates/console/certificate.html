@@ -1,0 +1,51 @@
+{% extends "console/base.html" %}
+{% block title %}Certificate of recognition{% endblock %}
+{% block content %}
+<div class="two-col" style="align-items:start">
+  <div>
+    <div class="card accent">
+      <h3>Certificates</h3>
+      <p>Every student who registers receives a certificate of recognition, signed by the head of the institute.
+        The student opens it from the page shown after registration, the registration e-mail, the status page and
+        the candidate portal, and prints it or saves it as PDF. Rejected and withdrawn applications have none.</p>
+      <p>{% if on %}<span class="pill green">issued</span> to {{ '{:,}'.format(count) }} application(s) so far{% else %}<span class="pill grey">not issued</span>{% endif %}</p>
+      <form method="post" class="btn-row">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        {% if on %}<button class="btn sm ghost" name="action" value="off" data-confirm="Stop issuing certificates? The links stop working until they are issued again.">Stop issuing</button>
+        {% else %}<button class="btn sm" name="action" value="on">Issue certificates</button>{% endif %}
+        <a class="btn sm secondary" href="{{ url_for('admin.certificate_sample') }}" target="_blank" rel="noopener">Open a sample certificate ↗</a>
+      </form>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3>Signed by</h3>
+      {% if signatory %}<p><b>{{ signatory }}</b>{% if designation %}<br>{{ designation }}{% endif %}<br>Central Institute of Classical Tamil, Chennai</p>
+      {% else %}<div class="alert warning">No name is set: the certificate shows no signatory.</div>{% endif %}
+      <p class="small dim">Name and designation are those of the head of the institute in
+        <a href="{{ url_for('admin.settings_page') }}">Settings</a> (also shown on the contact page).</p>
+    </div>
+  </div>
+  <div>
+    <div class="card">
+      <h3>Image of the signature</h3>
+      {% if signature %}
+      <p><img src="{{ signature }}" alt="Signature" style="max-height:90px;max-width:100%;background:#fff;border:1px solid var(--border);padding:6px"></p>
+      {% else %}<div class="alert warning">No signature yet: the certificates show the name and designation above an empty line.</div>{% endif %}
+      <form method="post" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="signature">
+        <div class="field"><label for="signature">{{ 'Replace the signature' if signature else 'Upload the signature' }}</label>
+          <input type="file" id="signature" name="signature" accept=".png,.jpg,.jpeg,image/png,image/jpeg" required>
+          <span class="help">A scan of the signature in dark ink, cropped close, as PNG (best with a transparent background) or JPG on white; under 1 MB. It is kept on the server outside the web folder and written only into the certificates.</span></div>
+        <div class="btn-row" style="margin-top:10px"><button class="btn sm">Upload</button></div>
+      </form>
+      {% if signature %}
+      <form method="post" style="margin-top:10px" data-confirm="Remove the signature from every certificate?">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="remove">
+        <button class="btn sm ghost">Remove the signature</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

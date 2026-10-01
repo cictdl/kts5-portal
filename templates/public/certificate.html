@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}" dir="{{ lang_dir }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>{{ t('cert.title') }} · {{ name }}</title>
+<link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/certificate.css') }}?v=1">
+</head>
+<body>
+<div class="toolbar">
+  <button type="button" data-print>{{ t('common.print') }}</button>
+  <span>{{ t('cert.save_hint') }}</span>
+  <a href="{{ url_for('public.home') }}">{{ t('nav.home') }}</a>
+</div>
+{# The sheet is in English, as the names on it are; it is an A4 page laid on its side. #}
+<main class="sheet" lang="en" dir="ltr">
+  <svg class="bg" viewBox="0 0 297 210" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="saffron" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e8791a"/><stop offset="1" stop-color="#f6b25a"/></linearGradient>
+      <linearGradient id="green" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4fae6e"/><stop offset="1" stop-color="#1b7f4b"/></linearGradient>
+    </defs>
+    <path d="M0,0 H250 C185,5 110,8 0,18 Z" fill="#f9d29a" opacity=".55"/>
+    <path d="M0,0 H205 C150,4 85,5 0,12 Z" fill="url(#saffron)"/>
+    <path d="M297,210 H45 C135,207 215,202 297,188 Z" fill="#bfe1c8" opacity=".6"/>
+    <path d="M297,210 H95 C170,208 235,204 297,196 Z" fill="url(#green)"/>
+  </svg>
+  <div class="watermark" aria-hidden="true" lang="ta">குறள்</div>
+  <div class="frame" aria-hidden="true"></div>
+
+  <header class="logos">
+    <img class="kts" src="{{ url_for('static', filename='img/kts-logo.png') }}" alt="Kashi Tamil Sangamam">
+    <div class="partners">
+      <img class="moe" src="{{ url_for('static', filename='img/logos/moe.png') }}" alt="Ministry of Education, Government of India">
+      <img class="cict" src="{{ url_for('static', filename='img/logos/cict.png') }}" alt="Central Institute of Classical Tamil">
+    </div>
+  </header>
+
+  <div class="body">
+    <svg class="medal" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="5.5"/><path d="M8.5 13.5 7 21l5-2.5 5 2.5-1.5-7.5"/></svg>
+    <h1>CERTIFICATE</h1>
+    <div class="sub"><span></span>OF RECOGNITION<span></span></div>
+    {% if kts_start and kts_end %}<p class="when">Kashi Tamil Sangamam 5.0 &middot; {{ kts_start }} &ndash; {{ kts_end }}</p>{% endif %}
+    <div class="pill">&#9733; Congratulations! &#9733;</div>
+
+    <p class="certify">This certificate is presented to</p>
+    <div class="name{{ ' long' if name|length > 30 }}">{{ name }}</div>
+    {% if college %}<p class="college">{{ college }}{% if place %}, {{ place }}{% endif %}</p>{% endif %}
+    <p class="text">for registering for <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural Payilvom</b> and joining the
+      nationwide movement to learn the Thirukkural, the timeless classic of Tamil, in the spirit of
+      <b>Ek Bharat Shreshtha Bharat</b>.</p>
+
+    <ul class="values">
+      <li><span class="icon green"><svg viewBox="0 0 24 24"><path d="M3 5.5c2.6-1.4 5.6-1.4 9 .6 3.4-2 6.4-2 9-.6V19c-2.6-1.4-5.6-1.4-9 .6-3.4-2-6.4-2-9-.6Z"/><path d="M12 6.1v13.5"/></svg></span>Learn the Thirukkural</li>
+      <li><span class="icon saffron"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.6 2.7-6 6-6s6 2.4 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.3c3 .1 5.5 2.2 5.5 5.7"/></svg></span>Ek Bharat Shreshtha Bharat</li>
+      <li><span class="icon blue"><svg viewBox="0 0 24 24"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg></span>Kashi &ndash; Tamil Sangamam</li>
+      <li><span class="icon red"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span>Viksit Bharat <small>@2047</small></li>
+    </ul>
+    <p class="theme"><span lang="ta">திருக்குறள் பயில்வோம்</span> &middot; Thirukkural Payilvom &middot; <span lang="hi">तिरुक्कुरल अभ्यास करें</span> &middot; Let's Learn Thirukkural</p>
+  </div>
+
+  <footer class="foot">
+    <div class="qr-card">
+      {% if qr %}<img src="{{ qr }}" alt="QR code of this certificate">{% endif %}
+      <div><b>Scan to verify</b><span>{{ host }}</span></div>
+    </div>
+    <div class="meta">Certificate No. <b>{{ number }}</b><br>Date of issue: {{ issued_on }}</div>
+    <div class="sign">
+      <div class="ink">{% if signature %}<img src="{{ signature }}" alt="Signature">{% endif %}</div>
+      <b>{{ signatory }}</b>
+      {% if designation %}<span>{{ designation }}</span>{% endif %}
+      <span>{{ organiser }}</span>
+    </div>
+  </footer>
+</main>
+<script type="application/json" id="i18n">{}</script>
+<script src="{{ url_for('static', filename='js/portal.js') }}?v=10" defer></script>
+</body>
+</html>

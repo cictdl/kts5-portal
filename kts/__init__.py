@@ -49,6 +49,8 @@ def create_app(config_object=Config):
     from . import kural as K
     # the stipend module adds its pages to the blueprints of the candidates and of the console
     from . import stipend  # noqa: F401
+    # and the certificate of recognition its page to those of the public site and of the console
+    from . import certificate
 
     db.init_app(app)
     i18n.register(app)
@@ -161,6 +163,7 @@ def create_app(config_object=Config):
                 "ministry": app.config["MINISTRY"], "base_url": app.config["BASE_URL"],
             },
             "get_setting": db.get_setting,
+            "certificate_link": certificate.certificate_link,
             "banner_state": banner_state,
             "social_links": db.social_links,
             "nodal_officers": db.nodal_officers,

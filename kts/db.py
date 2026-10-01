@@ -415,6 +415,8 @@ DEFAULT_SETTINGS = {
     "kts.start": "2026-11-28",
     "kts.end": "2026-12-12",
     "schedule.tentative": "1",
+    # every registered student receives a certificate of recognition (kts/certificate.py)
+    "cert.on": "1",
     "stats.public": "1",
     "site.draft_note_on": "1",
     "home.pm_on": "1",
