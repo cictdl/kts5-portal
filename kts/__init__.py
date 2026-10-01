@@ -162,6 +162,7 @@ def create_app(config_object=Config):
             "banner_state": banner_state,
             "social_links": db.social_links,
             "nodal_officers": db.nodal_officers,
+            "institute_head": db.institute_head,
             "now_ist": utils.now_ist,
         }
 

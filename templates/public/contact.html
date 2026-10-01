@@ -30,13 +30,15 @@
         <h3>{{ t('site.coordinating') }}</h3>
         <p>{{ t('site.organiser') }}<br><span class="dim"><bdi>{{ settings['contact.address'] }}</bdi></span></p>
         <p><a href="mailto:{{ settings['contact.email'] }}"><bdi>{{ settings['contact.email'] }}</bdi></a><br><bdi>{{ settings['contact.phone'] }}</bdi></p>
+        {% macro person(o) %}
+        <p class="nodal"><b><bdi>{{ o.name }}</bdi></b>{% if o.designation %}<br><span class="dim"><bdi>{{ o.designation }}</bdi></span>{% endif %}<br><span class="dim">{{ t('site.organiser') }}</span>
+          {% if o.email %}<br><a href="mailto:{{ o.email }}" dir="ltr">{{ o.email }}</a>{% endif %}{% if o.phone %}<br><a href="tel:{{ o.phone }}" dir="ltr">{{ o.phone }}</a>{% endif %}</p>
+        {% endmacro %}
+        {% for o in institute_head() %}{{ person(o) }}{% endfor %}
         {% set officers = nodal_officers() %}
         {% if officers %}
         <h4 style="margin:14px 0 6px">{{ t('site.nodal') }}</h4>
-        {% for o in officers %}
-        <p class="nodal"><b><bdi>{{ o.name }}</bdi></b>{% if o.designation %}<br><span class="dim"><bdi>{{ o.designation }}</bdi></span>{% endif %}<br><span class="dim">{{ t('site.organiser') }}</span>
-          {% if o.email %}<br><a href="mailto:{{ o.email }}" dir="ltr">{{ o.email }}</a>{% endif %}{% if o.phone %}<br><a href="tel:{{ o.phone }}" dir="ltr">{{ o.phone }}</a>{% endif %}</p>
-        {% endfor %}
+        {% for o in officers %}{{ person(o) }}{% endfor %}
         {% endif %}
       </div>
       {% set social = social_links() %}

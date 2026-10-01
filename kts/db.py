@@ -319,6 +319,10 @@ NODAL_OFFICERS = [
     ("nodal.2", {"name": "Dr. R. Akilan", "designation": "Programmer", "email": "akilan.r@cict.in", "phone": "9965734497"}),
 ]
 NODAL_FIELDS = [("name", "Name"), ("designation", "Designation"), ("email", "E-mail"), ("phone", "Phone")]
+# The head of the institute, shown in the same way above the nodal officers; the same four settings.
+INSTITUTE_HEAD = [
+    ("director", {"name": "Prof. R. Chandrasekaran", "designation": "Director", "email": "director@cict.in", "phone": "044-22540125"}),
+]
 
 DEFAULT_SETTINGS = {
     "site.banner": "Applications for KTS 5.0 — Thirukkural Payilvom are open. One student from every college in India.",
@@ -346,7 +350,7 @@ DEFAULT_SETTINGS = {
     "contact.phone": "044-22540125",
     "contact.address": "Central Institute of Classical Tamil (CICT) – Main Office, Chemmozhi Salai, Perumbakkam, Chennai – 600100, India",
     **{key: address for key, _name, address in SOCIAL_LINKS},
-    **{f"{prefix}.{field}": value for prefix, officer in NODAL_OFFICERS for field, value in officer.items()},
+    **{f"{prefix}.{field}": value for prefix, officer in INSTITUTE_HEAD + NODAL_OFFICERS for field, value in officer.items()},
     "kts.start": "2026-11-28",
     "kts.end": "2026-12-12",
     "schedule.tentative": "1",
@@ -454,15 +458,25 @@ def all_settings():
     return data
 
 
-def nodal_officers():
-    """The nodal officers with a name, as dicts name/designation/email/phone, in their order."""
+def _people(entries):
+    """The people of `entries` with a name, as dicts name/designation/email/phone, in their order."""
     settings = all_settings()
-    officers = []
-    for prefix, _officer in NODAL_OFFICERS:
-        officer = {field: (settings.get(f"{prefix}.{field}") or "").strip() for field, _label in NODAL_FIELDS}
-        if officer["name"]:
-            officers.append(officer)
-    return officers
+    people = []
+    for prefix, _person in entries:
+        person = {field: (settings.get(f"{prefix}.{field}") or "").strip() for field, _label in NODAL_FIELDS}
+        if person["name"]:
+            people.append(person)
+    return people
+
+
+def nodal_officers():
+    """The nodal officers with a name, in their order."""
+    return _people(NODAL_OFFICERS)
+
+
+def institute_head():
+    """The head of the institute when a name is set, else an empty list."""
+    return _people(INSTITUTE_HEAD)
 
 
 def social_links():
