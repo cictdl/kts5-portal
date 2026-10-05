@@ -768,5 +768,6 @@
   "paper.err_declare": "पत्र पठाउन घोषणा पुष्टि गर्नुहोस्।",
   "res.cat_video_kural": "तिरुक्कुरल भिडियो",
   "res.cat_video_valluvar": "तिरुवल्लुवर भिडियो",
-  "res.cat_video_sign": "सांकेतिक भाषामा तिरुक्कुरल"
+  "res.cat_video_sign": "सांकेतिक भाषामा तिरुक्कुरल",
+  "res.cat_music": "संगीत"
 }

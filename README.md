@@ -215,6 +215,10 @@ of the other two is added in *Console → Repository → New resource* with its 
 the category. A tab stands on the public page once it holds a published entry. The videos open
 on YouTube; nothing of YouTube is loaded by the portal itself.
 
+From 1.2.13 a tab *Music* (`music`) holds *திருக்குறள் இசைத் தமிழ் · Thirukkural Isai Tamil*, the
+complete musical version of the Thirukkural in six volumes, MP3 files on cict.in (seeds
+`kural-isai-1` to `kural-isai-6`).
+
 ## Research papers of the delegates
 
 From 1.2.11 (`kts/papers.py`). Each selected student sends a research paper on the Thirukkural on

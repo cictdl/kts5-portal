@@ -768,5 +768,6 @@
   "paper.err_declare": "Confirm the declaration to send the paper.",
   "res.cat_video_kural": "Thirukkural videos",
   "res.cat_video_valluvar": "Thiruvalluvar videos",
-  "res.cat_video_sign": "Thirukkural in sign language"
+  "res.cat_video_sign": "Thirukkural in sign language",
+  "res.cat_music": "Music"
 }
