@@ -75,6 +75,7 @@ def test_a_registered_student_has_a_certificate_signed_by_the_director():
     assert f"Certificate No. <b>{number}</b>" in page
     assert "<b>Prof. R. Chandrasekaran</b>" in page and "<span>Director</span>" in page
     assert "Central Institute of Classical Tamil, Chennai" in page
+    assert '<span class="auto">An autonomous Institution under the Ministry of Education, Government of India</span>' in page
     # the QR code opens the same page on the portal
     from kts.utils import qr_data_uri
     if qr_data_uri("x"):
@@ -284,7 +285,7 @@ def test_a_student_of_the_merit_list_has_a_certificate_of_merit():
     assert "as one of the 1,000 students chosen from colleges across India" in page and "held on 19 October 2026" in page
     number = "KTS5/CM/" + "/".join(row["app_no"].split("-")[1:])
     assert f"Certificate No. <b>{number}</b>" in page and "Date of issue: 21 Oct 2026" in page
-    assert "<b>Prof. R. Chandrasekaran</b>" in page
+    assert "<b>Prof. R. Chandrasekaran</b>" in page and '<span class="auto">An autonomous Institution under the Ministry of Education, Government of India</span>' in page
     assert r.headers["X-Robots-Tag"] == "noindex, nofollow"
     # the certificate of recognition stays, and the two seals are not the same
     recognition = _link(app, row)
@@ -414,6 +415,8 @@ def test_a_selected_student_has_a_confirmation_letter():
     assert "&#8377;10,000" in page and "from 28 November 2026 to 12 December 2026" in page
     assert "<b>Prof. R. Chandrasekaran</b>" in page and "Copy to: The Principal / Head of the Institution, Government College Thrissur" in page
     assert "Chemmozhi Salai, Perumbakkam" in page
+    # the standing of the institute, in the letterhead and under the signature
+    assert page.count("An autonomous Institution under the Ministry of Education, Government of India") == 2 and '<span class="min">An autonomous Institution under the Ministry of Education, Government of India</span>' in page
     assert r.headers["X-Robots-Tag"] == "noindex, nofollow" and "no-store" in r.headers["Cache-Control"]
     assert "<script>" not in page and not re.search(r"\son[a-z]+=", page)
     # a seal of the letter opens no certificate, and the other way round

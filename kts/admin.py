@@ -465,6 +465,12 @@ def run_selection(select_count, wait_count, user):
     `wait_count` as waitlisted, the rest as not selected.
     Tie-breaks: higher score, shorter time taken, earlier application.
     """
+    # an attempt whose time ran out while the browser was closed is still "in progress": it is
+    # closed and scored here, so that the student is ranked with the answers that were saved
+    from .candidate import _finalise
+    for stale in query("SELECT * FROM exam_sessions WHERE status = 'in_progress' AND deadline_at < ?",
+                       ((now_ist() - timedelta(seconds=45)).isoformat(),)):
+        _finalise(stale, "expired")
     rows = query("SELECT a.id, a.college_key, s.score, s.time_taken_sec, a.created_at "
                  "FROM applications a JOIN exam_sessions s ON s.application_id = a.id "
                  "WHERE a.status IN ('verified','selected','waitlisted','not_selected') AND s.status != 'in_progress' "

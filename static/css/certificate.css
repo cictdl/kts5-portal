@@ -95,6 +95,7 @@ h1 { margin: .4cqw 0 0; font-family: Cambria, Georgia, "Times New Roman", serif;
   border-bottom: .1cqw solid #1f3a5f; margin-bottom: .5cqw; }
 .sign .ink img { max-height: 5cqw; max-width: 20cqw; mix-blend-mode: multiply; }
 .sign b { font-size: 1.3cqw; color: #1f2937; }
+.sign .auto { font-size: .84cqw; line-height: 1.3; white-space: nowrap; margin-top: .15cqw; color: #6b7280; }
 
 @media print {
   html, body { width: 297mm; height: 210mm; background: none; }

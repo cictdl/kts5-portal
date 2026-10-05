@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <title>{{ t('cert.merit_title' if kind == 'merit' else 'cert.title') }} · {{ name }}</title>
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/certificate.css') }}?v=3">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/certificate.css') }}?v=4">
 </head>
 <body>
 <div class="toolbar">
@@ -87,6 +87,7 @@
       <b>{{ signatory }}</b>
       {% if designation %}<span>{{ designation }}</span>{% endif %}
       <span>{{ organiser }}</span>
+      <span class="auto">{{ autonomous }}</span>
     </div>
   </footer>
 </main>

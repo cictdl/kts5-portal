@@ -35,6 +35,7 @@ SIGNATURE_NAME = "certificate-signature"
 SIGNATURE_TYPES = {"png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg"}
 SIGNATURE_MAX_BYTES = 1024 * 1024
 ORGANISER = "Central Institute of Classical Tamil, Chennai"
+AUTONOMOUS = "An autonomous Institution under the Ministry of Education, Government of India"
 # the students of the merit list who receive a certificate of merit
 MERIT_OUTCOMES = ("selected", "waitlisted")
 # the two kinds: the code in the number of a certificate, and what its seal is made from
@@ -150,7 +151,7 @@ def _sheet(name, college, place, number, issued_on, link, kind="recognition", ra
         kts_start=_long_date(settings.get("kts.start")), kts_end=_long_date(settings.get("kts.end")),
         qr=qr_data_uri(link), link=link, host=urlsplit(link).netloc, signature=signature_data(),
         signatory=(settings.get("director.name") or "").strip(),
-        designation=(settings.get("director.designation") or "").strip(), organiser=ORGANISER)
+        designation=(settings.get("director.designation") or "").strip(), organiser=ORGANISER, autonomous=AUTONOMOUS)
 
 
 @public.route("/certificate/<app_no>/<seal>")
@@ -205,7 +206,7 @@ def _letter(app, rank, link):
         mentor=mentor, lang_name=info["name"] if info else "",
         qr=qr_data_uri(link), link=link, host=urlsplit(link).netloc, signature=signature_data(),
         signatory=(settings.get("director.name") or "").strip(),
-        designation=(settings.get("director.designation") or "").strip(), organiser=ORGANISER,
+        designation=(settings.get("director.designation") or "").strip(), organiser=ORGANISER, autonomous=AUTONOMOUS,
         address=(settings.get("contact.address") or "").strip(), email=(settings.get("contact.email") or "").strip(),
         phone=(settings.get("contact.phone") or "").strip())
 

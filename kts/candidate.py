@@ -4,6 +4,7 @@ acknowledgement and admit card, take the timed online test, see the result.
 """
 import json
 import random
+import sqlite3
 from datetime import timedelta
 from pathlib import Path
 
@@ -12,7 +13,7 @@ from flask import (Blueprint, abort, current_app, flash, g, jsonify, redirect, r
 
 from . import kural as K
 from .auth import candidate_required
-from .db import all_settings, audit, execute, query, utcnow
+from .db import get_db, all_settings, audit, execute, query, utcnow
 from .i18n import t
 from .utils import client_ip, exam_window, limiter, now_ist, parse_iso, qr_data_uri
 
@@ -166,10 +167,15 @@ def exam():
                 return redirect(url_for("candidate.home"))
             started = now_ist()
             deadline = started + timedelta(minutes=duration)
-            execute("INSERT INTO exam_sessions(application_id, lang, paper_json, started_at, deadline_at, ip, user_agent) "
-                    "VALUES(?,?,?,?,?,?,?)",
-                    (cand["id"], cand["pref_lang"], json.dumps(paper), started.isoformat(), deadline.isoformat(),
-                     client_ip(), (request.user_agent.string or "")[:200]))
+            try:
+                execute("INSERT INTO exam_sessions(application_id, lang, paper_json, started_at, deadline_at, ip, user_agent) "
+                        "VALUES(?,?,?,?,?,?,?)",
+                        (cand["id"], cand["pref_lang"], json.dumps(paper), started.isoformat(), deadline.isoformat(),
+                         client_ip(), (request.user_agent.string or "")[:200]))
+            except sqlite3.IntegrityError:
+                # a second "Start" sent at the same moment: the attempt that the first one made stands
+                get_db().rollback()
+                return redirect(url_for("candidate.paper"))
             audit("exam_started", "application", cand["id"], ip=client_ip())
         return redirect(url_for("candidate.paper"))
     return render_template("candidate/exam_start.html", cand=cand, settings=settings, start=start, end=end,

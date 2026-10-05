@@ -33,7 +33,7 @@ body { background: #e7e2d8; color: #1f2937; font-family: "Noto Sans", "Segoe UI"
 .org .ta, .org .hi { font-family: "Nirmala UI", "Noto Sans Tamil", "Noto Sans Devanagari", sans-serif; font-size: 1.95cqw;
   font-weight: 700; color: #8a1f17; }
 .org b { font-family: Cambria, Georgia, "Times New Roman", serif; font-size: 3.15cqw; color: #1f3a5f; margin-top: .3cqw; }
-.org .min { font-size: 1.75cqw; font-weight: 600; color: #374151; }
+.org .min { font-size: 1.55cqw; font-weight: 600; color: #374151; }
 .org .addr { font-size: 1.5cqw; color: #4b5563; margin-top: .4cqw; }
 
 .content { padding: 2.4cqw 8.5cqw 0; font-size: 1.74cqw; line-height: 1.46; color: #111827; }
@@ -46,10 +46,11 @@ body { background: #e7e2d8; color: #1f2937; font-family: "Noto Sans", "Segoe UI"
 .points li { margin-bottom: .45cqw; padding-left: .5cqw; }
 .points b { color: #1f3a5f; }
 
-.sign { display: flex; flex-direction: column; align-items: flex-start; margin: 1.2cqw 0 0 auto; width: 44cqw; line-height: 1.4; }
+.sign { display: flex; flex-direction: column; align-items: flex-start; margin: 1.2cqw 0 0 auto; width: 54cqw; line-height: 1.4; }
 .sign .ink { display: flex; align-items: flex-end; height: 6.6cqw; width: 100%; margin: .3cqw 0 .2cqw; }
 .sign .ink img { max-height: 6.3cqw; max-width: 34cqw; mix-blend-mode: multiply; }
 .sign b { font-size: 1.85cqw; }
+.sign .auto { font-size: 1.35cqw; color: #4b5563; }
 
 .copy { margin-top: 1.6cqw !important; font-size: 1.5cqw; color: #374151; }
 

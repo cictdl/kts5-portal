@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <title>{{ t('letter.title') }} · {{ name }}</title>
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/letter.css') }}?v=2">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/letter.css') }}?v=3">
 </head>
 <body>
 <div class="toolbar">
@@ -23,7 +23,7 @@
       <span class="ta" lang="ta">செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்</span>
       <span class="hi" lang="hi">केंद्रीय शास्त्रीय तमिल संस्थान</span>
       <b>Central Institute of Classical Tamil</b>
-      <span class="min">Ministry of Education, Government of India</span>
+      <span class="min">{{ autonomous }}</span>
       {% if address %}<span class="addr">{{ address }}</span>{% endif %}
     </div>
     <img class="kts" src="{{ url_for('static', filename='img/kts-logo.png') }}" alt="Kashi Tamil Sangamam">
@@ -66,6 +66,7 @@
       <b>{{ signatory }}</b>
       {% if designation %}<span>{{ designation }}</span>{% endif %}
       <span>{{ organiser }}</span>
+      <span class="auto">{{ autonomous }}</span>
     </div>
 
     {% if college %}<p class="copy">Copy to: The Principal / Head of the Institution, {{ college }}{% if place %}, {{ place }}{% endif %}, for information.</p>{% endif %}
