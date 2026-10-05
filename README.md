@@ -220,7 +220,10 @@ complete musical version of the Thirukkural in six volumes, MP3 files on cict.in
 `kural-isai-1` to `kural-isai-6`).
 
 From 1.2.14 the tab *Thirukkural videos* holds five lectures of Dr. Divya Sripada from the channel
-of CICT (seeds `yt-<video id>`). Titles are taken as YouTube gives them; YouTube itself cannot be
+of CICT (seeds `yt-<video id>`); from 1.2.15 the other videos on the Thirukkural and Thiruvalluvar in
+the playlists of the channel: 16 more under *Thirukkural videos* (Prof. P. Marudhanayagam; Prof.
+Jayaprakasam in Telugu) and 57 under *Thiruvalluvar videos* (the 49 parts of வள்ளுவத்தைச்
+சிந்திப்போம் by Dr. K. Balaraman; Prof. P. Marudhanayagam). Titles are taken as YouTube gives them; YouTube itself cannot be
 reached from every machine, and noembed.com returns the title and the channel of a video.
 
 ## Research papers of the delegates

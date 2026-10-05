@@ -6,6 +6,8 @@ Entries of the repository that every installation carries (data/resources.json).
 import json
 import re
 
+from markupsafe import escape
+
 from conftest import ROOT, make_app
 
 SEEDS = json.loads((ROOT / "data" / "resources.json").read_text(encoding="utf-8"))
@@ -25,7 +27,9 @@ SIGN = [s["url"] for s in SEEDS if s["category"] == "video_sign"]
 ISAI = [f"https://cict.in/audios/thirukural-{n}.mp3" for n in range(1, 7)]
 # five Thirukkural lectures of Dr. Divya Sripada from the YouTube channel of CICT (version 1.2.14)
 LECTURES = [f"https://www.youtube.com/watch?v={v}" for v in ("POU5PhXJRMU", "8k-U9tRG99E", "0VZagb_EtWA", "ZUaP1sFK-WQ", "-yZ9t9C7QA8")]
-ALL = [PLAY, WEB, CORPUS, ARCHIVES, RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ] + SIGN + ISAI + LECTURES
+# and the other Thirukkural and Thiruvalluvar videos of the playlists of the channel (version 1.2.15)
+CHANNEL = [s["url"] for s in SEEDS if s["key"].startswith("yt-") and s["url"] not in LECTURES]
+ALL = [PLAY, WEB, CORPUS, ARCHIVES, RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ] + SIGN + ISAI + LECTURES + CHANNEL
 
 
 def _restart(app):
@@ -41,7 +45,9 @@ def _rows(app):
 
 def test_the_seed_file_is_complete():
     assert [s["url"] for s in SEEDS] == ALL
-    assert [s["category"] for s in SEEDS] == ["app", "app", "corpus", "corpus", "app", "app", "app", "study", "app", "app"] + ["video_sign"] * 44 + ["music"] * 6 + ["video_kural"] * 5
+    assert [s["category"] for s in SEEDS] == ["app", "app", "corpus", "corpus", "app", "app", "app", "study", "app", "app"] + ["video_sign"] * 44 + ["music"] * 6 + ["video_kural"] * 5 + \
+        [s["category"] for s in SEEDS[65:]]
+    assert sorted(set(s["category"] for s in SEEDS[65:])) == ["video_kural", "video_valluvar"]
     for s in SEEDS:
         assert s["key"] and s["title"] and s["description"]
     assert len({s["key"] for s in SEEDS}) == len(SEEDS)
@@ -55,11 +61,12 @@ def test_a_new_installation_carries_the_app():
     # seven chosen for the home page, which shows six in the order of sort_order: Kural Bridge first,
     # the Digital Archives in the repository only; the two of the prosody app and the classroom quiz
     # are in the repository only, the quiz first of them
-    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1, 0] + [0] * 44 + [0] * 6 + [0] * 5
+    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1, 0] + [0] * 44 + [0] * 6 + [0] * 5 + [0] * 73
     client = app.test_client()
     page = client.get("/resources").get_data(as_text=True)
     for s in SEEDS:
-        assert s["title"] in page
+        # as the page writes it: a title may hold an "&"
+        assert str(escape(s["title"])) in page
     home = client.get("/").get_data(as_text=True)
     assert "Tirukkural Multilingual (Android)" in home and "Kural Bridge" in home
     # the card on the home page ends at a word, not inside one
@@ -126,8 +133,8 @@ def test_entries_added_later_reach_a_database_that_has_the_first_ones():
     conn = sqlite3.connect(str(app.config["DATABASE"]))
     later = ["kural-run", "kural-crossword", "yappu-kalam", "yappu-quick-guide", "kural-bridge", "classroom-quiz"] + \
         [f"kural-sign-{n:02d}" for n in range(1, 45)] + [f"kural-isai-{n}" for n in range(1, 7)] + \
-        [f"yt-{url.rsplit('=', 1)[1]}" for url in LECTURES]
-    gone = [RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ] + SIGN + ISAI + LECTURES
+        [f"yt-{url.rsplit('=', 1)[1]}" for url in LECTURES + CHANNEL]
+    gone = [RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ] + SIGN + ISAI + LECTURES + CHANNEL
     conn.execute("DELETE FROM resources WHERE url IN (%s)" % ", ".join("?" * len(gone)), gone)
     conn.execute("DELETE FROM settings WHERE key IN (%s)" % ", ".join("?" * len(later)), ["seed.resource." + k for k in later])
     conn.commit()
@@ -139,7 +146,7 @@ def test_entries_added_later_reach_a_database_that_has_the_first_ones():
     assert [r["title"] for r in rows[4:6]] == ["குறள் ஓட்டம் · Kural Run", "குறள் குறுக்கெழுத்து · Kural Crossword"]
     # shown with the featured entries first, each group in the order of sort_order
     page = again.test_client().get("/resources?lang=en").get_data(as_text=True)
-    order = [page.find(s["title"]) for s in sorted(SEEDS, key=lambda s: (-s["featured"], s["sort_order"]))]
+    order = [page.find(str(escape(s["title"]))) for s in sorted(SEEDS, key=lambda s: (-s["featured"], s["sort_order"]))]
     assert all(o > 0 for o in order) and order == sorted(order)
 
 
@@ -187,11 +194,22 @@ def test_the_videos_in_sign_language_have_a_tab_of_their_own():
     assert all(re.fullmatch(r"https://www\.youtube\.com/watch\?v=[A-Za-z0-9_-]{11}", url) for url in SIGN)
     page = client.get("/resources?lang=en").get_data(as_text=True)
     assert 'href="/resources?cat=video_sign&amp;l=&amp;q=" class="">Thirukkural in sign language <span class="muted">44</span></a>' in page
-    # the tab of the Thirukkural lectures holds five (1.2.14); that of Thiruvalluvar stands once it holds a video
-    assert 'href="/resources?cat=video_kural&amp;l=&amp;q=" class="">Thirukkural videos <span class="muted">5</span></a>' in page
-    assert "cat=video_valluvar" not in page
+    # the Thirukkural lectures: five sent by Dr. Akilan (1.2.14) and sixteen more of the channel (1.2.15);
+    # the Thiruvalluvar lectures: 57 (1.2.15)
+    assert 'href="/resources?cat=video_kural&amp;l=&amp;q=" class="">Thirukkural videos <span class="muted">21</span></a>' in page
+    assert 'href="/resources?cat=video_valluvar&amp;l=&amp;q=" class="">Thiruvalluvar videos <span class="muted">57</span></a>' in page
     lectures = client.get("/resources?cat=video_kural&lang=en").get_data(as_text=True)
-    assert lectures.count('<div class="card res-card">') == 5
+    assert lectures.count('<div class="card res-card">') == 21
+    valluvar = client.get("/resources?cat=video_valluvar&lang=en").get_data(as_text=True)
+    assert valluvar.count('<div class="card res-card">') == 57
+    # each series in the order of its parts
+    assert valluvar.index("வள்ளுவத்தைச் சிந்திப்போம் - பகுதி 1 முனைவர்") < valluvar.index("வள்ளுவத்தைச் சிந்திப்போம் - பகுதி 2 முனைவர்") \
+        < valluvar.index("வள்ளுவத்தைச் சிந்திப்போம் - பகுதி 49 |") < valluvar.index("Thiruvalluvar and Plato")
+    assert lectures.index("Thirukural in Telugu Part 1 |") < lectures.index("Thirukural Part 03") < lectures.index("Telugu Part 12")
+    # the Telugu lectures stand under Telugu in the filter of languages (with those of no language), the Tamil one not
+    telugu = client.get("/resources?cat=video_kural&l=te&lang=en").get_data(as_text=True)
+    assert telugu.count('<div class="card res-card">') == 20 and "Thirukural in Telugu Part 4 |" in telugu
+    assert "உலகப் பொதுமறை திருக்குறள்" not in telugu and "உலகப் பொதுமறை திருக்குறள்" in lectures
     assert lectures.index("Leadership lessons from Thirukural") < lectures.index("Part 01 : Goal setting") \
         < lectures.index("Part 02 : Goal setting") < lectures.index("part 01 : Importance of the Right Communications")
     tab = client.get("/resources?cat=video_sign&lang=en").get_data(as_text=True)
