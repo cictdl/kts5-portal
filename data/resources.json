@@ -22,5 +22,8 @@
    "url": "/static/yappu/app/index.html", "featured": 0, "sort_order": 14},
   {"key": "yappu-quick-guide", "title": "யாப்பு விரைவுக் கையேடு · Prosody quick reference", "category": "study", "lang": "ta",
    "description": "எழுத்து → அசை → சீர் → தளை → அடி → தொடை → பா. The rules of Tamil prosody on one page, to print (PDF).",
-   "url": "/static/yappu/yappu-quick-guide.pdf", "featured": 0, "sort_order": 15}
+   "url": "/static/yappu/yappu-quick-guide.pdf", "featured": 0, "sort_order": 15},
+  {"key": "kural-bridge", "title": "குறள் பாலம் · Kural Bridge", "category": "app", "lang": "",
+   "description": "A word game in 22 languages for the students of Kashi Tamil Sangamam: read a Thirukkural couplet in your own language, then build the Tamil original again word by word. Every Tamil word is also written in your own script, and its meaning appears as you place it. Free, no account, works offline.",
+   "url": "https://cictdl.github.io/index.html/kural-app/bridge/", "featured": 1, "sort_order": 9}
 ]

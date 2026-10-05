@@ -16,7 +16,8 @@ RUN = "https://www.digitalarchives.cict.in/kural-run.html"
 CROSSWORD = "https://cictdl.github.io/index.html/kural-app/kattam/index.html"
 YAPPU = "/static/yappu/app/index.html"
 GUIDE = "/static/yappu/yappu-quick-guide.pdf"
-ALL = [PLAY, WEB, CORPUS, ARCHIVES, RUN, CROSSWORD, YAPPU, GUIDE]
+BRIDGE = "https://cictdl.github.io/index.html/kural-app/bridge/"
+ALL = [PLAY, WEB, CORPUS, ARCHIVES, RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE]
 
 
 def _restart(app):
@@ -32,7 +33,7 @@ def _rows(app):
 
 def test_the_seed_file_is_complete():
     assert [s["url"] for s in SEEDS] == ALL
-    assert [s["category"] for s in SEEDS] == ["app", "app", "corpus", "corpus", "app", "app", "app", "study"]
+    assert [s["category"] for s in SEEDS] == ["app", "app", "corpus", "corpus", "app", "app", "app", "study", "app"]
     for s in SEEDS:
         assert s["key"] and s["title"] and s["description"]
     assert len({s["key"] for s in SEEDS}) == len(SEEDS)
@@ -43,14 +44,15 @@ def test_a_new_installation_carries_the_app():
     rows = _rows(app)
     assert [r["url"] for r in rows] == ALL
     assert all(r["published"] == 1 for r in rows)
-    # six on the home page, which shows six; the two of the prosody app are in the repository only
-    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0]
+    # seven chosen for the home page, which shows six in the order of sort_order: Kural Bridge first,
+    # the Digital Archives in the repository only; the two of the prosody app are in the repository only
+    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1]
     client = app.test_client()
     page = client.get("/resources").get_data(as_text=True)
     for s in SEEDS:
         assert s["title"] in page
     home = client.get("/").get_data(as_text=True)
-    assert "Tirukkural Multilingual (Android)" in home
+    assert "Tirukkural Multilingual (Android)" in home and "Kural Bridge" in home
     # the card on the home page ends at a word, not inside one
     assert "with the In<" not in home and "Institute's published translations into the 22 languages" not in home
     r = client.get(f"/resources/{rows[0]['id']}")
@@ -113,8 +115,8 @@ def test_entries_added_later_reach_a_database_that_has_the_first_ones():
     import sqlite3
     app = make_app(ADMIN_PASSWORD=None)
     conn = sqlite3.connect(str(app.config["DATABASE"]))
-    later = ["kural-run", "kural-crossword", "yappu-kalam", "yappu-quick-guide"]
-    conn.execute("DELETE FROM resources WHERE url IN (?, ?, ?, ?)", (RUN, CROSSWORD, YAPPU, GUIDE))
+    later = ["kural-run", "kural-crossword", "yappu-kalam", "yappu-quick-guide", "kural-bridge"]
+    conn.execute("DELETE FROM resources WHERE url IN (?, ?, ?, ?, ?)", (RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE))
     conn.execute("DELETE FROM settings WHERE key IN (%s)" % ", ".join("?" * len(later)), ["seed.resource." + k for k in later])
     conn.commit()
     conn.close()
