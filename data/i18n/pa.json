@@ -765,5 +765,8 @@
   "paper.sent_ok": "ਤੁਹਾਡਾ ਖੋਜ ਪੱਤਰ ਪ੍ਰਾਪਤ ਹੋ ਗਿਆ ਹੈ।",
   "paper.err_long": "ਇਹ ਲਿਖਤ ਬਹੁਤ ਲੰਮੀ ਹੈ।",
   "paper.err_file": "10 MB ਤੱਕ ਦੀ PDF ਜਾਂ Word (DOCX) ਫ਼ਾਈਲ ਚੁਣੋ।",
-  "paper.err_declare": "ਖੋਜ ਪੱਤਰ ਭੇਜਣ ਲਈ ਘੋਸ਼ਣਾ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ।"
+  "paper.err_declare": "ਖੋਜ ਪੱਤਰ ਭੇਜਣ ਲਈ ਘੋਸ਼ਣਾ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ।",
+  "res.cat_video_kural": "ਤਿਰੁੱਕੁਰਲ ਵੀਡੀਓ",
+  "res.cat_video_valluvar": "ਤਿਰੁਵੱਲੁਵਰ ਵੀਡੀਓ",
+  "res.cat_video_sign": "ਸੰਕੇਤਕ ਭਾਸ਼ਾ ਵਿੱਚ ਤਿਰੁੱਕੁਰਲ"
 }

@@ -439,8 +439,9 @@ def merit_csv():
 
 # ---- repository -------------------------------------------------------------
 
-CATEGORIES = ["translation", "publication", "app", "corpus", "video", "audio", "film", "comic",
-              "poster", "daily", "story", "study", "link"]
+# the videos of CICT on the Thirukkural, on Thiruvalluvar and in Indian Sign Language have tabs of their own
+CATEGORIES = ["translation", "publication", "app", "corpus", "video", "video_kural", "video_valluvar", "video_sign",
+              "audio", "film", "comic", "poster", "daily", "story", "study", "link"]
 
 
 @bp.route("/resources")

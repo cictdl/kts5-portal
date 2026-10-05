@@ -765,5 +765,8 @@
   "paper.sent_ok": "অদোমগী রিসর্চ পেপর ফংলে।",
   "paper.err_long": "ইখিবা অসি হেন্দোক্না শাংই।",
   "paper.err_file": "10 MB ফাওবগী PDF নৎত্রগা Word (DOCX) ফাইল অমা খনবিয়ু।",
-  "paper.err_declare": "পেপর থাবগীদমক লাউথোকপা অদু য়াবিয়ু।"
+  "paper.err_declare": "পেপর থাবগীদমক লাউথোকপা অদু য়াবিয়ু।",
+  "res.cat_video_kural": "তিরুক্কুরল ভিদিওশিং",
+  "res.cat_video_valluvar": "তিরুৱল্লুৱর ভিদিওশিং",
+  "res.cat_video_sign": "খুদমগী লোলদা তিরুক্কুরল"
 }

@@ -765,5 +765,8 @@
   "paper.sent_ok": "تُہُنٛد تحقیٖقی مَقالہٕ سَپُد موصوٗل۔",
   "paper.err_long": "یہِ چھُ سؠٹھاہ زیوٗٹھ۔",
   "paper.err_file": "10 MB تام PDF یا Word (DOCX) فایِل ژٲرِو۔",
-  "paper.err_declare": "مَقالہٕ سوزنہٕ باپتھ کٔرِو اِقرار قبوٗل۔"
+  "paper.err_declare": "مَقالہٕ سوزنہٕ باپتھ کٔرِو اِقرار قبوٗل۔",
+  "res.cat_video_kural": "تِرُکُّرَل ویڈیو",
+  "res.cat_video_valluvar": "تِرُوَلُّوَر ویڈیو",
+  "res.cat_video_sign": "اِشارَن ہٕنٛزِ زَبانہِ منٛز تِرُکُّرَل"
 }

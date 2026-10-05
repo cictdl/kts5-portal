@@ -765,5 +765,8 @@
   "paper.sent_ok": "तुमचो संशोधन निबंद पावला.",
   "paper.err_long": "हें खूब लांब आसा.",
   "paper.err_file": "10 MB मेरेनची PDF वा Word (DOCX) फायल वेंचात.",
-  "paper.err_declare": "निबंद धाडपाक घोशणेची पुश्टी करात."
+  "paper.err_declare": "निबंद धाडपाक घोशणेची पुश्टी करात.",
+  "res.cat_video_kural": "तिरुक्कुरल व्हिडियो",
+  "res.cat_video_valluvar": "तिरुवल्लुवर व्हिडियो",
+  "res.cat_video_sign": "सांकेतिक भाशेंत तिरुक्कुरल"
 }

@@ -765,5 +765,8 @@
   "paper.sent_ok": "మీ పరిశోధన పత్రం అందింది.",
   "paper.err_long": "ఇది మరీ పొడవుగా ఉంది.",
   "paper.err_file": "10 MB వరకు ఉన్న PDF లేదా Word (DOCX) ఫైల్‌ను ఎంచుకోండి.",
-  "paper.err_declare": "పత్రం పంపడానికి ధ్రువీకరణను అంగీకరించండి."
+  "paper.err_declare": "పత్రం పంపడానికి ధ్రువీకరణను అంగీకరించండి.",
+  "res.cat_video_kural": "తిరుక్కురళ్ వీడియోలు",
+  "res.cat_video_valluvar": "తిరువళ్ళువర్ వీడియోలు",
+  "res.cat_video_sign": "సంజ్ఞా భాషలో తిరుక్కురళ్"
 }

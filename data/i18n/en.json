@@ -765,5 +765,8 @@
   "paper.sent_ok": "Your research paper has been received.",
   "paper.err_long": "This is too long.",
   "paper.err_file": "Choose a PDF or Word (DOCX) file of up to 10 MB.",
-  "paper.err_declare": "Confirm the declaration to send the paper."
+  "paper.err_declare": "Confirm the declaration to send the paper.",
+  "res.cat_video_kural": "Thirukkural videos",
+  "res.cat_video_valluvar": "Thiruvalluvar videos",
+  "res.cat_video_sign": "Thirukkural in sign language"
 }

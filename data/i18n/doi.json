@@ -765,5 +765,8 @@
   "paper.sent_ok": "तुं’दा खोज-पत्र मिली गेआ ऐ।",
   "paper.err_long": "एह् लिखत बड़ी लम्मी ऐ।",
   "paper.err_file": "10 MB तगर दी PDF जां Word (DOCX) फाइल चुनो।",
-  "paper.err_declare": "खोज-पत्र भेजने आस्तै घोशणा दी पुश्टि करो।"
+  "paper.err_declare": "खोज-पत्र भेजने आस्तै घोशणा दी पुश्टि करो।",
+  "res.cat_video_kural": "तिरुक्कुरल वीडियो",
+  "res.cat_video_valluvar": "तिरुवल्लुवर वीडियो",
+  "res.cat_video_sign": "सांकेतिक भाशा च तिरुक्कुरल"
 }

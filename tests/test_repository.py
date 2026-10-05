@@ -4,6 +4,7 @@ Entries of the repository that every installation carries (data/resources.json).
     python -m pytest tests -q
 """
 import json
+import re
 
 from conftest import ROOT, make_app
 
@@ -18,7 +19,9 @@ YAPPU = "/static/yappu/app/index.html"
 GUIDE = "/static/yappu/yappu-quick-guide.pdf"
 BRIDGE = "https://cictdl.github.io/index.html/kural-app/bridge/"
 QUIZ = "/quiz"
-ALL = [PLAY, WEB, CORPUS, ARCHIVES, RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ]
+# the 44 parts of the Thirukkural in Indian Sign Language, on the YouTube channel of CICT (version 1.2.12)
+SIGN = [s["url"] for s in SEEDS if s["category"] == "video_sign"]
+ALL = [PLAY, WEB, CORPUS, ARCHIVES, RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ] + SIGN
 
 
 def _restart(app):
@@ -34,7 +37,7 @@ def _rows(app):
 
 def test_the_seed_file_is_complete():
     assert [s["url"] for s in SEEDS] == ALL
-    assert [s["category"] for s in SEEDS] == ["app", "app", "corpus", "corpus", "app", "app", "app", "study", "app", "app"]
+    assert [s["category"] for s in SEEDS] == ["app", "app", "corpus", "corpus", "app", "app", "app", "study", "app", "app"] + ["video_sign"] * 44
     for s in SEEDS:
         assert s["key"] and s["title"] and s["description"]
     assert len({s["key"] for s in SEEDS}) == len(SEEDS)
@@ -48,7 +51,7 @@ def test_a_new_installation_carries_the_app():
     # seven chosen for the home page, which shows six in the order of sort_order: Kural Bridge first,
     # the Digital Archives in the repository only; the two of the prosody app and the classroom quiz
     # are in the repository only, the quiz first of them
-    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1, 0]
+    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1, 0] + [0] * 44
     client = app.test_client()
     page = client.get("/resources").get_data(as_text=True)
     for s in SEEDS:
@@ -117,8 +120,10 @@ def test_entries_added_later_reach_a_database_that_has_the_first_ones():
     import sqlite3
     app = make_app(ADMIN_PASSWORD=None)
     conn = sqlite3.connect(str(app.config["DATABASE"]))
-    later = ["kural-run", "kural-crossword", "yappu-kalam", "yappu-quick-guide", "kural-bridge", "classroom-quiz"]
-    conn.execute("DELETE FROM resources WHERE url IN (?, ?, ?, ?, ?, ?)", (RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ))
+    later = ["kural-run", "kural-crossword", "yappu-kalam", "yappu-quick-guide", "kural-bridge", "classroom-quiz"] + \
+        [f"kural-sign-{n:02d}" for n in range(1, 45)]
+    gone = [RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ] + SIGN
+    conn.execute("DELETE FROM resources WHERE url IN (%s)" % ", ".join("?" * len(gone)), gone)
     conn.execute("DELETE FROM settings WHERE key IN (%s)" % ", ".join("?" * len(later)), ["seed.resource." + k for k in later])
     conn.commit()
     conn.close()
@@ -168,6 +173,26 @@ def test_an_address_of_the_portal_keeps_its_prefix():
     rid = {r["url"]: r["id"] for r in _rows(app)}[GUIDE]
     r = app.test_client().get(f"/kts5/resources/{rid}")
     assert r.status_code == 302 and r.headers["Location"] == "/kts5" + GUIDE
+
+
+def test_the_videos_in_sign_language_have_a_tab_of_their_own():
+    app = make_app(ADMIN_PASSWORD=None)
+    client = app.test_client()
+    assert len(SIGN) == 44 and len(set(SIGN)) == 44
+    assert all(re.fullmatch(r"https://www\.youtube\.com/watch\?v=[A-Za-z0-9_-]{11}", url) for url in SIGN)
+    page = client.get("/resources?lang=en").get_data(as_text=True)
+    assert 'href="/resources?cat=video_sign&amp;l=&amp;q=" class="">Thirukkural in sign language <span class="muted">44</span></a>' in page
+    # the tabs of the other two collections stand once they hold a video
+    assert "cat=video_kural" not in page and "cat=video_valluvar" not in page
+    tab = client.get("/resources?cat=video_sign&lang=en").get_data(as_text=True)
+    assert tab.count('<div class="card res-card">') == 44
+    assert tab.index("Part 1 ") < tab.index("Part 2 ") < tab.index("Part 44")
+    assert "சைகைமொழியில் திருக்குறள் — பகுதி 1 · Thirukkural in Indian Sign Language, Part 1" in tab
+    rid = {r["url"]: r["id"] for r in _rows(app)}[SIGN[0]]
+    r = client.get(f"/resources/{rid}")
+    assert r.status_code == 302 and r.headers["Location"] == SIGN[0]
+    # the tab names in the language of the page
+    assert "res.cat_video_sign" not in client.get("/resources?lang=ta").get_data(as_text=True)
 
 
 def test_the_classroom_quiz_is_in_the_resources():

@@ -205,6 +205,16 @@ players of one quiz (`quiz.max_players`, 200). A host has one quiz at a time; a 
 ended closes after six hours. The names of the players are deleted with their answers after 30
 days; the line of the quiz (host, language, number of players) stays.
 
+## Videos in the repository
+
+From 1.2.12 the repository has three tabs for the videos of CICT: *Thirukkural videos*
+(`video_kural`), *Thiruvalluvar videos* (`video_valluvar`) and *Thirukkural in sign language*
+(`video_sign`). The 44 parts of the Thirukkural in Indian Sign Language come with the portal (seeds
+`kural-sign-01` to `kural-sign-44` of `data/resources.json`, from the catalogue of CICT); a video
+of the other two is added in *Console → Repository → New resource* with its YouTube address and
+the category. A tab stands on the public page once it holds a published entry. The videos open
+on YouTube; nothing of YouTube is loaded by the portal itself.
+
 ## Research papers of the delegates
 
 From 1.2.11 (`kts/papers.py`). Each selected student sends a research paper on the Thirukkural on

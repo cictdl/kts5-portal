@@ -765,5 +765,8 @@
   "paper.sent_ok": "آپ کا تحقیقی مقالہ موصول ہو گیا ہے۔",
   "paper.err_long": "یہ بہت لمبا ہے۔",
   "paper.err_file": "زیادہ سے زیادہ 10 MB کی PDF یا Word (DOCX) فائل منتخب کریں۔",
-  "paper.err_declare": "مقالہ بھیجنے کے لیے اقرار نامے کی تصدیق کریں۔"
+  "paper.err_declare": "مقالہ بھیجنے کے لیے اقرار نامے کی تصدیق کریں۔",
+  "res.cat_video_kural": "تِروکُّرل ویڈیوز",
+  "res.cat_video_valluvar": "تِرووَلّووَر ویڈیوز",
+  "res.cat_video_sign": "اشاروں کی زبان میں تِروکُّرل"
 }

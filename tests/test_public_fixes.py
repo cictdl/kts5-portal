@@ -1014,8 +1014,9 @@ def test_alt_texts_use_keys_that_exist():
     # the bank details of the selected students (version 1.2.0), the 25 of the page that explains
     # them (1.2.1), the 3 of the certificate of recognition (1.2.2), the 2 of that of merit (1.2.3),
     # the 2 of the confirmation letter (1.2.5), the 62 of the classroom quiz (1.2.8) and the 10 of the
-    # certificate of participation in the inauguration (1.2.10) and the 41 of the research papers (1.2.11)
-    assert len(CATALOG["en"]) == 767
+    # certificate of participation in the inauguration (1.2.10), the 41 of the research papers (1.2.11) and
+    # the 3 tabs of the videos in the repository (1.2.12)
+    assert len(CATALOG["en"]) == 770
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1046,7 +1047,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.11" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.12" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

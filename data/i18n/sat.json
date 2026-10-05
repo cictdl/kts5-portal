@@ -765,5 +765,8 @@
   "paper.sent_ok": "ᱟᱢᱟᱜ ᱨᱤᱥᱟᱨᱪ ᱚᱱᱚᱞ ᱧᱟᱢ ᱮᱱᱟ ᱾",
   "paper.err_long": "ᱱᱚᱶᱟ ᱟᱹᱰᱤ ᱡᱤᱞᱤᱧ ᱜᱮᱭᱟ ᱾",
   "paper.err_file": "10 MB ᱦᱟᱹᱵᱤᱡ ᱢᱤᱫᱴᱟᱹᱝ PDF ᱥᱮ Word (DOCX) ᱯᱷᱟᱭᱤᱞ ᱵᱟᱪᱷᱟᱣ ᱢᱮ ᱾",
-  "paper.err_declare": "ᱚᱱᱚᱞ ᱵᱷᱮᱡᱟ ᱞᱟᱹᱜᱤᱫ ᱜᱷᱚᱥᱚᱱᱟ ᱢᱟᱱᱟᱣ ᱢᱮ ᱾"
+  "paper.err_declare": "ᱚᱱᱚᱞ ᱵᱷᱮᱡᱟ ᱞᱟᱹᱜᱤᱫ ᱜᱷᱚᱥᱚᱱᱟ ᱢᱟᱱᱟᱣ ᱢᱮ ᱾",
+  "res.cat_video_kural": "ᱛᱤᱨᱩᱠᱠᱩᱨᱚᱞ ᱵᱷᱤᱰᱤᱭᱳ ᱠᱚ",
+  "res.cat_video_valluvar": "ᱛᱤᱨᱩᱣᱚᱞᱞᱩᱣᱚᱨ ᱵᱷᱤᱰᱤᱭᱳ ᱠᱚ",
+  "res.cat_video_sign": "ᱤᱥᱟᱨᱟ ᱯᱟᱹᱨᱥᱤ ᱛᱮ ᱛᱤᱨᱩᱠᱠᱩᱨᱚᱞ"
 }

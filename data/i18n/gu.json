@@ -765,5 +765,8 @@
   "paper.sent_ok": "તમારું સંશોધનપત્ર પ્રાપ્ત થયું છે.",
   "paper.err_long": "આ લખાણ બહુ લાંબું છે.",
   "paper.err_file": "10 MB સુધીની PDF અથવા Word (DOCX) ફાઇલ પસંદ કરો.",
-  "paper.err_declare": "સંશોધનપત્ર મોકલવા માટે ઘોષણાની પુષ્ટિ કરો."
+  "paper.err_declare": "સંશોધનપત્ર મોકલવા માટે ઘોષણાની પુષ્ટિ કરો.",
+  "res.cat_video_kural": "તિરુક્કુરલ વીડિયો",
+  "res.cat_video_valluvar": "તિરુવલ્લુવર વીડિયો",
+  "res.cat_video_sign": "સાંકેતિક ભાષામાં તિરુક્કુરલ"
 }
