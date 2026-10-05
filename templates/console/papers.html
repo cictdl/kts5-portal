@@ -1,0 +1,51 @@
+{% extends "console/base.html" %}
+{% block title %}Research papers{% endblock %}
+{% set chip = {'submitted': '', 'returned': 'saffron', 'accepted': 'green'} %}
+{% set words = {'none': 'Not yet sent', 'submitted': 'Received, to review', 'returned': 'Returned for changes', 'accepted': 'Accepted'} %}
+{% block content %}
+<div class="kpis">
+  <div class="kpi"><div class="lbl">Delegates</div><div class="num">{{ '{:,}'.format(delegates) }}</div><div class="sub">selected students</div></div>
+  <div class="kpi"><div class="lbl">Not yet sent</div><div class="num">{{ '{:,}'.format(counts.get('none', 0)) }}</div></div>
+  <div class="kpi"><div class="lbl">Received</div><div class="num">{{ '{:,}'.format(counts.get('submitted', 0)) }}</div><div class="sub">to review</div></div>
+  <div class="kpi"><div class="lbl">Returned</div><div class="num">{{ '{:,}'.format(counts.get('returned', 0)) }}</div><div class="sub">with the students</div></div>
+  <div class="kpi"><div class="lbl">Accepted</div><div class="num">{{ '{:,}'.format(counts.get('accepted', 0)) }}</div></div>
+</div>
+{% if settings['merit.published'] != '1' %}<div class="alert warning">The merit list is not published: no student can send a paper yet.</div>
+{% elif window == 'open' %}<div class="alert info">The submission is open{% if settings['papers.due'] and settings['papers.open'] != '1' %} until {{ settings['papers.due']|date }}{% endif %}. Returned papers may be sent again after that date, until the submission is closed under <a href="{{ url_for('admin.settings_page') }}">Settings → Internship</a>.</div>
+{% elif window == 'not_yet' %}<div class="alert info">The submission opens on {{ settings['internship.start']|date }} (Settings → Internship).</div>
+{% else %}<div class="alert warning">The submission is closed{% if settings['papers.open'] != '0' %} (last date {{ settings['papers.due']|date }}); returned papers may still be sent again{% endif %}.</div>{% endif %}
+
+<form method="get" class="filters">
+  <div class="field grow"><label for="q">Search</label><input type="search" id="q" name="q" value="{{ f.q }}" placeholder="Name, application no, college or title"></div>
+  <div class="field"><label for="state">Paper</label><select id="state" name="state"><option value="">All delegates</option>{% for s in ['none', 'submitted', 'returned', 'accepted'] %}<option value="{{ s }}" {{ 'selected' if f.state == s }}>{{ words[s] }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="lang">Language</label><select id="lang" name="lang"><option value="">All</option>{% for code, label in langs %}<option value="{{ code }}" {{ 'selected' if f.lang == code }}>{{ label }}</option>{% endfor %}</select></div>
+  <div class="field"><button class="btn" type="submit">Filter</button></div>
+</form>
+
+<p class="small muted">{{ '{:,}'.format(pg.total) }} delegate(s){% if f.state %} · {{ words.get(f.state, f.state) }}{% endif %} · page {{ pg.page }} of {{ pg.pages }}
+  · the list as shown: <a href="{{ url_for('admin.papers', export='xlsx', **f) }}">Excel</a> · <a href="{{ url_for('admin.papers', export='csv', **f) }}">CSV</a></p>
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>App no</th><th>Name</th><th>College · State</th><th>Title</th><th>Language</th><th>Paper</th><th class="num">Version</th><th>Sent</th><th class="num">Score</th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+  <tr>
+    <td>{% if r.status %}<a href="{{ url_for('admin.paper_entry', aid=r.id) }}"><code>{{ r.app_no }}</code></a>{% else %}<code>{{ r.app_no }}</code>{% endif %}</td>
+    <td>{{ r.full_name }}</td>
+    <td>{{ r.college_name|truncate(40) }} · {{ r.college_state or r.state }}</td>
+    <td>{% if r.title %}<bdi>{{ r.title|truncate(70) }}</bdi>{% else %}–{% endif %}</td>
+    <td>{{ r.lang|langname if r.lang else '–' }}</td>
+    <td>{% if r.status %}<span class="pill {{ chip.get(r.status, '') }}">{{ words[r.status] }}</span>{% else %}<span class="pill grey">not yet</span>{% endif %}</td>
+    <td class="num">{{ r.version or '–' }}</td>
+    <td>{{ r.submitted_at|datetime if r.submitted_at else '–' }}</td>
+    <td class="num">{{ r.score if r.score is not none else '–' }}</td>
+  </tr>
+  {% else %}<tr><td colspan="9" class="muted">No delegate matches.</td></tr>{% endfor %}
+  </tbody></table></div>
+{% if pg.pages > 1 %}
+<div class="pagination">
+  {% if pg.has_prev %}<a href="{{ url_for('admin.papers', page=pg.page - 1, **f) }}">← Prev</a>{% endif %}
+  <span class="cur">{{ pg.page }}</span><span>of {{ pg.pages }}</span>
+  {% if pg.has_next %}<a href="{{ url_for('admin.papers', page=pg.page + 1, **f) }}">Next →</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

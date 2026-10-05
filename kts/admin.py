@@ -233,6 +233,9 @@ def _delete_application(row):
     """
     execute("DELETE FROM exam_sessions WHERE application_id = ?", (row["id"],))
     execute("DELETE FROM inaug_attendance WHERE application_id = ?", (row["id"],))
+    # a paper is sent by a selected student only, whose application the delete refuses; its lines go with it all the same
+    execute("DELETE FROM paper_files WHERE paper_id IN (SELECT id FROM papers WHERE application_id = ?)", (row["id"],))
+    execute("DELETE FROM papers WHERE application_id = ?", (row["id"],))
     execute("DELETE FROM applications WHERE id = ?", (row["id"],))
     folder = Path(current_app.config["UPLOAD_DIR"]).resolve()
     for rel in (row["photo_path"], row["idproof_path"]):
@@ -842,7 +845,10 @@ SETTING_GROUPS = [
      [("letter.date", "Date of the confirmation letter (YYYY-MM-DD)", "date"),
       ("internship.start", "Internship and research period begins (YYYY-MM-DD)", "date"),
       ("papers.due", "Last date for the research paper (YYYY-MM-DD)", "date"),
-      ("present.due", "Last date for the presentation (YYYY-MM-DD)", "date")]),
+      ("present.due", "Last date for the presentation (YYYY-MM-DD)", "date"),
+      ("papers.open", "Research papers: auto (from the start of the internship to the last date) | 1 (open) | 0 (closed, also for returned papers)", "text"),
+      ("papers.note", "Research papers: note shown above the form (empty: none)", "text"),
+      ("papers.guide_url", "Research papers: link to the guidelines (https://… or /static/…; empty: none)", "text")]),
     ("Classroom quiz", [("quiz.on", "Classroom quiz open (hosting and joining)", "bool"),
                         ("quiz.candidates", "Selected students may host a quiz once the merit list is published", "bool"),
                         ("quiz.max_players", "Players in one quiz at most", "number")]),

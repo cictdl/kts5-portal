@@ -1,0 +1,52 @@
+{% extends "console/base.html" %}
+{% block title %}Research paper · {{ a.app_no }}{% endblock %}
+{% block heading %}Research paper · {{ a.app_no }} · {{ a.full_name }} <span class="pill {{ {'returned': 'saffron', 'accepted': 'green'}.get(p.status, '') }}">{{ p.status }}</span>{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('admin.papers') }}">← Research papers</a> · <a href="{{ url_for('admin.application', aid=a.id) }}">Application</a></p>
+{% if a.status != 'selected' %}<div class="alert error">This student is no longer in the selected list (status: {{ a.status.replace('_', ' ') }}).</div>{% endif %}
+<div class="two-col" style="grid-template-columns: 1.5fr 1fr">
+  <div>
+    <div class="card accent detail">
+      <h3 dir="auto">{{ p.title }}</h3>
+      <dl>
+        <dt>Submission no.</dt><dd><code>{{ number }}</code></dd>
+        <dt>Student</dt><dd>{{ a.full_name }} · {{ a.college_name }}, {{ a.college_state or a.state }}</dd>
+        <dt>Language</dt><dd>{{ lang_name }}</dd>
+        <dt>Mentor</dt><dd>{{ p.mentor_name }}{% if p.mentor_designation %}, {{ p.mentor_designation }}{% endif %}{% if p.mentor_email %} · {{ p.mentor_email }}{% endif %}</dd>
+        {% if p.keywords %}<dt>Keywords</dt><dd dir="auto">{{ p.keywords }}</dd>{% endif %}
+        {% if p.couplets %}<dt>Couplets studied</dt><dd dir="auto">{{ p.couplets }}</dd>{% endif %}
+        <dt>First sent</dt><dd>{{ p.first_submitted_at|datetime }}</dd>
+        <dt>Last sent</dt><dd>{{ p.submitted_at|datetime }} · version {{ p.version }}</dd>
+        {% if p.reviewed_at %}<dt>Reviewed</dt><dd>{{ reviewer.name if reviewer else '–' }} · {{ p.reviewed_at|datetime }}{% if p.score is not none %} · score {{ p.score }}/100{% endif %}</dd>{% endif %}
+        {% if p.remarks %}<dt>Remarks</dt><dd style="white-space:pre-line">{{ p.remarks }}</dd>{% endif %}
+      </dl>
+      <h3 style="margin-top:14px">Abstract</h3>
+      <p dir="auto" style="white-space:pre-line">{{ p.abstract }}</p>
+    </div>
+  </div>
+  <div>
+    <div class="card">
+      <h3>Files</h3>
+      <ul class="notice-list">{% for f in files %}
+        <li><div><a href="{{ url_for('admin.paper_version', aid=a.id, version=f.version) }}">Version {{ f.version }}{% if f.version == p.version %} (current){% endif %}</a>
+          <div class="meta">{{ f.file_name }} · {{ f.file_size|size }} · {{ f.uploaded_at|datetime }}</div></div></li>
+      {% endfor %}</ul>
+    </div>
+    {% if may_review %}
+    <form method="post" class="card" style="margin-top:14px">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <input type="hidden" name="version" value="{{ p.version }}">
+      <h3>Review</h3>
+      <div class="field"><label for="score">Score out of 100 (optional)</label><input type="number" id="score" name="score" min="0" max="100" value="{{ p.score if p.score is not none else '' }}"></div>
+      <div class="field" style="margin-top:8px"><label for="remarks">Remarks to the student (required to return the paper)</label>
+        <textarea id="remarks" name="remarks" rows="5" maxlength="3000">{{ p.remarks }}</textarea>
+        <span class="help">The student reads them on the portal and in the e-mail.</span></div>
+      <div class="btn-row" style="margin-top:10px">
+        <button class="btn" name="action" value="accept">Accept the paper</button>
+        <button class="btn ghost" name="action" value="return" data-confirm="Return the paper to the student for changes?">Return for changes</button>
+      </div>
+    </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

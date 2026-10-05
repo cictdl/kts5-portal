@@ -41,6 +41,9 @@ PERMS = {
     "users":         {"superadmin"},
     "settings":      {"superadmin", "admin"},
     "audit":         {"superadmin", "admin"},
+    # the research papers of the delegates: read by these, reviewed by the first four
+    "papers.view":   {"superadmin", "admin", "verifier", "content", "viewer"},
+    "papers.review": {"superadmin", "admin", "verifier", "content"},
     # the classroom quiz: every member of staff may host one
     "quiz.host":     {"superadmin", "admin", "verifier", "content", "agency", "viewer"},
 }

@@ -401,6 +401,44 @@ CREATE TABLE IF NOT EXISTS inaug_attendance (
     marked_at   TEXT NOT NULL,
     marked_by   INTEGER REFERENCES users(id)
 );
+
+-- Research papers of the student delegates (kts/papers.py): one per application, the file sent
+-- last, its version and the review; every file sent stays in paper_files.
+CREATE TABLE IF NOT EXISTS papers (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    application_id INTEGER NOT NULL UNIQUE REFERENCES applications(id),
+    title         TEXT NOT NULL,
+    lang          TEXT NOT NULL,
+    abstract      TEXT NOT NULL,
+    keywords      TEXT NOT NULL DEFAULT '',
+    couplets      TEXT NOT NULL DEFAULT '',
+    mentor_name   TEXT NOT NULL DEFAULT '',
+    mentor_designation TEXT NOT NULL DEFAULT '',
+    mentor_email  TEXT NOT NULL DEFAULT '',
+    file_path     TEXT NOT NULL,
+    file_name     TEXT NOT NULL,
+    file_size     INTEGER NOT NULL,
+    version       INTEGER NOT NULL DEFAULT 1,
+    status        TEXT NOT NULL DEFAULT 'submitted',
+    score         INTEGER,
+    remarks       TEXT NOT NULL DEFAULT '',
+    reviewed_by   INTEGER REFERENCES users(id),
+    reviewed_at   TEXT,
+    submitted_at  TEXT NOT NULL,
+    first_submitted_at TEXT NOT NULL,
+    updated_at    TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_papers_status ON papers(status);
+
+CREATE TABLE IF NOT EXISTS paper_files (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    paper_id    INTEGER NOT NULL REFERENCES papers(id),
+    version     INTEGER NOT NULL,
+    file_path   TEXT NOT NULL,
+    file_name   TEXT NOT NULL,
+    file_size   INTEGER NOT NULL,
+    uploaded_at TEXT NOT NULL
+);
 """
 
 # Columns added after the first release: (table, column, DDL type/default)
@@ -493,6 +531,11 @@ DEFAULT_SETTINGS = {
     "internship.start": "2026-10-23",
     "papers.due": "2026-11-05",
     "present.due": "2026-11-15",
+    # the research papers (kts/papers.py): auto = from internship.start to papers.due, 1 open, 0 closed;
+    # a note and a link to the guidelines, shown above the form
+    "papers.open": "auto",
+    "papers.note": "",
+    "papers.guide_url": "",
     # the classroom quiz (kts/quiz.py): open, hosted also by the selected students, players in one quiz
     "quiz.on": "1",
     "quiz.candidates": "1",

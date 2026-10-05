@@ -36,6 +36,15 @@
       </div>
       {% endif %}
 
+      {% if paper %}
+      <div class="card {{ 'green' if paper.status == 'accepted' else 'accent' }}" style="margin-top:14px" id="paper-card">
+        <div class="section-head" style="margin-bottom:8px"><h3>📝 {{ t('paper.title') }}</h3><span class="pill {{ {'none': 'grey', 'returned': 'saffron', 'accepted': 'green'}.get(paper.status, '') }}">{{ t('paper.st_' ~ paper.status) }}</span></div>
+        <p class="small dim">{{ t('paper.card_text') }}</p>
+        {% if paper.due %}<p class="small"><b>{{ t('paper.due') }}:</b> {{ paper.due|date }}</p>{% endif %}
+        <a class="btn sm {{ 'saffron' if paper.status in ('none', 'returned') else 'secondary' }}" href="{{ url_for('candidate.research_paper') }}">{{ t('paper.go') if paper.status in ('none', 'returned') else t('paper.view') }} {{ fwd }}</a>
+      </div>
+      {% endif %}
+
       {% if inaug %}
       <div class="card {{ 'green' if inaug.attended else 'accent' }}" style="margin-top:14px" id="inaug-card">
         <div class="section-head" style="margin-bottom:8px"><h3>🎥 {{ t('inaug.title') }}</h3>{% if inaug.date %}<span class="pill">{{ inaug.date|date }}</span>{% endif %}</div>

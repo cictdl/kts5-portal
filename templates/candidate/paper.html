@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}{{ t('paper.title') }}{% endblock %}
+{# The paper may be written in any of the languages of the portal: the inputs follow the direction of what is typed. #}
+{% macro field(name, label, required=False, help='', attrs='', wide=False) %}
+<div class="field {{ 'wide' if wide }} {{ 'has-err' if errors.get(name) }}">
+  <label for="{{ name }}">{{ label }}{% if required %} <span class="req">*</span>{% else %} <span class="muted small">({{ t('common.optional') }})</span>{% endif %}</label>
+  <input type="text" id="{{ name }}" name="{{ name }}" value="{{ data.get(name) or '' }}" dir="auto" {{ 'required' if required }} {{ attrs|safe }}{% if errors.get(name) %} aria-invalid="true" aria-describedby="{{ name }}-err"{% endif %}>
+  {% if errors.get(name) %}<span class="err" id="{{ name }}-err">{{ errors[name] }}</span>{% elif help %}<span class="help">{{ help }}</span>{% endif %}
+</div>
+{% endmacro %}
+{% set chip = {'submitted': '', 'returned': 'saffron', 'accepted': 'green'} %}
+{% block content %}
+<div class="wrap-narrow section">
+  <span class="eyebrow"><bdi>{{ cand.app_no }}</bdi> · <bdi>{{ cand.full_name }}</bdi></span>
+  <h1>{{ t('paper.title') }}</h1>
+  {% if state == 'not_for_you' %}
+  <div class="alert info">{{ t('paper.only_selected') }}</div>
+  {% else %}
+
+  <ul class="prose small" style="margin:0 0 16px">
+    {% if settings['papers.due'] %}<li>{{ t('paper.due') }}: <b>{{ settings['papers.due']|date }}</b></li>{% endif %}
+    {% if guide_url %}<li><a href="{{ guide_url }}" target="_blank" rel="noopener">{{ t('paper.guidelines') }} ↗</a></li>{% endif %}
+    {% if settings['papers.note'] %}<li dir="auto">{{ settings['papers.note'] }}</li>{% endif %}
+  </ul>
+
+  {% if paper %}
+  <div class="card accent detail" style="margin-bottom:16px" id="paper-sent">
+    <div class="section-head" style="margin-bottom:10px"><h3>{{ t('paper.view') }}</h3><span class="pill {{ chip.get(paper.status, '') }}">{{ t('paper.st_' ~ paper.status) }}</span></div>
+    {% if paper.status == 'submitted' %}<div class="alert info">{{ t('paper.submitted_text') }}</div>
+    {% elif paper.status == 'returned' %}<div class="alert warning">{{ t('paper.returned_text') }}</div>
+    {% elif paper.status == 'accepted' %}<div class="alert success">{{ t('paper.accepted_text') }}</div>{% endif %}
+    {% if paper.remarks and paper.status in ('returned', 'accepted') %}<p><b>{{ t('paper.remarks') }}:</b> <bdi style="white-space:pre-line">{{ paper.remarks }}</bdi></p>{% endif %}
+    <dl>
+      <dt>{{ t('paper.number') }}</dt><dd><bdi dir="ltr">{{ number }}</bdi></dd>
+      <dt>{{ t('paper.f_title') }}</dt><dd><bdi>{{ paper.title }}</bdi></dd>
+      <dt>{{ t('paper.f_lang') }}</dt><dd>{{ paper.lang|langname }} · {{ paper.lang|langnative }}</dd>
+      <dt>{{ t('paper.file') }}</dt><dd><a href="{{ url_for('candidate.research_paper_file') }}"><bdi>{{ paper.file_name }}</bdi></a> <span class="small muted" dir="ltr">{{ paper.file_size|size }}</span></dd>
+      <dt>{{ t('paper.version') }}</dt><dd>{{ paper.version }}</dd>
+      <dt>{{ t('paper.sent_on') }}</dt><dd>{{ paper.submitted_at|datetime }}</dd>
+    </dl>
+  </div>
+  {% endif %}
+
+  {% if not can_send %}
+    {% if state == 'not_yet' %}<div class="alert info">{{ t('paper.not_yet') }} <b>{{ settings['internship.start']|date }}</b></div>
+    {% elif not paper or paper.status != 'accepted' %}<div class="alert warning">{{ t('paper.closed') }}</div>{% endif %}
+  {% else %}
+  <form method="post" enctype="multipart/form-data" novalidate data-once>
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <div class="form-section">
+      <h2>{{ t('paper.sec_paper') }}</h2>
+      <div class="fields">
+        {{ field('title', t('paper.f_title'), True, '', 'maxlength="200"', wide=True) }}
+        <div class="field {{ 'has-err' if errors.get('lang') }}">
+          <label for="lang">{{ t('paper.f_lang') }} <span class="req">*</span></label>
+          <select id="lang" name="lang" required>
+            {% for code, label in langs %}<option value="{{ code }}" {{ 'selected' if code == data.get('lang') }}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          {% if errors.get('lang') %}<span class="err">{{ errors['lang'] }}</span>{% endif %}
+        </div>
+        <div class="field wide {{ 'has-err' if errors.get('abstract') }}">
+          <label for="abstract">{{ t('paper.f_abstract') }} <span class="req">*</span></label>
+          <textarea id="abstract" name="abstract" rows="8" maxlength="3000" dir="auto" required{% if errors.get('abstract') %} aria-invalid="true" aria-describedby="abstract-err"{% endif %}>{{ data.get('abstract') or '' }}</textarea>
+          {% if errors.get('abstract') %}<span class="err" id="abstract-err">{{ errors['abstract'] }}</span>{% else %}<span class="help">{{ t('paper.f_abstract_help') }}</span>{% endif %}
+        </div>
+        {{ field('keywords', t('paper.f_keywords'), False, t('paper.f_keywords_help'), 'maxlength="200"', wide=True) }}
+        {{ field('couplets', t('paper.f_couplets'), False, t('paper.f_couplets_help'), 'maxlength="200"', wide=True) }}
+        <div class="field wide {{ 'has-err' if errors.get('file') }}">
+          <label for="file">{{ t('paper.f_file') }}{% if not paper %} <span class="req">*</span>{% endif %}</label>
+          <input type="file" id="file" name="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" {{ 'required' if not paper }} data-max="{{ max_bytes }}"{% if errors.get('file') %} aria-invalid="true" aria-describedby="file-err"{% endif %}>
+          {% if errors.get('file') %}<span class="err" id="file-err">{{ errors['file'] }}</span>{% elif paper %}<span class="help">{{ t('paper.f_file_keep') }}</span>{% endif %}
+          <span class="file-msg small"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>{{ t('paper.sec_mentor') }}</h2>
+      <div class="fields">
+        {{ field('mentor_name', t('reg.mentor_name'), True, '', 'maxlength="120"') }}
+        {{ field('mentor_designation', t('reg.mentor_designation'), False, '', 'maxlength="120"') }}
+        <div class="field {{ 'has-err' if errors.get('mentor_email') }}">
+          <label for="mentor_email">{{ t('reg.mentor_email') }} <span class="muted small">({{ t('common.optional') }})</span></label>
+          <input type="email" id="mentor_email" name="mentor_email" value="{{ data.get('mentor_email') or '' }}" maxlength="254" dir="ltr"{% if errors.get('mentor_email') %} aria-invalid="true" aria-describedby="mentor_email-err"{% endif %}>
+          {% if errors.get('mentor_email') %}<span class="err" id="mentor_email-err">{{ errors['mentor_email'] }}</span>{% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>{{ t('paper.sec_declare') }}</h2>
+      <label class="check"><input type="checkbox" name="declare" value="1" required{% if errors.get('declare') %} aria-describedby="declare-err"{% endif %}> {{ t('paper.declare') }}</label>
+      {% if errors.get('declare') %}<span class="err" id="declare-err">{{ errors['declare'] }}</span>{% endif %}
+    </div>
+    <div class="btn-row"><button class="btn saffron" type="submit">{{ t('paper.save') if paper and paper.status == 'submitted' else t('paper.send') }}</button>
+      <a class="btn ghost" href="{{ url_for('candidate.home') }}">{{ t('common.back') }}</a></div>
+  </form>
+  {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

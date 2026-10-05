@@ -53,6 +53,8 @@ def create_app(config_object=Config):
     from . import certificate
     # the classroom quiz has a blueprint of its own, and its list in the console
     from . import quiz
+    # the research papers add their pages to those of the candidates and of the console
+    from . import papers  # noqa: F401
 
     db.init_app(app)
     i18n.register(app)

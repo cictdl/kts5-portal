@@ -45,6 +45,7 @@ portal/
     stipend.py      stipend: the bank details of the selected students, both sides
     secure.py       seals the account and Aadhaar numbers (key instance/stipend.key)
     quiz.py         classroom quiz: a live Thirukkural quiz on the projector, answered on phones
+    papers.py       research papers of the delegates: submission, versions, review
     agency.py       coordination hub
     auth.py         staff login, roles, permissions
     utils.py        CSRF, rate limiting, uploads, exports, mail, dates
@@ -203,6 +204,25 @@ closes the quiz (`quiz.on`), stops the hosting by students (`quiz.candidates`) o
 players of one quiz (`quiz.max_players`, 200). A host has one quiz at a time; a quiz that is not
 ended closes after six hours. The names of the players are deleted with their answers after 30
 days; the line of the quiz (host, language, number of players) stays.
+
+## Research papers of the delegates
+
+From 1.2.11 (`kts/papers.py`). Each selected student sends a research paper on the Thirukkural on
+the candidate portal (*Research paper*, `/candidate/paper`): title, language (the 23 of the test),
+abstract (at most 3,000 characters), keywords and couplets studied (optional), the faculty mentor
+(taken from the application, may be corrected), the paper as PDF or Word (DOCX) of up to 10 MB, and
+a declaration that it is the student's own work. Number `KTS5/RP/…`. The period runs from
+`internship.start` to `papers.due` (setting `papers.open`: `auto`, `1` open, `0` closed); until the
+review the student may replace the paper or correct its details. A returned paper may be sent
+again after the last date, unless `papers.open` is `0`. Every file is kept with its version
+(`paper_files`), in `uploads/papers/`, which the web server never serves.
+
+*Console → Research papers* lists the delegates with their papers (filters, Excel and CSV of the
+list as shown), shows each paper with its versions and its abstract, and records the review:
+accept, or return with remarks (required), with an optional score out of 100. The student is told
+by e-mail on receipt, return and acceptance. Roles: `papers.view` (administrators, verifiers,
+content, viewers) and `papers.review` (all but viewers). Settings → Internship: `papers.note` (a note
+above the form) and `papers.guide_url` (a link to the guidelines).
 
 ## Stipend: bank details of the selected students
 
