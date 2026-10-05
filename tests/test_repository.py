@@ -23,7 +23,9 @@ QUIZ = "/quiz"
 SIGN = [s["url"] for s in SEEDS if s["category"] == "video_sign"]
 # Thirukkural Isai Tamil, the musical version in six volumes on cict.in (version 1.2.13)
 ISAI = [f"https://cict.in/audios/thirukural-{n}.mp3" for n in range(1, 7)]
-ALL = [PLAY, WEB, CORPUS, ARCHIVES, RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ] + SIGN + ISAI
+# five Thirukkural lectures of Dr. Divya Sripada from the YouTube channel of CICT (version 1.2.14)
+LECTURES = [f"https://www.youtube.com/watch?v={v}" for v in ("POU5PhXJRMU", "8k-U9tRG99E", "0VZagb_EtWA", "ZUaP1sFK-WQ", "-yZ9t9C7QA8")]
+ALL = [PLAY, WEB, CORPUS, ARCHIVES, RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ] + SIGN + ISAI + LECTURES
 
 
 def _restart(app):
@@ -39,7 +41,7 @@ def _rows(app):
 
 def test_the_seed_file_is_complete():
     assert [s["url"] for s in SEEDS] == ALL
-    assert [s["category"] for s in SEEDS] == ["app", "app", "corpus", "corpus", "app", "app", "app", "study", "app", "app"] + ["video_sign"] * 44 + ["music"] * 6
+    assert [s["category"] for s in SEEDS] == ["app", "app", "corpus", "corpus", "app", "app", "app", "study", "app", "app"] + ["video_sign"] * 44 + ["music"] * 6 + ["video_kural"] * 5
     for s in SEEDS:
         assert s["key"] and s["title"] and s["description"]
     assert len({s["key"] for s in SEEDS}) == len(SEEDS)
@@ -53,7 +55,7 @@ def test_a_new_installation_carries_the_app():
     # seven chosen for the home page, which shows six in the order of sort_order: Kural Bridge first,
     # the Digital Archives in the repository only; the two of the prosody app and the classroom quiz
     # are in the repository only, the quiz first of them
-    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1, 0] + [0] * 44 + [0] * 6
+    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1, 0] + [0] * 44 + [0] * 6 + [0] * 5
     client = app.test_client()
     page = client.get("/resources").get_data(as_text=True)
     for s in SEEDS:
@@ -123,8 +125,9 @@ def test_entries_added_later_reach_a_database_that_has_the_first_ones():
     app = make_app(ADMIN_PASSWORD=None)
     conn = sqlite3.connect(str(app.config["DATABASE"]))
     later = ["kural-run", "kural-crossword", "yappu-kalam", "yappu-quick-guide", "kural-bridge", "classroom-quiz"] + \
-        [f"kural-sign-{n:02d}" for n in range(1, 45)] + [f"kural-isai-{n}" for n in range(1, 7)]
-    gone = [RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ] + SIGN + ISAI
+        [f"kural-sign-{n:02d}" for n in range(1, 45)] + [f"kural-isai-{n}" for n in range(1, 7)] + \
+        [f"yt-{url.rsplit('=', 1)[1]}" for url in LECTURES]
+    gone = [RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ] + SIGN + ISAI + LECTURES
     conn.execute("DELETE FROM resources WHERE url IN (%s)" % ", ".join("?" * len(gone)), gone)
     conn.execute("DELETE FROM settings WHERE key IN (%s)" % ", ".join("?" * len(later)), ["seed.resource." + k for k in later])
     conn.commit()
@@ -184,8 +187,13 @@ def test_the_videos_in_sign_language_have_a_tab_of_their_own():
     assert all(re.fullmatch(r"https://www\.youtube\.com/watch\?v=[A-Za-z0-9_-]{11}", url) for url in SIGN)
     page = client.get("/resources?lang=en").get_data(as_text=True)
     assert 'href="/resources?cat=video_sign&amp;l=&amp;q=" class="">Thirukkural in sign language <span class="muted">44</span></a>' in page
-    # the tabs of the other two collections stand once they hold a video
-    assert "cat=video_kural" not in page and "cat=video_valluvar" not in page
+    # the tab of the Thirukkural lectures holds five (1.2.14); that of Thiruvalluvar stands once it holds a video
+    assert 'href="/resources?cat=video_kural&amp;l=&amp;q=" class="">Thirukkural videos <span class="muted">5</span></a>' in page
+    assert "cat=video_valluvar" not in page
+    lectures = client.get("/resources?cat=video_kural&lang=en").get_data(as_text=True)
+    assert lectures.count('<div class="card res-card">') == 5
+    assert lectures.index("Leadership lessons from Thirukural") < lectures.index("Part 01 : Goal setting") \
+        < lectures.index("Part 02 : Goal setting") < lectures.index("part 01 : Importance of the Right Communications")
     tab = client.get("/resources?cat=video_sign&lang=en").get_data(as_text=True)
     assert tab.count('<div class="card res-card">') == 44
     assert tab.index("Part 1 ") < tab.index("Part 2 ") < tab.index("Part 44")

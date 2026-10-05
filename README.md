@@ -219,6 +219,10 @@ From 1.2.13 a tab *Music* (`music`) holds *திருக்குறள் இ
 complete musical version of the Thirukkural in six volumes, MP3 files on cict.in (seeds
 `kural-isai-1` to `kural-isai-6`).
 
+From 1.2.14 the tab *Thirukkural videos* holds five lectures of Dr. Divya Sripada from the channel
+of CICT (seeds `yt-<video id>`). Titles are taken as YouTube gives them; YouTube itself cannot be
+reached from every machine, and noembed.com returns the title and the channel of a video.
+
 ## Research papers of the delegates
 
 From 1.2.11 (`kts/papers.py`). Each selected student sends a research paper on the Thirukkural on

@@ -178,5 +178,20 @@
    "url": "https://cict.in/audios/thirukural-5.mp3", "featured": 0, "sort_order": 24},
   {"key": "kural-isai-6", "title": "திருக்குறள் இசைத் தமிழ் — தொகுதி 6 · Thirukkural Isai Tamil, Volume 6", "category": "music", "lang": "ta",
    "description": "The complete musical version of the Thirukkural, in six volumes, from the repository of the Central Institute of Classical Tamil: volume 6 of 6 (MP3, 59.2 MB).",
-   "url": "https://cict.in/audios/thirukural-6.mp3", "featured": 0, "sort_order": 25}
+   "url": "https://cict.in/audios/thirukural-6.mp3", "featured": 0, "sort_order": 25},
+  {"key": "yt-POU5PhXJRMU", "title": "Leadership lessons from Thirukural | முனைவர் ஶ்ரீபாத திவ்யா", "category": "video_kural", "lang": "",
+   "description": "A lecture on the Thirukkural by Dr. Divya Sripada, on the YouTube channel of the Central Institute of Classical Tamil (செம்மொழி வலையொளி).",
+   "url": "https://www.youtube.com/watch?v=POU5PhXJRMU", "featured": 0, "sort_order": 401},
+  {"key": "yt-8k-U9tRG99E", "title": "Part 01 : Goal setting, Determination and Motivation in Tirukkural | Dr. Divya Sripada", "category": "video_kural", "lang": "",
+   "description": "A lecture on the Thirukkural by Dr. Divya Sripada, on the YouTube channel of the Central Institute of Classical Tamil (செம்மொழி வலையொளி).",
+   "url": "https://www.youtube.com/watch?v=8k-U9tRG99E", "featured": 0, "sort_order": 402},
+  {"key": "yt-0VZagb_EtWA", "title": "Part 02 : Goal setting, Determination and Motivation in Tirukkural | Dr. Divya Sripada", "category": "video_kural", "lang": "",
+   "description": "A lecture on the Thirukkural by Dr. Divya Sripada, on the YouTube channel of the Central Institute of Classical Tamil (செம்மொழி வலையொளி).",
+   "url": "https://www.youtube.com/watch?v=0VZagb_EtWA", "featured": 0, "sort_order": 403},
+  {"key": "yt-ZUaP1sFK-WQ", "title": "part 01 : Importance of the Right Communications | Dr. Divya Sripada", "category": "video_kural", "lang": "",
+   "description": "A lecture on the Thirukkural by Dr. Divya Sripada, on the YouTube channel of the Central Institute of Classical Tamil (செம்மொழி வலையொளி).",
+   "url": "https://www.youtube.com/watch?v=ZUaP1sFK-WQ", "featured": 0, "sort_order": 404},
+  {"key": "yt--yZ9t9C7QA8", "title": "part 02 : Importance of the Right Communications | Dr. Divya Sripada", "category": "video_kural", "lang": "",
+   "description": "A lecture on the Thirukkural by Dr. Divya Sripada, on the YouTube channel of the Central Institute of Classical Tamil (செம்மொழி வலையொளி).",
+   "url": "https://www.youtube.com/watch?v=-yZ9t9C7QA8", "featured": 0, "sort_order": 405}
 ]
