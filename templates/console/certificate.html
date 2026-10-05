@@ -44,6 +44,34 @@
         <a class="btn sm secondary" href="{{ url_for('admin.certificate_sample', kind='merit', waitlisted='1') }}" target="_blank" rel="noopener">Sample: waiting list ↗</a>
       </form>
     </div>
+    <div class="card accent" style="margin-top:14px" id="inaugural">
+      <h3>Certificates of participation (inauguration, online)</h3>
+      <p>Every selected student delegate who attends the inauguration of KTS 5.0{% if inaug_date %} on {{ inaug_date|date }}{% endif %}
+        online receives a certificate of participation once the attendance is recorded: by the student on the candidate
+        portal, with the attendance code announced during the live stream, or here, from a list of application numbers.
+        The code and the address of the live stream are set under <a href="{{ url_for('admin.settings_page') }}">Settings</a>
+        (Kashi Tamil Sangamam 5.0); the students can enter the code from the day of the inauguration while it is set.</p>
+      <p>{% if inaug_on %}<span class="pill green">issued</span>{% else %}<span class="pill grey">not issued</span>{% endif %}
+        · attendance recorded for <b>{{ '{:,}'.format(attended) }}</b> delegate(s)
+        · students' check-in: {% if inaug_open %}<span class="pill green">open</span>{% elif inaug_code %}<span class="pill">code set, opens on the day</span>{% else %}<span class="pill grey">closed (no code)</span>{% endif %}</p>
+      <form method="post" class="btn-row">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        {% if inaug_on %}<button class="btn sm ghost" name="action" value="inaug_off" data-confirm="Stop issuing certificates of participation? The links stop working until they are issued again.">Stop issuing</button>
+        {% else %}<button class="btn sm" name="action" value="inaug_on">Issue certificates of participation</button>{% endif %}
+        <a class="btn sm secondary" href="{{ url_for('admin.certificate_sample', kind='inaugural') }}" target="_blank" rel="noopener">Open a sample ↗</a>
+        <a class="btn sm secondary" href="{{ url_for('admin.attendance_csv') }}">Download the attendance (CSV)</a>
+      </form>
+      <form method="post" style="margin-top:12px">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <div class="field"><label for="numbers">Record the attendance of these application numbers</label>
+          <textarea id="numbers" name="numbers" rows="4" placeholder="KTS5-2026-000123&#10;KTS5-2026-000456"></textarea>
+          <span class="help">One or more numbers, in any layout (pasted from a list of the live stream, for example). Only selected delegates are recorded.</span></div>
+        <div class="btn-row" style="margin-top:8px">
+          <button class="btn sm" name="action" value="inaug_mark">Record attendance</button>
+          <button class="btn sm ghost" name="action" value="inaug_unmark" data-confirm="Remove the recorded attendance of these application numbers? Their certificates of participation stop working.">Remove attendance</button>
+        </div>
+      </form>
+    </div>
     <div class="card" style="margin-top:14px">
       <h3>Signed by</h3>
       {% if signatory %}<p><b>{{ signatory }}</b>{% if designation %}<br>{{ designation }}{% endif %}<br>Central Institute of Classical Tamil, Chennai</p>

@@ -55,6 +55,13 @@ h1 { margin: .4cqw 0 0; font-family: Cambria, Georgia, "Times New Roman", serif;
 .merit .sub span { background: #c9a227; }
 .merit .frame { border-width: .22cqw; }
 
+/* the certificate of participation in the inauguration (online): the same sheet in green */
+.inaugural .pill { background: linear-gradient(180deg, #23955a, #146b3e); color: #fff; }
+.inaugural .pill::first-letter { color: #f6d66b; }
+.inaugural .medal { width: 2.9cqw; height: 2.9cqw; stroke: #1b7f4b; stroke-width: 1.7; }
+.inaugural .sub { color: #146b3e; }
+.inaugural .sub span { background: #1b7f4b; }
+
 .certify { margin: 1.5cqw 0 0; font-size: 1.2cqw; color: #5b6472; font-style: italic; }
 .name { margin-top: .5cqw; padding: 0 2cqw .5cqw; border-bottom: .14cqw solid #c9a227; max-width: 66cqw;
   font-family: Cambria, Georgia, "Times New Roman", serif; font-size: 3.9cqw; line-height: 1.12; font-weight: 700;

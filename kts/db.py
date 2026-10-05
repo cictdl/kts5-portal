@@ -390,6 +390,17 @@ CREATE TABLE IF NOT EXISTS quiz_answers (
     PRIMARY KEY (player_id, q_index)
 );
 CREATE INDEX IF NOT EXISTS idx_quiz_answers ON quiz_answers(room_id, q_index);
+
+-- The student delegates who attended the inauguration of KTS 5.0 online (kts/certificate.py):
+-- recorded by the student with the code announced during the live stream (via 'code'), or by
+-- staff from a list of application numbers (via 'staff'). Each receives a certificate of
+-- participation.
+CREATE TABLE IF NOT EXISTS inaug_attendance (
+    application_id INTEGER PRIMARY KEY REFERENCES applications(id),
+    via         TEXT NOT NULL,
+    marked_at   TEXT NOT NULL,
+    marked_by   INTEGER REFERENCES users(id)
+);
 """
 
 # Columns added after the first release: (table, column, DDL type/default)
@@ -470,6 +481,12 @@ DEFAULT_SETTINGS = {
     "cert.on": "1",
     # and every student selected in the published merit list a certificate of merit
     "cert.merit_on": "1",
+    # and every student delegate whose attendance at the inauguration (online) is recorded, a
+    # certificate of participation; the address of the live stream, and the attendance code that
+    # is announced during it (empty: the students cannot record their attendance themselves)
+    "cert.inaug_on": "1",
+    "inaug.link": "",
+    "inaug.code": "",
     # the confirmation letter of the selected students, and the dates of the internship it names
     "letter.on": "1",
     "letter.date": "2026-10-22",

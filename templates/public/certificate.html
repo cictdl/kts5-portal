@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>{{ t('cert.merit_title' if kind == 'merit' else 'cert.title') }} · {{ name }}</title>
+<title>{{ t({'merit': 'cert.merit_title', 'inaugural': 'cert.inaug_title'}.get(kind, 'cert.title')) }} · {{ name }}</title>
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/certificate.css') }}?v=4">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/certificate.css') }}?v=5">
 </head>
 <body>
 <div class="toolbar">
@@ -39,13 +39,21 @@
   </header>
 
   <div class="body">
+    {% if kind == 'inaugural' %}
+    {# a screen with the live stream: the delegate took part online #}
+    <svg class="medal" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4" width="19" height="12.5" rx="1.6"/><path d="M10.2 7.6v5.3l4.4-2.65Z"/><path d="M8 20.5h8M12 16.5v4"/></svg>
+    {% else %}
     <svg class="medal" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="5.5"/><path d="M8.5 13.5 7 21l5-2.5 5 2.5-1.5-7.5"/></svg>
+    {% endif %}
     <h1>CERTIFICATE</h1>
-    <div class="sub"><span></span>{{ 'OF MERIT' if kind == 'merit' else 'OF RECOGNITION' }}<span></span></div>
+    <div class="sub"><span></span>{{ {'merit': 'OF MERIT', 'inaugural': 'OF PARTICIPATION'}.get(kind, 'OF RECOGNITION') }}<span></span></div>
     {% if kts_start and kts_end %}<p class="when">Kashi Tamil Sangamam 5.0 &middot; {{ kts_start }} &ndash; {{ kts_end }}</p>{% endif %}
     {% if kind == 'merit' %}
     <div class="pill">&#9733; Merit List{% if waitlisted %} &middot; Waiting List{% endif %}{% if rank %} &middot; Rank {{ rank }}{% endif %} &#9733;</div>
     <p class="certify">This certificate is awarded to</p>
+    {% elif kind == 'inaugural' %}
+    <div class="pill">&#9733; Student Delegate &middot; Online Participation &#9733;</div>
+    <p class="certify">This certificate is presented to</p>
     {% else %}
     <div class="pill">&#9733; Congratulations! &#9733;</div>
     <p class="certify">This certificate is presented to</p>
@@ -57,6 +65,10 @@
       <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural Payilvom</b>, through the online test on the
       Thirukkural{% if test_date %} held on {{ test_date }}{% endif %} among students of colleges across India, in the spirit
       of <b>Ek Bharat Shreshtha Bharat</b>.</p>
+    {% elif kind == 'inaugural' %}
+    <p class="text">for participating online, as a student delegate of <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural
+      Payilvom</b>, in the <b>Inauguration of Kashi Tamil Sangamam 5.0</b>{% if kts_start %} on {{ kts_start }}{% endif %},
+      and joining the nationwide movement to learn the Thirukkural in the spirit of <b>Ek Bharat Shreshtha Bharat</b>.</p>
     {% elif kind == 'merit' %}
     <p class="text">for being selected in the merit list of <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural Payilvom</b>,
       as one of the {{ selected or '1,000' }} students chosen from colleges across India through the online test on the

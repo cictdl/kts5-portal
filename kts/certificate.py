@@ -10,6 +10,11 @@ number, so nobody reaches the certificate of another student by changing the num
 address, nor a certificate of merit from the address of one of recognition. The QR code on the
 sheet opens that same page on the portal: the page itself is the proof that it is genuine.
 
+The student delegates who attend the inauguration of KTS 5.0 online receive a certificate of
+participation, /certificate/inaugural/<application number>/<seal>, once their attendance is
+recorded: by the student, with the code announced during the live stream (setting inaug.code),
+on the candidate portal, or by staff in the console from a list of application numbers.
+
 Who signs: the head of the institute in the settings (director.name, director.designation). The
 image of the signature is uploaded by an administrator in the console and kept in the instance
 folder, which the web server never serves; it is written into the page itself.
@@ -17,17 +22,20 @@ folder, which the web server never serves; it is written into the page itself.
 import base64
 import hashlib
 import hmac
+import re
 from datetime import datetime
 from pathlib import Path
 from urllib.parse import urlsplit
 
-from flask import abort, current_app, flash, redirect, render_template, request, url_for
+from flask import Response, abort, current_app, flash, g, redirect, render_template, request, url_for
 
 from .admin import bp as console
-from .auth import current_user, login_required
-from .db import all_settings, audit, query, set_setting
+from .auth import candidate_required, current_user, login_required
+from .candidate import bp as candidate
+from .db import all_settings, audit, execute, query, set_setting, utcnow
+from .i18n import t
 from .public import bp as public
-from .utils import client_ip, fmt_date, now_ist, qr_data_uri, to_ist
+from .utils import client_ip, csv_bytes, fmt_date, limiter, now_ist, qr_data_uri, to_ist
 
 # applications that receive no certificate
 NOT_ISSUED = ("rejected", "withdrawn")
@@ -39,7 +47,10 @@ AUTONOMOUS = "An autonomous Institution under the Ministry of Education, Governm
 # the students of the merit list who receive a certificate of merit
 MERIT_OUTCOMES = ("selected", "waitlisted")
 # the two kinds: the code in the number of a certificate, and what its seal is made from
-KINDS = {"recognition": ("CR", "kts5-certificate"), "merit": ("CM", "kts5-merit"), "letter": ("CL", "kts5-letter")}
+KINDS = {"recognition": ("CR", "kts5-certificate"), "merit": ("CM", "kts5-merit"), "letter": ("CL", "kts5-letter"),
+         "inaugural": ("CP", "kts5-inaugural")}
+# application numbers in a list pasted into the console
+APP_NO = re.compile(r"KTS5-\d{4}-\d{6}", re.I)
 
 
 def _seal(app_no, kind="recognition"):
@@ -103,6 +114,53 @@ def letter_link(app, external=False):
     if external:
         return f"{current_app.config['BASE_URL'].rstrip('/')}/letter/{app['app_no']}/{seal}"
     return url_for("public.confirmation_letter", app_no=app["app_no"], seal=seal)
+
+
+def _delegate(app, settings):
+    """A student delegate: selected in the published merit list."""
+    return settings.get("merit.published") == "1" and bool(app["app_no"]) and app["status"] == "selected"
+
+
+def attendance(app):
+    """The recorded attendance of an application at the inauguration, or None."""
+    return query("SELECT * FROM inaug_attendance WHERE application_id = ?", (app["id"],), one=True)
+
+
+def inaug_issued(app, settings=None):
+    """
+    True when this application has a certificate of participation: issuing is on, the student is a
+    delegate (selected in the published merit list) and the attendance at the inauguration is recorded.
+    """
+    settings = settings if settings is not None else all_settings()
+    return settings.get("cert.inaug_on") == "1" and _delegate(app, settings) and attendance(app) is not None
+
+
+def inaug_link(app, external=False):
+    """Address of the certificate of participation of an application, or None when it has none."""
+    if app is None or not inaug_issued(app):
+        return None
+    seal = _seal(app["app_no"], "inaugural")
+    if external:
+        return f"{current_app.config['BASE_URL'].rstrip('/')}/certificate/inaugural/{app['app_no']}/{seal}"
+    return url_for("public.inaugural_certificate", app_no=app["app_no"], seal=seal)
+
+
+def _plain_code(value):
+    return "".join((value or "").split()).casefold()
+
+
+def inaug_open(settings):
+    """The students may record their attendance: a code is set and the day of the inauguration has come."""
+    start = (settings.get("kts.start") or "")[:10]
+    return bool(_plain_code(settings.get("inaug.code"))) and bool(start) and now_ist().date().isoformat() >= start
+
+
+def inaug_state(app, settings):
+    """What the card of the inauguration shows a delegate; None for any other student."""
+    if not _delegate(app, settings):
+        return None
+    return {"date": settings.get("kts.start") or "", "link": (settings.get("inaug.link") or "").strip(),
+            "attended": attendance(app) is not None, "open": inaug_open(settings), "certificate": inaug_link(app)}
 
 
 def number_of(app_no, kind="recognition"):
@@ -185,6 +243,44 @@ def merit_certificate(app_no, seal):
     return response
 
 
+@public.route("/certificate/inaugural/<app_no>/<seal>")
+def inaugural_certificate(app_no, seal):
+    app = query("SELECT * FROM applications WHERE app_no = ?", (app_no,), one=True)
+    if app is None or not hmac.compare_digest(seal, _seal(app_no, "inaugural")) or not inaug_issued(app):
+        abort(404)
+    # issued on the day the attendance was recorded
+    issued_on = fmt_date(to_ist(attendance(app)["marked_at"]))
+    response = current_app.make_response(_sheet(
+        app["full_name"], app["college_name"], app["college_state"] or app["state"], number_of(app_no, "inaugural"),
+        issued_on, inaug_link(app, external=True), kind="inaugural"))
+    response.headers["X-Robots-Tag"] = "noindex, nofollow"
+    response.headers["Cache-Control"] = "private, no-store"
+    return response
+
+
+@candidate.route("/inauguration", methods=["POST"])
+@candidate_required
+def record_attendance():
+    """A delegate records the attendance at the inauguration with the code announced during the live stream."""
+    cand = g.candidate
+    settings = all_settings()
+    if not _delegate(cand, settings) or not inaug_open(settings):
+        flash(t("inaug.later"), "warning")
+    elif attendance(cand) is None:
+        key = str(cand["id"])
+        if limiter.blocked("inaug_code", key, 10, 15 * 60):
+            flash(t("reg.err_rate"), "error")
+        elif _plain_code(request.form.get("code")) != _plain_code(settings.get("inaug.code")):
+            limiter.hit("inaug_code", key, 15 * 60)
+            flash(t("inaug.wrong"), "error")
+        else:
+            execute("INSERT OR IGNORE INTO inaug_attendance(application_id, via, marked_at) VALUES(?, 'code', ?)",
+                    (cand["id"], utcnow()))
+            audit("inaug_attendance", "application", cand["id"], detail="code", ip=client_ip())
+            flash(t("inaug.recorded"), "success")
+    return redirect(url_for("candidate.home") + "#inaug-card")
+
+
 def _letter(app, rank, link):
     """The confirmation letter of an application (or of the invented student of the sample)."""
     from . import kural as K
@@ -248,6 +344,38 @@ def certificate_settings():
             audit("certificate_" + action, "settings", None, user=user, ip=client_ip())
             flash("Certificates of merit are issued." if action == "merit_on"
                   else "Certificates of merit are no longer issued.", "success")
+        elif action in ("inaug_on", "inaug_off"):
+            set_setting("cert.inaug_on", "1" if action == "inaug_on" else "0")
+            audit("certificate_" + action, "settings", None, user=user, ip=client_ip())
+            flash("Certificates of participation are issued." if action == "inaug_on"
+                  else "Certificates of participation are no longer issued.", "success")
+        elif action in ("inaug_mark", "inaug_unmark"):
+            numbers = list(dict.fromkeys(n.upper() for n in APP_NO.findall(request.form.get("numbers") or "")))
+            done, skipped = [], []
+            for number in numbers:
+                row = query("SELECT id, status FROM applications WHERE app_no = ?", (number,), one=True)
+                if action == "inaug_unmark":
+                    if row is not None and query("SELECT 1 FROM inaug_attendance WHERE application_id = ?", (row["id"],), one=True):
+                        execute("DELETE FROM inaug_attendance WHERE application_id = ?", (row["id"],))
+                        done.append(number)
+                    else:
+                        skipped.append(number)
+                elif row is None or row["status"] != "selected":
+                    skipped.append(number)
+                else:
+                    execute("INSERT OR IGNORE INTO inaug_attendance(application_id, via, marked_at, marked_by) VALUES(?, 'staff', ?, ?)",
+                            (row["id"], utcnow(), user["id"]))
+                    done.append(number)
+            audit("inaug_attendance_" + ("removed" if action == "inaug_unmark" else "recorded"), "application", None,
+                  detail={"numbers": done}, user=user, ip=client_ip())
+            if not numbers:
+                flash("No application number (KTS5-2026-000123) was found in the list.", "error")
+            else:
+                verb = "removed" if action == "inaug_unmark" else "recorded"
+                flash(f"Attendance {verb} for {len(done)} application(s)."
+                      + (f" Left out, not {'recorded' if action == 'inaug_unmark' else 'a selected delegate'} or unknown: "
+                         + ", ".join(skipped[:20]) + (" …" if len(skipped) > 20 else "") if skipped else ""),
+                      "success" if done else "warning")
         elif action == "signature":
             upload = request.files.get("signature")
             name = (upload.filename or "") if upload else ""
@@ -279,7 +407,32 @@ def certificate_settings():
                            count=counts["n"], merit_on=settings.get("cert.merit_on") == "1",
                            published=settings.get("merit.published") == "1", selected=selected["n"],
                            letter_on=settings.get("letter.on") == "1",
-                           chosen=query("SELECT COUNT(*) AS n FROM applications WHERE status = 'selected'", one=True)["n"])
+                           chosen=query("SELECT COUNT(*) AS n FROM applications WHERE status = 'selected'", one=True)["n"],
+                           inaug_on=settings.get("cert.inaug_on") == "1", inaug_open=inaug_open(settings),
+                           inaug_code=bool(_plain_code(settings.get("inaug.code"))), inaug_date=settings.get("kts.start") or "",
+                           attended=query("SELECT COUNT(*) AS n FROM inaug_attendance a JOIN applications p ON p.id = a.application_id "
+                                          "WHERE p.status = 'selected'", one=True)["n"])
+
+
+def _csv_text(value):
+    """A cell as a spreadsheet shows it: never read as a formula."""
+    value = "" if value is None else str(value)
+    return "'" + value if value[:1] in ("=", "+", "-", "@", "\t", "\r") else value
+
+
+@console.route("/certificate/attendance.csv")
+@login_required("settings")
+def attendance_csv():
+    """The recorded attendance at the inauguration, for the records of the institute."""
+    rows = query("SELECT p.app_no, p.full_name, p.college_name, p.college_state, p.state, p.status, a.via, a.marked_at "
+                 "FROM inaug_attendance a JOIN applications p ON p.id = a.application_id ORDER BY a.marked_at, p.app_no")
+    body = csv_bytes(["Application number", "Name", "College", "State", "Status", "Recorded by", "Recorded at (IST)"],
+                     [(r["app_no"], _csv_text(r["full_name"]), _csv_text(r["college_name"]), r["college_state"] or r["state"],
+                       r["status"], "student (code)" if r["via"] == "code" else "staff",
+                       to_ist(r["marked_at"]).strftime("%d-%m-%Y %H:%M")) for r in rows])
+    audit("inaug_attendance_export", "settings", None, detail=f"{len(rows)} rows", user=current_user(), ip=client_ip())
+    return Response(body, mimetype="text/csv",
+                    headers={"Content-Disposition": 'attachment; filename="kts5-inauguration-attendance.csv"'})
 
 
 @console.route("/certificate/sample")
@@ -293,7 +446,7 @@ def certificate_sample():
         response = current_app.make_response(_letter(sample, 1, current_app.config["BASE_URL"].rstrip("/") + "/"))
         response.headers["Cache-Control"] = "private, no-store"
         return response
-    kind = "merit" if request.args.get("kind") == "merit" else "recognition"
+    kind = request.args.get("kind") if request.args.get("kind") in ("merit", "inaugural") else "recognition"
     response = current_app.make_response(_sheet(
         "Sample Student Name", "Government Arts College, Sample Town", "Tamil Nadu", f"KTS5/{KINDS[kind][0]}/2026/000000",
         fmt_date(now_ist()), current_app.config["BASE_URL"].rstrip("/") + "/", kind=kind, rank=1 if kind == "merit" else None,

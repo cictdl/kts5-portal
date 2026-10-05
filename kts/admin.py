@@ -232,6 +232,7 @@ def _delete_application(row):
     with it. For a trial entry or one made by mistake; its number is not given again.
     """
     execute("DELETE FROM exam_sessions WHERE application_id = ?", (row["id"],))
+    execute("DELETE FROM inaug_attendance WHERE application_id = ?", (row["id"],))
     execute("DELETE FROM applications WHERE id = ?", (row["id"],))
     folder = Path(current_app.config["UPLOAD_DIR"]).resolve()
     for rel in (row["photo_path"], row["idproof_path"]):
@@ -846,6 +847,8 @@ SETTING_GROUPS = [
                         ("quiz.candidates", "Selected students may host a quiz once the merit list is published", "bool"),
                         ("quiz.max_players", "Players in one quiz at most", "number")]),
     ("Kashi Tamil Sangamam 5.0", [("kts.start", "Inauguration (YYYY-MM-DD)", "date"), ("kts.end", "Valedictory programme (YYYY-MM-DD)", "date"),
+                                  ("inaug.link", "Live stream of the inauguration (address, shown to the selected students)", "text"),
+                                  ("inaug.code", "Attendance code announced during the live stream (from the day of the inauguration; empty: the students cannot record their attendance)", "text"),
                                   ("schedule.tentative", "Show the note “tentative timeline” on the schedule page", "bool")]),
     ("Merit list", [("merit.published", "Merit list published", "bool"), ("merit.select_count", "Number to select", "number"),
                     ("merit.wait_count", "Waitlist size", "number"), ("merit.note", "Note shown above the merit list", "text")]),

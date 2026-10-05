@@ -20,6 +20,7 @@
         </dl></div>
         <div class="btn-row" style="margin-top:12px"><a class="btn sm secondary" href="{{ url_for('candidate.ack') }}">{{ t('reg.ack') }}</a>
           {% set letter = letter_link(cand) %}{% if letter %}<a class="btn sm saffron" href="{{ letter }}">✉️ {{ t('letter.get') }}</a>{% endif %}
+          {% if inaug and inaug.certificate %}<a class="btn sm saffron" href="{{ inaug.certificate }}">🎥 {{ t('cert.inaug_get') }}</a>{% endif %}
           {% set merit_cert = merit_link(cand) %}{% if merit_cert %}<a class="btn sm saffron" href="{{ merit_cert }}">🏆 {{ t('cert.merit_get') }}</a>{% endif %}
           {% set cert = certificate_link(cand) %}{% if cert %}<a class="btn sm {{ 'secondary' if merit_cert else 'saffron' }}" href="{{ cert }}">🏅 {{ t('cert.get') }}</a>{% endif %}
           {% if cand.status in ('verified', 'selected', 'waitlisted', 'not_selected') %}<a class="btn sm secondary" href="{{ url_for('candidate.admit_card') }}">{{ t('cand.admit') }}</a>{% endif %}</div>
@@ -32,6 +33,29 @@
         {% set bank_text = {'submitted': 'bank.submitted_text', 'returned': 'bank.returned_text', 'approved': 'bank.approved_text', 'paid': 'bank.paid_text', 'closed': 'bank.closed'} %}
         <p class="small dim">{{ t(bank_text.get(bank, 'bank.card_text')) }}{% if bank == 'not_open' or (bank == 'returned' and settings['stipend.open'] != '1') %} {{ t('bank.not_open') }}{% endif %}</p>
         <a class="btn sm {{ 'saffron' if bank in ('form', 'returned') else 'secondary' }}" href="{{ url_for('candidate.bank') }}">{{ t('bank.open') }} {{ fwd }}</a>
+      </div>
+      {% endif %}
+
+      {% if inaug %}
+      <div class="card {{ 'green' if inaug.attended else 'accent' }}" style="margin-top:14px" id="inaug-card">
+        <div class="section-head" style="margin-bottom:8px"><h3>🎥 {{ t('inaug.title') }}</h3>{% if inaug.date %}<span class="pill">{{ inaug.date|date }}</span>{% endif %}</div>
+        {% if inaug.attended %}
+        <div class="alert success">{{ t('inaug.recorded') }}</div>
+        {% if inaug.certificate %}<a class="btn sm saffron" href="{{ inaug.certificate }}">🎥 {{ t('cert.inaug_get') }}</a>{% endif %}
+        {% else %}
+        <p class="small dim">{{ t('inaug.card_text') }}</p>
+        {% if inaug.link %}<p><a class="btn sm secondary" href="{{ inaug.link }}" target="_blank" rel="noopener noreferrer">▶ {{ t('inaug.watch') }} ↗</a></p>{% endif %}
+        {% if inaug.open %}
+        <form method="post" action="{{ url_for('candidate.record_attendance') }}" class="btn-row" data-once>
+          <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+          <label class="visually-hidden" for="inaug-code">{{ t('inaug.code') }}</label>
+          <input id="inaug-code" name="code" required autocomplete="off" placeholder="{{ t('inaug.code') }}" style="max-width:220px">
+          <button class="btn sm saffron" type="submit">{{ t('inaug.record') }}</button>
+        </form>
+        {% else %}
+        <p class="small muted">{{ t('inaug.later') }}</p>
+        {% endif %}
+        {% endif %}
       </div>
       {% endif %}
 

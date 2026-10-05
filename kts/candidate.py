@@ -86,9 +86,11 @@ def home():
     bank = page_state(settings, entry) if may_use(cand, settings, entry) else None
     # a selected student may host a classroom quiz at the presentation in his or her college
     from .quiz import may_host_candidate
+    # and records the attendance at the inauguration, which is attended online
+    from .certificate import inaug_state
     return render_template("candidate/home.html", cand=cand, settings=settings, start=start, end=end,
                            is_open=is_open, exam=exam, sessions=sessions, materials=materials, merit=merit,
-                           bank=bank, quiz=may_host_candidate(cand, settings),
+                           bank=bank, quiz=may_host_candidate(cand, settings), inaug=inaug_state(cand, settings),
                            lang_name=K.lang_info(cand["pref_lang"])["name"])
 
 

@@ -1804,7 +1804,7 @@ def test_post_where_only_get_is_allowed(app):
 
 def test_version():
     from kts import version
-    assert version.VERSION == "1.2.9"
+    assert version.VERSION == "1.2.10"
     assert "/healthz" in version.__doc__ and "installer" in version.__doc__
 
 

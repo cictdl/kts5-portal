@@ -130,6 +130,15 @@ python -m pytest tests -q
 
 ## Certificates of recognition and of merit, confirmation letter
 
+The student delegates (the selected students of the published merit list) attend the
+inauguration of KTS 5.0 online and receive a certificate of participation (from 1.2.10):
+`/certificate/inaugural/<application number>/<seal>`, number `KTS5/CP/…`, the same sheet in
+green. It is issued once the attendance is recorded (table `inaug_attendance`): by the student,
+on the candidate portal, with the attendance code announced during the live stream (settings
+`inaug.code` and `inaug.link`; the code is accepted from the day of the inauguration,
+`kts.start`, while it is set), or in *Console → Certificate* from a list of application numbers,
+where the attendance is also removed and downloaded as CSV. Setting `cert.inaug_on`.
+
 Every selected student also receives a confirmation letter on the letterhead
 of CICT (from 1.2.5): `/letter/<application number>/<seal>`, an A4 page with
 reference number `CICT/KTS5/CL/…`, the rank, the faculty mentor and the

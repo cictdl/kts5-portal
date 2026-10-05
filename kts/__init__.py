@@ -169,6 +169,7 @@ def create_app(config_object=Config):
             "certificate_link": certificate.certificate_link,
             "merit_link": certificate.merit_link,
             "letter_link": certificate.letter_link,
+            "inaug_link": certificate.inaug_link,
             "banner_state": banner_state,
             "social_links": db.social_links,
             "nodal_officers": db.nodal_officers,

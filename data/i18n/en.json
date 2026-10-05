@@ -714,5 +714,15 @@
   "quiz.new": "New quiz",
   "quiz.kural": "Kural {n}",
   "quiz.questions": "questions",
-  "quiz.sec": "seconds"
+  "quiz.sec": "seconds",
+  "cert.inaug_title": "Certificate of participation",
+  "cert.inaug_get": "Your certificate of participation",
+  "inaug.title": "Inauguration of KTS 5.0 · online",
+  "inaug.card_text": "The student delegates attend the inauguration of Kashi Tamil Sangamam 5.0 online. Watch the live stream and enter the attendance code announced during it: you then receive a certificate of participation.",
+  "inaug.watch": "Watch the live stream",
+  "inaug.code": "Attendance code",
+  "inaug.record": "Record my attendance",
+  "inaug.recorded": "Your attendance at the inauguration is recorded.",
+  "inaug.wrong": "This is not the attendance code. Enter the code as it was announced.",
+  "inaug.later": "The attendance code is announced during the live stream of the inauguration."
 }
