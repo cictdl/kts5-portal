@@ -51,6 +51,8 @@ def create_app(config_object=Config):
     from . import stipend  # noqa: F401
     # and the certificate of recognition its page to those of the public site and of the console
     from . import certificate
+    # the classroom quiz has a blueprint of its own, and its list in the console
+    from . import quiz
 
     db.init_app(app)
     i18n.register(app)
@@ -61,6 +63,7 @@ def create_app(config_object=Config):
     app.register_blueprint(auth.bp)
     app.register_blueprint(admin.bp)
     app.register_blueprint(agency.bp)
+    app.register_blueprint(quiz.bp)
 
     # ---- request guards -------------------------------------------------
     @app.before_request
@@ -85,7 +88,7 @@ def create_app(config_object=Config):
                                     "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
                                     "script-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; "
                                     "frame-ancestors 'self'")
-        if request.path.startswith(("/console", "/candidate", "/hub", "/register", "/status", "/contact")):
+        if request.path.startswith(("/console", "/candidate", "/hub", "/register", "/status", "/contact", "/quiz")):
             resp.headers["Cache-Control"] = "no-store"
         if app.config.get("HSTS") and app.config.get("SESSION_COOKIE_SECURE"):
             resp.headers.setdefault("Strict-Transport-Security", "max-age=31536000")

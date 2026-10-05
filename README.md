@@ -44,10 +44,11 @@ portal/
     admin.py        console
     stipend.py      stipend: the bank details of the selected students, both sides
     secure.py       seals the account and Aadhaar numbers (key instance/stipend.key)
+    quiz.py         classroom quiz: a live Thirukkural quiz on the projector, answered on phones
     agency.py       coordination hub
     auth.py         staff login, roles, permissions
     utils.py        CSRF, rate limiting, uploads, exports, mail, dates
-  templates/        public/ · candidate/ · console/ · hub/
+  templates/        public/ · candidate/ · console/ · hub/ · quiz/
   static/           css/portal.css · js/portal.js · img/ (kts-logo.png, kts-mark.png, thiruvalluvar.jpg, logos/, favicon, lockups)
   tools/make_logo.py  rebuilds the logo set from the originals in tools/logo-src/
   tools/check_i18n.py checks the translations (missing keys, wrong script, lost numbers)
@@ -168,6 +169,30 @@ page). The image of the signature is uploaded in *Console → Certificate*
 (PNG or JPG under 1 MB) and kept as `instance/certificate-signature.png` (or
 `.jpg`), outside the web folder; it is written into each certificate page
 itself. Without it the certificates show the name above an empty line.
+
+## Classroom quiz
+
+A live Thirukkural quiz for a class (from 1.2.8, `kts/quiz.py`), made for the presentation that
+each selected student gives in his or her college. The host opens *Host a quiz* (`/quiz/host`),
+chooses the language of the questions (the 23 of the test), the questions (the whole Thirukkural,
+one section or one chapter), 5 to 20 questions and 20 to 60 seconds for each, and shows the quiz
+on the projector: the address, a six-digit code and a QR code. The students join on their phones
+at `/quiz` with the code and a name, without an account. Each question is shown alone for five
+seconds, then with its four answers (coloured, each with its own shape) and the time; a correct
+answer earns 1,000 points at once and 500 at the last moment. The answer, the couplet in Tamil and
+in the language of the quiz, a leaderboard after each question and a podium at the end follow; the
+host downloads the results as CSV. The pages are in the 23 interface languages, in a light theme.
+
+The questions are made from the corpus when the quiz is created, in the kinds of the question
+generator of the test; they are never those of the question bank. The screens ask the portal for
+the state every second (projector) or second and a half (phones): no socket, so nothing holds a
+thread of Waitress. Who hosts: CICT staff signed in to the console, and the selected students
+signed in to the candidate portal once the merit list is published (a card on their page). The
+console lists every quiz (*Classroom quiz*); under *Settings → Classroom quiz* an administrator
+closes the quiz (`quiz.on`), stops the hosting by students (`quiz.candidates`) or limits the
+players of one quiz (`quiz.max_players`, 200). A host has one quiz at a time; a quiz that is not
+ended closes after six hours. The names of the players are deleted with their answers after 30
+days; the line of the quiz (host, language, number of players) stays.
 
 ## Stipend: bank details of the selected students
 

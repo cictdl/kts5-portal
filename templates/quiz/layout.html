@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}" dir="{{ lang_dir }}" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% block robots %}<meta name="robots" content="noindex">
+{% endblock %}
+<title>{% block title %}{{ t('quiz.title') }}{% endblock %} · {{ t('site.name') }}</title>
+<link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=10">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/quiz.css') }}?v=1">
+</head>
+<body class="quiz-page {% block body_class %}{% endblock %}">
+<div class="tricolour"></div>
+<header class="quiz-bar">
+  <a class="quiz-brand" href="{{ url_for('quiz.join') }}"><img src="{{ url_for('static', filename='img/kts-mark.png') }}" alt="" width="42" height="42"><span><b>{{ t('quiz.title') }}</b><small>{{ t('site.name') }} · {{ t('site.theme') }}</small></span></a>
+  {% block bar %}
+  <form class="lang-menu" method="get" action="{{ url_for('public.set_lang') }}">
+    <label for="ui-lang"><span aria-hidden="true">🌐</span><span class="visually-hidden">{{ t('site.lang_menu') }} · Choose language</span></label>
+    <select id="ui-lang" name="code" data-autosubmit title="{{ t('site.lang_menu') }}">
+      {% for L in LANGUAGES %}<option value="{{ L.code }}" lang="{{ L.code }}" {{ 'selected' if L.code == lang }}>{{ L.native }}{% if L.native != L.name %} · {{ L.name }}{% endif %}</option>
+      {% endfor %}
+    </select>
+    <noscript><button type="submit">OK</button></noscript>
+  </form>
+  {% endblock %}
+</header>
+<main id="main">
+{% block content %}{% endblock %}
+</main>
+<footer class="quiz-foot">{{ t('site.organiser') }} · {{ t('site.ministry') }}</footer>
+<script type="application/json" id="i18n">{{ js_strings|tojson }}</script>
+{% block data %}{% endblock %}
+<script src="{{ url_for('static', filename='js/portal.js') }}?v=10" defer></script>
+<script src="{{ url_for('static', filename='js/quiz.js') }}?v=1" defer></script>
+</body>
+</html>

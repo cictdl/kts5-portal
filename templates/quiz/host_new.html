@@ -1,0 +1,55 @@
+{% extends "quiz/layout.html" %}
+{% block title %}{{ t('quiz.host_title') }}{% endblock %}
+{% block content %}
+<div class="quiz-narrow wide">
+  <div class="quiz-card">
+    <h1>🖥 {{ t('quiz.host_title') }}</h1>
+    <p class="dim">{{ t('quiz.host_intro') }}</p>
+    {% if closed %}
+    <div class="alert warning">{{ t('quiz.off') }}</div>
+    {% elif not host %}
+    <div class="alert info">{{ t('quiz.who_hosts') }}</div>
+    <div class="btn-row">
+      <a class="btn saffron" href="{{ url_for('candidate.login') }}">{{ t('nav.candidate') }}</a>
+      <a class="btn secondary" href="{{ url_for('auth.login') }}">{{ t('nav.admin') }}</a>
+      <a class="btn ghost" href="{{ url_for('quiz.join') }}">{{ t('quiz.join') }}</a>
+    </div>
+    {% else %}
+    {% if mine %}<a class="alert info back-link" href="{{ url_for('quiz.host_screen', code=mine.code) }}">{{ t('quiz.back_host') }} · <bdi dir="ltr">{{ mine.code }}</bdi> {{ fwd }}</a>{% endif %}
+    {% if error %}<div class="alert error" role="alert">{{ error }}</div>{% endif %}
+    <form method="post" action="{{ url_for('quiz.host_new') }}" class="host-form" data-once>
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <label for="q-lang">{{ t('quiz.q_lang') }}</label>
+      <select id="q-lang" name="lang">
+        {% for code, label in langs %}<option value="{{ code }}" {{ 'selected' if code == form.lang }}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <label for="q-scope">{{ t('quiz.scope') }}</label>
+      <select id="q-scope" name="scope">
+        <option value="all" {{ 'selected' if form.scope == 'all' }}>{{ t('quiz.scope_all') }}</option>
+        <optgroup label="{{ t('common.section') }}">
+          {% for n, label in pals %}<option value="pal{{ n }}" {{ 'selected' if form.scope == 'pal' ~ n }}>{{ label }}</option>
+          {% endfor %}
+        </optgroup>
+        <optgroup label="{{ t('common.chapters') }}">
+          {% for n, label in chapters %}<option value="ch{{ n }}" {{ 'selected' if form.scope == 'ch' ~ n }}>{{ n }}. {{ label }}</option>
+          {% endfor %}
+        </optgroup>
+      </select>
+      <div class="pair">
+        <div>
+          <label for="q-count">{{ t('quiz.count') }}</label>
+          <select id="q-count" name="count">{% for n in counts %}<option value="{{ n }}" {{ 'selected' if form.count == n|string }}>{{ n }}</option>{% endfor %}</select>
+        </div>
+        <div>
+          <label for="q-seconds">{{ t('quiz.seconds') }}</label>
+          <select id="q-seconds" name="seconds">{% for n in seconds %}<option value="{{ n }}" {{ 'selected' if form.seconds == n|string }}>{{ n }}</option>{% endfor %}</select>
+        </div>
+      </div>
+      <button class="btn saffron quiz-go" type="submit">{{ t('quiz.create') }} {{ fwd }}</button>
+    </form>
+    <p class="small muted">{{ t('quiz.privacy') }}</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

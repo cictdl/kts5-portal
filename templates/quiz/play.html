@@ -1,0 +1,18 @@
+{% extends "quiz/layout.html" %}
+{% block title %}{{ t('quiz.title') }} · {{ room.code }}{% endblock %}
+{% block body_class %}play{% endblock %}
+{% block bar %}
+<div class="bar-me"><bdi id="me-name">{{ player.name }}</bdi><b id="me-score" dir="ltr">{{ player.score }}</b></div>
+{% endblock %}
+{% block content %}
+<div id="quiz-play" class="qp">
+  <noscript><div class="alert warning">{{ t('quiz.need_js') }}</div></noscript>
+  <div id="qp-screen" class="qp-screen" aria-live="polite"><div class="quiz-card"><p class="dim">{{ t('js.wait') }}</p></div></div>
+  <form method="post" action="{{ url_for('quiz.leave') }}" class="qp-leave">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <button class="btn ghost sm" type="submit" data-confirm="{{ t('quiz.leave_confirm') }}">{{ t('quiz.leave') }}</button>
+  </form>
+</div>
+{% endblock %}
+{% block data %}<script type="application/json" id="quiz-data">{{ data|tojson }}</script>
+{% endblock %}

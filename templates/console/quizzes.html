@@ -1,0 +1,24 @@
+{% extends "console/base.html" %}
+{% block title %}Classroom quiz{% endblock %}
+{% block content %}
+<div class="card accent" style="margin-bottom:14px">
+  <p>A live Thirukkural quiz for a class: the host shows it on the projector, the students join on their phones at
+    <b>/quiz</b> with the six-digit code and answer each question in time. The questions are made from the corpus in the
+    language that the host chooses; they are never those of the question bank of the test.
+    {% if settings['quiz.on'] != '1' %}<span class="pill grey">closed</span>{% endif %}
+    {% if settings['quiz.candidates'] == '1' %}Selected students host from the candidate portal once the merit list is published.{% else %}Selected students cannot host now.{% endif %}
+    The names of the players are deleted with their answers after 30 days. Switches under <a href="{{ url_for('admin.settings_page') }}">Settings</a> (Classroom quiz).</p>
+  <div class="btn-row"><a class="btn sm" href="{{ url_for('quiz.host_new') }}" target="_blank" rel="noopener">Host a quiz ↗</a>
+    <a class="btn sm secondary" href="{{ url_for('quiz.join') }}" target="_blank" rel="noopener">Page for the players ↗</a></div>
+</div>
+<p class="small muted">{% if everyone %}All quizzes, newest first (300 at most).{% else %}Your quizzes, newest first.{% endif %}</p>
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Created (IST)</th><th>Code</th><th>Host</th><th>Language</th><th class="num">Questions</th><th class="num">Players</th><th>State</th><th></th></tr></thead>
+  <tbody>{% for line in lines %}{% set r = line.room %}
+  <tr><td>{{ r.created_at|datetime }}</td><td><code>{{ r.code }}</code></td>
+    <td>{{ r.host_name }}{% if line.app_no %} <span class="small muted">· student {{ line.app_no }}</span>{% elif r.host_kind == 'staff' %} <span class="small muted">· staff</span>{% endif %}</td>
+    <td>{{ r.lang|langname }}</td><td class="num">{{ line.questions }}</td><td class="num">{{ r.players }}</td>
+    <td>{% if line.stage == 'end' %}<span class="pill grey">ended</span>{% elif line.stage == 'lobby' %}<span class="pill">waiting</span>{% else %}<span class="pill green">live · question {{ r.q_index + 1 }}</span>{% endif %}</td>
+    <td>{% if r.host_kind == 'staff' and r.host_id == current_user.id %}<a class="btn xs secondary" href="{{ url_for('quiz.host_screen', code=r.code) }}" target="_blank" rel="noopener">Open ↗</a>{% endif %}</td></tr>
+  {% else %}<tr><td colspan="8" class="muted">No quiz yet.</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

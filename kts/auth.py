@@ -41,6 +41,8 @@ PERMS = {
     "users":         {"superadmin"},
     "settings":      {"superadmin", "admin"},
     "audit":         {"superadmin", "admin"},
+    # the classroom quiz: every member of staff may host one
+    "quiz.host":     {"superadmin", "admin", "verifier", "content", "agency", "viewer"},
 }
 
 

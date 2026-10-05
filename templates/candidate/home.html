@@ -35,6 +35,14 @@
       </div>
       {% endif %}
 
+      {% if quiz %}
+      <div class="card accent" style="margin-top:14px" id="quiz-card">
+        <h3>🎯 {{ t('quiz.title') }}</h3>
+        <p class="small dim">{{ t('quiz.card_text') }}</p>
+        <a class="btn sm saffron" href="{{ url_for('quiz.host_new') }}">{{ t('quiz.host_title') }} {{ fwd }}</a>
+      </div>
+      {% endif %}
+
       <div class="card" style="margin-top:14px">
         <h3>{{ t('exam.title') }}</h3>
         <p class="small dim"><b>{{ t('cand.exam_window') }}:</b> <bdi>{{ settings['exam.date']|date }}, {{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST</bdi> · {{ settings['exam.duration_min'] }} {{ t('exam.minutes') }} · {{ settings['exam.questions'] }} {{ t('exam.pattern_text') }}</p>

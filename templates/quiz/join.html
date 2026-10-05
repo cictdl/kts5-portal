@@ -1,0 +1,31 @@
+{% extends "quiz/layout.html" %}
+{% block robots %}{% endblock %}
+{% block content %}
+<div class="quiz-narrow">
+  <div class="quiz-card join-card">
+    <div class="join-icon" aria-hidden="true">🎯</div>
+    <h1>{{ t('quiz.title') }}</h1>
+    <p class="dim">{{ t('quiz.tagline') }}</p>
+    {% if back %}<a class="alert info back-link" href="{{ url_for('quiz.play') }}">{{ t('quiz.continue') }} · <bdi dir="ltr">{{ back }}</bdi> {{ fwd }}</a>{% endif %}
+    {% if closed %}
+    <div class="alert warning">{{ t('quiz.off') }}</div>
+    {% else %}
+    {% if error %}<div class="alert error" role="alert">{{ error }}</div>{% endif %}
+    <form method="post" action="{{ url_for('quiz.join') }}" class="join-form" data-once>
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <label for="code">{{ t('quiz.code') }}</label>
+      <input id="code" name="code" class="code-input" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" required value="{{ code }}" dir="ltr" placeholder="000000" aria-describedby="code-hint">
+      <small id="code-hint" class="muted">{{ t('quiz.code_hint') }}</small>
+      <label for="name">{{ t('quiz.name') }}</label>
+      <input id="name" name="name" maxlength="24" autocomplete="nickname" required value="{{ name }}" aria-describedby="name-hint">
+      <small id="name-hint" class="muted">{{ t('quiz.name_hint') }}</small>
+      <button class="btn saffron quiz-go" type="submit">{{ t('quiz.join') }} {{ fwd }}</button>
+    </form>
+    {% endif %}
+  </div>
+  <p class="host-line">
+    {% if host %}<a class="btn secondary" href="{{ url_for('quiz.host_new') }}">🖥 {{ t('quiz.host_title') }} {{ fwd }}</a>
+    {% else %}<a href="{{ url_for('quiz.host_new') }}">🖥 {{ t('quiz.host_title') }}</a>{% endif %}
+  </p>
+</div>
+{% endblock %}

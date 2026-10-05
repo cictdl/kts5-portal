@@ -47,6 +47,9 @@
     <a class="item {{ 'active' if ep.startswith('agency.task') }}" href="{{ url_for('agency.tasks') }}">📋 Tasks</a>
     <a class="item {{ 'active' if ep.startswith('agency.document') }}" href="{{ url_for('agency.documents') }}">📁 Shared documents</a>
     <a class="item {{ 'active' if ep == 'agency.calendar' }}" href="{{ url_for('agency.calendar') }}">🗓 Calendar</a>
+    {% if has_perm(u, 'quiz.host') %}
+    <a class="item {{ 'active' if ep == 'admin.quizzes' }}" href="{{ url_for('admin.quizzes') }}">🎯 Classroom quiz</a>
+    {% endif %}
     {% if has_perm(u, 'coord.manage') %}
     <a class="item {{ 'active' if ep.startswith('admin.agenc') }}" href="{{ url_for('admin.agencies') }}">🏛 Agencies</a>
     {% endif %}

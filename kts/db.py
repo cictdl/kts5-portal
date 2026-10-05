@@ -339,6 +339,57 @@ CREATE TABLE IF NOT EXISTS stipend_batches (
     paid_on     TEXT NOT NULL DEFAULT '',
     settled_at  TEXT
 );
+
+-- Classroom quiz (kts/quiz.py): a live quiz that a host shows on a projector and a class answers
+-- on phones. The questions are made when the quiz is created and kept here as JSON; the times of
+-- the question on the screens are milliseconds of the server clock. players counts those who
+-- joined, and stays when their names and answers are deleted after 30 days.
+CREATE TABLE IF NOT EXISTS quiz_rooms (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    code        TEXT NOT NULL,
+    host_kind   TEXT NOT NULL,
+    host_id     INTEGER NOT NULL,
+    host_name   TEXT NOT NULL DEFAULT '',
+    lang        TEXT NOT NULL,
+    scope       TEXT NOT NULL DEFAULT 'all',
+    seconds     INTEGER NOT NULL DEFAULT 30,
+    questions   TEXT NOT NULL,
+    phase       TEXT NOT NULL DEFAULT 'lobby',
+    q_index     INTEGER NOT NULL DEFAULT -1,
+    q_start_ms  INTEGER,
+    q_end_ms    INTEGER,
+    players     INTEGER NOT NULL DEFAULT 0,
+    created_at  TEXT NOT NULL,
+    created_ms  INTEGER NOT NULL,
+    ended_at    TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_quiz_code ON quiz_rooms(code, ended_at);
+CREATE INDEX IF NOT EXISTS idx_quiz_host ON quiz_rooms(host_kind, host_id);
+
+CREATE TABLE IF NOT EXISTS quiz_players (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    room_id     INTEGER NOT NULL REFERENCES quiz_rooms(id),
+    token       TEXT NOT NULL UNIQUE,
+    name        TEXT NOT NULL,
+    score       INTEGER NOT NULL DEFAULT 0,
+    right_count INTEGER NOT NULL DEFAULT 0,
+    time_ms     INTEGER NOT NULL DEFAULT 0,
+    removed     INTEGER NOT NULL DEFAULT 0,
+    joined_at   TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_quiz_players ON quiz_players(room_id, removed);
+
+CREATE TABLE IF NOT EXISTS quiz_answers (
+    room_id     INTEGER NOT NULL,
+    player_id   INTEGER NOT NULL REFERENCES quiz_players(id) ON DELETE CASCADE,
+    q_index     INTEGER NOT NULL,
+    choice      INTEGER NOT NULL,
+    correct     INTEGER NOT NULL,
+    points      INTEGER NOT NULL,
+    ms          INTEGER NOT NULL,
+    PRIMARY KEY (player_id, q_index)
+);
+CREATE INDEX IF NOT EXISTS idx_quiz_answers ON quiz_answers(room_id, q_index);
 """
 
 # Columns added after the first release: (table, column, DDL type/default)
@@ -425,6 +476,10 @@ DEFAULT_SETTINGS = {
     "internship.start": "2026-10-23",
     "papers.due": "2026-11-05",
     "present.due": "2026-11-15",
+    # the classroom quiz (kts/quiz.py): open, hosted also by the selected students, players in one quiz
+    "quiz.on": "1",
+    "quiz.candidates": "1",
+    "quiz.max_players": "200",
     "stats.public": "1",
     "site.draft_note_on": "1",
     "home.pm_on": "1",

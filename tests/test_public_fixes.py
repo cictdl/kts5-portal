@@ -645,8 +645,9 @@ def test_templates_print_streams_through_the_filter():
         for value in re.findall(r'\slang="\{\{\s*(.*?)\s*\}\}"', path.read_text(encoding="utf-8")):
             printed.setdefault(value, set()).add(path.relative_to(ROOT / "templates").as_posix())
     plain = {value: where for value, where in printed.items() if not value.endswith("|langtag")}
-    assert plain == {"lang": {"base.html", "candidate/exam_paper.html", "public/certificate.html", "public/letter.html"},
-                     "L.code": {"base.html", "public/orientation.html"}}
+    assert plain == {"lang": {"base.html", "candidate/exam_paper.html", "public/certificate.html", "public/letter.html",
+                              "quiz/layout.html"},
+                     "L.code": {"base.html", "public/orientation.html", "quiz/layout.html"}}
     assert set(printed) - set(plain) == {"stream|langtag", "info.code|langtag", "shown|langtag", "kotd_lang|langtag",
                                          "qlang|langtag"}
 
@@ -975,6 +976,8 @@ def test_version_of_style_sheet_and_script():
     # the certificate has a style sheet of its own and the script for its print button
     expected["public/certificate.html"] = [("js/portal.js", "10")]
     expected["public/letter.html"] = [("js/portal.js", "10")]
+    # the pages of the classroom quiz have a frame of their own, with the style sheet and the script of the portal
+    expected["quiz/layout.html"] = [("css/portal.css", "10"), ("js/portal.js", "10")]
     assert linked == expected
     for path in TEMPLATES:
         assert not re.search(r"portal\.(css|js)'\) \}\}(?!\?v=10\")", path.read_text(encoding="utf-8")), path
@@ -1009,9 +1012,9 @@ def test_alt_texts_use_keys_that_exist():
     # 540 texts, the two that ask for English entries in the registration form, the heading of the
     # social-media links, the nodal officers, the 19 of the timeline (version 1.1.5) and the 59 of
     # the bank details of the selected students (version 1.2.0), the 25 of the page that explains
-    # them (1.2.1), the 3 of the certificate of recognition (1.2.2), the 2 of that of merit (1.2.3)
-    # and the 2 of the confirmation letter (1.2.5)
-    assert len(CATALOG["en"]) == 654
+    # them (1.2.1), the 3 of the certificate of recognition (1.2.2), the 2 of that of merit (1.2.3),
+    # the 2 of the confirmation letter (1.2.5) and the 62 of the classroom quiz (1.2.8)
+    assert len(CATALOG["en"]) == 716
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1042,7 +1045,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.7" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.8" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

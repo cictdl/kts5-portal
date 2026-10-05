@@ -1,0 +1,77 @@
+{% extends "quiz/layout.html" %}
+{% block title %}{{ t('quiz.title') }} · {{ room.code }}{% endblock %}
+{% block body_class %}host{% endblock %}
+{% block bar %}
+<div class="bar-tools">
+  <span class="bar-code" dir="ltr">{{ room.code }}</span>
+  <button class="btn ghost sm" type="button" data-full>⛶ {{ t('quiz.fullscreen') }}</button>
+  <button class="btn ghost sm" type="button" data-act="end" data-ask="{{ t('quiz.end_confirm') }}" data-live>{{ t('quiz.end') }}</button>
+</div>
+{% endblock %}
+{% block content %}
+{% set play = '◀' if lang_dir == 'rtl' else '▶' %}
+<div id="quiz-host" class="qh" data-stage-now="lobby">
+  <noscript><div class="alert warning">{{ t('quiz.need_js') }}</div></noscript>
+
+  <section class="qh-lobby" data-stage="lobby">
+    <div class="join-panel">
+      <div class="join-text">
+        <div class="lbl">{{ t('quiz.join_at') }}</div>
+        <div class="url" dir="ltr">{{ shown }}</div>
+        <div class="lbl">{{ t('quiz.code') }}</div>
+        <div class="code" dir="ltr">{{ room.code[:3] }}&nbsp;{{ room.code[3:] }}</div>
+      </div>
+      {% if qr %}<img class="qr" src="{{ qr }}" alt="QR · {{ shown }}" width="240" height="240">{% endif %}
+    </div>
+    <div class="lobby-players">
+      <div class="lobby-head">
+        <h2><b data-bind="players" dir="ltr">0</b> {{ t('quiz.players') }}</h2>
+        <button class="btn saffron quiz-go" type="button" data-act="start" data-primary disabled>{{ play }} {{ t('quiz.start') }}</button>
+      </div>
+      <p class="dim waiting" data-bind="waiting">{{ t('quiz.waiting') }}</p>
+      <ul class="chips" data-bind="names"></ul>
+    </div>
+    <p class="qh-meta">{{ room.lang|langnative }} · {{ total }} {{ t('quiz.questions') }} · {{ room.seconds }} {{ t('quiz.sec') }} · {{ scope_label }}</p>
+  </section>
+
+  <section class="qh-question" data-stage="ready question reveal" hidden>
+    <div class="q-head">
+      <span class="qno" data-bind="qno"></span>
+      <span class="answered"><b data-bind="answered" dir="ltr">0</b> / <span data-bind="all" dir="ltr">0</span> {{ t('quiz.answers') }}</span>
+      <div class="qz-timer" data-bind="timer" aria-hidden="true"><span data-bind="secs"></span></div>
+    </div>
+    <div class="ready-bar" data-bind="ready"><span></span></div>
+    <h2 class="stem" data-bind="stem"></h2>
+    <div class="quote" data-bind="quote"></div>
+    <ol class="options" data-bind="options"></ol>
+    <div class="kural-panel" data-bind="kural" hidden></div>
+    <div class="q-actions">
+      <button class="btn secondary" type="button" data-act="skip" data-when="ready question">{{ t('quiz.skip') }}</button>
+      <button class="btn saffron quiz-go" type="button" data-act="board" data-when="reveal" data-primary>{{ t('quiz.leaderboard') }} {{ play }}</button>
+      <button class="btn secondary" type="button" data-act="next" data-when="reveal" data-bind="next1">{{ t('quiz.next') }}</button>
+    </div>
+  </section>
+
+  <section class="qh-board" data-stage="board" hidden>
+    <h2 class="qh-title">🏅 {{ t('quiz.leaderboard') }}</h2>
+    <p class="qno center" data-bind="qno2"></p>
+    <ol class="qz-board" data-bind="board"></ol>
+    <div class="q-actions center">
+      <button class="btn saffron quiz-go" type="button" data-act="next" data-primary data-bind="next2">{{ t('quiz.next') }} {{ play }}</button>
+    </div>
+  </section>
+
+  <section class="qh-end" data-stage="end" hidden>
+    <h2 class="qh-title">🏆 {{ t('quiz.final') }}</h2>
+    <div class="podium" data-bind="podium"></div>
+    <ol class="qz-board rest" data-bind="rest" start="4"></ol>
+    <p class="center dim">{{ t('quiz.thanks') }}</p>
+    <div class="q-actions center">
+      <a class="btn secondary" href="{{ url_for('quiz.host_results', code=room.code) }}">⬇ {{ t('quiz.download') }}</a>
+      <a class="btn saffron" href="{{ url_for('quiz.host_new') }}">{{ t('quiz.new') }}</a>
+    </div>
+  </section>
+</div>
+{% endblock %}
+{% block data %}<script type="application/json" id="quiz-data">{{ data|tojson }}</script>
+{% endblock %}
