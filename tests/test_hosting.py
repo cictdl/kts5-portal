@@ -1673,12 +1673,12 @@ def test_about_dates_follow_the_language(order):
     for code, page in pages.items():
         assert f'<html lang="{code.split()[0]}"' in page
         if code.startswith("en"):
-            assert "KTS 1.0 · 16 Nov 2022 – 15 Dec 2022" in page and "16-11-2022" not in page, order
+            assert "KTS 1.0 · 16 Nov 2022 – 16 Dec 2022" in page and "16-11-2022" not in page, order
             assert "\u2066" not in page
         elif code.startswith("ur"):
-            assert "KTS 1.0 · \u206616-11-2022\u2069 – \u206615-12-2022\u2069" in page and "Nov 2022" not in page, order
+            assert "KTS 1.0 · \u206616-11-2022\u2069 – \u206616-12-2022\u2069" in page and "Nov 2022" not in page, order
         else:
-            assert "KTS 1.0 · 16-11-2022 – 15-12-2022" in page and "Nov 2022" not in page, order
+            assert "KTS 1.0 · 16-11-2022 – 16-12-2022" in page and "Nov 2022" not in page, order
             assert "KTS 3.0 · 15-02-2025 – 24-02-2025" in page
 
 
@@ -1804,7 +1804,7 @@ def test_post_where_only_get_is_allowed(app):
 
 def test_version():
     from kts import version
-    assert version.VERSION == "1.2.4"
+    assert version.VERSION == "1.2.5"
     assert "/healthz" in version.__doc__ and "installer" in version.__doc__
 
 

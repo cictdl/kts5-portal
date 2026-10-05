@@ -127,7 +127,17 @@ python -m pytest tests -q
    for the bank, and mark that list as paid when the bank has made the
    transfers. See the next section.
 
-## Certificates of recognition and of merit
+## Certificates of recognition and of merit, confirmation letter
+
+Every selected student also receives a confirmation letter on the letterhead
+of CICT (from 1.2.5): `/letter/<application number>/<seal>`, an A4 page with
+reference number `CICT/KTS5/CL/…`, the rank, the faculty mentor and the
+language of the application, the dates of the internship, of the research
+paper and of the presentation (settings `letter.date`, `internship.start`,
+`papers.due`, `present.due`), the stipend and the days of the Sangamam,
+signed like the certificates, with a copy to the head of the institution.
+Issued once the merit list is published (setting `letter.on`); linked from
+the status page and the candidate portal.
 
 Every student who registers receives a certificate of recognition, signed by
 the head of the institute (from version 1.2.2, `kts/certificate.py`). Every

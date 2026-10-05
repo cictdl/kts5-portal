@@ -29,6 +29,7 @@
       {% if a.remarks and a.status == 'rejected' %}<dt>{{ t('common.remarks') }}</dt><dd><bdi>{{ a.remarks }}</bdi></dd>{% endif %}
     </dl></div>
     <div class="btn-row" style="margin-top:14px"><a class="btn" href="{{ url_for('candidate.login') }}">{{ t('nav.candidate') }} {{ fwd }}</a>
+      {% set letter = letter_link(a) %}{% if letter %}<a class="btn saffron" href="{{ letter }}">✉️ {{ t('letter.get') }}</a>{% endif %}
       {% set merit_cert = merit_link(a) %}{% if merit_cert %}<a class="btn saffron" href="{{ merit_cert }}">🏆 {{ t('cert.merit_get') }}</a>{% endif %}
       {% set cert = certificate_link(a) %}{% if cert %}<a class="btn {{ 'secondary' if merit_cert else 'saffron' }}" href="{{ cert }}">🏅 {{ t('cert.get') }}</a>{% endif %}</div>
   </div>

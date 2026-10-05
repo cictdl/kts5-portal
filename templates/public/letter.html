@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}" dir="{{ lang_dir }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>{{ t('letter.title') }} · {{ name }}</title>
+<link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/letter.css') }}?v=2">
+</head>
+<body>
+<div class="toolbar">
+  <button type="button" data-print>{{ t('common.print') }}</button>
+  <span>{{ t('cert.save_hint') }}</span>
+  <a href="{{ url_for('public.home') }}">{{ t('nav.home') }}</a>
+</div>
+{# An official letter on the letterhead of CICT, in English; an A4 page. #}
+<main class="page" lang="en" dir="ltr">
+  <div class="tricolour" aria-hidden="true"><span></span><span></span><span></span></div>
+  <header class="head">
+    <img class="cict" src="{{ url_for('static', filename='img/logos/cict.png') }}" alt="Central Institute of Classical Tamil">
+    <div class="org">
+      <span class="ta" lang="ta">செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்</span>
+      <span class="hi" lang="hi">केंद्रीय शास्त्रीय तमिल संस्थान</span>
+      <b>Central Institute of Classical Tamil</b>
+      <span class="min">Ministry of Education, Government of India</span>
+      {% if address %}<span class="addr">{{ address }}</span>{% endif %}
+    </div>
+    <img class="kts" src="{{ url_for('static', filename='img/kts-logo.png') }}" alt="Kashi Tamil Sangamam">
+  </header>
+
+  <section class="content">
+    <div class="refline"><span>Ref. No. <b>{{ number }}</b></span><span>Date: <b>{{ letter_date }}</b></span></div>
+
+    <p class="to">To<br><b>{{ name }}</b><br>{% if college %}{{ college }}<br>{% endif %}{% if place %}{{ place }}<br>{% endif %}Application No. {{ app_no }}</p>
+
+    <p class="subject"><span>Subject:</span> Kashi Tamil Sangamam 5.0 &ndash; Thirukkural Payilvom: confirmation of selection
+      and one-month internship &ndash; reg.</p>
+
+    <p>Dear {{ name }},</p>
+    <p>We are pleased to inform you that you have been selected as one of the {{ selected or '1,000' }} students of
+      <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural Payilvom</b> on the basis of the online test on the Thirukkural
+      {%- if test_date %} held on {{ test_date }}{% endif %}.{% if rank %} Your rank in the merit list is <b>{{ rank }}</b>.{% endif %}
+      Congratulations!</p>
+    <p>As a selected student, please take note of the following:</p>
+    <ol class="points">
+      <li><b>One-month internship.</b> Your internship and research period on the Thirukkural begins
+        {%- if internship_start %} on {{ internship_start }}{% else %} as announced on the portal{% endif %}
+        {%- if mentor %}, under the guidance of your faculty mentor, {{ mentor }}{% endif %}.</li>
+      <li><b>Live sessions.</b> Attend the online orientation lectures and the live question-and-answer sessions
+        {%- if lang_name %} in {{ lang_name }}{% endif %}; their schedule is published on the portal.</li>
+      <li><b>Research paper.</b> Submit your research paper on the Thirukkural through the portal
+        {%- if papers_due %} on or before {{ papers_due }}{% endif %}.</li>
+      <li><b>Presentation.</b> Make a presentation on the Thirukkural in your institution, on a date of your choice
+        {%- if present_due %}, on or before {{ present_due }}{% endif %}.</li>
+      <li><b>Stipend.</b> A stipend of &#8377;10,000 for the internship will be paid by bank transfer to your own
+        bank account. Give your bank details in the candidate portal{% if stipend_last %} on or before {{ stipend_last }}{% endif %};
+        the steps are at {{ host }}/stipend.</li>
+    </ol>
+    {% if kts_start and kts_end %}<p>Kashi Tamil Sangamam 5.0 will be held from {{ kts_start }} to {{ kts_end }}.</p>{% endif %}
+    <p>We wish you a rewarding journey with the Thirukkural.</p>
+
+    <div class="sign">
+      <span>Yours sincerely,</span>
+      <div class="ink">{% if signature %}<img src="{{ signature }}" alt="Signature">{% endif %}</div>
+      <b>{{ signatory }}</b>
+      {% if designation %}<span>{{ designation }}</span>{% endif %}
+      <span>{{ organiser }}</span>
+    </div>
+
+    {% if college %}<p class="copy">Copy to: The Principal / Head of the Institution, {{ college }}{% if place %}, {{ place }}{% endif %}, for information.</p>{% endif %}
+  </section>
+
+  <footer class="foot">
+    <div class="qr">{% if qr %}<img src="{{ qr }}" alt="QR code of this letter">{% endif %}</div>
+    <p>This letter is issued electronically through the portal of Kashi Tamil Sangamam 5.0. Scan the QR code to
+      verify it on {{ host }}.{% if email or phone %}<br>For queries: {% if email %}{{ email }}{% endif %}{% if email and phone %} &middot; {% endif %}{% if phone %}{{ phone }}{% endif %}{% endif %}</p>
+  </footer>
+</main>
+<script type="application/json" id="i18n">{}</script>
+<script src="{{ url_for('static', filename='js/portal.js') }}?v=10" defer></script>
+</body>
+</html>

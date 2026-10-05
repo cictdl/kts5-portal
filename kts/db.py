@@ -419,6 +419,12 @@ DEFAULT_SETTINGS = {
     "cert.on": "1",
     # and every student selected in the published merit list a certificate of merit
     "cert.merit_on": "1",
+    # the confirmation letter of the selected students, and the dates of the internship it names
+    "letter.on": "1",
+    "letter.date": "2026-10-22",
+    "internship.start": "2026-10-23",
+    "papers.due": "2026-11-05",
+    "present.due": "2026-11-15",
     "stats.public": "1",
     "site.draft_note_on": "1",
     "home.pm_on": "1",

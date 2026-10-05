@@ -379,3 +379,107 @@ def test_certificates_of_merit_are_switched_off_and_on_and_a_sample_is_shown():
     assert "Waiting List" in sample and "for securing a place on the waiting list" in sample
     sample = admin.get("/console/certificate/sample").get_data(as_text=True)
     assert "OF RECOGNITION" in sample and "KTS5/CR/2026/000000" in sample
+
+
+# ---- confirmation letter -------------------------------------------------------------------------
+
+def _letter_link(app, row):
+    from kts.certificate import letter_link
+    from kts.db import query
+    with app.test_request_context():
+        with app.app_context():
+            return letter_link(query("SELECT * FROM applications WHERE id = ?", (row["id"],), one=True))
+
+
+def test_a_selected_student_has_a_confirmation_letter():
+    app = make_app(ADMIN_PASSWORD=None)
+    _client, row = _registered(app)
+    from kts.db import execute
+    with app.app_context():
+        execute("UPDATE applications SET mentor_name = ?, mentor_designation = ? WHERE id = ?",
+                ("Dr. K. Mentor", "Assistant Professor of Tamil", row["id"]))
+    _selected(app, row, rank=12)
+    link = _letter_link(app, row)
+    assert link and link.startswith(f"/letter/{row['app_no']}/")
+    r = app.test_client().get(link)
+    assert r.status_code == 200
+    page = r.get_data(as_text=True)
+    number = "CICT/KTS5/CL/" + "/".join(row["app_no"].split("-")[1:])
+    assert f"Ref. No. <b>{number}</b>" in page and "Date: <b>22 October 2026</b>" in page
+    assert "<b>Student Certificate 1</b>" in page and "Government College Thrissur" in page and f"Application No. {row['app_no']}" in page
+    assert "confirmation of selection" in page and "Dear Student Certificate 1," in page
+    assert "one of the 1,000 students" in page and "held on 19 October 2026" in page and "<b>12</b>" in page
+    assert "begins on 23 October 2026, under the guidance of your faculty mentor, Dr. K. Mentor, Assistant Professor of Tamil." in page
+    assert "sessions in Hindi;" in page and "on or before 05 November 2026" in page and "on or before 15 November 2026" in page
+    assert "&#8377;10,000" in page and "from 28 November 2026 to 12 December 2026" in page
+    assert "<b>Prof. R. Chandrasekaran</b>" in page and "Copy to: The Principal / Head of the Institution, Government College Thrissur" in page
+    assert "Chemmozhi Salai, Perumbakkam" in page
+    assert r.headers["X-Robots-Tag"] == "noindex, nofollow" and "no-store" in r.headers["Cache-Control"]
+    assert "<script>" not in page and not re.search(r"\son[a-z]+=", page)
+    # a seal of the letter opens no certificate, and the other way round
+    seal = link.rsplit("/", 1)[1]
+    assert app.test_client().get(f"/certificate/{row['app_no']}/{seal}").status_code == 404
+    assert app.test_client().get(f"/letter/{row['app_no']}/{_merit_link(app, row).rsplit('/', 1)[1]}").status_code == 404
+
+
+def test_the_dates_of_the_letter_follow_the_settings():
+    app = make_app(ADMIN_PASSWORD=None)
+    _client, row = _registered(app)
+    _selected(app, row)
+    for key, value in (("letter.date", "2026-10-24"), ("internship.start", "2026-10-26"), ("papers.due", "2026-11-09"),
+                       ("present.due", ""), ("stipend.last_date", "2026-11-20")):
+        _set(app, key, value)
+    page = app.test_client().get(_letter_link(app, row)).get_data(as_text=True)
+    assert "Date: <b>24 October 2026</b>" in page and "begins on 26 October 2026" in page
+    assert "on or before 09 November 2026" in page and "on or before 20 November 2026" in page
+    # without a last date the presentation is "on a date of your choice"
+    assert "on a date of your choice." in page
+
+
+@pytest.mark.parametrize("outcome, published", [("selected", "0"), ("waitlisted", "1"), ("not_selected", "1")])
+def test_no_letter_before_the_list_is_published_or_outside_the_selected(outcome, published):
+    app = make_app(ADMIN_PASSWORD=None)
+    _client, row = _registered(app)
+    _selected(app, row, outcome=outcome, published=published)
+    assert _letter_link(app, row) is None
+    from kts.certificate import _seal
+    with app.app_context():
+        seal = _seal(row["app_no"], "letter")
+    assert app.test_client().get(f"/letter/{row['app_no']}/{seal}").status_code == 404
+
+
+def test_the_student_finds_the_letter_on_the_status_page():
+    app = make_app(ADMIN_PASSWORD=None)
+    _client, row = _registered(app)
+    _selected(app, row)
+    link = _letter_link(app, row)
+    lookup = app.test_client()
+    lookup.get("/status")
+    with lookup.session_transaction() as s:
+        token = s["_csrf"]
+    status = lookup.post("/status", data={"_csrf": token, "app_no": row["app_no"], "dob": "2004-05-06",
+                                          "last4": row["mobile"][-4:]}).get_data(as_text=True)
+    assert f'href="{link}"' in status and status.index(link) < status.index(_merit_link(app, row))
+    home = Path(__file__).resolve().parent.parent / "templates" / "candidate" / "home.html"
+    assert "letter_link(cand)" in home.read_text(encoding="utf-8")
+
+
+def test_letters_are_switched_off_and_on_and_a_sample_is_shown():
+    app = make_app(ADMIN_PASSWORD=None)
+    _client, row = _registered(app)
+    _selected(app, row)
+    link = _letter_link(app, row)
+    admin = _staff(app, "admin@tests.example", "admin")
+    page = admin.get("/console/certificate").get_data(as_text=True)
+    assert "Confirmation letters" in page and "to 1 selected student(s)" in page
+    with admin.session_transaction() as s:
+        token = s["_csrf"]
+    admin.post("/console/certificate", data={"_csrf": token, "action": "letter_off"})
+    assert app.test_client().get(link).status_code == 404
+    admin.post("/console/certificate", data={"_csrf": token, "action": "letter_on"})
+    assert app.test_client().get(link).status_code == 200
+    sample = admin.get("/console/certificate/sample?kind=letter").get_data(as_text=True)
+    assert "Sample Student Name" in sample and "CICT/KTS5/CL/2026/000000" in sample and "Dr. A. Sample" in sample
+    from kts.admin import SETTING_GROUPS
+    group = [items for title, items in SETTING_GROUPS if title.startswith("Internship")]
+    assert [key for key, _l, _k in group[0]] == ["letter.date", "internship.start", "papers.due", "present.due"]

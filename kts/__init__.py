@@ -165,6 +165,7 @@ def create_app(config_object=Config):
             "get_setting": db.get_setting,
             "certificate_link": certificate.certificate_link,
             "merit_link": certificate.merit_link,
+            "letter_link": certificate.letter_link,
             "banner_state": banner_state,
             "social_links": db.social_links,
             "nodal_officers": db.nodal_officers,

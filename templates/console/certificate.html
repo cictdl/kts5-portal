@@ -1,5 +1,5 @@
 {% extends "console/base.html" %}
-{% block title %}Certificates{% endblock %}
+{% block title %}Certificates and letters{% endblock %}
 {% block content %}
 <div class="two-col" style="align-items:start">
   <div>
@@ -14,6 +14,20 @@
         {% if on %}<button class="btn sm ghost" name="action" value="off" data-confirm="Stop issuing certificates? The links stop working until they are issued again.">Stop issuing</button>
         {% else %}<button class="btn sm" name="action" value="on">Issue certificates</button>{% endif %}
         <a class="btn sm secondary" href="{{ url_for('admin.certificate_sample') }}" target="_blank" rel="noopener">Open a sample certificate ↗</a>
+      </form>
+    </div>
+    <div class="card accent" style="margin-top:14px">
+      <h3>Confirmation letters</h3>
+      <p>Every selected student receives a letter that confirms the selection and names the internship, the live
+        sessions, the research paper, the presentation and the stipend, once the merit list is published. A waitlisted
+        student receives one when moved up into the selected list. The dates in the letter are those of
+        <a href="{{ url_for('admin.settings_page') }}">Settings</a> (Internship).</p>
+      <p>{% if letter_on %}<span class="pill green">issued</span>{% if published %} to {{ '{:,}'.format(chosen) }} selected student(s){% else %} once the merit list is published{% endif %}{% else %}<span class="pill grey">not issued</span>{% endif %}</p>
+      <form method="post" class="btn-row">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        {% if letter_on %}<button class="btn sm ghost" name="action" value="letter_off" data-confirm="Stop issuing confirmation letters? The links stop working until they are issued again.">Stop issuing</button>
+        {% else %}<button class="btn sm" name="action" value="letter_on">Issue confirmation letters</button>{% endif %}
+        <a class="btn sm secondary" href="{{ url_for('admin.certificate_sample', kind='letter') }}" target="_blank" rel="noopener">Open a sample letter ↗</a>
       </form>
     </div>
     <div class="card accent" style="margin-top:14px">

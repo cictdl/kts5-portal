@@ -43,10 +43,11 @@
       </div>
       {% set social = social_links() %}
       {% if social %}
+      {% from "social_icons.html" import social_icon %}
       <div class="card" style="margin-top:14px">
         <h3>{{ t('site.follow') }}</h3>
         <div class="btn-row" dir="ltr" style="flex-wrap:wrap;gap:8px">
-          {% for name, address in social %}<a class="btn xs secondary" href="{{ address }}" target="_blank" rel="noopener noreferrer">{{ name }}</a>{% endfor %}
+          {% for name, address in social %}<a class="btn xs secondary" href="{{ address }}" target="_blank" rel="noopener noreferrer">{{ social_icon(name) }}{{ name }}</a>{% endfor %}
         </div>
       </div>
       {% endif %}

@@ -25,7 +25,8 @@ LINKS = [
 
 def _footer_links(page):
     row = page.split('class="langs social"')[1].split("</ul>")[0]
-    return re.findall(r'<a href="([^"]+)" target="_blank" rel="noopener noreferrer">([^<]+)</a>', row)
+    # each link carries a small icon (an inline svg) in front of its name
+    return re.findall(r'<a href="([^"]+)" target="_blank" rel="noopener noreferrer">(?:<svg class="si si-[a-z]+".*?</svg>)?([^<]+)</a>', row, re.S)
 
 
 def test_the_nine_links_are_the_settings():
@@ -93,3 +94,23 @@ def test_the_settings_page_offers_them():
     assert len(group) == 1 and [key for key, _label, _kind in group[0]] == [
         "social.x", "social.instagram", "social.youtube", "social.facebook", "social.threads", "social.whatsapp",
         "social.linkedin", "social.telegram", "social.arattai"]
+
+
+def test_every_link_carries_the_icon_of_its_service():
+    from kts.db import SOCIAL_LINKS
+    page = make_app(ADMIN_PASSWORD=None).test_client().get("/contact?lang=en").get_data(as_text=True)
+    for _key, name, address in SOCIAL_LINKS:
+        link = page[page.index(f'href="{address}"'):]
+        link = link[:link.index("</a>")]
+        assert f'<svg class="si si-{name.lower()}"' in link and 'aria-hidden="true"' in link, name
+        # the icon is drawn in the page: nothing is loaded from the service
+        assert "<img" not in link and "http" not in link.split(">", 1)[1]
+    footer = page.split('class="langs social"')[1].split("</ul>")[0]
+    assert footer.count("<svg") == len(SOCIAL_LINKS)
+    # a service the portal does not know gets the plain round icon
+    from kts.db import set_setting
+    app = make_app(ADMIN_PASSWORD=None)
+    with app.app_context():
+        set_setting("social.x", "")
+    page = app.test_client().get("/contact?lang=en").get_data(as_text=True)
+    assert 'si-x' not in page and page.count('class="si si-') == len(SOCIAL_LINKS) * 2 - 2

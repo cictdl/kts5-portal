@@ -27,11 +27,11 @@
       <div class="card accent">
         <h3>{{ t('home.journey') }}</h3>
         <div class="timeline" style="margin-top:14px">
-          <div class="item"><b><bdi>KTS 1.0 · {{ '2022-11-16'|date }} – {{ '2022-12-15'|date }}</bdi></b><br><span class="small dim">{{ t('about.j1') }}</span></div>
-          <div class="item"><b><bdi>KTS 2.0 · {{ '2023-12-17'|date }} – {{ '2023-12-30'|date }}</bdi></b><br><span class="small dim">{{ t('about.j2') }}</span></div>
-          <div class="item"><b><bdi>KTS 3.0 · {{ '2025-02-15'|date }} – {{ '2025-02-24'|date }}</bdi></b><br><span class="small dim">{{ t('about.j3') }}</span></div>
-          <div class="item"><b><bdi>KTS 4.0 · 2025 – 2026</bdi></b><br><span class="small dim">{{ t('about.j4') }}</span></div>
-          <div class="item"><b><bdi>KTS 5.0 · 2026</bdi></b><br><span class="small dim">{{ t('about.j5') }}</span></div>
+          <div class="item"><b><a href="https://www.pib.gov.in/PressReleasePage.aspx?PRID=1877283" target="_blank" rel="noopener"><bdi>KTS 1.0 · {{ '2022-11-16'|date }} – {{ '2022-12-16'|date }}</bdi> ↗</a></b><br><span class="small dim">{{ t('about.j1') }}</span></div>
+          <div class="item"><b><a href="https://www.pib.gov.in/PressReleasePage.aspx?PRID=1987518" target="_blank" rel="noopener"><bdi>KTS 2.0 · {{ '2023-12-17'|date }} – {{ '2023-12-30'|date }}</bdi> ↗</a></b><br><span class="small dim">{{ t('about.j2') }}</span></div>
+          <div class="item"><b><a href="https://www-pib-gov-in.translate.goog/PressReleasePage.aspx?PRID=2103308&amp;reg=48&amp;lang=2&amp;_x_tr_sl=en&amp;_x_tr_tl=ta&amp;_x_tr_hl=ta&amp;_x_tr_pto=tc" target="_blank" rel="noopener"><bdi>KTS 3.0 · {{ '2025-02-15'|date }} – {{ '2025-02-24'|date }}</bdi> ↗</a></b><br><span class="small dim">{{ t('about.j3') }}</span></div>
+          <div class="item"><b><a href="https://www.pib.gov.in/PressNoteDetails.aspx?id=156270&amp;NoteId=156270&amp;ModuleId=3&amp;reg=6&amp;lang=1" target="_blank" rel="noopener"><bdi>KTS 4.0 · 2025 – 2026</bdi> ↗</a></b><br><span class="small dim">{{ t('about.j4') }}</span></div>
+          <div class="item"><b><a href="{{ url_for('public.schedule') }}"><bdi>KTS 5.0 · {% if get_setting('kts.start') and get_setting('kts.end') %}{{ get_setting('kts.start')|date }} – {{ get_setting('kts.end')|date }}{% else %}2026{% endif %}</bdi></a></b><br><span class="small dim">{{ t('about.j5') }}</span></div>
         </div>
       </div>
       <div class="card" style="margin-top:14px">

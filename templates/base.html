@@ -130,9 +130,10 @@
   </div>
   {% set social = social_links() %}
   {% if social %}
+  {% from "social_icons.html" import social_icon %}
   <div class="langs social"><div class="wrap">
     <span class="lbl">{{ t('site.follow') }}</span>
-    <ul dir="ltr">{% for name, address in social %}<li><a href="{{ address }}" target="_blank" rel="noopener noreferrer">{{ name }}</a></li>{% endfor %}</ul>
+    <ul dir="ltr">{% for name, address in social %}<li><a href="{{ address }}" target="_blank" rel="noopener noreferrer">{{ social_icon(name) }}{{ name }}</a></li>{% endfor %}</ul>
   </div></div>
   {% endif %}
   <div class="langs"><div class="wrap">

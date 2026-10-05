@@ -1,6 +1,7 @@
 """
 Certificates signed by the Director of CICT: of recognition, for every student who registers,
-and of merit, for the students of the published merit list, selected or waitlisted.
+and of merit, for the students of the published merit list, selected or waitlisted; and the
+letter that confirms the selection of a selected student (/letter/<application number>/<seal>).
 
 A certificate is a page of the portal, laid out as an A4 sheet (landscape) that the student
 prints or saves as PDF: /certificate/<application number>/<seal> and
@@ -37,7 +38,7 @@ ORGANISER = "Central Institute of Classical Tamil, Chennai"
 # the students of the merit list who receive a certificate of merit
 MERIT_OUTCOMES = ("selected", "waitlisted")
 # the two kinds: the code in the number of a certificate, and what its seal is made from
-KINDS = {"recognition": ("CR", "kts5-certificate"), "merit": ("CM", "kts5-merit")}
+KINDS = {"recognition": ("CR", "kts5-certificate"), "merit": ("CM", "kts5-merit"), "letter": ("CL", "kts5-letter")}
 
 
 def _seal(app_no, kind="recognition"):
@@ -81,6 +82,26 @@ def merit_link(app, external=False):
     if external:
         return f"{current_app.config['BASE_URL'].rstrip('/')}/certificate/merit/{app['app_no']}/{seal}"
     return url_for("public.merit_certificate", app_no=app["app_no"], seal=seal)
+
+
+def letter_issued(app, settings=None):
+    """
+    True when this application has a confirmation letter: issuing is on, the merit list is
+    published and the student is selected in it (a waitlisted student receives one when moved up).
+    """
+    settings = settings if settings is not None else all_settings()
+    return (settings.get("letter.on") == "1" and settings.get("merit.published") == "1"
+            and bool(app["app_no"]) and app["status"] == "selected")
+
+
+def letter_link(app, external=False):
+    """Address of the confirmation letter of an application, or None when it has none."""
+    if app is None or not letter_issued(app):
+        return None
+    seal = _seal(app["app_no"], "letter")
+    if external:
+        return f"{current_app.config['BASE_URL'].rstrip('/')}/letter/{app['app_no']}/{seal}"
+    return url_for("public.confirmation_letter", app_no=app["app_no"], seal=seal)
 
 
 def number_of(app_no, kind="recognition"):
@@ -163,6 +184,45 @@ def merit_certificate(app_no, seal):
     return response
 
 
+def _letter(app, rank, link):
+    """The confirmation letter of an application (or of the invented student of the sample)."""
+    from . import kural as K
+    settings = all_settings()
+    selected = str(settings.get("merit.select_count") or "").strip()
+    mentor = (app["mentor_name"] or "").strip()
+    if mentor and (app["mentor_designation"] or "").strip():
+        mentor = f"{mentor}, {app['mentor_designation'].strip()}"
+    info = K.lang_info(app["pref_lang"]) if app["pref_lang"] else None
+    return render_template(
+        "public/letter.html", name=app["full_name"], college=app["college_name"], place=app["college_state"] or app["state"],
+        app_no=app["app_no"], number="/".join(["CICT"] + number_of(app["app_no"], "letter").split("/")),
+        letter_date=_long_date(settings.get("letter.date")) or fmt_date(now_ist()), rank=rank,
+        selected="{:,}".format(int(selected)) if selected.isdigit() and int(selected) > 0 else "",
+        test_date=_long_date(settings.get("exam.date")), internship_start=_long_date(settings.get("internship.start")),
+        papers_due=_long_date(settings.get("papers.due")), present_due=_long_date(settings.get("present.due")),
+        stipend_last=_long_date(settings.get("stipend.last_date")),
+        kts_start=_long_date(settings.get("kts.start")), kts_end=_long_date(settings.get("kts.end")),
+        mentor=mentor, lang_name=info["name"] if info else "",
+        qr=qr_data_uri(link), link=link, host=urlsplit(link).netloc, signature=signature_data(),
+        signatory=(settings.get("director.name") or "").strip(),
+        designation=(settings.get("director.designation") or "").strip(), organiser=ORGANISER,
+        address=(settings.get("contact.address") or "").strip(), email=(settings.get("contact.email") or "").strip(),
+        phone=(settings.get("contact.phone") or "").strip())
+
+
+@public.route("/letter/<app_no>/<seal>")
+def confirmation_letter(app_no, seal):
+    app = query("SELECT * FROM applications WHERE app_no = ?", (app_no,), one=True)
+    if app is None or not hmac.compare_digest(seal, _seal(app_no, "letter")) or not letter_issued(app):
+        abort(404)
+    entry = query("SELECT rank FROM merit_list WHERE application_id = ? ORDER BY id DESC LIMIT 1", (app["id"],), one=True)
+    response = current_app.make_response(_letter(app, entry["rank"] if entry else app["exam_rank"],
+                                                 letter_link(app, external=True)))
+    response.headers["X-Robots-Tag"] = "noindex, nofollow"
+    response.headers["Cache-Control"] = "private, no-store"
+    return response
+
+
 # ---- console ------------------------------------------------------------------
 
 @console.route("/certificate", methods=["GET", "POST"])
@@ -177,6 +237,11 @@ def certificate_settings():
             audit("certificate_" + action, "settings", None, user=user, ip=client_ip())
             flash("Certificates of recognition are issued." if action == "on"
                   else "Certificates of recognition are no longer issued.", "success")
+        elif action in ("letter_on", "letter_off"):
+            set_setting("letter.on", "1" if action == "letter_on" else "0")
+            audit("certificate_" + action, "settings", None, user=user, ip=client_ip())
+            flash("Confirmation letters are issued." if action == "letter_on"
+                  else "Confirmation letters are no longer issued.", "success")
         elif action in ("merit_on", "merit_off"):
             set_setting("cert.merit_on", "1" if action == "merit_on" else "0")
             audit("certificate_" + action, "settings", None, user=user, ip=client_ip())
@@ -211,13 +276,22 @@ def certificate_settings():
     return render_template("console/certificate.html", on=settings.get("cert.on") == "1", signature=signature_data(),
                            signatory=settings.get("director.name") or "", designation=settings.get("director.designation") or "",
                            count=counts["n"], merit_on=settings.get("cert.merit_on") == "1",
-                           published=settings.get("merit.published") == "1", selected=selected["n"])
+                           published=settings.get("merit.published") == "1", selected=selected["n"],
+                           letter_on=settings.get("letter.on") == "1",
+                           chosen=query("SELECT COUNT(*) AS n FROM applications WHERE status = 'selected'", one=True)["n"])
 
 
 @console.route("/certificate/sample")
 @login_required("settings")
 def certificate_sample():
     """A certificate as a student receives it (?kind=merit for one of merit), with the details of an invented student."""
+    if request.args.get("kind") == "letter":
+        sample = {"full_name": "Sample Student Name", "college_name": "Government Arts College, Sample Town",
+                  "college_state": "Tamil Nadu", "state": "Tamil Nadu", "app_no": "KTS5-2026-000000", "pref_lang": "hi",
+                  "mentor_name": "Dr. A. Sample", "mentor_designation": "Associate Professor of Tamil"}
+        response = current_app.make_response(_letter(sample, 1, current_app.config["BASE_URL"].rstrip("/") + "/"))
+        response.headers["Cache-Control"] = "private, no-store"
+        return response
     kind = "merit" if request.args.get("kind") == "merit" else "recognition"
     response = current_app.make_response(_sheet(
         "Sample Student Name", "Government Arts College, Sample Town", "Tamil Nadu", f"KTS5/{KINDS[kind][0]}/2026/000000",
