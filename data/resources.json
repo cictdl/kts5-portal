@@ -25,5 +25,8 @@
    "url": "/static/yappu/yappu-quick-guide.pdf", "featured": 0, "sort_order": 15},
   {"key": "kural-bridge", "title": "குறள் பாலம் · Kural Bridge", "category": "app", "lang": "",
    "description": "A word game in 22 languages for the students of Kashi Tamil Sangamam: read a Thirukkural couplet in your own language, then build the Tamil original again word by word. Every Tamil word is also written in your own script, and its meaning appears as you place it. Free, no account, works offline.",
-   "url": "https://cictdl.github.io/index.html/kural-app/bridge/", "featured": 1, "sort_order": 9}
+   "url": "https://cictdl.github.io/index.html/kural-app/bridge/", "featured": 1, "sort_order": 9},
+  {"key": "classroom-quiz", "title": "வகுப்பறை வினாடி வினா · Classroom Quiz", "category": "app", "lang": "",
+   "description": "A live Thirukkural quiz for a whole class, in 23 languages: the questions on the projector, the answers on the phones of the students, who join with a six-digit code and their name, without an account. The fastest correct answers earn the most points; the couplet, a leaderboard and a podium follow. Hosted by the students selected for KTS 5.0 and by CICT staff.",
+   "url": "/quiz", "featured": 0, "sort_order": 8}
 ]

@@ -17,7 +17,8 @@ CROSSWORD = "https://cictdl.github.io/index.html/kural-app/kattam/index.html"
 YAPPU = "/static/yappu/app/index.html"
 GUIDE = "/static/yappu/yappu-quick-guide.pdf"
 BRIDGE = "https://cictdl.github.io/index.html/kural-app/bridge/"
-ALL = [PLAY, WEB, CORPUS, ARCHIVES, RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE]
+QUIZ = "/quiz"
+ALL = [PLAY, WEB, CORPUS, ARCHIVES, RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ]
 
 
 def _restart(app):
@@ -33,7 +34,7 @@ def _rows(app):
 
 def test_the_seed_file_is_complete():
     assert [s["url"] for s in SEEDS] == ALL
-    assert [s["category"] for s in SEEDS] == ["app", "app", "corpus", "corpus", "app", "app", "app", "study", "app"]
+    assert [s["category"] for s in SEEDS] == ["app", "app", "corpus", "corpus", "app", "app", "app", "study", "app", "app"]
     for s in SEEDS:
         assert s["key"] and s["title"] and s["description"]
     assert len({s["key"] for s in SEEDS}) == len(SEEDS)
@@ -45,8 +46,9 @@ def test_a_new_installation_carries_the_app():
     assert [r["url"] for r in rows] == ALL
     assert all(r["published"] == 1 for r in rows)
     # seven chosen for the home page, which shows six in the order of sort_order: Kural Bridge first,
-    # the Digital Archives in the repository only; the two of the prosody app are in the repository only
-    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1]
+    # the Digital Archives in the repository only; the two of the prosody app and the classroom quiz
+    # are in the repository only, the quiz first of them
+    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1, 0]
     client = app.test_client()
     page = client.get("/resources").get_data(as_text=True)
     for s in SEEDS:
@@ -115,8 +117,8 @@ def test_entries_added_later_reach_a_database_that_has_the_first_ones():
     import sqlite3
     app = make_app(ADMIN_PASSWORD=None)
     conn = sqlite3.connect(str(app.config["DATABASE"]))
-    later = ["kural-run", "kural-crossword", "yappu-kalam", "yappu-quick-guide", "kural-bridge"]
-    conn.execute("DELETE FROM resources WHERE url IN (?, ?, ?, ?, ?)", (RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE))
+    later = ["kural-run", "kural-crossword", "yappu-kalam", "yappu-quick-guide", "kural-bridge", "classroom-quiz"]
+    conn.execute("DELETE FROM resources WHERE url IN (?, ?, ?, ?, ?, ?)", (RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ))
     conn.execute("DELETE FROM settings WHERE key IN (%s)" % ", ".join("?" * len(later)), ["seed.resource." + k for k in later])
     conn.commit()
     conn.close()
@@ -166,3 +168,21 @@ def test_an_address_of_the_portal_keeps_its_prefix():
     rid = {r["url"]: r["id"] for r in _rows(app)}[GUIDE]
     r = app.test_client().get(f"/kts5/resources/{rid}")
     assert r.status_code == 302 and r.headers["Location"] == "/kts5" + GUIDE
+
+
+def test_the_classroom_quiz_is_in_the_resources():
+    app = make_app(ADMIN_PASSWORD=None)
+    client = app.test_client()
+    page = client.get("/resources?lang=en").get_data(as_text=True)
+    assert "வகுப்பறை வினாடி வினா · Classroom Quiz" in page
+    # in the repository, first of the entries that are not on the home page; not on the home page
+    assert page.find("Classroom Quiz") > page.find("Digital Archives") and page.find("Classroom Quiz") < page.find("Yappu Kalam")
+    assert "Classroom Quiz" not in client.get("/?lang=en").get_data(as_text=True)
+    rid = {r["url"]: r["id"] for r in _rows(app)}[QUIZ]
+    r = client.get(f"/resources/{rid}")
+    assert r.status_code == 302 and r.headers["Location"] == QUIZ
+    assert client.get(QUIZ).status_code == 200
+    # under a path prefix the address keeps it
+    own = make_app(ADMIN_PASSWORD=None, URL_PREFIX="/kts5")
+    rid = {r["url"]: r["id"] for r in _rows(own)}[QUIZ]
+    assert own.test_client().get(f"/kts5/resources/{rid}").headers["Location"] == "/kts5" + QUIZ

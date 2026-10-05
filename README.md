@@ -181,7 +181,8 @@ at `/quiz` with the code and a name, without an account. Each question is shown 
 seconds, then with its four answers (coloured, each with its own shape) and the time; a correct
 answer earns 1,000 points at once and 500 at the last moment. The answer, the couplet in Tamil and
 in the language of the quiz, a leaderboard after each question and a podium at the end follow; the
-host downloads the results as CSV. The pages are in the 23 interface languages, in a light theme.
+host downloads the results as CSV. The pages are in the 23 interface languages, in a light theme. The quiz stands in the Resources
+(from 1.2.9, seed `classroom-quiz` of `data/resources.json`).
 
 The questions are made from the corpus when the quiz is created, in the kinds of the question
 generator of the test; they are never those of the question bank. The screens ask the portal for
