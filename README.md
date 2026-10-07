@@ -180,6 +180,15 @@ page). The image of the signature is uploaded in *Console → Certificate*
 `.jpg`), outside the web folder; it is written into each certificate page
 itself. Without it the certificates show the name above an empty line.
 
+## Reels and shorts
+
+From 1.2.23 the programme page lists, under the card "Reels and shorts" of part II (`/programme#reels`),
+the short videos of CICT on YouTube in which scholars and students explain the Thirukkural in their
+own languages. The list is `data/reels.json` (YouTube id, language in English, its own name,
+presenter), in the order of CICT's list; the page groups it by language and links each video to
+`https://www.youtube.com/shorts/<id>`. To add a video, add a line to the file. Only YouTube links
+are listed, not Facebook ones.
+
 ## Nomination at registration
 
 From 1.2.22 registration follows the nomination process of the Ministry: the Faculty

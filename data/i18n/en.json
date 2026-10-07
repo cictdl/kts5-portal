@@ -799,5 +799,9 @@
   "reg.nomination": "Nomination form, signed by the Head of the Institution",
   "reg.nomination_help": "The nomination form of KTS 5.0, filled in, signed and sealed by the Director, Registrar, Principal or Head of the Institution; scanned as PDF, JPG or PNG, up to 4 MB.",
   "reg.nomination_download": "Download the nomination form",
-  "reg.err_nomination": "Upload the signed nomination form as PDF, JPG or PNG under 4 MB."
+  "reg.err_nomination": "Upload the signed nomination form as PDF, JPG or PNG under 4 MB.",
+  "prog.reels.d": "Short videos of the Central Institute of Classical Tamil (CICT) in which scholars and students explain the specialties and greatness of the Thirukkural, written in Tamil by Thiruvalluvar, in their own languages.",
+  "prog.reels.count": "{reels} short videos in {langs} languages",
+  "prog.reels.watch": "Watch on YouTube",
+  "prog.reels.channel": "All the shorts on the YouTube channel of CICT"
 }

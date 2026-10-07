@@ -38,9 +38,26 @@
   <h2 style="margin-top:36px"><span class="pill kumkum">II</span> {{ t('prog.part2') }}</h2>
   <div class="grid grid-2" style="margin-top:14px">
     {% for n in range(1, 11) %}
-    <div class="card"><h3>{{ t('prog.a%d.t' % n) }}</h3><p class="small dim">{{ t('prog.a%d.d' % n) }}</p></div>
+    <div class="card"><h3>{{ t('prog.a%d.t' % n) }}</h3><p class="small dim">{{ t('prog.a%d.d' % n) }}</p>{% if n == 6 %}
+      <a class="btn sm secondary" href="#reels">▶ {{ t('prog.reels.count')|replace('{reels}', reels.count|string)|replace('{langs}', reels.langs|length|string) }}</a>{% endif %}</div>
     {% endfor %}
   </div>
+
+  <h3 id="reels" style="margin-top:28px">{{ t('prog.a6.t') }}</h3>
+  <p class="dim" style="max-width:72ch">{{ t('prog.reels.d') }}</p>
+  <p><span class="pill saffron">{{ t('prog.reels.count')|replace('{reels}', reels.count|string)|replace('{langs}', reels.langs|length|string) }}</span></p>
+  <div class="grid grid-3 reels" style="margin-top:14px">
+    {% for g in reels.langs %}
+    <div class="card reel">
+      <h3 style="margin-bottom:6px"><bdi>{{ g.native }}</bdi>{% if g.native != g.name %} <span class="muted small" lang="en">· {{ g.name }}</span>{% endif %}</h3>
+      <ul style="list-style:none;margin:0;padding:0">
+        {% for v in g.videos %}<li style="padding:5px 0;border-top:1px solid var(--border)"><a href="https://www.youtube.com/shorts/{{ v.id }}" target="_blank" rel="noopener" title="{{ t('prog.reels.watch') }}"><span aria-hidden="true">▶</span> <bdi lang="en" dir="ltr">{{ v.presenter }}</bdi></a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
+  </div>
+  <p style="margin-top:14px"><a class="btn sm secondary" href="https://www.youtube.com/@cicttamil/shorts" target="_blank" rel="noopener">{{ t('prog.reels.channel') }} ↗</a></p>
 
   <h2 style="margin-top:36px"><span class="pill kumkum">III</span> {{ t('prog.part3') }}</h2>
   <div class="grid grid-3" style="margin-top:14px">

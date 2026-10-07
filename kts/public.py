@@ -177,9 +177,23 @@ def about():
     return render_template("public/about.html")
 
 
+@lru_cache(maxsize=1)
+def reels():
+    """
+    The short videos of CICT on YouTube in which the Thirukkural is explained in another language
+    (data/reels.json, in the order of the list of CICT), grouped by language.
+    """
+    rows = json.loads((current_app.config["DATA_DIR"] / "reels.json").read_text(encoding="utf-8"))
+    groups = {}
+    for row in rows:
+        group = groups.setdefault(row["lang"], {"name": row["lang"], "native": row["native"], "videos": []})
+        group["videos"].append({"id": row["id"], "presenter": row["presenter"]})
+    return {"count": len(rows), "langs": tuple(groups.values())}
+
+
 @bp.route("/programme")
 def programme():
-    return render_template("public/programme.html", settings=all_settings())
+    return render_template("public/programme.html", settings=all_settings(), reels=reels())
 
 
 @bp.route("/stipend")
