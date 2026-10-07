@@ -79,7 +79,8 @@ def test_the_message_is_in_the_language_of_the_page(lang):
             "email": "m@tests.example", "state": "Tamil Nadu", "college_name": "Government College",
             "college_type": "Government college", "college_state": "Tamil Nadu", "course_level": "Undergraduate",
             "year_of_study": "2nd year", "pref_lang": "hi", "declare_true": "1", "declare_participate": "1",
-            "declare_consent": "1", "captcha": "7", "photo": (io.BytesIO(PNG), "p.png"), "idproof": (io.BytesIO(PNG), "i.png")}
+            "declare_consent": "1", "captcha": "7", "photo": (io.BytesIO(PNG), "p.png"), "idproof": (io.BytesIO(PNG), "i.png"),
+            "nomination": (io.BytesIO(PNG), "n.png"), "mentor_email": "mentor@tests.example", "mentor_phone": "9876012345"}
     r = client.post("/register", data=form, content_type="multipart/form-data")
     assert r.status_code == 400
     assert _message(lang) in r.get_data(as_text=True)

@@ -16,5 +16,21 @@
     </div>
     {% endfor %}
   </div>
+
+  <h2 id="nodal" style="margin-top:36px">{{ t('nodal.title') }}</h2>
+  <p class="dim" style="max-width:72ch">{{ t('nodal.intro') }}</p>
+  <div class="table-wrap"><table class="table nodal">
+    <thead><tr><th class="num">#</th><th>{{ t('nodal.col_state') }}</th><th>{{ t('nodal.col_type') }}</th><th>{{ t('nodal.col_hei') }}</th></tr></thead>
+    <tbody>{% for n in nodal %}
+    <tr><td class="num">{{ loop.index }}</td><td>{{ place(n.state) }}</td><td>{{ t('nodal.type_' ~ n.type) }}</td><td lang="en" dir="ltr">{{ n.name }}</td></tr>
+    {% endfor %}</tbody>
+  </table></div>
+
+  <h2 style="margin-top:36px">{{ t('nodal.how_title') }}</h2>
+  <div class="grid grid-2" style="margin-top:14px">
+    {% for n in (1, 2, 3, 4) %}
+    <div class="card flat"><h3>{{ t('nodal.p%d_t' % n) }}</h3><p class="dim small" style="margin:0">{{ t('nodal.p%d' % n) }}</p></div>
+    {% endfor %}
+  </div>
 </div>
 {% endblock %}

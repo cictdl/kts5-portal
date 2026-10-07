@@ -30,7 +30,7 @@ SCRIPTS = {
     "ks": [(0x0600, 0x06FF), (0x0750, 0x077F), (0x08A0, 0x08FF), (0xFB50, 0xFDFF), (0xFE70, 0xFEFF)],
 }
 # Tokens that legitimately stay in Latin letters.
-KEEP = {"kts", "cict", "aishe", "ugc", "aicte", "cbse", "kvs", "jnv", "nvs", "iit", "nit", "iiser", "iiit", "obc", "sc", "st",
+KEEP = {"kts", "cict", "aishe", "ugc", "aicte", "cbse", "kvs", "jnv", "nvs", "iit", "nit", "iim", "hei", "iiser", "iiit", "obc", "sc", "st",
         "ews", "pin", "pdf", "jpg", "png", "csv", "kb", "mb", "whatsapp", "youtube", "excel", "cc", "by", "c", "m", "phil",
         "ph", "d", "ist", "mcq", "qr", "nhai", "aai", "bhu", "bbs", "irctc", "dr", "mu", "email", "otp", "id", "app", "url"}
 

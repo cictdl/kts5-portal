@@ -462,6 +462,8 @@ CREATE TABLE IF NOT EXISTS paper_files (
 LATER_COLUMNS = [
     ("applications", "withdrawn_at", "TEXT"),
     ("applications", "admit_card_no", "TEXT"),
+    # the nomination form signed by the head of the institution, uploaded at registration (1.2.22)
+    ("applications", "nomination_path", "TEXT"),
     # the stipend as it was paid: the setting stipend.amount may change afterwards
     ("bank_details", "paid_amount", "INTEGER"),
     # the stipend per student as a payment list went out: the list is paid at that sum, not at the

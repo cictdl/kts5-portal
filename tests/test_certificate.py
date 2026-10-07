@@ -36,7 +36,10 @@ def _registered(app, n=1, ip="198.51.100.60"):
         "college_name": "Government College Thrissur", "college_type": "Government college", "college_state": "Kerala",
         "course_level": "Undergraduate", "year_of_study": "2nd year", "pref_lang": "hi", "declare_true": "1",
         "declare_participate": "1", "declare_consent": "1", "captcha": "7",
+        "mentor_name": "Dr. K. Mentor", "mentor_designation": "Assistant Professor of Tamil",
+        "mentor_email": f"mentor{n}@tests.example", "mentor_phone": f"98761{n:05d}",
         "photo": (io.BytesIO(PNG), "photo.png"), "idproof": (io.BytesIO(PNG), "id.png"),
+        "nomination": (io.BytesIO(PNG), "nomination.png"),
     }
     r = client.post("/register", data=form, content_type="multipart/form-data", environ_base={"REMOTE_ADDR": ip})
     assert r.status_code == 302 and "/register/done/" in r.headers["Location"], r.status_code

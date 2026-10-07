@@ -2,7 +2,9 @@
 Public site: home, programme, registration, status, repository, notices.
 """
 import json
+import json
 import posixpath
+from functools import lru_cache
 from datetime import date, datetime
 from pathlib import Path
 from urllib.parse import unquote_plus, urlsplit
@@ -208,8 +210,10 @@ FIELDS = [
     "mother_tongue", "pref_lang", "tamil_level", "kural_level", "mentor_name",
     "mentor_designation", "mentor_email", "mentor_phone",
 ]
+# the Faculty Supervisor/Guide is named in the nomination of the institution (1.2.22)
 REQUIRED = ["full_name", "gender", "dob", "mobile", "email", "state", "college_name",
-            "college_type", "college_state", "course_level", "year_of_study", "pref_lang"]
+            "college_type", "college_state", "course_level", "year_of_study", "pref_lang",
+            "mentor_name", "mentor_designation", "mentor_email", "mentor_phone"]
 # Written by the applicant; every applicant fills them in English, whatever the language of the page
 ENGLISH = ["full_name", "address", "district", "college_name", "aishe_code", "college_district", "university",
            "discipline", "roll_no", "mentor_name", "mentor_designation"]
@@ -290,7 +294,7 @@ def register():
                 errors["mobile"] = t("reg.err_dup_mobile")
         # asked before a file is stored: a refused request leaves nothing in the upload folder
         refused = not errors and limiter.blocked("register", ip, current_app.config["RATE_REGISTER_PER_HOUR"], 3600)
-        photo = idproof = None
+        photo = idproof = nomination = None
         if not errors and not refused:
             try:
                 photo = save_upload(request.files.get("photo"), "photos", IMAGE_EXT, current_app.config["PHOTO_MAX_BYTES"])
@@ -300,8 +304,13 @@ def register():
                 idproof = save_upload(request.files.get("idproof"), "idproofs", DOC_EXT, current_app.config["IDPROOF_MAX_BYTES"])
             except ValueError:
                 errors["idproof"] = t("reg.err_idproof")
+            try:
+                nomination = save_upload(request.files.get("nomination"), "nominations", DOC_EXT,
+                                         current_app.config["NOMINATION_MAX_BYTES"])
+            except ValueError:
+                errors["nomination"] = t("reg.err_nomination")
             if errors:
-                _discard(photo, idproof)
+                _discard(photo, idproof, nomination)
         if errors or refused:
             # the limit is no mistake of the applicant: it is said at the top and no field is marked
             flash(t("reg.err_rate") if refused else t("reg.err_fix"), "error")
@@ -310,8 +319,8 @@ def register():
 
         now = utcnow()
         data["college_key"] = college_key(data["college_name"], data["college_state"], data["aishe_code"])
-        cols = FIELDS + ["pwd", "college_key", "photo_path", "idproof_path", "ip", "created_at", "updated_at", "status"]
-        values = [data[f] for f in FIELDS] + [data["pwd"], data["college_key"], photo[0], idproof[0], ip, now, now, "submitted"]
+        cols = FIELDS + ["pwd", "college_key", "photo_path", "idproof_path", "nomination_path", "ip", "created_at", "updated_at", "status"]
+        values = [data[f] for f in FIELDS] + [data["pwd"], data["college_key"], photo[0], idproof[0], nomination[0], ip, now, now, "submitted"]
         row_id = execute(f"INSERT INTO applications({', '.join(cols)}) VALUES({', '.join('?' * len(cols))})", values)
         app_no = make_app_no(row_id)
         execute("UPDATE applications SET app_no = ? WHERE id = ?", (app_no, row_id))
@@ -599,10 +608,16 @@ def schedule():
                            dates=_key_dates(settings))
 
 
+@lru_cache(maxsize=1)
+def nodal_heis():
+    """The State/UT-wise Nodal Higher Educational Institutions (data/nodal_heis.json), as the Ministry listed them."""
+    return tuple(json.loads((current_app.config["DATA_DIR"] / "nodal_heis.json").read_text(encoding="utf-8")))
+
+
 @bp.route("/partners")
 def partners():
     rows = query("SELECT * FROM agencies WHERE active = 1 ORDER BY sort_order, name")
-    return render_template("public/partners.html", rows=rows)
+    return render_template("public/partners.html", rows=rows, nodal=nodal_heis())
 
 
 @bp.route("/contact", methods=["GET", "POST"])

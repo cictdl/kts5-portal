@@ -180,6 +180,26 @@ page). The image of the signature is uploaded in *Console → Certificate*
 `.jpg`), outside the web folder; it is written into each certificate page
 itself. Without it the certificates show the name above an empty line.
 
+## Nomination at registration
+
+From 1.2.22 registration follows the nomination process of the Ministry: the Faculty
+Supervisor/Guide (name, designation, e-mail, mobile) is required, and the nomination form signed
+and sealed by the Director, Registrar, Principal or Head of the Institution is uploaded (PDF, JPG
+or PNG up to 4 MB, `applications.nomination_path`, folder `uploads/nominations/`, seen by the
+staff who see applications). The blank form is `static/KTS5-nomination-form.pdf`, made by
+`tools/make_nomination_form.py`, and linked from the registration page. Applications registered
+before 1.2.22 have no form; the console says so.
+
+## Nodal Higher Educational Institutions
+
+From 1.2.22 the partners page (`/partners#nodal`) lists the 31 State/UT-wise Nodal Higher
+Educational Institutions designated by the Ministry (`data/nodal_heis.json`: state, type, name;
+the names stay in English, the States in the language of the page) and explains in four points
+how the programme reaches the institutions: the role of the Nodal Institution (up to 50
+institutions in its State/UT, a State/UT Nodal Officer), nomination and registration (one
+student and one Faculty Supervisor/Guide per institution, endorsed by its head), the selection
+of 1,000 students, and the campus activities with their report.
+
 ## Gallery
 
 From 1.2.20 (`kts/gallery.py`): photographs of the programme in albums on the public page

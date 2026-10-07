@@ -255,12 +255,17 @@ def _register(app, n, ip="198.51.100.40", photo=PNG, idproof=PNG, **changed):
         "college_name": "Government College Thrissur", "college_type": "Government college", "college_state": "Kerala",
         "course_level": "Undergraduate", "year_of_study": "2nd year", "pref_lang": "hi", "declare_true": "1",
         "declare_participate": "1", "declare_consent": "1", "captcha": "7",
+        "mentor_name": "Dr. K. Mentor", "mentor_designation": "Assistant Professor of Tamil",
+        "mentor_email": f"mentor{n}@tests.example", "mentor_phone": f"98760{n:05d}",
     }
     if photo is not None:
         form["photo"] = (io.BytesIO(photo), "photo.png")
     if idproof is not None:
         form["idproof"] = (io.BytesIO(idproof), "id.png")
+    form["nomination"] = (io.BytesIO(PNG), "nomination.png")
     form.update(changed)
+    if form.get("nomination") is None:
+        del form["nomination"]
     return client.post("/register", data=form, content_type="multipart/form-data", environ_base={"REMOTE_ADDR": ip})
 
 
@@ -276,7 +281,8 @@ def test_refused_registration_leaves_no_file():
     for n in (1, 2):
         r = _register(own, n)
         assert r.status_code == 302 and "/register/done/" in r.headers["Location"]
-    assert len(_files(own)) == 4 and _stored(own) == 2
+    # three files for each application: the photograph, the ID and the nomination form (1.2.22)
+    assert len(_files(own)) == 6 and _stored(own) == 2
     before = _files(own)
     for n in (3, 4, 5):
         r = _register(own, n)
@@ -285,7 +291,7 @@ def test_refused_registration_leaves_no_file():
     # somebody else is not held up
     r = _register(own, 6, ip="198.51.100.41")
     assert r.status_code == 302
-    assert len(_files(own)) == 6 and _stored(own) == 3
+    assert len(_files(own)) == 9 and _stored(own) == 3
 
 
 def _notice(key, lang="en"):
@@ -311,7 +317,7 @@ def test_refused_registration_is_said_at_the_top():
     assert _text("common.captcha_help") in page
     # what was typed stays in the form, nothing of it is stored
     assert 'value="Student 2"' in page and 'value="student2@tests.example"' in page
-    assert _stored(own) == 1 and len(_files(own)) == 2
+    assert _stored(own) == 1 and len(_files(own)) == 3
     # a mistake is marked as before, and said before the limit
     r = _register(own, 3, captcha="8")
     page = r.data.decode("utf-8")
@@ -324,7 +330,7 @@ def test_refused_registration_is_said_at_the_top():
     page = r.data.decode("utf-8")
     assert _notice("reg.err_fix") in page and _text("reg.err_rate") not in page
     assert _marked(page)[1] == [_text("reg.err_dup_mobile"), _text("reg.err_dup_email")]
-    assert _stored(own) == 1 and len(_files(own)) == 2
+    assert _stored(own) == 1 and len(_files(own)) == 3
     # the refusals were not counted: after the hour the place is free
     from kts.utils import limiter
     assert len(limiter._hits[("register", "198.51.100.40")][1]) == 1
@@ -339,23 +345,31 @@ def test_only_stored_applications_are_counted():
     assert _files(own) == [] and _stored(own) == 0
     assert _register(own, 1).status_code == 302 and _register(own, 2).status_code == 302
     assert _register(own, 3).status_code == 400
-    assert len(_files(own)) == 4
+    assert len(_files(own)) == 6
 
 
-@pytest.mark.parametrize("bad, key", [("idproof", "reg.err_idproof"), ("photo", "reg.err_photo")])
-def test_one_upload_fails_and_the_other_is_removed(bad, key):
+@pytest.mark.parametrize("bad, key", [("idproof", "reg.err_idproof"), ("photo", "reg.err_photo"),
+                                      ("nomination", "reg.err_nomination")])
+def test_one_upload_fails_and_the_others_are_removed(bad, key):
     own = make_app(RATE_REGISTER_PER_HOUR=3)
-    r = _register(own, 1, **{bad: b"this is no picture"})
+
+    def send(content):
+        if bad == "nomination":
+            # the form carries a nomination file by default; replaced here, or left out with None
+            return _register(own, 1, nomination=None if content is None else (io.BytesIO(content), "n.png"))
+        return _register(own, 1, **{bad: content})
+
+    r = send(b"this is no picture")
     assert r.status_code == 400 and _text(key) in r.data.decode("utf-8")
     assert _files(own) == [] and _stored(own) == 0
     # a file that is empty, a file that is missing altogether
     for content in (b"", None):
-        r = _register(own, 1, **{bad: content})
+        r = send(content)
         assert r.status_code == 400 and _text(key) in r.data.decode("utf-8")
         assert _files(own) == [] and _stored(own) == 0
-    # the same applicant with both files
+    # the same applicant with all three files
     assert _register(own, 1).status_code == 302
-    assert len(_files(own)) == 2
+    assert len(_files(own)) == 3
 
 
 def _look_up(app, ip="198.51.100.50", **changed):
@@ -1016,8 +1030,9 @@ def test_alt_texts_use_keys_that_exist():
     # them (1.2.1), the 3 of the certificate of recognition (1.2.2), the 2 of that of merit (1.2.3),
     # the 2 of the confirmation letter (1.2.5), the 62 of the classroom quiz (1.2.8) and the 10 of the
     # certificate of participation in the inauguration (1.2.10), the 41 of the research papers (1.2.11) and
-    # the 3 tabs of the videos in the repository (1.2.12), the tab of music (1.2.13) and the 8 of the gallery (1.2.20)
-    assert len(CATALOG["en"]) == 779
+    # the 3 tabs of the videos in the repository (1.2.12), the tab of music (1.2.13), the 8 of the gallery (1.2.20)
+    # the 18 of the Nodal Higher Educational Institutions and the 4 of the nomination form (1.2.22)
+    assert len(CATALOG["en"]) == 801
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1048,7 +1063,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.20" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.22" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

@@ -109,13 +109,13 @@
     </div>
 
     <div class="form-section">
-      <h2>{{ t('reg.sec_mentor') }} <span class="muted small">({{ t('common.optional') }})</span></h2>
+      <h2>{{ t('reg.sec_mentor') }}</h2>
       <p class="hint">{{ t('reg.mentor_intro') }}</p>
       <div class="fields">
-        {{ field('mentor_name', t('reg.mentor_name'), attrs='maxlength="120" dir="ltr" lang="en"') }}
-        {{ field('mentor_designation', t('reg.mentor_designation'), attrs='maxlength="120" dir="ltr" lang="en"') }}
-        {{ field('mentor_email', t('reg.mentor_email'), type='email', attrs='maxlength="120" dir="ltr"') }}
-        {{ field('mentor_phone', t('reg.mentor_phone'), type='tel', attrs='inputmode="numeric" maxlength="10" dir="ltr"') }}
+        {{ field('mentor_name', t('reg.mentor_name'), required=True, attrs='maxlength="120" dir="ltr" lang="en"') }}
+        {{ field('mentor_designation', t('reg.mentor_designation'), required=True, attrs='maxlength="120" dir="ltr" lang="en"') }}
+        {{ field('mentor_email', t('reg.mentor_email'), type='email', required=True, attrs='maxlength="120" dir="ltr"') }}
+        {{ field('mentor_phone', t('reg.mentor_phone'), type='tel', required=True, attrs='inputmode="numeric" maxlength="10" dir="ltr"') }}
       </div>
     </div>
 
@@ -128,6 +128,10 @@
         <div class="field {{ 'has-err' if errors.get('idproof') }}"><label for="idproof">{{ t('reg.idproof') }} <span class="req">*</span></label>
           <input type="file" id="idproof" name="idproof" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required data-max="2097152">
           {% if errors.get('idproof') %}<span class="err">{{ errors['idproof'] }}</span>{% else %}<span class="help">{{ t('reg.idproof_help') }}</span>{% endif %}</div>
+        <div class="field wide {{ 'has-err' if errors.get('nomination') }}"><label for="nomination">{{ t('reg.nomination') }} <span class="req">*</span></label>
+          <input type="file" id="nomination" name="nomination" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required data-max="4194304">
+          {% if errors.get('nomination') %}<span class="err">{{ errors['nomination'] }}</span>{% else %}<span class="help">{{ t('reg.nomination_help') }}</span>{% endif %}
+          <a class="btn sm secondary" style="margin-top:8px" href="{{ url_for('static', filename='KTS5-nomination-form.pdf') }}" download>📄 {{ t('reg.nomination_download') }}</a></div>
       </div>
     </div>
 

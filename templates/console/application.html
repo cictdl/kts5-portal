@@ -25,14 +25,15 @@
         <dt>University</dt><dd>{{ a.university or '–' }}</dd>
         <dt>Programme</dt><dd>{{ a.course_level }} · {{ a.discipline or '–' }} · {{ a.year_of_study }}{% if a.roll_no %} · Roll {{ a.roll_no }}{% endif %}</dd>
         <dt>ID proof</dt><dd>{% if a.idproof_path %}<a href="{{ url_for('admin.staff_file', relpath=a.idproof_path) }}" target="_blank" rel="noopener">Open document ↗</a>{% else %}–{% endif %}</dd>
+        <dt>Nomination form</dt><dd>{% if a.nomination_path %}<a href="{{ url_for('admin.staff_file', relpath=a.nomination_path) }}" target="_blank" rel="noopener">Open the signed form ↗</a>{% else %}<span class="muted">not uploaded (registered before version 1.2.22)</span>{% endif %}</dd>
         <dt>Institution key</dt><dd><code class="small">{{ a.college_key }}</code></dd>
       </dl>
-      <h3 style="margin-top:14px">Language and mentor</h3>
+      <h3 style="margin-top:14px">Language and Faculty Supervisor/Guide</h3>
       <dl>
         <dt>Orientation / test</dt><dd><b>{{ lang_name }}</b></dd>
         <dt>Mother tongue</dt><dd>{{ a.mother_tongue|langname if a.mother_tongue else '–' }}</dd>
         <dt>Tamil · Kural</dt><dd>{{ a.tamil_level or '–' }} · {{ a.kural_level or '–' }}</dd>
-        <dt>Mentor</dt><dd>{{ a.mentor_name or '–' }}{% if a.mentor_designation %}, {{ a.mentor_designation }}{% endif %}{% if a.mentor_email %} · {{ a.mentor_email }}{% endif %}{% if a.mentor_phone %} · {{ a.mentor_phone }}{% endif %}</dd>
+        <dt>Supervisor/Guide</dt><dd>{{ a.mentor_name or '–' }}{% if a.mentor_designation %}, {{ a.mentor_designation }}{% endif %}{% if a.mentor_email %} · {{ a.mentor_email }}{% endif %}{% if a.mentor_phone %} · {{ a.mentor_phone }}{% endif %}</dd>
         <dt>Submitted</dt><dd>{{ a.created_at|datetime }} · IP {{ a.ip }}</dd>
         {% if verifier %}<dt>Verified by</dt><dd>{{ verifier.name }} · {{ a.verified_at|datetime }}</dd>{% endif %}
       </dl>

@@ -53,6 +53,9 @@ def test_register_and_status(client):
         "college_type": "Government college", "college_state": "Kerala", "course_level": "Undergraduate", "year_of_study": "2nd year",
         "pref_lang": "hi", "declare_true": "1", "declare_participate": "1", "declare_consent": "1", "captcha": "7",
         "photo": (io.BytesIO(_png_bytes()), "photo.png"), "idproof": (io.BytesIO(_png_bytes()), "id.png"),
+        "nomination": (io.BytesIO(_png_bytes()), "nomination.png"),
+        "mentor_name": "Dr. K. Mentor", "mentor_designation": "Assistant Professor", "mentor_email": "mentor@tests.example",
+        "mentor_phone": "9876012345",
     }
     r = client.post("/register", data=form, content_type="multipart/form-data", follow_redirects=True)
     assert r.status_code == 200
@@ -62,6 +65,7 @@ def test_register_and_status(client):
         s["_captcha"] = "7"
     form["photo"] = (io.BytesIO(_png_bytes()), "photo.png")
     form["idproof"] = (io.BytesIO(_png_bytes()), "id.png")
+    form["nomination"] = (io.BytesIO(_png_bytes()), "nomination.png")
     form["mobile"] = "9876543211"
     r = client.post("/register", data=form, content_type="multipart/form-data")
     assert r.status_code == 400

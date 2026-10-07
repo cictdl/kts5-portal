@@ -125,6 +125,8 @@ class Config:
     MAX_CONTENT_LENGTH = 25 * 1024 * 1024  # 25 MB request ceiling
     PHOTO_MAX_BYTES = 600 * 1024
     IDPROOF_MAX_BYTES = 2 * 1024 * 1024
+    # the nomination form signed by the head of the institution, scanned (version 1.2.22)
+    NOMINATION_MAX_BYTES = 4 * 1024 * 1024
     RESOURCE_MAX_BYTES = 20 * 1024 * 1024
 
     # ---- security -------------------------------------------------------

@@ -239,7 +239,7 @@ def _delete_application(row):
     execute("DELETE FROM papers WHERE application_id = ?", (row["id"],))
     execute("DELETE FROM applications WHERE id = ?", (row["id"],))
     folder = Path(current_app.config["UPLOAD_DIR"]).resolve()
-    for rel in (row["photo_path"], row["idproof_path"]):
+    for rel in (row["photo_path"], row["idproof_path"], row["nomination_path"]):
         path = (folder / rel).resolve() if rel else None
         if path is None or folder not in path.parents:
             continue
@@ -275,9 +275,9 @@ def staff_file(relpath):
     # the folders that exist, by their names as the portal writes them: Windows would open
     # "Photos" or "photos." as the folder photos
     folder = relpath.partition("/")[0]
-    if folder not in ("photos", "idproofs", "bankproofs", "notices", "resources", "tasks", "documents", "gallery"):
+    if folder not in ("photos", "idproofs", "nominations", "bankproofs", "notices", "resources", "tasks", "documents", "gallery"):
         abort(404)
-    if folder in ("photos", "idproofs") and not has_perm(user, "apps.view"):
+    if folder in ("photos", "idproofs", "nominations") and not has_perm(user, "apps.view"):
         abort(403)
     if folder == "bankproofs":
         if not has_perm(user, "stipend"):
