@@ -769,5 +769,13 @@
   "res.cat_video_kural": "तिरुक्कुरल वीडियो",
   "res.cat_video_valluvar": "तिरुवल्लुवर वीडियो",
   "res.cat_video_sign": "सांकेतिक भाषा मे तिरुक्कुरल",
-  "res.cat_music": "संगीत"
+  "res.cat_music": "संगीत",
+  "nav.gallery": "गैलरी",
+  "gallery.title": "गैलरी",
+  "gallery.intro": "काशी तमिल संगमम 5.0 – तिरुक्कुरल पयिल्वोमक फोटो: परिसर, सत्र आ स्वयं संगमम।",
+  "gallery.empty": "कार्यक्रम आगाँ बढ़ला संग फोटो सभ एतय जुड़ैत जाएत।",
+  "gallery.all": "सभ एल्बम",
+  "gallery.photos": "फोटो",
+  "gallery.open": "फोटो खोलू",
+  "gallery.back": "गैलरी मे पाछाँ जाउ"
 }

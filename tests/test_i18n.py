@@ -16,7 +16,7 @@ I18N = ROOT / "data" / "i18n"
 EN = json.loads((I18N / "en.json").read_text(encoding="utf-8"))
 CODES = sorted(p.stem for p in I18N.glob("*.json") if p.stem != "en")
 PAGES = ["/", "/about", "/programme", "/register", "/status", "/examination", "/merit-list", "/resources",
-         "/thirukkural", "/thirukkural/1", "/daily-kural", "/orientation", "/notices", "/schedule", "/partners",
+         "/thirukkural", "/thirukkural/1", "/daily-kural", "/orientation", "/notices", "/schedule", "/partners", "/gallery",
          "/contact", "/candidate/login", "/no-such-page"]
 
 

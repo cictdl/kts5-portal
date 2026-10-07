@@ -430,6 +430,23 @@ CREATE TABLE IF NOT EXISTS papers (
 );
 CREATE INDEX IF NOT EXISTS idx_papers_status ON papers(status);
 
+-- Gallery (kts/gallery.py): photographs in albums (the album is the event named on them), the
+-- files in uploads/gallery/, served at /files/gallery/ when published.
+CREATE TABLE IF NOT EXISTS gallery_photos (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    album       TEXT NOT NULL,
+    caption     TEXT NOT NULL DEFAULT '',
+    taken_on    TEXT NOT NULL DEFAULT '',
+    file_path   TEXT NOT NULL,
+    file_name   TEXT NOT NULL,
+    file_size   INTEGER NOT NULL,
+    published   INTEGER NOT NULL DEFAULT 1,
+    sort_order  INTEGER NOT NULL DEFAULT 100,
+    created_by  INTEGER REFERENCES users(id),
+    created_at  TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_gallery_album ON gallery_photos(album, published);
+
 CREATE TABLE IF NOT EXISTS paper_files (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     paper_id    INTEGER NOT NULL REFERENCES papers(id),

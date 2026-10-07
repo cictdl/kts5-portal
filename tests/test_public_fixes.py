@@ -971,16 +971,17 @@ def test_version_of_style_sheet_and_script():
     for path in TEMPLATES:
         for name, version in re.findall(r"filename='((?:css|js)/portal\.(?:css|js))'\) \}\}\?v=(\d+)", path.read_text(encoding="utf-8")):
             linked.setdefault(path.relative_to(ROOT / "templates").as_posix(), []).append((name, version))
-    expected = {name: [("css/portal.css", "10"), ("js/portal.js", "10")]
+    expected = {name: [("css/portal.css", "11"), ("js/portal.js", "10")]
                 for name in ("base.html", "candidate/exam_paper.html", "console/base.html")}
     # the certificate has a style sheet of its own and the script for its print button
     expected["public/certificate.html"] = [("js/portal.js", "10")]
     expected["public/letter.html"] = [("js/portal.js", "10")]
     # the pages of the classroom quiz have a frame of their own, with the style sheet and the script of the portal
-    expected["quiz/layout.html"] = [("css/portal.css", "10"), ("js/portal.js", "10")]
+    expected["quiz/layout.html"] = [("css/portal.css", "11"), ("js/portal.js", "10")]
     assert linked == expected
     for path in TEMPLATES:
-        assert not re.search(r"portal\.(css|js)'\) \}\}(?!\?v=10\")", path.read_text(encoding="utf-8")), path
+        assert not re.search(r"portal\.css'\) \}\}(?!\?v=11\")", path.read_text(encoding="utf-8")), path
+        assert not re.search(r"portal\.js'\) \}\}(?!\?v=10\")", path.read_text(encoding="utf-8")), path
 
 
 # ---- B9 · alt texts of the logos ----------------------------------------------------------------
@@ -1015,8 +1016,8 @@ def test_alt_texts_use_keys_that_exist():
     # them (1.2.1), the 3 of the certificate of recognition (1.2.2), the 2 of that of merit (1.2.3),
     # the 2 of the confirmation letter (1.2.5), the 62 of the classroom quiz (1.2.8) and the 10 of the
     # certificate of participation in the inauguration (1.2.10), the 41 of the research papers (1.2.11) and
-    # the 3 tabs of the videos in the repository (1.2.12) and the tab of music (1.2.13)
-    assert len(CATALOG["en"]) == 771
+    # the 3 tabs of the videos in the repository (1.2.12), the tab of music (1.2.13) and the 8 of the gallery (1.2.20)
+    assert len(CATALOG["en"]) == 779
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1047,7 +1048,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.19" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.20" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

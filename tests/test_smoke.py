@@ -32,7 +32,7 @@ def _png_bytes():
 def test_public_pages(client):
     for path in ["/", "/about", "/programme", "/register", "/status", "/examination", "/merit-list", "/resources",
                  "/thirukkural", "/thirukkural?ch=133&l=hi", "/thirukkural/1330", "/daily-kural?l=te", "/orientation",
-                 "/notices", "/schedule", "/partners", "/contact", "/healthz", "/robots.txt", "/lang/ta", "/?lang=hi"]:
+                 "/notices", "/schedule", "/partners", "/gallery", "/contact", "/healthz", "/robots.txt", "/lang/ta", "/?lang=hi"]:
         r = client.get(path, follow_redirects=True)
         assert r.status_code == 200, path
 

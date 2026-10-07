@@ -6,7 +6,7 @@
 <title>{% block title %}Console{% endblock %} · KTS 5.0</title>
 <meta name="robots" content="noindex">
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=10">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=11">
 </head>
 <body>
 <div class="console">
@@ -41,6 +41,7 @@
     <a class="item {{ 'active' if ep.startswith('admin.notice') }}" href="{{ url_for('admin.notices') }}">📣 Notices</a>
     <a class="item {{ 'active' if ep.startswith('admin.resource') }}" href="{{ url_for('admin.resources') }}">📚 Repository</a>
     <a class="item {{ 'active' if ep.startswith('admin.event') }}" href="{{ url_for('admin.events') }}">📅 Events &amp; sessions</a>
+    <a class="item {{ 'active' if ep == 'admin.gallery_admin' }}" href="{{ url_for('admin.gallery_admin') }}">🖼 Gallery</a>
     {% endif %}
     {% if has_perm(u, 'messages') %}
     <a class="item {{ 'active' if ep == 'admin.messages' }}" href="{{ url_for('admin.messages') }}">✉️ Messages</a>

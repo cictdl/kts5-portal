@@ -769,5 +769,13 @@
   "res.cat_video_kural": "Thirukkural videos",
   "res.cat_video_valluvar": "Thiruvalluvar videos",
   "res.cat_video_sign": "Thirukkural in sign language",
-  "res.cat_music": "Music"
+  "res.cat_music": "Music",
+  "nav.gallery": "Gallery",
+  "gallery.title": "Gallery",
+  "gallery.intro": "Photographs from Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom: the campuses, the sessions and the Sangamam itself.",
+  "gallery.empty": "Photographs will appear here as the programme unfolds.",
+  "gallery.all": "All albums",
+  "gallery.photos": "photographs",
+  "gallery.open": "Open the photograph",
+  "gallery.back": "Back to the gallery"
 }

@@ -769,5 +769,13 @@
   "res.cat_video_kural": "তিরুক্কুরাল ভিডিও",
   "res.cat_video_valluvar": "তিরুবল্লুবর ভিডিও",
   "res.cat_video_sign": "সাংকেতিক ভাষায় তিরুক্কুরাল",
-  "res.cat_music": "সংগীত"
+  "res.cat_music": "সংগীত",
+  "nav.gallery": "গ্যালারি",
+  "gallery.title": "গ্যালারি",
+  "gallery.intro": "কাশী তামিল সঙ্গমম 5.0 – তিরুক্কুরাল পয়িলবোম-এর ছবি: ক্যাম্পাস, অধিবেশন ও স্বয়ং সঙ্গমম।",
+  "gallery.empty": "কর্মসূচি এগোনোর সঙ্গে সঙ্গে ছবি এখানে যুক্ত হতে থাকবে।",
+  "gallery.all": "সব অ্যালবাম",
+  "gallery.photos": "ছবি",
+  "gallery.open": "ছবিটি খুলুন",
+  "gallery.back": "গ্যালারিতে ফিরে যান"
 }

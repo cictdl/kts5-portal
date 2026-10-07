@@ -369,6 +369,15 @@ table.table td.num, table.table th.num { text-align: end; font-variant-numeric: 
 .res-tabs a { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); font-size: .85rem; font-weight: 600; color: var(--ink); }
 .res-tabs a.on { background: var(--indigo); border-color: var(--indigo); color: #fff; }
 .res-card { display: flex; flex-direction: column; gap: 8px; }
+
+/* ---- gallery: a grid of photographs, each in its frame ---- */
+.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 14px; }
+.photo { margin: 0; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+.photo a { display: block; background: var(--bg2); }
+.photo img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.photo figcaption { padding: 10px 14px; font-size: .9rem; line-height: 1.45; }
+.photo-grid.admin .photo { padding: 10px; }
+.photo-grid.admin .photo img { aspect-ratio: 3 / 2; border-radius: 8px; }
 .res-card .cat { font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--kumkum); font-weight: 700; }
 .res-card .desc { color: var(--dim); font-size: .92rem; flex: 1; }
 .res-card .foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: .82rem; color: var(--mute); }

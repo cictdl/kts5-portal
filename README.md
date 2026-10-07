@@ -180,6 +180,15 @@ page). The image of the signature is uploaded in *Console → Certificate*
 `.jpg`), outside the web folder; it is written into each certificate page
 itself. Without it the certificates show the name above an empty line.
 
+## Gallery
+
+From 1.2.20 (`kts/gallery.py`): photographs of the programme in albums on the public page
+*Gallery* (`/gallery`, a tab per album). Staff of the content role upload them in *Console →
+Gallery*, several at once (JPG, PNG or WebP of up to 8 MB each), with the album (the event), a
+caption and a date, and hide, re-caption or delete each one. The files lie in `uploads/gallery/`
+and are served at `/files/gallery/…` while published. No thumbnail is made: the live server has
+no image library, so photographs should be uploaded at web size (about 1,600 pixels wide).
+
 ## Contact form
 
 Every message of the contact form is kept in *Console → Messages* and, from 1.2.19, also sent

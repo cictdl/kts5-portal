@@ -55,6 +55,8 @@ def create_app(config_object=Config):
     from . import quiz
     # the research papers add their pages to those of the candidates and of the console
     from . import papers  # noqa: F401
+    # the gallery adds its page to the public site and its console page
+    from . import gallery  # noqa: F401
 
     db.init_app(app)
     i18n.register(app)

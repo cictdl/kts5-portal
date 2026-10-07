@@ -769,5 +769,13 @@
   "res.cat_video_kural": "ਤਿਰੁੱਕੁਰਲ ਵੀਡੀਓ",
   "res.cat_video_valluvar": "ਤਿਰੁਵੱਲੁਵਰ ਵੀਡੀਓ",
   "res.cat_video_sign": "ਸੰਕੇਤਕ ਭਾਸ਼ਾ ਵਿੱਚ ਤਿਰੁੱਕੁਰਲ",
-  "res.cat_music": "ਸੰਗੀਤ"
+  "res.cat_music": "ਸੰਗੀਤ",
+  "nav.gallery": "ਗੈਲਰੀ",
+  "gallery.title": "ਗੈਲਰੀ",
+  "gallery.intro": "ਕਾਸ਼ੀ ਤਮਿਲ ਸੰਗਮਮ 5.0 – ਤਿਰੁੱਕੁਰਲ ਪਯਿਲਵੋਮ ਦੀਆਂ ਤਸਵੀਰਾਂ: ਕੈਂਪਸ, ਸੈਸ਼ਨ ਅਤੇ ਖ਼ੁਦ ਸੰਗਮਮ।",
+  "gallery.empty": "ਪ੍ਰੋਗਰਾਮ ਦੇ ਅੱਗੇ ਵਧਣ ਨਾਲ ਤਸਵੀਰਾਂ ਇੱਥੇ ਜੁੜਦੀਆਂ ਜਾਣਗੀਆਂ।",
+  "gallery.all": "ਸਾਰੀਆਂ ਐਲਬਮਾਂ",
+  "gallery.photos": "ਤਸਵੀਰਾਂ",
+  "gallery.open": "ਤਸਵੀਰ ਖੋਲ੍ਹੋ",
+  "gallery.back": "ਗੈਲਰੀ ਵਿੱਚ ਵਾਪਸ"
 }

@@ -769,5 +769,13 @@
   "res.cat_video_kural": "তিরুক্কুরল ভিদিওশিং",
   "res.cat_video_valluvar": "তিরুৱল্লুৱর ভিদিওশিং",
   "res.cat_video_sign": "খুদমগী লোলদা তিরুক্কুরল",
-  "res.cat_music": "ঈশৈ"
+  "res.cat_music": "ঈশৈ",
+  "nav.gallery": "গেলরি",
+  "gallery.title": "গেলরি",
+  "gallery.intro": "কাশী তামিল সঙ্গমম 5.0 – তিরুক্কুরল পয়িলৱোমগী ফোটোশিং: কেম্পসশিং, সেসনশিং অমসুং সঙ্গমম মশামক।",
+  "gallery.empty": "প্রোগ্রাম চৎথরকপগা লোয়ননা ফোটোশিং মফম অসিদা উবা ফংগনি।",
+  "gallery.all": "এলবম পূম্নমক",
+  "gallery.photos": "ফোটোশিং",
+  "gallery.open": "ফোটো হাংবিয়ু",
+  "gallery.back": "গেলরিদা হনবা"
 }

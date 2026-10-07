@@ -487,7 +487,11 @@ def public_file(relpath):
     """Public attachments (notices, resources, shared documents marked public)."""
     # the folder is tested on the path as it will be opened: "notices/../photos/x" is "photos/x"
     relpath = posixpath.normpath(relpath)
-    if not (relpath.startswith("notices/") or relpath.startswith("resources/")):
+    if not relpath.startswith(("notices/", "resources/", "gallery/")):
+        abort(404)
+    if relpath.startswith("gallery/") and not query("SELECT 1 FROM gallery_photos WHERE file_path = ? AND published = 1",
+                                                     (relpath,), one=True):
+        # a photograph that is not published, or one that is gone, is not served
         abort(404)
     return send_from_directory(Path(current_app.config["UPLOAD_DIR"]), relpath)
 

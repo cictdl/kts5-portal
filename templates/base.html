@@ -11,7 +11,7 @@
 {% endblock %}
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=10">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=11">
 {% block head %}{% endblock %}
 </head>
 <body>
@@ -65,6 +65,7 @@
       <li><a href="{{ url_for('public.notices') }}" class="{{ 'active' if ep.startswith('public.notice') }}">{{ t('nav.notices') }}</a></li>
       <li><a href="{{ url_for('public.schedule') }}" class="{{ 'active' if ep == 'public.schedule' }}">{{ t('nav.schedule') }}</a></li>
       <li><a href="{{ url_for('public.partners') }}" class="{{ 'active' if ep == 'public.partners' }}">{{ t('nav.partners') }}</a></li>
+      <li><a href="{{ url_for('public.gallery') }}" class="{{ 'active' if ep == 'public.gallery' }}">{{ t('nav.gallery') }}</a></li>
       <li><a href="{{ url_for('public.contact') }}" class="{{ 'active' if ep == 'public.contact' }}">{{ t('nav.contact') }}</a></li>
     </ul>
   </div>

@@ -769,5 +769,13 @@
   "res.cat_video_kural": "તિરુક્કુરલ વીડિયો",
   "res.cat_video_valluvar": "તિરુવલ્લુવર વીડિયો",
   "res.cat_video_sign": "સાંકેતિક ભાષામાં તિરુક્કુરલ",
-  "res.cat_music": "સંગીત"
+  "res.cat_music": "સંગીત",
+  "nav.gallery": "ગૅલેરી",
+  "gallery.title": "ગૅલેરી",
+  "gallery.intro": "કાશી તમિલ સંગમમ 5.0 – તિરુક્કુરલ પયિલ્વોમની તસવીરો: કૅમ્પસ, સત્રો અને ખુદ સંગમમ.",
+  "gallery.empty": "કાર્યક્રમ આગળ વધે તેમ તેમ તસવીરો અહીં ઉમેરાતી જશે.",
+  "gallery.all": "તમામ આલ્બમ",
+  "gallery.photos": "તસવીરો",
+  "gallery.open": "તસવીર ખોલો",
+  "gallery.back": "ગૅલેરીમાં પાછા જાઓ"
 }

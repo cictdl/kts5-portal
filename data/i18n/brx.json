@@ -769,5 +769,13 @@
   "res.cat_video_kural": "तिरुक्कुरल भिडिअ",
   "res.cat_video_valluvar": "तिरुवल्लुवर भिडिअ",
   "res.cat_video_sign": "सांकेतिक रावाव तिरुक्कुरल",
-  "res.cat_music": "संगीत"
+  "res.cat_music": "संगीत",
+  "nav.gallery": "गेलारि",
+  "gallery.title": "गेलारि",
+  "gallery.intro": "काशी तामिल संगमम 5.0 – तिरुक्कुरल पयिल्वोमनि फट’फोर: केम्पासफोर, सेसनफोर आरो संगमम गावनो।",
+  "gallery.empty": "हाबाफारिया सोलिनाय लोगो-लोगो फट’फोरा बेयाव नुजाथिगोन।",
+  "gallery.all": "गासैबो एलबामफोर",
+  "gallery.photos": "फट’फोर",
+  "gallery.open": "फट’खौ खेव",
+  "gallery.back": "गेलारियाव थांफिन"
 }

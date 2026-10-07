@@ -769,5 +769,13 @@
   "res.cat_video_kural": "تِروکُّرل ویڈیوز",
   "res.cat_video_valluvar": "تِرووَلّووَر ویڈیوز",
   "res.cat_video_sign": "اشاروں کی زبان میں تِروکُّرل",
-  "res.cat_music": "موسیقی"
+  "res.cat_music": "موسیقی",
+  "nav.gallery": "گیلری",
+  "gallery.title": "گیلری",
+  "gallery.intro": "کاشی تمل سنگمم 5.0 – تِروکُّرل پَیِلووم کی تصاویر: کیمپس، نشستیں اور خود سنگمم۔",
+  "gallery.empty": "پروگرام کے آگے بڑھنے کے ساتھ ساتھ تصاویر یہاں شامل ہوتی جائیں گی۔",
+  "gallery.all": "تمام البم",
+  "gallery.photos": "تصاویر",
+  "gallery.open": "تصویر کھولیں",
+  "gallery.back": "گیلری پر واپس"
 }

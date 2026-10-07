@@ -275,7 +275,7 @@ def staff_file(relpath):
     # the folders that exist, by their names as the portal writes them: Windows would open
     # "Photos" or "photos." as the folder photos
     folder = relpath.partition("/")[0]
-    if folder not in ("photos", "idproofs", "bankproofs", "notices", "resources", "tasks", "documents"):
+    if folder not in ("photos", "idproofs", "bankproofs", "notices", "resources", "tasks", "documents", "gallery"):
         abort(404)
     if folder in ("photos", "idproofs") and not has_perm(user, "apps.view"):
         abort(403)

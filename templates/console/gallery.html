@@ -1,0 +1,54 @@
+{% extends "console/base.html" %}
+{% block title %}Gallery{% endblock %}
+{% block content %}
+<div class="two-col" style="align-items:start;margin-bottom:16px">
+  <form method="post" enctype="multipart/form-data" class="card accent">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <input type="hidden" name="action" value="upload">
+    <h3>Add photographs</h3>
+    <div class="fields">
+      <div class="field wide"><label for="album">Album (the event)</label><input type="text" id="album" name="album" list="albums" maxlength="120" required placeholder="Inauguration of KTS 5.0, Varanasi">
+        <datalist id="albums">{% for a in albums %}<option value="{{ a.album }}">{% endfor %}</datalist></div>
+      <div class="field wide"><label for="caption">Caption (the same for all the photographs chosen; may be changed one by one below)</label><input type="text" id="caption" name="caption" maxlength="300"></div>
+      <div class="field"><label for="taken_on">Date</label><input type="date" id="taken_on" name="taken_on"></div>
+      <div class="field wide"><label for="photos">Photographs (JPG, PNG or WebP, up to 8 MB each, {{ most }} at a time)</label><input type="file" id="photos" name="photos" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" multiple required>
+        <span class="help">A photograph of 1,600 pixels on its long side is plenty for the web and loads quickly; the portal does not shrink what is uploaded.</span></div>
+    </div>
+    <div class="btn-row" style="margin-top:12px"><button class="btn">Upload</button><a class="btn sm secondary" href="{{ url_for('public.gallery') }}" target="_blank" rel="noopener">Public gallery ↗</a></div>
+  </form>
+  <div class="card">
+    <h3>Albums</h3>
+    {% if albums %}<ul class="notice-list">
+      <li><div><a href="{{ url_for('admin.gallery_admin') }}"><b>All photographs</b></a></div></li>
+      {% for a in albums %}<li><div><a href="{{ url_for('admin.gallery_admin', album=a.album) }}"><b>{{ a.album }}</b></a><div class="meta">{{ a.n }} photograph(s){% if a.last %} · {{ a.last|date }}{% endif %}</div></div></li>{% endfor %}
+    </ul>{% else %}<p class="muted">No photographs yet. The public page says so until the first ones are uploaded.</p>{% endif %}
+    <p class="small muted" style="margin-top:10px">An album is the name of the event written on its photographs; write the same name to add to it. Unpublished photographs are seen here only.</p>
+  </div>
+</div>
+{% if photos %}
+<p class="small muted">{{ photos|length }} photograph(s){% if album %} · {{ album }}{% endif %}</p>
+<div class="photo-grid admin">
+  {% for p in photos %}
+  <form method="post" class="photo card flat">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <input type="hidden" name="id" value="{{ p.id }}">
+    <input type="hidden" name="show" value="{{ album }}">
+    <a href="{{ url_for('admin.staff_file', relpath=p.file_path) }}" target="_blank" rel="noopener"><img src="{{ url_for('admin.staff_file', relpath=p.file_path) }}" alt="" loading="lazy"></a>
+    <div class="fields" style="margin-top:8px">
+      <div class="field wide"><input type="text" name="caption" value="{{ p.caption }}" maxlength="300" placeholder="Caption"></div>
+      <div class="field wide"><input type="text" name="album" value="{{ p.album }}" maxlength="120" list="albums"></div>
+      <div class="field"><input type="date" name="taken_on" value="{{ p.taken_on }}"></div>
+      <div class="field"><input type="number" name="sort_order" value="{{ p.sort_order }}" title="Sort order (lower first)"></div>
+    </div>
+    <div class="btn-row" style="margin-top:8px">
+      <button class="btn xs" name="action" value="caption">Save</button>
+      <button class="btn xs secondary" name="action" value="toggle">{{ 'Hide' if p.published else 'Publish' }}</button>
+      <button class="btn xs ghost" name="action" value="delete" data-confirm="Delete this photograph?">Delete</button>
+      {% if not p.published %}<span class="pill grey">hidden</span>{% endif %}
+    </div>
+    <div class="small muted" style="margin-top:6px">{{ p.file_name }} · {{ p.file_size|size }}{% if p.by_name %} · {{ p.by_name }}{% endif %}</div>
+  </form>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

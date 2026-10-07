@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ t('gallery.title') }}{% endblock %}
+{% block content %}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('site.name') }} · {{ t('site.theme') }}</span>
+  <h1>{{ t('gallery.title') }}</h1>
+  <p class="lead dim" style="max-width:74ch">{{ t('gallery.intro') }}</p>
+  {% if albums %}
+  <div class="res-tabs">
+    <a href="{{ url_for('public.gallery') }}" class="{{ 'on' if not album }}">{{ t('gallery.all') }}</a>
+    {% for a in albums %}<a href="{{ url_for('public.gallery', album=a.album) }}" class="{{ 'on' if album == a.album }}"><bdi>{{ a.album }}</bdi> <span class="muted">{{ a.n }}</span></a>{% endfor %}
+  </div>
+  {% endif %}
+  {% if photos %}
+  <p class="small muted">{{ photos|length }} {{ t('gallery.photos') }}</p>
+  <div class="photo-grid">
+    {% for p in photos %}
+    <figure class="photo">
+      <a href="{{ url_for('public.public_file', relpath=p.file_path) }}" target="_blank" rel="noopener" aria-label="{{ t('gallery.open') }}">
+        <img src="{{ url_for('public.public_file', relpath=p.file_path) }}" alt="{{ p.caption or p.album }}" loading="lazy">
+      </a>
+      <figcaption><bdi>{{ p.caption or p.album }}</bdi>{% if p.caption and not album %} <span class="muted">· <bdi>{{ p.album }}</bdi></span>{% endif %}{% if p.taken_on %} <span class="muted">· {{ p.taken_on|date }}</span>{% endif %}</figcaption>
+    </figure>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card"><p class="muted" style="margin:0">{{ t('gallery.empty') }}</p></div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -769,5 +769,13 @@
   "res.cat_video_kural": "तिरुक्कुरल व्हिडियो",
   "res.cat_video_valluvar": "तिरुवल्लुवर व्हिडियो",
   "res.cat_video_sign": "सांकेतिक भाशेंत तिरुक्कुरल",
-  "res.cat_music": "संगीत"
+  "res.cat_music": "संगीत",
+  "nav.gallery": "गॅलरी",
+  "gallery.title": "गॅलरी",
+  "gallery.intro": "काशी तमिळ संगमम 5.0 – तिरुक्कुरल पयिल्वोमचीं छायाचित्रां: म्हाविद्यालयां, सत्रां आनी खुद संगमम.",
+  "gallery.empty": "कार्यावळ फुडें वता तशीं छायाचित्रां हांगा येत वतलीं.",
+  "gallery.all": "सगळे आल्बम",
+  "gallery.photos": "छायाचित्रां",
+  "gallery.open": "छायाचित्र उगडात",
+  "gallery.back": "गॅलरीक फाटीं"
 }

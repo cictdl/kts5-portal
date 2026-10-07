@@ -769,5 +769,13 @@
   "res.cat_video_kural": "तिरुक्कुरल वीडियो",
   "res.cat_video_valluvar": "तिरुवल्लुवर वीडियो",
   "res.cat_video_sign": "इशारनि जी ॿोलीअ में तिरुक्कुरल",
-  "res.cat_music": "संगीत"
+  "res.cat_music": "संगीत",
+  "nav.gallery": "गैलरी",
+  "gallery.title": "गैलरी",
+  "gallery.intro": "काशी तमिल संगमम 5.0 – तिरुक्कुरल पयिल्वोम जूं तस्वीरूं: कैम्पस, सेशन ऐं खुद संगमम।",
+  "gallery.empty": "प्रोग्रामु अॻते वधण सां गॾु तस्वीरूं हिते शामिल थींदियूं वेंदियूं।",
+  "gallery.all": "सभु एल्बम",
+  "gallery.photos": "तस्वीरूं",
+  "gallery.open": "तस्वीर खोलियो",
+  "gallery.back": "गैलरीअ में वापस"
 }
