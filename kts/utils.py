@@ -524,6 +524,26 @@ def send_later(messages):
     return thread
 
 
+def send_again(rows):
+    """
+    Messages of the outbox that are waiting or failed, sent once more by a thread of their own,
+    each in its own row. Gives the thread, or None when SMTP is not configured or nothing is given.
+    """
+    if not rows or not current_app.config.get("SMTP_HOST"):
+        return None
+    app = current_app._get_current_object()
+    items = [(r["id"], r["to_addr"], r["subject"], r["body"]) for r in rows]
+
+    def run():
+        with app.app_context():
+            for item in items:
+                _deliver(*item)
+
+    thread = threading.Thread(target=run, name="kts-mail-again", daemon=True)
+    thread.start()
+    return thread
+
+
 def _deliver(row_id, to_addr, subject, body):
     """One message of the outbox over SMTP; its row says afterwards whether it went."""
     cfg = current_app.config

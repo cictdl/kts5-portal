@@ -1,8 +1,43 @@
 {% extends "console/base.html" %}
 {% block title %}Mail outbox{% endblock %}
 {% block content %}
-{% if not smtp %}<div class="alert warning">SMTP is not configured (set <code>KTS_SMTP_HOST</code>, <code>KTS_SMTP_USER</code>, <code>KTS_SMTP_PASSWORD</code>, <code>KTS_SMTP_FROM</code>). Messages are kept here so the helpdesk can send them by hand.</div>{% endif %}
+<div class="two-col" style="align-items:start;margin-bottom:16px">
+  <div class="card {{ 'accent' if smtp.host else '' }}">
+    <h3>Outgoing mail</h3>
+    {% if smtp.host %}
+    <dl class="detail">
+      <dt>Server</dt><dd><code>{{ smtp.host }}</code> · port {{ smtp.port }}{% if smtp.tls %} · STARTTLS{% endif %}</dd>
+      <dt>Account</dt><dd>{% if smtp.user %}<code>{{ smtp.user }}</code>{% else %}<span class="muted">none (no sign-in)</span>{% endif %}
+        · password {% if smtp.password %}<span class="pill green">set</span>{% else %}<span class="pill grey">not set</span>{% endif %}</dd>
+      <dt>Sender</dt><dd><code>{{ smtp.sender }}</code></dd>
+    </dl>
+    {% else %}
+    <div class="alert warning">Mail is not configured: every message waits in the list below. Enter the settings
+      <code>KTS_SMTP_HOST</code>, <code>KTS_SMTP_PORT</code>, <code>KTS_SMTP_USER</code>, <code>KTS_SMTP_PASSWORD</code>,
+      <code>KTS_SMTP_FROM</code> and <code>KTS_SMTP_TLS</code> in <code>instance\portal.env</code> and run the installation task again.</div>
+    {% endif %}
+    <p class="small muted">Messages: {{ counts.get('sent', 0) }} sent · {{ counts.get('queued', 0) }} waiting · {{ counts.get('failed', 0) }} failed.</p>
+  </div>
+  <div>
+    <form method="post" class="card">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <h3>Send a test message</h3>
+      <div class="field"><label for="to">To</label><input type="email" id="to" name="to" value="{{ me if '@' in me and not me.endswith('.local') else '' }}" required></div>
+      <div class="btn-row" style="margin-top:10px"><button class="btn sm" name="action" value="test">Send the test message</button></div>
+      <p class="small muted" style="margin:8px 0 0">The result is shown at once: sent, or the reason the mail server gave.</p>
+    </form>
+    {% if smtp.host and (counts.get('queued') or counts.get('failed')) %}
+    <form method="post" class="card" style="margin-top:14px">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <h3>Send the waiting messages again</h3>
+      <p class="small dim">{{ counts.get('queued', 0) + counts.get('failed', 0) }} message(s) are waiting or failed, for example those
+        written before mail was configured. They are sent again, the oldest first, {{ most }} at most in one go.</p>
+      <button class="btn sm secondary" name="action" value="again" data-confirm="Send the waiting and failed messages again?">Send them again</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
 <div class="table-wrap"><table class="table">
   <thead><tr><th>Queued</th><th>To</th><th>Subject</th><th>Status</th><th>Body</th></tr></thead>
-  <tbody>{% for m in rows %}<tr><td class="small" style="white-space:nowrap">{{ m.created_at|datetime }}</td><td class="small">{{ m.to_addr }}</td><td>{{ m.subject }}</td><td>{% if m.status == 'sent' %}<span class="pill green">sent</span>{% elif m.status == 'failed' %}<span class="pill kumkum" title="{{ m.error }}">failed</span>{% else %}<span class="pill grey">queued</span>{% endif %}</td><td class="small" style="white-space:pre-line;max-width:520px">{{ m.body|truncate(400) }}</td></tr>{% else %}<tr><td colspan="5" class="muted">Nothing queued.</td></tr>{% endfor %}</tbody></table></div>
+  <tbody>{% for m in rows %}<tr><td class="small" style="white-space:nowrap">{{ m.created_at|datetime }}</td><td class="small">{{ m.to_addr }}</td><td>{{ m.subject }}</td><td>{% if m.status == 'sent' %}<span class="pill green">sent</span>{% elif m.status == 'failed' %}<span class="pill kumkum">failed</span><div class="small muted" style="max-width:260px">{{ m.error }}</div>{% else %}<span class="pill grey">queued</span>{% endif %}</td><td class="small" style="white-space:pre-line;max-width:520px">{{ m.body|truncate(400) }}</td></tr>{% else %}<tr><td colspan="5" class="muted">Nothing queued.</td></tr>{% endfor %}</tbody></table></div>
 {% endblock %}

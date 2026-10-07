@@ -20,7 +20,7 @@ from .db import (DEFAULT_SETTINGS, INSTITUTE_HEAD, NODAL_FIELDS, NODAL_OFFICERS,
                  set_setting, utcnow)
 from .public import CATEGORIES
 from .utils import (RESOURCE_EXT, client_ip, csv_bytes, exam_window, now_ist, paginate, parse_iso,
-                    registration_state, safe_int, save_upload, send_mail, xlsx_bytes)
+                    registration_state, safe_int, save_upload, send_again, send_mail, valid_email, xlsx_bytes)
 
 bp = Blueprint("admin", __name__, url_prefix="/console")
 
@@ -908,9 +908,48 @@ def audit_log():
     return render_template("console/audit.html", rows=rows, q=q, pg=pg)
 
 
-@bp.route("/outbox")
+# messages sent again in one go, the oldest first
+SEND_AGAIN_MOST = 500
+
+
+@bp.route("/outbox", methods=["GET", "POST"])
 @login_required("settings")
 def outbox():
+    user = current_user()
+    cfg = current_app.config
+    if request.method == "POST":
+        action = request.form.get("action")
+        if action == "test":
+            to = (request.form.get("to") or "").strip()
+            if not valid_email(to):
+                flash("Enter the e-mail address to send the test message to.", "error")
+            else:
+                row_id = send_mail(to, "KTS 5.0 portal: test message",
+                                   "This is a test message of the portal of Kashi Tamil Sangamam 5.0 "
+                                   f"({cfg['BASE_URL']}), sent from Console → Mail outbox on "
+                                   f"{now_ist().strftime('%d %b %Y, %H:%M')} IST by {user['name']}.\n\n"
+                                   "If it has arrived, the portal can send its mails.")
+                row = query("SELECT status, error FROM outbox WHERE id = ?", (row_id,), one=True)
+                audit("mail_test", "outbox", row_id, detail={"to": to, "status": row["status"]}, user=user, ip=client_ip())
+                if row["status"] == "sent":
+                    flash(f"The test message was sent to {to}. Look for it in that mailbox (and in its spam folder).", "success")
+                elif row["status"] == "failed":
+                    flash(f"The test message could not be sent: {row['error']}", "error")
+                else:
+                    flash("Mail is not configured: the test message waits in the list below.", "warning")
+        elif action == "again":
+            if not cfg.get("SMTP_HOST"):
+                flash("Mail is not configured: nothing can be sent.", "error")
+            else:
+                rows = query("SELECT id, to_addr, subject, body FROM outbox WHERE status IN ('queued', 'failed') "
+                             "ORDER BY id LIMIT ?", (SEND_AGAIN_MOST,))
+                send_again(rows)
+                audit("mail_again", "outbox", None, detail=f"{len(rows)} message(s)", user=user, ip=client_ip())
+                flash(f"{len(rows)} waiting or failed message(s) are being sent again; reload this page in a minute.", "success")
+        return redirect(url_for("admin.outbox"))
     rows = query("SELECT * FROM outbox ORDER BY id DESC LIMIT 200")
-    smtp = bool(current_app.config.get("SMTP_HOST"))
-    return render_template("console/outbox.html", rows=rows, smtp=smtp)
+    counts = {r["status"]: r["n"] for r in query("SELECT status, COUNT(*) AS n FROM outbox GROUP BY status")}
+    smtp = {"host": cfg.get("SMTP_HOST") or "", "port": cfg.get("SMTP_PORT"), "user": cfg.get("SMTP_USER") or "",
+            "sender": cfg.get("SMTP_FROM") or "", "tls": bool(cfg.get("SMTP_TLS")), "password": bool(cfg.get("SMTP_PASSWORD"))}
+    return render_template("console/outbox.html", rows=rows, smtp=smtp, counts=counts, me=user["email"],
+                           most=SEND_AGAIN_MOST)

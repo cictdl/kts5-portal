@@ -247,7 +247,7 @@ then the task of Plesk (steps 1 to 5 above).
    page "The portal is being updated"; a form that is sent in those seconds
    is not stored and has to be sent again.
 3. **Read step 2 of the output.** It must read
-   `complete: portal version 1.2.15 with 23 interface languages`, with the
+   `complete: portal version 1.2.16 with 23 interface languages`, with the
    number that `kts\version.py` of the release names. If the line names no
    version, the old installer ran. Nothing is lost and the portal works, with
    the new code; wait ten minutes and run the task once more. That run does
@@ -359,7 +359,7 @@ portal, the vendored libraries, `web.config`, and empty `instance\`,
    `data\`, `instance\`, `uploads\`, `logs\` … directly inside `httpdocs`.
    Delete the zip afterwards.
 4. Open `http://kts.cict.in/healthz`. Expected:
-   `{"ok": true, "time": "…", "version": "1.2.15"}`.
+   `{"ok": true, "time": "…", "version": "1.2.16"}`.
    First start takes 10–20 seconds (it creates the database).
 5. If you get **502.3** instead, open `web.config` in the File Manager editor
    and replace the two values with the ones the probe printed:
@@ -397,6 +397,13 @@ portal, the vendored libraries, `web.config`, and empty `instance\`,
    Manager editor), one `NAME=value` on a line, then restart the portal: run
    the installation task again or, on a server installed the long way, save
    `web.config` once more. Until then mails wait in *Console → Mail outbox*.
+   With Google Workspace (as for kts@cict.in): `KTS_SMTP_HOST=smtp.gmail.com`,
+   `KTS_SMTP_PORT=587`, `KTS_SMTP_TLS=1`, `KTS_SMTP_USER` and `KTS_SMTP_FROM` the address,
+   `KTS_SMTP_PASSWORD` an app password of that account (Google Account → Security →
+   2-Step Verification → App passwords; the 16 letters without spaces). *Console → Mail
+   outbox* then sends a test message and shows the answer of the server, and sends the
+   messages written before mail was configured once more. Google sends at most 2,000
+   messages a day from one account.
 6. Test a registration yourself and delete it from the console (withdraw).
 
 ## 6b. Deploy from GitHub instead of uploading zips
