@@ -97,6 +97,53 @@ def test_the_waiting_messages_are_sent_again(server):
         assert [r["status"] for r in query("SELECT status FROM outbox ORDER BY id")] == ["sent", "sent", "sent"]
 
 
+class FakeSocket:
+    def close(self):
+        pass
+
+
+def test_the_check_of_the_connection_names_the_step_that_fails(server, monkeypatch):
+    import socket
+    open_ports = {587, 465}
+
+    def connect(address, timeout=None):
+        if address[1] not in open_ports:
+            raise ConnectionRefusedError("refused")
+        return FakeSocket()
+
+    monkeypatch.setattr(socket, "create_connection", connect)
+    monkeypatch.setattr(socket, "getaddrinfo", lambda host, port, proto=0: [(2, 1, 6, "", ("142.250.4.108", port))])
+    monkeypatch.setattr(FakeSMTP, "ehlo", lambda self: (250, b"smtp.gmail.com at your service"), raising=False)
+    monkeypatch.setattr(FakeSMTP, "quit", lambda self: None, raising=False)
+    monkeypatch.setattr(FakeSMTP, "starttls", lambda self: (220, b"Ready to start TLS"))
+    monkeypatch.setattr(FakeSMTP, "login", lambda self, user, password: (235, b"Accepted"))
+    app = make_app(ADMIN_PASSWORD=None, SMTP_HOST="smtp.gmail.com", SMTP_PORT=587, SMTP_USER="kts@cict.in",
+                   SMTP_PASSWORD="app-password-of-the-tests", SMTP_FROM="kts@cict.in")
+    admin = _staff(app, "admin@tests.example", "admin")
+    page = _post(admin, action="check")
+    assert page.count('<span class="pill green">ok</span>') == 6 and "Sign-in as kts@cict.in" in page
+    assert "app-password-of-the-tests" not in page and "142.250.4.108" in page
+    # the hosting company closes port 587: the check says so, and stops before the greeting
+    open_ports.discard(587)
+    page = _post(admin, action="check")
+    assert "Reach port 587" in page and "ConnectionRefusedError" in page and "KTS_SMTP_PORT=465" in page
+
+
+def test_port_465_is_encrypted_from_the_start(server, monkeypatch):
+    used = []
+
+    class FakeSSL(FakeSMTP):
+        def __init__(self, host, port, timeout=None):
+            used.append(("ssl", port))
+
+    monkeypatch.setattr(smtplib, "SMTP_SSL", FakeSSL)
+    app = make_app(ADMIN_PASSWORD=None, SMTP_HOST="smtp.gmail.com", SMTP_PORT=465, SMTP_USER="kts@cict.in",
+                   SMTP_PASSWORD="x", SMTP_FROM="kts@cict.in")
+    admin = _staff(app, "admin@tests.example", "admin")
+    assert "The test message was sent to someone@cict.in." in _post(admin, action="test", to="someone@cict.in")
+    assert used == [("ssl", 465)] and server.sent[-1][0] == "someone@cict.in"
+
+
 def test_without_mail_the_test_message_waits(server):
     app = make_app(ADMIN_PASSWORD=None)
     admin = _staff(app, "admin@tests.example", "admin")

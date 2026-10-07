@@ -247,7 +247,7 @@ then the task of Plesk (steps 1 to 5 above).
    page "The portal is being updated"; a form that is sent in those seconds
    is not stored and has to be sent again.
 3. **Read step 2 of the output.** It must read
-   `complete: portal version 1.2.16 with 23 interface languages`, with the
+   `complete: portal version 1.2.17 with 23 interface languages`, with the
    number that `kts\version.py` of the release names. If the line names no
    version, the old installer ran. Nothing is lost and the portal works, with
    the new code; wait ten minutes and run the task once more. That run does
@@ -359,7 +359,7 @@ portal, the vendored libraries, `web.config`, and empty `instance\`,
    `data\`, `instance\`, `uploads\`, `logs\` … directly inside `httpdocs`.
    Delete the zip afterwards.
 4. Open `http://kts.cict.in/healthz`. Expected:
-   `{"ok": true, "time": "…", "version": "1.2.16"}`.
+   `{"ok": true, "time": "…", "version": "1.2.17"}`.
    First start takes 10–20 seconds (it creates the database).
 5. If you get **502.3** instead, open `web.config` in the File Manager editor
    and replace the two values with the ones the probe printed:
@@ -403,7 +403,10 @@ portal, the vendored libraries, `web.config`, and empty `instance\`,
    2-Step Verification → App passwords; the 16 letters without spaces). *Console → Mail
    outbox* then sends a test message and shows the answer of the server, and sends the
    messages written before mail was configured once more. Google sends at most 2,000
-   messages a day from one account.
+   messages a day from one account. *Check the connection* there tries each step (the name
+   of the server, ports 587 and 465, the greeting, STARTTLS, the sign-in) and names the one
+   that fails: a port that cannot be reached is closed by the hosting company for outgoing
+   mail. On port 465 the connection is encrypted from the start (`KTS_SMTP_PORT=465`).
 6. Test a registration yourself and delete it from the console (withdraw).
 
 ## 6b. Deploy from GitHub instead of uploading zips

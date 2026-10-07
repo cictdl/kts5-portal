@@ -20,7 +20,8 @@ from .db import (DEFAULT_SETTINGS, INSTITUTE_HEAD, NODAL_FIELDS, NODAL_OFFICERS,
                  set_setting, utcnow)
 from .public import CATEGORIES
 from .utils import (RESOURCE_EXT, client_ip, csv_bytes, exam_window, now_ist, paginate, parse_iso,
-                    registration_state, safe_int, save_upload, send_again, send_mail, valid_email, xlsx_bytes)
+                    registration_state, safe_int, save_upload, send_again, send_mail, valid_email, xlsx_bytes,
+                    mail_check)
 
 bp = Blueprint("admin", __name__, url_prefix="/console")
 
@@ -917,9 +918,15 @@ SEND_AGAIN_MOST = 500
 def outbox():
     user = current_user()
     cfg = current_app.config
+    check = None
     if request.method == "POST":
         action = request.form.get("action")
-        if action == "test":
+        if action == "check":
+            # the answer is shown on this page itself
+            check = mail_check(cfg)
+            audit("mail_check", "outbox", None, detail=[f"{name}: {'ok' if ok else 'failed'}" for name, ok, _d in check],
+                  user=user, ip=client_ip())
+        elif action == "test":
             to = (request.form.get("to") or "").strip()
             if not valid_email(to):
                 flash("Enter the e-mail address to send the test message to.", "error")
@@ -946,10 +953,11 @@ def outbox():
                 send_again(rows)
                 audit("mail_again", "outbox", None, detail=f"{len(rows)} message(s)", user=user, ip=client_ip())
                 flash(f"{len(rows)} waiting or failed message(s) are being sent again; reload this page in a minute.", "success")
-        return redirect(url_for("admin.outbox"))
+        if check is None:
+            return redirect(url_for("admin.outbox"))
     rows = query("SELECT * FROM outbox ORDER BY id DESC LIMIT 200")
     counts = {r["status"]: r["n"] for r in query("SELECT status, COUNT(*) AS n FROM outbox GROUP BY status")}
     smtp = {"host": cfg.get("SMTP_HOST") or "", "port": cfg.get("SMTP_PORT"), "user": cfg.get("SMTP_USER") or "",
             "sender": cfg.get("SMTP_FROM") or "", "tls": bool(cfg.get("SMTP_TLS")), "password": bool(cfg.get("SMTP_PASSWORD"))}
     return render_template("console/outbox.html", rows=rows, smtp=smtp, counts=counts, me=user["email"],
-                           most=SEND_AGAIN_MOST)
+                           most=SEND_AGAIN_MOST, check=check)

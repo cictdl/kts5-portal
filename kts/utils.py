@@ -8,6 +8,7 @@ import ipaddress
 import re
 import secrets
 import smtplib
+import socket
 import threading
 import time
 import unicodedata
@@ -544,6 +545,69 @@ def send_again(rows):
     return thread
 
 
+def _smtp(cfg, timeout=15):
+    """
+    A connection to the mail server: on port 465 encrypted from the first byte (implicit TLS),
+    on any other port plain and then, with KTS_SMTP_TLS=1, encrypted by STARTTLS.
+    """
+    if int(cfg["SMTP_PORT"]) == 465:
+        return smtplib.SMTP_SSL(cfg["SMTP_HOST"], cfg["SMTP_PORT"], timeout=timeout)
+    smtp = smtplib.SMTP(cfg["SMTP_HOST"], cfg["SMTP_PORT"], timeout=timeout)
+    if cfg["SMTP_TLS"]:
+        smtp.starttls()
+    return smtp
+
+
+def mail_check(cfg, timeout=10):
+    """
+    The way to the mail server, step by step: [(step, ok, detail)]. It stops at the first step
+    that fails, after trying which of the ports 587 and 465 can be reached at all; a hosting
+    company that blocks mail lets none of them through. The password is used, never shown.
+    """
+    host = cfg.get("SMTP_HOST") or ""
+    port = int(cfg.get("SMTP_PORT") or 587)
+    steps = []
+
+    def step(name, work):
+        try:
+            detail = work()
+        except Exception as exc:  # noqa: BLE001 - every failure is the answer of the check
+            steps.append((name, False, f"{type(exc).__name__}: {exc}"[:300]))
+            return False
+        steps.append((name, True, detail or ""))
+        return True
+
+    if not host:
+        return [("Mail server", False, "KTS_SMTP_HOST is not set")]
+    if not step(f"Find {host}", lambda: ", ".join(sorted({a[4][0] for a in socket.getaddrinfo(host, port, proto=socket.IPPROTO_TCP)})[:4])):
+        return steps
+    for p in sorted({port, 587, 465}):
+        step(f"Reach port {p}", lambda p=p: socket.create_connection((host, p), timeout).close() or "open")
+    conn = {}
+
+    def greet():
+        conn["smtp"] = (smtplib.SMTP_SSL if port == 465 else smtplib.SMTP)(host, port, timeout=timeout)
+        code, text = conn["smtp"].ehlo()
+        return f"{code} {text.decode('utf-8', 'replace').splitlines()[0]}"
+
+    if not step(f"Greeting on port {port}", greet):
+        return steps
+    smtp = conn["smtp"]
+    try:
+        if port != 465 and cfg.get("SMTP_TLS"):
+            if not step("Encryption (STARTTLS)", lambda: str(smtp.starttls()[0])):
+                return steps
+            smtp.ehlo()
+        if cfg.get("SMTP_USER"):
+            step(f"Sign-in as {cfg['SMTP_USER']}", lambda: str(smtp.login(cfg["SMTP_USER"], cfg.get("SMTP_PASSWORD") or "")[0]))
+    finally:
+        try:
+            smtp.quit()
+        except Exception:  # noqa: BLE001 - the line may be gone already
+            pass
+    return steps
+
+
 def _deliver(row_id, to_addr, subject, body):
     """One message of the outbox over SMTP; its row says afterwards whether it went."""
     cfg = current_app.config
@@ -553,9 +617,7 @@ def _deliver(row_id, to_addr, subject, body):
         msg["To"] = to_addr
         msg["Subject"] = subject
         msg.set_content(body)
-        with smtplib.SMTP(cfg["SMTP_HOST"], cfg["SMTP_PORT"], timeout=15) as smtp:
-            if cfg["SMTP_TLS"]:
-                smtp.starttls()
+        with _smtp(cfg) as smtp:
             if cfg.get("SMTP_USER"):
                 smtp.login(cfg["SMTP_USER"], cfg["SMTP_PASSWORD"] or "")
             smtp.send_message(msg)

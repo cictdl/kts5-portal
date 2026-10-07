@@ -17,6 +17,23 @@
       <code>KTS_SMTP_FROM</code> and <code>KTS_SMTP_TLS</code> in <code>instance\portal.env</code> and run the installation task again.</div>
     {% endif %}
     <p class="small muted">Messages: {{ counts.get('sent', 0) }} sent · {{ counts.get('queued', 0) }} waiting · {{ counts.get('failed', 0) }} failed.</p>
+    {% if smtp.host %}
+    <form method="post" class="btn-row">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <button class="btn sm secondary" name="action" value="check">Check the connection</button>
+    </form>
+    {% endif %}
+    {% if check %}
+    <div class="table-wrap" style="margin-top:12px" id="mail-check"><table class="table">
+      <thead><tr><th>Step</th><th>Result</th><th>Detail</th></tr></thead>
+      <tbody>{% for name, ok, detail in check %}<tr><td>{{ name }}</td><td>{% if ok %}<span class="pill green">ok</span>{% else %}<span class="pill kumkum">failed</span>{% endif %}</td><td class="small">{{ detail }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+    {% set ns = namespace(blocked=false) %}
+    {% for name, ok, _d in check %}{% if not ok and name.startswith('Reach port') %}{% set ns.blocked = true %}{% endif %}{% endfor %}
+    {% if ns.blocked %}<p class="small">A port that cannot be reached is usually closed by the hosting company for outgoing mail. Ask it to allow
+      connections from this server to <code>{{ smtp.host }}</code> on port 587 (or 465). If port 465 is open and 587 is not, write
+      <code>KTS_SMTP_PORT=465</code> in <code>portal.env</code> and run the installation task again.</p>{% endif %}
+    {% endif %}
   </div>
   <div>
     <form method="post" class="card">
