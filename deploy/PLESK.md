@@ -247,7 +247,7 @@ then the task of Plesk (steps 1 to 5 above).
    page "The portal is being updated"; a form that is sent in those seconds
    is not stored and has to be sent again.
 3. **Read step 2 of the output.** It must read
-   `complete: portal version 1.2.17 with 23 interface languages`, with the
+   `complete: portal version 1.2.18 with 23 interface languages`, with the
    number that `kts\version.py` of the release names. If the line names no
    version, the old installer ran. Nothing is lost and the portal works, with
    the new code; wait ten minutes and run the task once more. That run does
@@ -359,7 +359,7 @@ portal, the vendored libraries, `web.config`, and empty `instance\`,
    `data\`, `instance\`, `uploads\`, `logs\` … directly inside `httpdocs`.
    Delete the zip afterwards.
 4. Open `http://kts.cict.in/healthz`. Expected:
-   `{"ok": true, "time": "…", "version": "1.2.17"}`.
+   `{"ok": true, "time": "…", "version": "1.2.18"}`.
    First start takes 10–20 seconds (it creates the database).
 5. If you get **502.3** instead, open `web.config` in the File Manager editor
    and replace the two values with the ones the probe printed:
@@ -404,9 +404,14 @@ portal, the vendored libraries, `web.config`, and empty `instance\`,
    outbox* then sends a test message and shows the answer of the server, and sends the
    messages written before mail was configured once more. Google sends at most 2,000
    messages a day from one account. *Check the connection* there tries each step (the name
-   of the server, ports 587 and 465, the greeting, STARTTLS, the sign-in) and names the one
-   that fails: a port that cannot be reached is closed by the hosting company for outgoing
-   mail. On port 465 the connection is encrypted from the start (`KTS_SMTP_PORT=465`).
+   of the server, ports 587 and 465, the certificate the server shows, the form of the
+   password as read from `portal.env`, the greeting, STARTTLS, the sign-in in its three
+   steps) and names the one that fails: a port that cannot be reached is closed by the
+   hosting company for outgoing mail; a certificate not issued by Google means something on
+   the server (an antivirus or a mail filter) opens the encrypted line and must leave the
+   portal alone; a line cut at the sign-in with a genuine certificate points to the same.
+   The password is never shown, only whether it has the form of an app password (16 letters).
+   On port 465 the connection is encrypted from the start (`KTS_SMTP_PORT=465`).
 6. Test a registration yourself and delete it from the console (withdraw).
 
 ## 6b. Deploy from GitHub instead of uploading zips

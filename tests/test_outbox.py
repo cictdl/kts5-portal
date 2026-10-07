@@ -116,17 +116,62 @@ def test_the_check_of_the_connection_names_the_step_that_fails(server, monkeypat
     monkeypatch.setattr(FakeSMTP, "ehlo", lambda self: (250, b"smtp.gmail.com at your service"), raising=False)
     monkeypatch.setattr(FakeSMTP, "quit", lambda self: None, raising=False)
     monkeypatch.setattr(FakeSMTP, "starttls", lambda self: (220, b"Ready to start TLS"))
-    monkeypatch.setattr(FakeSMTP, "login", lambda self, user, password: (235, b"Accepted"))
+    # the sign-in in its three steps, as the check makes it: the server answers each command
+    answers = {"AUTH": (334, b"VXNlcm5hbWU6")}
+    sent = []
+
+    def docmd(self, cmd, args=""):
+        sent.append(cmd)
+        if cmd == "AUTH":
+            return answers["AUTH"]
+        if len(sent) == 2:
+            return 334, b"UGFzc3dvcmQ6"
+        return answers.get("password", (235, b"2.7.0 Accepted"))
+
+    monkeypatch.setattr(FakeSMTP, "docmd", docmd, raising=False)
+    monkeypatch.setattr(FakeSMTP, "esmtp_features", {"auth": " LOGIN PLAIN XOAUTH2"}, raising=False)
+    import kts.utils as utils
+    monkeypatch.setattr(utils, "peer_certificate", lambda host, port=465, timeout=10: ("smtp.gmail.com", "Google Trust Services, WR2"))
     app = make_app(ADMIN_PASSWORD=None, SMTP_HOST="smtp.gmail.com", SMTP_PORT=587, SMTP_USER="kts@cict.in",
-                   SMTP_PASSWORD="app-password-of-the-tests", SMTP_FROM="kts@cict.in")
+                   SMTP_PASSWORD="abcdefghijklmnop", SMTP_FROM="kts@cict.in")
     admin = _staff(app, "admin@tests.example", "admin")
     page = _post(admin, action="check")
-    assert page.count('<span class="pill green">ok</span>') == 6 and "Sign-in as kts@cict.in" in page
-    assert "app-password-of-the-tests" not in page and "142.250.4.108" in page
+    assert page.count('<span class="pill green">ok</span>') == 11 and "Sign-in, 3: the password" in page
+    assert "issued by Google Trust Services" in page and "16 letters a–z" in page
+    # the password itself is never on the page, not even encoded
+    import base64
+    assert "abcdefghijklmnop" not in page and base64.b64encode(b"abcdefghijklmnop").decode() not in page
+    assert "142.250.4.108" in page
+    # a refused password is told with the words of the server
+    answers["password"] = (535, b"5.7.8 Username and Password not accepted")
+    page = _post(admin, action="check")
+    assert "Username and Password not accepted" in page and page.count('<span class="pill kumkum">failed</span>') == 1
+    # a line cut at the password: the step says so
+    def cut(self, cmd, args=""):
+        if cmd == "AUTH":
+            return 334, b"VXNlcm5hbWU6"
+        raise smtplib.SMTPServerDisconnected("Connection unexpectedly closed")
+
+    monkeypatch.setattr(FakeSMTP, "docmd", cut)
+    page = _post(admin, action="check")
+    assert "Sign-in, 2: the name kts@cict.in" in page and "SMTPServerDisconnected" in page
+    # a certificate that is not Google's: something on the way opens the line
+    monkeypatch.setattr(utils, "peer_certificate", lambda host, port=465, timeout=10: ("smtp.gmail.com", "Hosting Antivirus CA"))
+    page = _post(admin, action="check")
+    assert "not a certificate of Google" in page
     # the hosting company closes port 587: the check says so, and stops before the greeting
     open_ports.discard(587)
     page = _post(admin, action="check")
     assert "Reach port 587" in page and "ConnectionRefusedError" in page and "KTS_SMTP_PORT=465" in page
+
+
+def test_the_form_of_the_password_is_described_never_the_password():
+    from kts.utils import password_form
+    assert password_form("abcdefghijklmnop") == (True, "16 letters a–z, the form of a Google app password")
+    ok, words = password_form("abcd efgh ijkl mnop")
+    assert not ok and "19 characters with spaces" in words and "abcd" not in words
+    assert password_form("")[1] == "empty"
+    assert "capital letters, digits, other characters" in password_form("Abc123!")[1]
 
 
 def test_port_465_is_encrypted_from_the_start(server, monkeypatch):

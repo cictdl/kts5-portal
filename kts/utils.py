@@ -5,10 +5,13 @@ import base64
 import csv
 import io
 import ipaddress
+import os
 import re
 import secrets
 import smtplib
 import socket
+import ssl
+import tempfile
 import threading
 import time
 import unicodedata
@@ -558,11 +561,56 @@ def _smtp(cfg, timeout=15):
     return smtp
 
 
+def peer_certificate(host, port=465, timeout=10):
+    """
+    (subject, issuer) of the certificate that the server on an implicit-TLS port shows, read
+    without checking it: a certificate that the issuer of the real server did not make shows
+    that something on the way opens the encrypted line.
+    """
+    pem = ssl.get_server_certificate((host, port), timeout=timeout)
+    with tempfile.NamedTemporaryFile("w", suffix=".pem", delete=False) as fh:
+        fh.write(pem)
+    try:
+        cert = ssl._ssl._test_decode_cert(fh.name)
+    finally:
+        os.unlink(fh.name)
+
+    def names(part):
+        return ", ".join(value for rdn in cert.get(part, ()) for key, value in rdn
+                         if key in ("commonName", "organizationName"))
+
+    return names("subject"), names("issuer")
+
+
+def password_form(password):
+    """What the password looks like, never what it is: (has the form of an app password, words)."""
+    password = password or ""
+    if re.fullmatch(r"[a-z]{16}", password):
+        return True, "16 letters a–z, the form of a Google app password"
+    if not password:
+        return False, "empty"
+    kinds = []
+    if " " in password:
+        kinds.append("spaces")
+    if re.search(r"[A-Z]", password):
+        kinds.append("capital letters")
+    if re.search(r"[0-9]", password):
+        kinds.append("digits")
+    if re.search(r"[^A-Za-z0-9 ]", password):
+        kinds.append("other characters")
+    return False, f"{len(password)} characters" + (" with " + ", ".join(kinds) if kinds else "") + \
+        "; a Google app password is 16 letters a–z, written without the spaces Google shows"
+
+
 def mail_check(cfg, timeout=10):
     """
     The way to the mail server, step by step: [(step, ok, detail)]. It stops at the first step
     that fails, after trying which of the ports 587 and 465 can be reached at all; a hosting
-    company that blocks mail lets none of them through. The password is used, never shown.
+    company that blocks mail lets none of them through. The certificate that the server shows
+    says whether the line reaches the mail server itself; the sign-in is made in its three steps
+    (AUTH LOGIN, the name, the password), each with the answer of the server, so that a line that
+    is cut before the password is sent is told from a password that is refused. The password is
+    used, never shown; only its form is described.
     """
     host = cfg.get("SMTP_HOST") or ""
     port = int(cfg.get("SMTP_PORT") or 587)
@@ -574,6 +622,10 @@ def mail_check(cfg, timeout=10):
         except Exception as exc:  # noqa: BLE001 - every failure is the answer of the check
             steps.append((name, False, f"{type(exc).__name__}: {exc}"[:300]))
             return False
+        if isinstance(detail, tuple):
+            ok, detail = detail
+            steps.append((name, ok, detail))
+            return ok
         steps.append((name, True, detail or ""))
         return True
 
@@ -583,6 +635,17 @@ def mail_check(cfg, timeout=10):
         return steps
     for p in sorted({port, 587, 465}):
         step(f"Reach port {p}", lambda p=p: socket.create_connection((host, p), timeout).close() or "open")
+
+    def certificate():
+        subject, issuer = peer_certificate(host, 465, timeout)
+        genuine = "google" in issuer.lower() if "gmail" in host or "google" in host else True
+        text = f"{subject}, issued by {issuer}"
+        return (True, text) if genuine else (False, text + " (not a certificate of Google: something on the "
+                                                           "way opens the encrypted line)")
+
+    step("Certificate on port 465", certificate)
+    if cfg.get("SMTP_USER"):
+        step("Password as read from portal.env", lambda: password_form(cfg.get("SMTP_PASSWORD")))
     conn = {}
 
     def greet():
@@ -593,13 +656,25 @@ def mail_check(cfg, timeout=10):
     if not step(f"Greeting on port {port}", greet):
         return steps
     smtp = conn["smtp"]
+
+    def answer(code, text):
+        return f"{code} {text.decode('utf-8', 'replace') if isinstance(text, bytes) else text}"[:200]
+
+    def expect(command, wanted):
+        code, text = smtp.docmd(*command)
+        return (code == wanted, answer(code, text))
+
     try:
         if port != 465 and cfg.get("SMTP_TLS"):
             if not step("Encryption (STARTTLS)", lambda: str(smtp.starttls()[0])):
                 return steps
             smtp.ehlo()
         if cfg.get("SMTP_USER"):
-            step(f"Sign-in as {cfg['SMTP_USER']}", lambda: str(smtp.login(cfg["SMTP_USER"], cfg.get("SMTP_PASSWORD") or "")[0]))
+            step("Sign-in methods offered", lambda: smtp.esmtp_features.get("auth", "none").strip() or "none")
+            user, password = cfg["SMTP_USER"], cfg.get("SMTP_PASSWORD") or ""
+            if step("Sign-in, 1: AUTH LOGIN", lambda: expect(("AUTH", "LOGIN"), 334)) and \
+                    step(f"Sign-in, 2: the name {user}", lambda: expect((base64.b64encode(user.encode()).decode(),), 334)):
+                step("Sign-in, 3: the password", lambda: expect((base64.b64encode(password.encode()).decode(),), 235))
     finally:
         try:
             smtp.quit()
