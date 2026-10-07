@@ -509,6 +509,8 @@ DEFAULT_SETTINGS = {
     "orientation.note": "Language-wise online orientation sessions (10 lectures + 20-minute live Q&A) will be scheduled after the merit list is published.",
     "contact.email": "office@cict.in",
     "contact.phone": "044-22540125",
+    # the address that receives a copy of every message of the contact form (empty: none)
+    "contact.notify": "kts@cict.in",
     "contact.address": "Central Institute of Classical Tamil (CICT) – Main Office, Chemmozhi Salai, Perumbakkam, Chennai – 600100, India",
     **{key: address for key, _name, address in SOCIAL_LINKS},
     **{f"{prefix}.{field}": value for prefix, officer in INSTITUTE_HEAD + NODAL_OFFICERS for field, value in officer.items()},

@@ -622,13 +622,39 @@ def contact():
             # the limit is no mistake of the visitor: it is said at the top and no field is marked
             flash(t("reg.err_rate"), "error")
         elif not errors:
-            execute("INSERT INTO messages(name, email, phone, subject, body, topic, ip, created_at) VALUES(?,?,?,?,?,?,?,?)",
-                    (data["name"], data["email"], data["phone"], data["subject"], data["body"],
-                     data["topic"] or "general", client_ip(), utcnow()))
+            mid = execute("INSERT INTO messages(name, email, phone, subject, body, topic, ip, created_at) VALUES(?,?,?,?,?,?,?,?)",
+                          (data["name"], data["email"], data["phone"], data["subject"], data["body"],
+                           data["topic"] or "general", client_ip(), utcnow()))
+            _notify_helpdesk(settings, mid, data)
             sent = True
             data = {}
     return render_template("public/contact.html", settings=settings, sent=sent, errors=errors, data=data,
                            captcha=new_captcha())
+
+
+def _notify_helpdesk(settings, mid, data):
+    """
+    The message as an e-mail to the helpdesk address of the settings, so that nobody has to
+    watch the console for it. The visitor's address stands in the body and not as the sender:
+    the portal sends from its own account; a reply goes to the visitor from the helpdesk's own
+    mail. Nothing is sent when the address is empty or not an address.
+    """
+    to = (settings.get("contact.notify") or "").strip()
+    if not valid_email(to):
+        return
+    link = f"{current_app.config['BASE_URL'].rstrip('/')}/console/messages"
+    body = "\n".join([
+        f"A message has come through the contact form of the KTS 5.0 portal (no. {mid}).",
+        "",
+        f"From: {data['name']} <{data['email']}>" + (f", {data['phone']}" if data["phone"] else ""),
+        f"Topic: {data['topic'] or 'general'}",
+        f"Subject: {data['subject']}",
+        "",
+        data["body"],
+        "",
+        f"Reply to the visitor at {data['email']}. The message is kept in the console: {link}",
+    ])
+    send_mail(to, f"[KTS 5.0 contact] {data['subject'][:120]}", body)
 
 
 @bp.route("/healthz")

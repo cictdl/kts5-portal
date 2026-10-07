@@ -180,6 +180,14 @@ page). The image of the signature is uploaded in *Console → Certificate*
 `.jpg`), outside the web folder; it is written into each certificate page
 itself. Without it the certificates show the name above an empty line.
 
+## Contact form
+
+Every message of the contact form is kept in *Console → Messages* and, from 1.2.19, also sent
+by e-mail to the address of the setting `contact.notify` (*Settings → Contact*; kts@cict.in by
+default, empty for none), with the visitor's name, address and message and a link to the
+console. The mail goes from the portal's own account; the helpdesk replies to the visitor from
+its own mail.
+
 ## Classroom quiz
 
 A live Thirukkural quiz for a class (from 1.2.8, `kts/quiz.py`), made for the presentation that
