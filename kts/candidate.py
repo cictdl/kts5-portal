@@ -174,6 +174,11 @@ def exam():
                 return redirect(url_for("candidate.home"))
             started = now_ist()
             deadline = started + timedelta(minutes=duration)
+            # The test closes for everyone at the end of the window (1.2.33): who starts late has only the
+            # time left until then. A window already over (the administrator opened the test by hand
+            # afterwards) leaves the whole duration.
+            if end is not None and started < end < deadline:
+                deadline = end
             try:
                 execute("INSERT INTO exam_sessions(application_id, lang, paper_json, started_at, deadline_at, ip, user_agent) "
                         "VALUES(?,?,?,?,?,?,?)",

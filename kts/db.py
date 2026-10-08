@@ -514,7 +514,7 @@ DEFAULT_SETTINGS = {
     "reg.start": "2026-10-15",
     "reg.end": "2026-10-21",
     "exam.date": "2026-10-22",
-    "exam.start_time": "11:00",
+    "exam.start_time": "11:30",
     "exam.end_time": "12:00",
     "exam.duration_min": "30",
     "exam.questions": "50",
@@ -598,6 +598,8 @@ RETIRED_DEFAULTS = {
     "exam.date": ["2026-11-29", "2026-10-19"],
     "letter.date": ["2026-10-22"],
     "internship.start": ["2026-10-23"],
+    # the test begins at 11:30 (8 October 2026); the window still closes at 12:00
+    "exam.start_time": ["11:00"],
 }
 
 # Days of the events of data/timeline.json as earlier versions put them in, by the key of the event:

@@ -180,6 +180,15 @@ page). The image of the signature is uploaded in *Console → Certificate*
 `.jpg`), outside the web folder; it is written into each certificate page
 itself. Without it the certificates show the name above an empty line.
 
+## The time of the test
+
+From 1.2.33 the test of 22 October 2026 runs from 11:30 to 12:00 IST for everyone (settings
+`exam.start_time`, `exam.end_time`, `exam.duration_min` 30): an attempt ends after its 30 minutes or
+at the end of the window, whichever comes first, so who starts at 11:30 has the whole time and who
+starts later has only what is left. Nobody starts after 12:00. The examination page and the start
+page of the test say so. Opened by hand after the window (`exam.open` 1), an attempt keeps its whole
+duration.
+
 ## Visitors
 
 From 1.2.31 the footer of every page shows *Visitors: total · Today: n*, and the console dashboard

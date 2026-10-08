@@ -11,6 +11,7 @@
     </div>
     <h3>{{ t('exam.guidelines') }}</h3>
     <ol class="prose"><li>{{ t('exam.g1') }}</li><li>{{ t('exam.g2') }}</li><li>{{ t('exam.g3') }}</li><li>{{ t('exam.g4') }}</li></ol>
+    <p class="alert info ends-note"><b>{{ t('exam.ends_note')|replace('{end}', settings['exam.end_time']|string)|replace('{start}', settings['exam.start_time']|string)|replace('{minutes}', settings['exam.duration_min']|string) }}</b></p>
     <p class="small dim">{{ t('common.language') }}: <b>{{ cand.pref_lang|langnative }} · {{ cand.pref_lang|langname }}</b></p>
     {% if not eligible %}
       <div class="alert warning">{{ t('exam.not_eligible') }}</div>

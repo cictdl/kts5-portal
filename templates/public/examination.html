@@ -20,6 +20,7 @@
         <ul class="prose">
           <li>{{ t('exam.g1') }}</li><li>{{ t('exam.g2') }}</li><li>{{ t('exam.g3') }}</li><li>{{ t('exam.g4') }}</li>
         </ul>
+        <p class="alert info ends-note"><b>{{ t('exam.ends_note')|replace('{end}', settings['exam.end_time']|string)|replace('{start}', settings['exam.start_time']|string)|replace('{minutes}', settings['exam.duration_min']|string) }}</b></p>
         {% if settings['exam.instructions_url'] %}<p><a class="btn sm secondary" href="{{ settings['exam.instructions_url'] }}" target="_blank" rel="noopener">📄 {{ t('exam.instructions') }}</a></p>{% endif %}
         <div class="btn-row" style="margin-top:12px">
           <a class="btn saffron" href="{{ url_for('candidate.login') }}">{{ t('cand.take_exam') }} {{ fwd }}</a>

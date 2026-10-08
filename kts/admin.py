@@ -841,7 +841,7 @@ SETTING_GROUPS = [
                    ("home.pm_quote_by", "Attribution", "text"), ("home.pm_caption", "Photograph caption", "text")]),
     ("Registration", [("reg.open", "Registration enabled", "bool"), ("reg.start", "Opens on (YYYY-MM-DD)", "date"), ("reg.end", "Closes on (YYYY-MM-DD)", "date")]),
     ("Online test", [("exam.date", "Test date (YYYY-MM-DD)", "date"), ("exam.start_time", "Login window opens (HH:MM IST)", "text"),
-                     ("exam.end_time", "Login window closes (HH:MM IST)", "text"), ("exam.duration_min", "Duration in minutes", "number"),
+                     ("exam.end_time", "The test closes for everyone (HH:MM IST): nobody starts after it, and every attempt ends at it", "text"), ("exam.duration_min", "Duration in minutes", "number"),
                      ("exam.questions", "Questions per paper", "number"), ("exam.marks_per_q", "Marks per question", "number"),
                      ("exam.negative", "Negative marks per wrong answer", "number"), ("exam.show_score", "Show score to candidates", "bool"),
                      ("exam.open", "Window mode: auto | 1 (force open) | 0 (force closed)", "text"), ("exam.instructions_url", "Link to the official instructions PDF", "text")]),

@@ -94,6 +94,7 @@ def test_the_dates_of_the_timeline_are_the_defaults():
     # the timeline of 8 October 2026
     assert DEFAULT_SETTINGS["reg.start"] == "2026-10-15" and DEFAULT_SETTINGS["reg.end"] == "2026-10-21"
     assert DEFAULT_SETTINGS["exam.date"] == "2026-10-22"
+    assert (DEFAULT_SETTINGS["exam.start_time"], DEFAULT_SETTINGS["exam.end_time"]) == ("11:30", "12:00")
     assert DEFAULT_SETTINGS["letter.date"] == "2026-10-25" and DEFAULT_SETTINGS["internship.start"] == "2026-10-26"
     assert DEFAULT_SETTINGS["papers.due"] == "2026-11-05" and DEFAULT_SETTINGS["present.due"] == "2026-11-15"
     assert DEFAULT_SETTINGS["kts.start"] == "2026-11-28" and DEFAULT_SETTINGS["kts.end"] == "2026-12-12"
@@ -115,7 +116,7 @@ def test_the_live_database_moves_to_the_timeline_of_8_october():
     """Version 1.2.31 on the live site held the earlier dates as they came: all of them move."""
     app = make_app(ADMIN_PASSWORD=None)
     for key, old in (("reg.start", "2026-10-10"), ("reg.end", "2026-10-16"), ("exam.date", "2026-10-19"),
-                     ("letter.date", "2026-10-22"), ("internship.start", "2026-10-23")):
+                     ("letter.date", "2026-10-22"), ("internship.start", "2026-10-23"), ("exam.start_time", "11:00")):
         _sql(app, "UPDATE settings SET value = ? WHERE key = ?", (old, key))
     for title, starts, ends in ((SEEDS[1]["title"], "2026-10-20T00:00", "2026-10-21T00:00"),
                                 (SEEDS[2]["title"], "2026-10-22T00:00", None),
@@ -125,8 +126,8 @@ def test_the_live_database_moves_to_the_timeline_of_8_october():
     _sql(app, "UPDATE events SET starts_at = '2026-11-06T10:00' WHERE title = ?", (SEEDS[7]["title"],))
     again = _start(app)
     settings = _settings(again)
-    moved = [settings[k] for k in ("reg.start", "reg.end", "exam.date", "letter.date", "internship.start")]
-    assert moved == ["2026-10-15", "2026-10-21", "2026-10-22", "2026-10-25", "2026-10-26"]
+    moved = [settings[k] for k in ("reg.start", "reg.end", "exam.date", "letter.date", "internship.start", "exam.start_time")]
+    assert moved == ["2026-10-15", "2026-10-21", "2026-10-22", "2026-10-25", "2026-10-26", "11:30"]
     rows = {t: (s, e) for t, s, e in _sql(again, "SELECT title, starts_at, ends_at FROM events")}
     assert rows[SEEDS[1]["title"]] == ("2026-10-23T00:00", "2026-10-24T00:00")
     assert rows[SEEDS[2]["title"]] == ("2026-10-25T00:00", None) and rows[SEEDS[3]["title"]] == ("2026-10-26T00:00", None)
@@ -187,7 +188,7 @@ def test_the_schedule_shows_the_timeline_in_order(monkeypatch):
         assert day in upcoming, day
     # a day without a time of day stands alone; the test has the hours of its settings
     assert "12:00 AM" not in upcoming
-    assert "22 Oct 2026, 11:00 AM" in upcoming and "– 22 Oct 2026, 12:00 PM" in upcoming
+    assert "22 Oct 2026, 11:30 AM" in upcoming and "– 22 Oct 2026, 12:00 PM" in upcoming
     assert _text("timeline.present_note") in upcoming
     # the evaluation is the work of CIIL
     row = upcoming[upcoming.index(_text("timeline.eval_start")):upcoming.index(_text("timeline.eval_end"))]
@@ -232,7 +233,7 @@ def test_the_timeline_is_in_the_language_of_the_page(monkeypatch, lang):
         assert _text(key, lang) != _text(key), key
         assert _text(key, lang) in page, key
     assert _text("timeline.circular") not in page
-    assert "07-10-2026" in page and "22-10-2026, 11:00" in page
+    assert "07-10-2026" in page and "22-10-2026, 11:30" in page
 
 
 def test_wording_entered_in_the_console_is_shown_as_it_is(monkeypatch):

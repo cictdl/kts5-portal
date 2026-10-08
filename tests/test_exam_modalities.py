@@ -118,35 +118,59 @@ def test_an_attempt_that_ran_out_with_the_browser_closed_is_counted_by_the_selec
     assert [(r["rank"], r["app_no"], r["outcome"]) for r in ranked] == [(1, students[2]["app_no"], "selected")]
 
 
-def test_the_window_closes_at_the_end_time_but_an_attempt_begun_before_it_goes_on(monkeypatch):
+def test_the_test_closes_at_the_end_of_the_window_for_everyone(monkeypatch):
+    """11:30 to 12:00 IST: who starts at 11:30 has the 30 minutes, who starts later the time left (1.2.33)."""
     from datetime import datetime
     from kts import candidate, utils
     from kts.db import set_setting
-    app, students = _ready()
+    from kts.utils import parse_iso
+    app, students = _ready(3)
     with app.app_context():
         set_setting("exam.open", "auto")
-        set_setting("exam.date", "2026-10-19")
+        set_setting("exam.date", "2026-10-22")
+
     def at(hhmm):
-        now = datetime.fromisoformat(f"2026-10-19T{hhmm}").replace(tzinfo=utils.IST)
+        now = datetime.fromisoformat(f"2026-10-22T{hhmm}").replace(tzinfo=utils.IST)
         monkeypatch.setattr(utils, "now_ist", lambda: now)
         monkeypatch.setattr(candidate, "now_ist", lambda: now)
-    client, token = _signed_in(app, students[0])
-    at("10:59")
-    r = client.post("/candidate/exam", data={"_csrf": token})
+
+    def save(client, token):
+        return client.post("/candidate/exam/save", data=json.dumps({"answers": {}}), content_type="application/json",
+                           headers={"X-CSRF-Token": token})
+
+    first, t1 = _signed_in(app, students[0])
+    late, t2 = _signed_in(app, students[1])
+    # the window opens at 11:30
+    at("11:29")
+    r = first.post("/candidate/exam", data={"_csrf": t1})
     assert r.headers["Location"].endswith("/candidate/") and _attempt(app, students[0]) is None
-    at("11:59")
-    r = client.post("/candidate/exam", data={"_csrf": token})
-    assert r.headers["Location"].endswith("/candidate/exam/paper")
-    at("12:20")
-    assert client.get("/candidate/exam/paper").status_code == 200
-    r = client.post("/candidate/exam/save", data=json.dumps({"answers": {}}), content_type="application/json",
-                    headers={"X-CSRF-Token": token})
-    assert r.status_code == 200 and r.get_json()["remaining"] == 9 * 60
-    at("12:31")
-    r = client.post("/candidate/exam/save", data=json.dumps({"answers": {}}), content_type="application/json",
-                    headers={"X-CSRF-Token": token})
+    at("11:30")
+    assert first.post("/candidate/exam", data={"_csrf": t1}).headers["Location"].endswith("/candidate/exam/paper")
+    at("11:45")
+    assert late.post("/candidate/exam", data={"_csrf": t2}).headers["Location"].endswith("/candidate/exam/paper")
+    # both end at 12:00: the first after its 30 minutes, the late one after 15
+    for who in students[:2]:
+        attempt = _attempt(app, who)
+        assert parse_iso(attempt["deadline_at"]).strftime("%H:%M") == "12:00"
+    at("11:55")
+    assert save(late, t2).get_json()["remaining"] == 5 * 60 and save(first, t1).get_json()["remaining"] == 5 * 60
+    # nobody starts after 12:00, and at 12:01 every attempt is over
+    at("12:01")
+    third, t3 = _signed_in(app, students[2])
+    assert third.post("/candidate/exam", data={"_csrf": t3}).headers["Location"].endswith("/candidate/")
+    r = save(late, t2)
     assert r.status_code == 409 and r.get_json()["reason"] == "expired"
-    assert _attempt(app, students[0])["status"] == "expired"
+    assert _attempt(app, students[1])["status"] == "expired"
+    # the pages tell it before the start
+    page = third.get("/candidate/exam?lang=en").get_data(as_text=True)
+    note = "The test closes at 12:00 IST for everyone. Start at 11:30 to have the full 30 minutes"
+    assert note in page and note in app.test_client().get("/examination?lang=en").get_data(as_text=True)
+    # opened by hand after the window, an attempt has its whole duration
+    with app.app_context():
+        set_setting("exam.open", "1")
+    at("14:00")
+    assert third.post("/candidate/exam", data={"_csrf": t3}).headers["Location"].endswith("/candidate/exam/paper")
+    assert parse_iso(_attempt(app, students[2])["deadline_at"]).strftime("%H:%M") == "14:30"
 
 
 def test_a_student_not_yet_verified_cannot_start():
