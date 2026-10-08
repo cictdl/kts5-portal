@@ -75,7 +75,9 @@ def dashboard():
     hide = "" if has_perm(user, "stipend") else " WHERE action NOT LIKE 'bank_%'"
     recent = query("SELECT * FROM audit_log" + hide + " ORDER BY id DESC LIMIT 12")
     start, end, is_open = exam_window(settings)
-    return render_template("console/dashboard.html", settings=settings, by_status=by_status, total=total,
+    from .visits import days as visit_days
+    visit_rows = visit_days(30)
+    return render_template("console/dashboard.html", visit_rows=visit_rows, settings=settings, by_status=by_status, total=total,
                            colleges=colleges, states=states, days=days, max_day=max_day, top_states=top_states,
                            by_lang=by_lang, exam=exam, qbank=qbank, tasks={r["status"]: r["n"] for r in tasks},
                            overdue=overdue, messages=messages, recent=recent, reg_state=registration_state(settings),
@@ -832,6 +834,7 @@ def user_form(uid=None):
 
 SETTING_GROUPS = [
     ("Site", [("site.banner", "Banner text", "text"), ("site.banner_on", "Show banner", "bool"), ("stats.public", "Show live counts on the home page", "bool"),
+              ("site.visitors", "Show the count of visitors in the footer of every page", "bool"),
               ("site.draft_note_on", "Show the note “this translation is a draft” in interface languages that are not yet reviewed", "bool")]),
     ("Home page", [("home.pm_on", "Show the Prime Minister's photograph and quotation", "bool"),
                    ("home.pm_quote", "Quotation (without quotation marks)", "text"),

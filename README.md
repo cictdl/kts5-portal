@@ -180,6 +180,16 @@ page). The image of the signature is uploaded in *Console → Certificate*
 `.jpg`), outside the web folder; it is written into each certificate page
 itself. Without it the certificates show the name above an empty line.
 
+## Visitors
+
+From 1.2.31 the footer of every page shows *Visitors: total · Today: n*, and the console dashboard
+lists the visitors and pages of the last 30 days (`kts/visits.py`, table `visit_days`). A visitor is
+one browser on one day: its address and browser name are mixed with a random key of the day that is
+never stored, so nothing of who visited is kept, only the day and two numbers. Pages of the console
+and the hub, files, JSON answers, the health check and robots are not counted. The counts are written
+once a minute; a restart forgets which browsers were already counted that day. Counting began with
+this version. *Settings → Site → Show the count of visitors* hides the footer line.
+
 ## Reels and shorts
 
 From 1.2.23 the programme page lists, under the card "Reels and shorts" of part II (`/programme#reels`),

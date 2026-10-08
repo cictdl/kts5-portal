@@ -432,6 +432,13 @@ CREATE INDEX IF NOT EXISTS idx_papers_status ON papers(status);
 
 -- Gallery (kts/gallery.py): photographs in albums (the album is the event named on them), the
 -- files in uploads/gallery/, served at /files/gallery/ when published.
+-- the visitors of a day, counted without keeping who they were (kts/visits.py, 1.2.31)
+CREATE TABLE IF NOT EXISTS visit_days (
+    day       TEXT PRIMARY KEY,
+    visitors  INTEGER NOT NULL DEFAULT 0,
+    views     INTEGER NOT NULL DEFAULT 0
+);
+
 CREATE TABLE IF NOT EXISTS gallery_photos (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     album       TEXT NOT NULL,
@@ -562,6 +569,8 @@ DEFAULT_SETTINGS = {
     "quiz.candidates": "1",
     # anybody may host a classroom quiz, without an account (1.2.30)
     "quiz.public": "1",
+    # the count of visitors in the footer of every page (1.2.31)
+    "site.visitors": "1",
     "quiz.max_players": "200",
     "stats.public": "1",
     "site.draft_note_on": "1",

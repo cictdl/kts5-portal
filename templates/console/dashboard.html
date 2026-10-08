@@ -42,6 +42,14 @@
 </div>
 
 <div class="card" style="margin-top:16px">
+  {% set vmax = (visit_rows|map(attribute=1)|max) or 1 %}
+  <div class="section-head"><h3>Visitors · last 30 days</h3><span class="small muted">total {{ '{:,}'.format(visit_rows|sum(attribute=1)) }} visitors, {{ '{:,}'.format(visit_rows|sum(attribute=2)) }} pages · a visitor is one browser on one day; nobody's address is kept</span></div>
+  <div class="table-wrap"><table class="table visit-days"><thead><tr><th>Day</th><th class="num">Visitors</th><th class="num">Pages</th><th style="width:45%"></th></tr></thead><tbody>
+  {% for d, v, p in visit_rows %}<tr><td>{{ d|date }}</td><td class="num">{{ '{:,}'.format(v) }}</td><td class="num">{{ '{:,}'.format(p) }}</td><td><div class="track"><div class="fill" style="width:{{ (v / vmax * 100)|round(1) }}%;background:var(--saffron)"></div></div></td></tr>{% endfor %}
+  </tbody></table></div>
+</div>
+
+<div class="card" style="margin-top:16px">
   <div class="section-head"><h3>Recent activity</h3><a class="small" href="{{ url_for('admin.audit_log') }}">Audit log →</a></div>
   {% for r in recent %}<div class="audit-row"><span class="muted">{{ r.created_at|datetime }}</span><span><code>{{ r.action }}</code> {{ r.entity }}{% if r.entity_id %} #{{ r.entity_id }}{% endif %} <span class="muted">· {{ r.actor }}</span> <span class="dim">{{ r.detail|truncate(90) }}</span></span></div>{% endfor %}
 </div>

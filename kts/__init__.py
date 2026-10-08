@@ -57,6 +57,8 @@ def create_app(config_object=Config):
     from . import papers  # noqa: F401
     # the gallery adds its page to the public site and its console page
     from . import gallery  # noqa: F401
+    # the count of visitors (1.2.31)
+    from . import visits
 
     db.init_app(app)
     i18n.register(app)
@@ -75,6 +77,14 @@ def create_app(config_object=Config):
         if request.endpoint in ("public.healthz",) or request.path.startswith("/static/"):
             return
         utils.check_csrf()
+
+    @app.after_request
+    def _count(resp):
+        try:
+            visits.visits(app).record(resp)
+        except Exception:  # the count never stands in the way of a page
+            app.logger.exception("visit not counted")
+        return resp
 
     @app.after_request
     def _headers(resp):
@@ -170,6 +180,7 @@ def create_app(config_object=Config):
                 "ministry": app.config["MINISTRY"], "base_url": app.config["BASE_URL"],
             },
             "get_setting": db.get_setting,
+            "visit_figures": lambda: visits.visits(app).figures(),
             "certificate_link": certificate.certificate_link,
             "merit_link": certificate.merit_link,
             "letter_link": certificate.letter_link,

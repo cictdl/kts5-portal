@@ -804,5 +804,7 @@
   "prog.reels.count": "{reels} short videos in {langs} languages",
   "prog.reels.watch": "Watch on YouTube",
   "prog.reels.channel": "All the shorts on the YouTube channel of CICT",
-  "quiz.guest_note": "Anybody may host a quiz. It belongs to this browser: keep this window on the projector until the end; on another device, start a new quiz."
+  "quiz.guest_note": "Anybody may host a quiz. It belongs to this browser: keep this window on the projector until the end; on another device, start a new quiz.",
+  "site.visitors": "Visitors",
+  "site.visitors_today": "Today"
 }
