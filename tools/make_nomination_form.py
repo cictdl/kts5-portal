@@ -4,8 +4,11 @@ institution fills in, signs and seals, and the nominated student uploads at regi
 
     python tools/make_nomination_form.py
 
-Drawn with PyMuPDF and the fonts of Windows (Cambria for the headings, Segoe UI for the text; Nirmala UI
-for the Tamil and Hindi theme line). The logos are those of the portal (static/img).
+Drawn with PyMuPDF and the fonts of Windows (Cambria for the headings, Segoe UI for the text). The Tamil
+and Hindi theme line goes through PyMuPDF's HTML layout (insert_htmlbox, with Latha and Mangal), which
+shapes the script: drawn letter by letter, as insert_text does, the vowel signs of Tamil and Devanagari
+come apart (திருக்குறள் lost its ு and the ோ of பயில்வோம் stood on a dotted circle). The logos are those of
+the portal (static/img).
 """
 from pathlib import Path
 
@@ -21,13 +24,24 @@ DIM = (0.36, 0.33, 0.31)
 RULE = (0.70, 0.68, 0.65)
 
 
+def checked(page):
+    """page.insert_textbox draws nothing, silently, when the text does not fit its box: here it stops instead."""
+    plain = page.insert_textbox
+
+    def insert_textbox(rect, text, **kw):
+        left = plain(rect, text, **kw)
+        assert left >= 0, f"the text does not fit its box {rect}: {text[:60]}"
+        return left
+    page.insert_textbox = insert_textbox
+    return page
+
+
 def main():
     doc = fitz.open()
-    page = doc.new_page(width=595, height=842)  # A4
+    page = checked(doc.new_page(width=595, height=842))  # A4
     page.insert_font(fontname="head", fontfile=str(FONTS / "cambriab.ttf"))
     page.insert_font(fontname="text", fontfile=str(FONTS / "segoeui.ttf"))
     page.insert_font(fontname="bold", fontfile=str(FONTS / "segoeuib.ttf"))
-    page.insert_font(fontname="indic", fontfile=str(FONTS / "Nirmala.ttc"))
     sh = page.new_shape()
 
     # tricolour band
@@ -39,12 +53,16 @@ def main():
     # letterhead
     page.insert_image(fitz.Rect(40, 26, 92, 78), filename=str(ROOT / "static" / "img" / "logos" / "goi.png"), keep_proportion=True)
     page.insert_image(fitz.Rect(503, 24, 555, 76), filename=str(ROOT / "static" / "img" / "cict-logo.png"), keep_proportion=True)
-    page.insert_textbox(fitz.Rect(100, 24, 495, 42), "Ministry of Education, Government of India", fontname="text", fontsize=9.5,
+    page.insert_textbox(fitz.Rect(100, 20, 495, 36), "Ministry of Education, Government of India", fontname="text", fontsize=9.5,
                         color=DIM, align=1)
-    page.insert_textbox(fitz.Rect(100, 40, 495, 62), "Kashi Tamil Sangamam 5.0", fontname="head", fontsize=17, color=INDIGO, align=1)
-    page.insert_textbox(fitz.Rect(100, 61, 495, 78), "திருக்குறள் பயில்வோம் · Thirukkural Payilvom · तिरुक्कुरल अभ्यास करें",
-                        fontname="indic", fontsize=9.5, color=KUMKUM, align=1)
-    page.insert_textbox(fitz.Rect(100, 77, 495, 92), "Central Institute of Classical Tamil (CICT), Chennai · www.kts.cict.in",
+    page.insert_textbox(fitz.Rect(100, 34, 495, 62), "Kashi Tamil Sangamam 5.0", fontname="head", fontsize=17, color=INDIGO, align=1)
+    css = ("@font-face { font-family: ta; src: url(latha.ttf); } @font-face { font-family: dv; src: url(mangal.ttf); } "
+           "body { margin: 0; font-size: 9.5pt; color: #b3261f; text-align: center; } "
+           ".ta { font-family: ta; } .dv { font-family: dv; } .en { font-family: sans-serif; }")
+    page.insert_htmlbox(fitz.Rect(100, 61, 495, 77),
+                        '<p><span class="ta">திருக்குறள் பயில்வோம்</span> <span class="en">· Thirukkural Payilvom ·</span> '
+                        '<span class="dv">तिरुक्कुरल अभ्यास करें</span></p>', css=css, archive=fitz.Archive(str(FONTS)))
+    page.insert_textbox(fitz.Rect(100, 76, 495, 94), "Central Institute of Classical Tamil (CICT), Chennai · www.kts.cict.in",
                         fontname="text", fontsize=8.5, color=DIM, align=1)
     page.draw_line((40, 98), (555, 98), color=INDIGO, width=1.2)
 
@@ -91,13 +109,13 @@ def main():
     y = line(y, "E-mail")
 
     y = section(y + 6, "D. Endorsement by the Head of the Institution")
-    page.insert_textbox(fitz.Rect(40, y, 555, y + 44),
+    page.insert_textbox(fitz.Rect(40, y, 555, y + 60),
                         "The student named above is a bona fide student of this institution and is nominated, with the Faculty "
                         "Supervisor/Guide named above, for the Students' Engagement Programme of Kashi Tamil Sangamam 5.0. The "
                         "institution will facilitate the online qualifying examination, the orientation, the research paper and the "
                         "one-hour presentation on the Thirukkural, and will submit the institutional report in the prescribed format.",
                         fontname="text", fontsize=8.8, color=INK, align=3)
-    y += 52
+    y += 62
     y = pair(y, "Name of the Head of the Institution", "Designation")
     y = pair(y, "Place", "Date")
     page.insert_text((40, y + 10), "Signature", fontname="text", fontsize=9, color=INK)
