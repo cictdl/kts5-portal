@@ -560,6 +560,8 @@ DEFAULT_SETTINGS = {
     # the classroom quiz (kts/quiz.py): open, hosted also by the selected students, players in one quiz
     "quiz.on": "1",
     "quiz.candidates": "1",
+    # anybody may host a classroom quiz, without an account (1.2.30)
+    "quiz.public": "1",
     "quiz.max_players": "200",
     "stats.public": "1",
     "site.draft_note_on": "1",

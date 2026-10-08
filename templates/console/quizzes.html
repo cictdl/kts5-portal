@@ -16,7 +16,7 @@
   <thead><tr><th>Created (IST)</th><th>Code</th><th>Host</th><th>Language</th><th class="num">Questions</th><th class="num">Players</th><th>State</th><th></th></tr></thead>
   <tbody>{% for line in lines %}{% set r = line.room %}
   <tr><td>{{ r.created_at|datetime }}</td><td><code>{{ r.code }}</code></td>
-    <td>{{ r.host_name }}{% if line.app_no %} <span class="small muted">· student {{ line.app_no }}</span>{% elif r.host_kind == 'staff' %} <span class="small muted">· staff</span>{% endif %}</td>
+    <td>{{ r.host_name }}{% if line.app_no %} <span class="small muted">· student {{ line.app_no }}</span>{% elif r.host_kind == 'staff' %} <span class="small muted">· staff</span>{% elif r.host_kind == 'guest' %} <span class="small muted">· visitor without an account</span>{% endif %}</td>
     <td>{{ r.lang|langname }}</td><td class="num">{{ line.questions }}</td><td class="num">{{ r.players }}</td>
     <td>{% if line.stage == 'end' %}<span class="pill grey">ended</span>{% elif line.stage == 'lobby' %}<span class="pill">waiting</span>{% else %}<span class="pill green">live · question {{ r.q_index + 1 }}</span>{% endif %}</td>
     <td>{% if r.host_kind == 'staff' and r.host_id == current_user.id %}<a class="btn xs secondary" href="{{ url_for('quiz.host_screen', code=r.code) }}" target="_blank" rel="noopener">Open ↗</a>{% endif %}</td></tr>

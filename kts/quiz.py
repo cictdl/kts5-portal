@@ -14,10 +14,13 @@ Live updates: the screens ask for the state every second or two. No socket: behi
 would hold one of its threads for every phone. Times are milliseconds of the server clock, and a
 screen counts down from what the server says remains.
 
-Who hosts: CICT staff signed in to the console, and, once the merit list is published, the selected
-students signed in to the candidate portal (setting quiz.candidates). Anybody with the code joins as
-a player, without an account; the name a player gives is shown to the class and is deleted with the
-answers after KEEP_DAYS days.
+Who hosts: CICT staff signed in to the console; once the merit list is published, the selected
+students signed in to the candidate portal (setting quiz.candidates); and, from version 1.2.30, anybody
+without an account (setting quiz.public), a teacher for example. The quiz of such a visitor belongs to
+the browser that made it: the session holds a random key that stands for the host, so that nobody else
+can run its screen. A visitor makes GUEST_PER_HOUR quizzes an hour from one address at most, and all
+visitors together GUEST_PER_DAY a day. Anybody with the code joins as a player, without an account; the
+name a player gives is shown to the class and is deleted with the answers after KEEP_DAYS days.
 """
 import json
 import random
@@ -44,6 +47,8 @@ ROOM_HOURS = 6             # a quiz that its host never ended closes this long a
 KEEP_DAYS = 30             # then the names and answers of its players are deleted; the line of the list stays
 COUNTS = (5, 10, 15, 20)   # questions in a quiz
 SECONDS = (20, 30, 45, 60)  # time for one question
+GUEST_PER_HOUR = 10        # quizzes a visitor without an account makes in an hour from one address
+GUEST_PER_DAY = 300        # quizzes of all such visitors together in a day
 NAME_MAX = 24
 # the four options: colour and shape, so that the answer is told by the shape as well
 SHAPES = ("▲", "◆", "●", "■")
@@ -215,18 +220,31 @@ def _kural_info(n, lang):
 
 # ---- rooms --------------------------------------------------------------------------------------
 
-def _host():
-    """(kind, id, name) of the visitor as a host: staff of the console, or a selected student."""
+def _host(make_key=False):
+    """
+    (kind, id, name) of the visitor as a host: staff of the console, a selected student, or, when the
+    setting quiz.public allows it, anybody ("guest"). A guest is the random key in the session; it is
+    made when the guest makes a quiz (make_key), and is 0 before, which no quiz has.
+    """
     user = current_user()
     if user is not None and not user["must_change_password"] and has_perm(user, "quiz.host"):
         return "staff", user["id"], user["name"]
+    settings = all_settings()
     cid = session.get("cand_id")
     if cid:
-        settings = all_settings()
         if settings.get("quiz.candidates") == "1" and settings.get("merit.published") == "1":
             cand = query("SELECT id, full_name FROM applications WHERE id = ? AND status = 'selected'", (cid,), one=True)
             if cand is not None:
                 return "candidate", cand["id"], cand["full_name"]
+    if settings.get("quiz.public", "1") == "1":
+        key = session.get("quiz_guest")
+        if not isinstance(key, int) or key <= 0:
+            key = 0
+            if make_key:
+                key = secrets.randbelow(2 ** 62 - 1) + 1
+                session["quiz_guest"] = key
+                session.permanent = True
+        return "guest", key, ""
     return None
 
 
@@ -472,7 +490,7 @@ def answer():
 
 @bp.route("/host", methods=["GET", "POST"])
 def host_new():
-    host = _host()
+    host = _host(make_key=request.method == "POST")
     if host is None or _closed():
         return render_template("quiz/host_new.html", host=None, closed=_closed())
     error = None
@@ -494,8 +512,14 @@ def host_new():
         questions = []
         if lang in codes and count in COUNTS and seconds in SECONDS and _scope(form["scope"]) is not None:
             questions = make_questions(lang, count, form["scope"], random.Random(secrets.randbits(64)))
+        if questions and host[0] == "guest":
+            # a visitor without an account: so many quizzes an hour from one address, so many a day in all
+            day = query("SELECT COUNT(*) AS n FROM quiz_rooms WHERE host_kind = 'guest' AND created_ms > ?",
+                        (_now_ms() - 86400 * 1000,), one=True)["n"]
+            if day >= GUEST_PER_DAY or not limiter.allow("quiz_guest", client_ip(), GUEST_PER_HOUR, 3600):
+                questions, error = [], t("reg.err_rate")
         if not questions:
-            error = t("quiz.no_questions")
+            error = error or t("quiz.no_questions")
         else:
             _forget_old()
             now = _now_ms()

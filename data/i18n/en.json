@@ -803,5 +803,6 @@
   "prog.reels.d": "Short videos of the Central Institute of Classical Tamil (CICT) in which scholars and students explain the specialties and greatness of the Thirukkural, written in Tamil by Thiruvalluvar, in their own languages.",
   "prog.reels.count": "{reels} short videos in {langs} languages",
   "prog.reels.watch": "Watch on YouTube",
-  "prog.reels.channel": "All the shorts on the YouTube channel of CICT"
+  "prog.reels.channel": "All the shorts on the YouTube channel of CICT",
+  "quiz.guest_note": "Anybody may host a quiz. It belongs to this browser: keep this window on the projector until the end; on another device, start a new quiz."
 }

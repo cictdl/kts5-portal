@@ -245,11 +245,14 @@ host downloads the results as CSV. The pages are in the 23 interface languages, 
 The questions are made from the corpus when the quiz is created, in the kinds of the question
 generator of the test; they are never those of the question bank. The screens ask the portal for
 the state every second (projector) or second and a half (phones): no socket, so nothing holds a
-thread of Waitress. Who hosts: CICT staff signed in to the console, and the selected students
-signed in to the candidate portal once the merit list is published (a card on their page). The
+thread of Waitress. Who hosts: CICT staff signed in to the console, the selected students
+signed in to the candidate portal once the merit list is published (a card on their page), and,
+from 1.2.30, anybody without an account, a teacher for example. The quiz of such a visitor belongs
+to the browser that made it (a random key in its session), so nobody else runs its screen; a
+visitor makes 10 quizzes an hour from one address, and all visitors together 300 a day. The
 console lists every quiz (*Classroom quiz*); under *Settings → Classroom quiz* an administrator
-closes the quiz (`quiz.on`), stops the hosting by students (`quiz.candidates`) or limits the
-players of one quiz (`quiz.max_players`, 200). A host has one quiz at a time; a quiz that is not
+closes the quiz (`quiz.on`), stops the hosting by students (`quiz.candidates`) or by visitors
+without an account (`quiz.public`), or limits the players of one quiz (`quiz.max_players`, 200). A host has one quiz at a time; a quiz that is not
 ended closes after six hours. The names of the players are deleted with their answers after 30
 days; the line of the quiz (host, language, number of players) stays.
 

@@ -852,6 +852,7 @@ SETTING_GROUPS = [
       ("papers.guide_url", "Research papers: link to the guidelines (https://… or /static/…; empty: none)", "text")]),
     ("Classroom quiz", [("quiz.on", "Classroom quiz open (hosting and joining)", "bool"),
                         ("quiz.candidates", "Selected students may host a quiz once the merit list is published", "bool"),
+                        ("quiz.public", "Anybody may host a quiz, without an account (10 quizzes an hour from one address, 300 a day in all)", "bool"),
                         ("quiz.max_players", "Players in one quiz at most", "number")]),
     ("Kashi Tamil Sangamam 5.0", [("kts.start", "Inauguration (YYYY-MM-DD)", "date"), ("kts.end", "Valedictory programme (YYYY-MM-DD)", "date"),
                                   ("inaug.link", "Live stream of the inauguration (address, shown to the selected students)", "text"),

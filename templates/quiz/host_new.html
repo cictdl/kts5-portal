@@ -48,6 +48,7 @@
       </div>
       <button class="btn saffron quiz-go" type="submit">{{ t('quiz.create') }} {{ fwd }}</button>
     </form>
+    {% if host[0] == 'guest' %}<p class="small dim guest-note">{{ t('quiz.guest_note') }}</p>{% endif %}
     <p class="small muted">{{ t('quiz.privacy') }}</p>
     {% endif %}
   </div>

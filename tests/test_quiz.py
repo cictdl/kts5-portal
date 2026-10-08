@@ -234,6 +234,9 @@ def test_the_screens_of_the_host_belong_to_the_host(clock):
 
 def test_who_may_host(clock):
     app = make_app(ADMIN_PASSWORD=None)
+    from kts.db import set_setting as _set
+    with app.app_context():
+        _set("quiz.public", "0")  # the visitors without an account: test_anybody_may_host
     page = app.test_client().get("/quiz/host?lang=en").get_data(as_text=True)
     assert "is hosted by a student selected for KTS 5.0" in page and 'name="scope"' not in page
     students = add_candidates(app, 2)
@@ -365,3 +368,57 @@ def test_pages_of_the_quiz_in_every_language(app):
         host = client.get(f"/quiz/host?lang={code}").get_data(as_text=True)
         assert 'name="robots" content="noindex"' in host
     assert client.get("/quiz").headers["Cache-Control"] == "no-store"
+
+
+def test_anybody_may_host(clock, monkeypatch):
+    """A visitor without an account hosts a quiz; it belongs to that browser (1.2.30)."""
+    from kts import quiz
+    from kts.db import query, set_setting
+    app = make_app(ADMIN_PASSWORD=None)
+
+    def visitor(ip):
+        c = app.test_client()
+        c.environ_base["REMOTE_ADDR"] = ip
+        return c
+
+    teacher = visitor("203.0.113.70")
+    page = teacher.get("/quiz/host?lang=en").get_data(as_text=True)
+    assert 'name="scope"' in page and "Anybody may host a quiz. It belongs to this browser" in page
+    assert "is hosted by a student selected" not in page
+    code = _create(teacher, lang="ta", count="5", seconds="20")
+    with app.app_context():
+        room = query("SELECT * FROM quiz_rooms WHERE code = ?", (code,), one=True)
+    assert room["host_kind"] == "guest" and room["host_id"] > 0 and room["host_name"] == ""
+    assert teacher.get(f"/quiz/host/{code}").status_code == 200
+    assert teacher.get(f"/quiz/host/{code}/state").status_code == 200
+    # the screens of the quiz belong to that browser: another visitor, even from the same address, has none
+    for other in (visitor("203.0.113.70"), visitor("203.0.113.71")):
+        for path in (f"/quiz/host/{code}", f"/quiz/host/{code}/state", f"/quiz/host/{code}/results.csv"):
+            assert other.get(path).status_code == 404
+        assert _post_json(other, f"/quiz/host/{code}/action", {"action": "end"}).status_code == 404
+    # the students join it as any other
+    _join(app, code, "Anu")
+    assert _post_json(teacher, f"/quiz/host/{code}/action", {"action": "start"}).status_code == 200
+    # the console lists it
+    admin = _staff(app, "admin@tests.example", "admin")
+    assert "visitor without an account" in admin.get("/console/quizzes").get_data(as_text=True)
+    # ten quizzes an hour from one address: the eleventh is refused, another address goes on
+    busy = visitor("203.0.113.72")
+    for _ in range(quiz.GUEST_PER_HOUR):
+        _create(busy)
+    r = busy.post("/quiz/host", data={"_csrf": _csrf(busy), "lang": "hi", "scope": "all", "count": "5", "seconds": "20"})
+    assert r.status_code == 200 and "Too many attempts from this connection." in r.get_data(as_text=True)
+    _create(visitor("203.0.113.73"))
+    # and so many a day for all the visitors together
+    monkeypatch.setattr(quiz, "GUEST_PER_DAY", 3)
+    late = visitor("203.0.113.74")
+    r = late.post("/quiz/host", data={"_csrf": _csrf(late), "lang": "hi", "scope": "all", "count": "5", "seconds": "20"})
+    assert "Too many attempts from this connection." in r.get_data(as_text=True)
+    # staff are not counted
+    _create(admin)
+    # the switch of the administrator: visitors no longer host, and see who does
+    with app.app_context():
+        set_setting("quiz.public", "0")
+    page = visitor("203.0.113.75").get("/quiz/host?lang=en").get_data(as_text=True)
+    assert 'name="scope"' not in page and "is hosted by a student selected" in page
+    assert teacher.get(f"/quiz/host/{code}").status_code == 404
