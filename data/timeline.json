@@ -1,8 +1,8 @@
 [
   {"key": "circular", "title": "Issue of the circular and nationwide outreach", "kind": "general", "starts": "2026-10-07"},
-  {"key": "selection", "title": "Selection of the 1,000 students", "kind": "general", "starts": "2026-10-20", "ends": "2026-10-21"},
-  {"key": "letters", "title": "Issue of confirmation letters", "kind": "general", "starts": "2026-10-22"},
-  {"key": "internship", "title": "Commencement of the one-month internship and research period", "kind": "internship", "starts": "2026-10-23"},
+  {"key": "selection", "title": "Selection of the 1,000 students", "kind": "general", "starts": "2026-10-23", "ends": "2026-10-24"},
+  {"key": "letters", "title": "Issue of confirmation letters", "kind": "general", "starts": "2026-10-25"},
+  {"key": "internship", "title": "Commencement of the one-month internship and research period", "kind": "internship", "starts": "2026-10-26"},
   {"key": "live", "title": "Live sessions: 20 question-and-answer sessions", "kind": "orientation", "starts": "2026-10-26"},
   {"key": "papers", "title": "Submission of research papers", "kind": "internship", "starts": "2026-11-05"},
   {"key": "forward", "title": "Classification and forwarding of research papers", "kind": "internship", "starts": "2026-11-06"},

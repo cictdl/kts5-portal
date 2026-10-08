@@ -91,12 +91,15 @@ def _banner(page):
 
 def test_the_dates_of_the_timeline_are_the_defaults():
     from kts.db import DEFAULT_SETTINGS
-    assert DEFAULT_SETTINGS["reg.start"] == "2026-10-10" and DEFAULT_SETTINGS["reg.end"] == "2026-10-16"
-    assert DEFAULT_SETTINGS["exam.date"] == "2026-10-19"
+    # the timeline of 8 October 2026
+    assert DEFAULT_SETTINGS["reg.start"] == "2026-10-15" and DEFAULT_SETTINGS["reg.end"] == "2026-10-21"
+    assert DEFAULT_SETTINGS["exam.date"] == "2026-10-22"
+    assert DEFAULT_SETTINGS["letter.date"] == "2026-10-25" and DEFAULT_SETTINGS["internship.start"] == "2026-10-26"
+    assert DEFAULT_SETTINGS["papers.due"] == "2026-11-05" and DEFAULT_SETTINGS["present.due"] == "2026-11-15"
     assert DEFAULT_SETTINGS["kts.start"] == "2026-11-28" and DEFAULT_SETTINGS["kts.end"] == "2026-12-12"
     # the days of the week as the calendar has them
     days = [datetime.fromisoformat(DEFAULT_SETTINGS[key]).strftime("%a") for key in ("reg.start", "reg.end", "exam.date", "kts.start", "kts.end")]
-    assert days == ["Sat", "Fri", "Mon", "Sat", "Sat"]
+    assert days == ["Thu", "Wed", "Thu", "Sat", "Sat"]
 
 
 def test_a_database_of_an_earlier_version_receives_the_dates():
@@ -105,8 +108,33 @@ def test_a_database_of_an_earlier_version_receives_the_dates():
         _sql(app, "UPDATE settings SET value = ? WHERE key = ?", (old, key))
     _sql(app, "DELETE FROM settings WHERE key IN ('kts.start', 'kts.end', 'schedule.tentative')")
     settings = _settings(_start(app))
-    assert (settings["reg.start"], settings["reg.end"], settings["exam.date"]) == ("2026-10-10", "2026-10-16", "2026-10-19")
+    assert (settings["reg.start"], settings["reg.end"], settings["exam.date"]) == ("2026-10-15", "2026-10-21", "2026-10-22")
     assert (settings["kts.start"], settings["kts.end"], settings["schedule.tentative"]) == ("2026-11-28", "2026-12-12", "1")
+
+def test_the_live_database_moves_to_the_timeline_of_8_october():
+    """Version 1.2.31 on the live site held the earlier dates as they came: all of them move."""
+    app = make_app(ADMIN_PASSWORD=None)
+    for key, old in (("reg.start", "2026-10-10"), ("reg.end", "2026-10-16"), ("exam.date", "2026-10-19"),
+                     ("letter.date", "2026-10-22"), ("internship.start", "2026-10-23")):
+        _sql(app, "UPDATE settings SET value = ? WHERE key = ?", (old, key))
+    for title, starts, ends in ((SEEDS[1]["title"], "2026-10-20T00:00", "2026-10-21T00:00"),
+                                (SEEDS[2]["title"], "2026-10-22T00:00", None),
+                                (SEEDS[3]["title"], "2026-10-23T00:00", None)):
+        _sql(app, "UPDATE events SET starts_at = ?, ends_at = ? WHERE title = ?", (starts, ends, title))
+    # another event that an administrator moved by hand
+    _sql(app, "UPDATE events SET starts_at = '2026-11-06T10:00' WHERE title = ?", (SEEDS[7]["title"],))
+    again = _start(app)
+    settings = _settings(again)
+    moved = [settings[k] for k in ("reg.start", "reg.end", "exam.date", "letter.date", "internship.start")]
+    assert moved == ["2026-10-15", "2026-10-21", "2026-10-22", "2026-10-25", "2026-10-26"]
+    rows = {t: (s, e) for t, s, e in _sql(again, "SELECT title, starts_at, ends_at FROM events")}
+    assert rows[SEEDS[1]["title"]] == ("2026-10-23T00:00", "2026-10-24T00:00")
+    assert rows[SEEDS[2]["title"]] == ("2026-10-25T00:00", None) and rows[SEEDS[3]["title"]] == ("2026-10-26T00:00", None)
+    assert rows[SEEDS[7]["title"]][0] == "2026-11-06T10:00"
+    # an event that the administrator moved away from the old days stays where it was put
+    app = make_app(ADMIN_PASSWORD=None)
+    _sql(app, "UPDATE events SET starts_at = '2026-10-22T15:00', ends_at = NULL WHERE title = ?", (SEEDS[2]["title"],))
+    assert _sql(_start(app), "SELECT starts_at FROM events WHERE title = ?", (SEEDS[2]["title"],)) == [("2026-10-22T15:00",)]
 
 
 def test_dates_set_by_the_administrator_are_left_alone():
@@ -118,14 +146,14 @@ def test_dates_set_by_the_administrator_are_left_alone():
     assert settings["kts.end"] == "2026-12-14"
 
 
-@pytest.mark.parametrize("day, state", [("2026-10-09", "not_yet"), ("2026-10-10", "open"), ("2026-10-16", "open"), ("2026-10-17", "closed")])
+@pytest.mark.parametrize("day, state", [("2026-10-14", "not_yet"), ("2026-10-15", "open"), ("2026-10-21", "open"), ("2026-10-22", "closed")])
 def test_registration_follows_the_dates(monkeypatch, day, state):
     app = _portal()
     _on(monkeypatch, day)
     page = _page(app, "/register?lang=en")
     assert ('name="full_name"' in page) == (state == "open")
     if state == "not_yet":
-        assert _text("reg.not_yet") + " 10 Oct 2026" in page
+        assert _text("reg.not_yet") + " 15 Oct 2026" in page
     # the button of the hero is there while registration is open
     home = _page(app, "/?lang=en")
     assert ('<a class="btn saffron" href="/register">' in home) == (state == "open")
@@ -153,13 +181,13 @@ def test_the_schedule_shows_the_timeline_in_order(monkeypatch):
     assert past == ""
     places = [upcoming.index("<bdi>" + _text(key) + "</bdi>") for key in KEYS]
     assert places == sorted(places)
-    for day in ("07 Oct 2026", "10 Oct 2026", "16 Oct 2026", "20 Oct 2026", "– 21 Oct 2026", "22 Oct 2026", "23 Oct 2026", "26 Oct 2026",
+    for day in ("07 Oct 2026", "15 Oct 2026", "21 Oct 2026", "23 Oct 2026", "– 24 Oct 2026", "25 Oct 2026", "26 Oct 2026",
                 "05 Nov 2026", "06 Nov 2026", "07 Nov 2026", "12 Nov 2026", "13 Nov 2026", "– 16 Nov 2026", "15 Nov 2026", "20 Nov 2026",
                 "28 Nov 2026", "12 Dec 2026"):
         assert day in upcoming, day
     # a day without a time of day stands alone; the test has the hours of its settings
     assert "12:00 AM" not in upcoming
-    assert "19 Oct 2026, 11:00 AM" in upcoming and "– 19 Oct 2026, 12:00 PM" in upcoming
+    assert "22 Oct 2026, 11:00 AM" in upcoming and "– 22 Oct 2026, 12:00 PM" in upcoming
     assert _text("timeline.present_note") in upcoming
     # the evaluation is the work of CIIL
     row = upcoming[upcoming.index(_text("timeline.eval_start")):upcoming.index(_text("timeline.eval_end"))]
@@ -168,13 +196,13 @@ def test_the_schedule_shows_the_timeline_in_order(monkeypatch):
 
 def test_what_is_over_moves_to_the_past(monkeypatch):
     app = _portal()
-    _on(monkeypatch, "2026-10-21")
+    _on(monkeypatch, "2026-10-24")
     upcoming, past = _halves(_page(app, "/schedule?lang=en"))
     for key in ("timeline.circular", "timeline.reg_open", "timeline.reg_close", "timeline.exam"):
         assert _text(key) in past and _text(key) not in upcoming, key
     # the selection takes two days and is not over on its second
     assert _text("timeline.selection") in upcoming and _text("timeline.selection") not in past
-    _on(monkeypatch, "2026-10-22")
+    _on(monkeypatch, "2026-10-25")
     upcoming, past = _halves(_page(app, "/schedule?lang=en"))
     assert _text("timeline.selection") in past and _text("timeline.letters") in upcoming
     # the last that is over stands first
@@ -204,7 +232,7 @@ def test_the_timeline_is_in_the_language_of_the_page(monkeypatch, lang):
         assert _text(key, lang) != _text(key), key
         assert _text(key, lang) in page, key
     assert _text("timeline.circular") not in page
-    assert "07-10-2026" in page and "19-10-2026, 11:00" in page
+    assert "07-10-2026" in page and "22-10-2026, 11:00" in page
 
 
 def test_wording_entered_in_the_console_is_shown_as_it_is(monkeypatch):
@@ -285,7 +313,7 @@ def test_a_new_installation_carries_the_timeline():
     assert [row[0] for row in rows] == [s["title"] for s in SEEDS]
     assert all(row[4] == 1 for row in rows)
     assert rows[0][2] == "2026-10-07T00:00" and rows[0][3] is None
-    assert rows[1][2:4] == ("2026-10-20T00:00", "2026-10-21T00:00")
+    assert rows[1][2:4] == ("2026-10-23T00:00", "2026-10-24T00:00")
 
 
 def test_the_timeline_is_put_in_once():
@@ -324,27 +352,27 @@ def test_the_banner_does_not_announce_open_applications_before_the_first_day(mon
     app = _portal()
     _on(monkeypatch, "2026-10-01")
     banner = _banner(_page(app, "/?lang=en"))
-    assert _text("reg.not_yet") + " 10 Oct 2026" in banner and "are open" not in banner
+    assert _text("reg.not_yet") + " 15 Oct 2026" in banner and "are open" not in banner
     banner = _banner(_page(app, "/programme?lang=ta"))
-    assert _text("reg.not_yet", "ta") in banner and "10-10-2026" in banner
+    assert _text("reg.not_yet", "ta") in banner and "15-10-2026" in banner
     assert _text("set.banner", "ta") not in banner
 
 
 def test_the_banner_announces_them_while_they_are_open(monkeypatch):
     app = _portal()
-    _on(monkeypatch, "2026-10-10")
+    _on(monkeypatch, "2026-10-15")
     assert _text("set.banner") in _banner(_page(app, "/?lang=en"))
     assert _text("set.banner", "hi") in _banner(_page(app, "/?lang=hi"))
 
 
 def test_the_banner_says_so_when_registration_is_closed(monkeypatch):
     app = _portal()
-    _on(monkeypatch, "2026-10-17")
+    _on(monkeypatch, "2026-10-22")
     banner = _banner(_page(app, "/?lang=en"))
     assert _text("reg.closed") in banner and "are open" not in banner
     # also when the administrator has switched the registration off inside the dates
     app = _portal(**{"reg.open": "0"})
-    _on(monkeypatch, "2026-10-12")
+    _on(monkeypatch, "2026-10-17")
     assert _text("reg.closed") in _banner(_page(app, "/?lang=en"))
 
 

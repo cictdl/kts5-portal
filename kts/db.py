@@ -511,9 +511,9 @@ DEFAULT_SETTINGS = {
     "site.banner_on": "1",
     "reg.open": "1",
     # the dates of the tentative timeline of KTS 5.0 (28.11.2026 – 12.12.2026)
-    "reg.start": "2026-10-10",
-    "reg.end": "2026-10-16",
-    "exam.date": "2026-10-19",
+    "reg.start": "2026-10-15",
+    "reg.end": "2026-10-21",
+    "exam.date": "2026-10-22",
     "exam.start_time": "11:00",
     "exam.end_time": "12:00",
     "exam.duration_min": "30",
@@ -555,8 +555,8 @@ DEFAULT_SETTINGS = {
     "inaug.code": "",
     # the confirmation letter of the selected students, and the dates of the internship it names
     "letter.on": "1",
-    "letter.date": "2026-10-22",
-    "internship.start": "2026-10-23",
+    "letter.date": "2026-10-25",
+    "internship.start": "2026-10-26",
     "papers.due": "2026-11-05",
     "present.due": "2026-11-15",
     # the research papers (kts/papers.py): auto = from internship.start to papers.due, 1 open, 0 closed;
@@ -590,10 +590,23 @@ RETIRED_DEFAULTS = {
     # the pattern of the test up to version 1.1.0: 25 questions of 4 marks, now 50 of 2 (100 marks either way)
     "exam.questions": ["25"],
     "exam.marks_per_q": ["4"],
-    # the dates up to version 1.1.4, before the timeline of the programme was fixed
-    "reg.start": ["2026-09-25"],
-    "reg.end": ["2026-11-15"],
-    "exam.date": ["2026-11-29"],
+    # the dates up to version 1.1.4, before the timeline of the programme was fixed, and those of the
+    # timeline up to 1.2.31 (registration 10-16 October, test 19 October), moved by the timeline of
+    # 8 October 2026 (registration 15-21 October, test 22 October)
+    "reg.start": ["2026-09-25", "2026-10-10"],
+    "reg.end": ["2026-11-15", "2026-10-16"],
+    "exam.date": ["2026-11-29", "2026-10-19"],
+    "letter.date": ["2026-10-22"],
+    "internship.start": ["2026-10-23"],
+}
+
+# Days of the events of data/timeline.json as earlier versions put them in, by the key of the event:
+# (starts_at, ends_at). An event that still holds them receives the days of the present file; an event
+# moved in the console is left alone. The timeline of 8 October 2026 moved these three.
+RETIRED_EVENT_DAYS = {
+    "selection": [("2026-10-20T00:00", "2026-10-21T00:00")],
+    "letters": [("2026-10-22T00:00", None)],
+    "internship": [("2026-10-23T00:00", None)],
 }
 
 
@@ -1018,6 +1031,17 @@ def init_db(app):
                      e["ends"] + "T00:00" if e.get("ends") else None, agency[0] if agency else None, now, now),
                 )
             conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
+        # the days of an event that an earlier version put in, still unchanged, become those of the file
+        seeds = {e["key"]: e for e in json.loads(seed_path.read_text(encoding="utf-8"))}
+        for key, olds in RETIRED_EVENT_DAYS.items():
+            e = seeds.get(key)
+            if e is None:
+                continue
+            new = (e["starts"] + "T00:00", e["ends"] + "T00:00" if e.get("ends") else None)
+            for starts, ends in olds:
+                conn.execute("UPDATE events SET starts_at = ?, ends_at = ?, updated_at = ? "
+                             "WHERE title = ? AND starts_at = ? AND ends_at IS ?",
+                             (new[0], new[1], now, e["title"], starts, ends))
 
     # The role of an agency as seeded by an earlier version becomes the present wording, so that
     # the partner page keeps finding its translation; wording changed in the console is left alone.
