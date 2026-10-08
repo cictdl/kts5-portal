@@ -35,7 +35,10 @@ def test_the_programme_page_links_every_short():
     assert page.count('<div class="card reel">') == len(langs)
     # the presenters of one language stand under it: two in Kurukh
     kurukh = page.split("कुँड़ुख़")[1].split('<div class="card reel">')[0]
-    assert "Bhuneshwar Oraon" in kurukh and "Mahesh S. Meenz" in kurukh
+    assert "Bhubaneswar Oraon" in kurukh and "Mahesh S. Minj" in kurukh
+    # ten in Hindi under one card, in the order of CICT's list
+    hindi = page.split("<bdi>हिन्दी</bdi>")[1].split('<div class="card reel">')[0]
+    assert hindi.count("youtube.com/shorts/") == 10 and hindi.index("Imtiyaz Dhafrani") < hindi.index("Mrs. Sabitri Tripathy")
     assert "facebook.com" not in page.split('id="reels"')[1].split("<footer")[0]
     assert 'href="https://www.youtube.com/@cicttamil/shorts"' in page
     # in Tamil the texts are Tamil, the names stay as they are written

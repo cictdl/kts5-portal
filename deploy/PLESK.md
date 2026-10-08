@@ -247,7 +247,7 @@ then the task of Plesk (steps 1 to 5 above).
    page "The portal is being updated"; a form that is sent in those seconds
    is not stored and has to be sent again.
 3. **Read step 2 of the output.** It must read
-   `complete: portal version 1.2.25 with 23 interface languages`, with the
+   `complete: portal version 1.2.26 with 23 interface languages`, with the
    number that `kts\version.py` of the release names. If the line names no
    version, the old installer ran. Nothing is lost and the portal works, with
    the new code; wait ten minutes and run the task once more. That run does
@@ -359,7 +359,7 @@ portal, the vendored libraries, `web.config`, and empty `instance\`,
    `data\`, `instance\`, `uploads\`, `logs\` … directly inside `httpdocs`.
    Delete the zip afterwards.
 4. Open `http://kts.cict.in/healthz`. Expected:
-   `{"ok": true, "time": "…", "version": "1.2.25"}`.
+   `{"ok": true, "time": "…", "version": "1.2.26"}`.
    First start takes 10–20 seconds (it creates the database).
 5. If you get **502.3** instead, open `web.config` in the File Manager editor
    and replace the two values with the ones the probe printed:
