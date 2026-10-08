@@ -195,8 +195,9 @@ From 1.2.22 registration follows the nomination process of the Ministry: the Fac
 Supervisor/Guide (name, designation, e-mail, mobile) is required, and the nomination form signed
 and sealed by the Director, Registrar, Principal or Head of the Institution is uploaded (PDF, JPG
 or PNG up to 4 MB, `applications.nomination_path`, folder `uploads/nominations/`, seen by the
-staff who see applications). The blank form is `static/KTS5-nomination-form.pdf`, made by
-`tools/make_nomination_form.py`, and linked from the registration page. Applications registered
+staff who see applications). The blank form is `static/KTS5-nomination-form.pdf`, linked from
+the registration page: since 1.2.27 it is CICT's own design (made in Canva, one A4 page). To change
+the form, replace that file with the new PDF under the same name. Applications registered
 before 1.2.22 have no form; the console says so.
 
 ## Nodal Higher Educational Institutions
