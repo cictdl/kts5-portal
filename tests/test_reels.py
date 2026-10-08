@@ -45,3 +45,16 @@ def test_the_programme_page_links_every_short():
     from kts.i18n import CATALOG
     tamil = client.get("/programme?lang=ta").get_data(as_text=True)
     assert CATALOG["ta"]["prog.reels.d"] in tamil and "Madhulika" in tamil and "Reels and shorts" not in tamil
+
+
+def test_the_gaming_app_card_leads_to_the_four_games():
+    import json
+    app = make_app(ADMIN_PASSWORD=None)
+    page = app.test_client().get("/programme?lang=en").get_data(as_text=True)
+    card = page.split("Thirukkural Gaming App")[1].split("</div></div>")[0]
+    # the same addresses as the entries of the repository
+    seeds = {r["key"]: r["url"] for r in json.loads((ROOT / "data" / "resources.json").read_text(encoding="utf-8"))}
+    for key in ("kural-bridge", "kural-run", "kural-crossword"):
+        assert f'href="{seeds[key]}" target="_blank" rel="noopener"' in card, key
+    assert seeds["classroom-quiz"] == "/quiz" and 'href="/quiz/">Classroom quiz</a>' in card
+    assert card.index("Kural Bridge") < card.index("Kural Run") < card.index("Kural Crossword") < card.index("Classroom quiz")

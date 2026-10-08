@@ -63,7 +63,14 @@
   <div class="grid grid-3" style="margin-top:14px">
     <div class="card accent"><h3>{{ t('prog.b1.t') }}</h3><p class="small dim">{{ t('prog.b1.d') }}</p><a class="btn sm secondary" href="{{ url_for('public.daily_kural') }}">{{ t('res.daily_title') }}</a></div>
     <div class="card accent"><h3>{{ t('prog.b2.t') }}</h3><p class="small dim">{{ t('prog.b2.d') }}</p></div>
-    <div class="card accent"><h3>{{ t('prog.b3.t') }}</h3><p class="small dim">{{ t('prog.b3.d') }}</p></div>
+    <div class="card accent"><h3>{{ t('prog.b3.t') }}</h3><p class="small dim">{{ t('prog.b3.d') }}</p>
+      {# the games of CICT, by their names as in the repository (1.2.29) #}
+      <div class="btn-row games" style="flex-wrap:wrap;gap:6px">
+        <a class="btn sm secondary" href="https://cictdl.github.io/index.html/kural-app/bridge/" target="_blank" rel="noopener"><bdi>குறள் பாலம் · Kural Bridge</bdi> ↗</a>
+        <a class="btn sm secondary" href="https://www.digitalarchives.cict.in/kural-run.html" target="_blank" rel="noopener"><bdi>குறள் ஓட்டம் · Kural Run</bdi> ↗</a>
+        <a class="btn sm secondary" href="https://cictdl.github.io/index.html/kural-app/kattam/index.html" target="_blank" rel="noopener"><bdi>குறள் குறுக்கெழுத்து · Kural Crossword</bdi> ↗</a>
+        <a class="btn sm secondary" href="{{ url_for('quiz.join') }}">{{ t('quiz.title') }}</a>
+      </div></div>
   </div>
 </div>
 {% endblock %}
