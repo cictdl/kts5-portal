@@ -12,7 +12,9 @@
       <dt>{{ t('exam.time_taken') }}</dt><dd>{{ (exam.time_taken_sec // 60) }} {{ t('exam.min_short') }} {{ exam.time_taken_sec % 60 }} {{ t('exam.sec_short') }}</dd>
       {% if show_score %}<dt>{{ t('status.score') }}</dt><dd><bdi><b style="font-size:1.4rem">{{ exam.score|int }}</b> / {{ max_score|int }}</bdi> · {{ exam.correct_count }} {{ t('exam.correct') }}</dd>{% endif %}
     </dl></div>
-    <p class="small muted" style="margin-top:12px">{{ t('exam.merit_intro') }}</p>
+    {# the merit list is named only when it exists: before, the sentence of its page read as if the list were final #}
+    {% if settings['merit.published'] == '1' %}<p class="small muted" style="margin-top:12px">{{ t('exam.merit_intro') }} <a href="{{ url_for('public.merit') }}">{{ t('nav.merit') }} →</a></p>
+    {% else %}<p class="small muted" style="margin-top:12px">{{ t('exam.merit_unpublished') }}</p>{% endif %}
     <a class="btn" href="{{ url_for('candidate.home') }}">{{ t('cand.title') }}</a>
   </div>
 </div>

@@ -157,3 +157,19 @@ def test_a_student_not_yet_verified_cannot_start():
     client, token = _signed_in(app, students[0])
     r = client.post("/candidate/exam", data={"_csrf": token})
     assert r.headers["Location"].endswith("/candidate/") and _attempt(app, students[0]) is None
+
+
+def test_the_result_page_names_the_merit_list_only_once_it_is_published():
+    from kts.db import set_setting
+    from kts.i18n import CATALOG
+    app, students = _ready()
+    client, token = _signed_in(app, students[0])
+    client.post("/candidate/exam", data={"_csrf": token})
+    client.post("/candidate/exam/submit", data={"_csrf": token})
+    page = client.get("/candidate/exam/result?lang=en").get_data(as_text=True)
+    assert "Score" in page and "The merit list has not been published yet." in page
+    assert CATALOG["en"]["exam.merit_intro"] not in page and 'href="/merit-list"' not in page.split("<main")[1].split("</main>")[0]
+    with app.app_context():
+        set_setting("merit.published", "1")
+    page = client.get("/candidate/exam/result?lang=en").get_data(as_text=True)
+    assert CATALOG["en"]["exam.merit_intro"] in page and 'href="/merit-list">Merit list →</a>' in page
