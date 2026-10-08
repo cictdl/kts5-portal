@@ -16,5 +16,6 @@
     {% endif %}
     <div class="btn-row"><a class="btn" href="{{ url_for('public.status') }}">{{ t('nav.status') }}</a><a class="btn secondary" href="{{ url_for('public.examination') }}">{{ t('nav.exam') }}</a><a class="btn secondary" href="{{ url_for('public.notices') }}">{{ t('nav.notices') }}</a></div>
   </div>
+  {% if state == 'not_yet' %}{% include "public/_nomination_box.html" %}{% endif %}
 </div>
 {% endblock %}

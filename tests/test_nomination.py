@@ -51,3 +51,29 @@ def test_the_form_tells_the_nomination_and_offers_the_blank_form():
     assert r.status_code == 200 and r.data[:5] == b"%PDF-"
     r.close()
     assert (ROOT / "static" / "KTS5-nomination-form.pdf").stat().st_size < 400_000
+
+
+def test_the_registration_page_offers_the_form_before_and_while_it_is_open():
+    from kts.db import set_setting
+    app = make_app(ADMIN_PASSWORD=None)
+    client = app.test_client()
+    link = 'href="/static/KTS5-nomination-form.pdf" download>Download the nomination form (PDF)</a>'
+    # open: at the top of the page, and again at the upload of step 6
+    page = client.get("/register?lang=en").get_data(as_text=True)
+    assert page.count('href="/static/KTS5-nomination-form.pdf" download') == 2 and link in page
+    assert page.index(link) < page.index('name="full_name"')
+    # before registration opens: the waiting page offers it, so the institutions can sign it in time
+    with app.app_context():
+        set_setting("reg.start", "2030-01-01")
+    page = client.get("/register?lang=en").get_data(as_text=True)
+    assert "Registration opens on" in page and link in page and 'name="full_name"' not in page
+    assert "Nomination form, signed by the Head of the Institution" in page
+    from kts.i18n import CATALOG
+    tamil = client.get("/register?lang=ta").get_data(as_text=True)
+    assert CATALOG["ta"]["reg.nomination_download"] in tamil
+    # after it closes there is nothing to nominate
+    with app.app_context():
+        set_setting("reg.start", "2026-01-01")
+        set_setting("reg.end", "2026-01-02")
+    page = client.get("/register?lang=en").get_data(as_text=True)
+    assert "KTS5-nomination-form.pdf" not in page

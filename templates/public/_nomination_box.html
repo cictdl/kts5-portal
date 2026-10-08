@@ -1,0 +1,6 @@
+{# The nomination form of the institution, offered before the student registers (1.2.28) #}
+<div class="card accent nomination-box" style="margin:16px 0;max-width:70ch">
+  <h3 style="margin-bottom:6px">📄 {{ t('reg.nomination') }}</h3>
+  <p class="small dim" style="margin:0 0 12px">{{ t('reg.nomination_help') }}</p>
+  <a class="btn saffron" href="{{ url_for('static', filename='KTS5-nomination-form.pdf') }}" download>{{ t('reg.nomination_download') }} (PDF)</a>
+</div>

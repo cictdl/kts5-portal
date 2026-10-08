@@ -196,7 +196,8 @@ Supervisor/Guide (name, designation, e-mail, mobile) is required, and the nomina
 and sealed by the Director, Registrar, Principal or Head of the Institution is uploaded (PDF, JPG
 or PNG up to 4 MB, `applications.nomination_path`, folder `uploads/nominations/`, seen by the
 staff who see applications). The blank form is `static/KTS5-nomination-form.pdf`, linked from
-the registration page: since 1.2.27 it is CICT's own design (made in Canva, one A4 page). To change
+the registration page (from 1.2.28 also in a box at the top of the form and on the page shown
+before registration opens): since 1.2.27 it is CICT's own design (made in Canva, one A4 page). To change
 the form, replace that file with the new PDF under the same name. Applications registered
 before 1.2.22 have no form; the console says so.
 
