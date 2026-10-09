@@ -464,6 +464,77 @@ def xlsx_bytes(headers, rows, sheet="Sheet1", text_cols=()):
     return buf.getvalue()
 
 
+SHEET_MAX_BYTES = 1024 * 1024
+
+
+def xlsx_rows(data):
+    """
+    The rows of the first sheet of an .xlsx file, each a list of texts (a small reader: shared and
+    inline strings, numbers; a whole number keeps all its digits, as a mobile number must).
+    """
+    import zipfile
+    from decimal import Decimal, InvalidOperation
+    from xml.etree import ElementTree as ET
+    main = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
+    rel = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"
+    with zipfile.ZipFile(io.BytesIO(data)) as z:
+        if sum(i.file_size for i in z.infolist()) > 40 * SHEET_MAX_BYTES:
+            raise ValueError("the spreadsheet is too large")
+        names = set(z.namelist())
+        shared = []
+        if "xl/sharedStrings.xml" in names:
+            for si in ET.fromstring(z.read("xl/sharedStrings.xml")).iter(main + "si"):
+                shared.append("".join(t.text or "" for t in si.iter(main + "t")))
+        # the first sheet of the workbook, wherever it is kept
+        sheet = "xl/worksheets/sheet1.xml"
+        try:
+            first = ET.fromstring(z.read("xl/workbook.xml")).find(f"{main}sheets/{main}sheet")
+            target = {r.get("Id"): r.get("Target") for r in ET.fromstring(z.read("xl/_rels/workbook.xml.rels"))}[first.get(rel + "id")]
+            sheet = target.lstrip("/") if target.startswith("/") else "xl/" + target
+        except (KeyError, AttributeError, ET.ParseError):
+            pass
+        rows = []
+        for row in ET.fromstring(z.read(sheet)).iter(main + "row"):
+            cells = {}
+            for n, c in enumerate(row.findall(main + "c")):
+                letters = "".join(ch for ch in (c.get("r") or "") if ch.isalpha())
+                col = n
+                if letters:
+                    col = 0
+                    for ch in letters.upper():
+                        col = col * 26 + ord(ch) - 64
+                    col -= 1
+                kind, value = c.get("t"), c.find(main + "v")
+                if kind == "s":
+                    text = shared[int(value.text)] if value is not None and value.text else ""
+                elif kind == "inlineStr":
+                    text = "".join(t.text or "" for t in c.iter(main + "t"))
+                else:
+                    text = value.text if value is not None and value.text else ""
+                    if kind in (None, "n") and text:
+                        try:
+                            number = Decimal(text)
+                            text = str(int(number)) if number == number.to_integral_value() else format(number.normalize(), "f")
+                        except InvalidOperation:
+                            pass
+                cells[col] = text
+            rows.append([cells.get(i, "") for i in range(max(cells) + 1)] if cells else [])
+        return rows
+
+
+def sheet_rows(filename, data):
+    """The rows of an uploaded spreadsheet, .xlsx or .csv (UTF-8, or the code page of Excel; comma or semicolon)."""
+    if filename.lower().endswith(".xlsx"):
+        return xlsx_rows(data)
+    try:
+        text = data.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        text = data.decode("cp1252", errors="replace")
+    first = text.split("\n", 1)[0]
+    delimiter = ";" if first.count(";") > first.count(",") else ("\t" if first.count("\t") > first.count(",") else ",")
+    return [list(r) for r in csv.reader(io.StringIO(text), delimiter=delimiter)]
+
+
 # ---- QR ---------------------------------------------------------------------
 
 def qr_data_uri(text):

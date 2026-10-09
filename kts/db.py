@@ -576,6 +576,10 @@ DEFAULT_SETTINGS = {
     "quiz.candidates": "1",
     # anybody may host a classroom quiz, without an account (1.2.30)
     "quiz.public": "1",
+    # the Nodal Officers of the States/UTs (1.2.39): verification closes the day before the test
+    "verify.end": "2026-10-21",
+    "nodal.digest": "1",
+    "nodal.digest_time": "08:00",
     # the sender of mails (kts/mailq.py, 1.2.35): below the 2,000 mails a day of a Google Workspace account
     "mail.daily_limit": "1800",
     "mail.per_minute": "30",

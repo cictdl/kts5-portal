@@ -15,13 +15,14 @@ from flask import (Blueprint, Response, abort, current_app, flash, g, redirect, 
 from werkzeug.security import generate_password_hash
 
 from . import kural as K
+from . import nodal as NODAL
 from .auth import PERMS, ROLES, current_user, has_perm, login_required, state_scope
 from .db import (DEFAULT_SETTINGS, INSTITUTE_HEAD, NODAL_FIELDS, NODAL_OFFICERS, SOCIAL_LINKS, all_settings, audit, execute, executemany, get_setting, query,
                  set_setting, utcnow)
 from .public import CATEGORIES
 from .utils import (RESOURCE_EXT, client_ip, csv_bytes, exam_window, now_ist, paginate, parse_iso,
                     registration_state, safe_int, save_upload, send_again, send_mail, valid_email, xlsx_bytes,
-                    mail_check)
+                    mail_check, SHEET_MAX_BYTES, sheet_rows)
 
 bp = Blueprint("admin", __name__, url_prefix="/console")
 
@@ -126,7 +127,8 @@ def applications():
     rows = query("SELECT a.*" + sql + " ORDER BY a.id DESC LIMIT ? OFFSET ?", args + [pg["per_page"], pg["offset"]])
     scope = state_scope(_user())
     return render_template("console/applications.html", rows=rows, f=f, pg=pg, statuses=APP_STATUSES,
-                           states=scope if scope is not None else _states(), langs=K.ORIENTATION_LANGS, scope=scope)
+                           states=scope if scope is not None else _states(), langs=K.ORIENTATION_LANGS, scope=scope,
+                           closes=NODAL.closes_line() if scope is not None else "")
 
 
 @bp.route("/applications/export.<fmt>")
@@ -846,22 +848,8 @@ def user_form(uid=None):
                                 (generate_password_hash(temp_password), uid))
                     audit("user_updated", "user", uid, detail=d["email"], user=_user(), ip=client_ip())
                 else:
-                    temp_password = "Kts5-" + secrets.token_urlsafe(6)
-                    uid = execute("INSERT INTO users(email, name, password_hash, role, agency_id, phone, active, must_change_password, created_at, states) "
-                                  "VALUES(?,?,?,?,?,?,?,1,?,?)",
-                                  (d["email"], d["name"], generate_password_hash(temp_password), d["role"], agency_id, d["phone"], active,
-                                   utcnow(), states))
-                    audit("user_created", "user", uid, detail=d["email"], user=_user(), ip=client_ip())
-                    nodal = ""
-                    if d["role"] == "nodal":
-                        nodal = (f"As Nodal Officer for {', '.join(chosen)}, you see the applications of the students of the institutions "
-                                 f"of your State/UT, with their photograph, ID proof and signed nomination form, and you verify them: "
-                                 f"Console > Verification queue. Only verified students can take the online test.\n\n")
-                    send_mail(d["email"], "Your KTS 5.0 portal account",
-                              f"Dear {d['name']},\n\nAn account has been created for you on the Kashi Tamil Sangamam 5.0 portal.\n\n"
-                              + nodal +
-                              f"Sign in: {current_app.config['BASE_URL']}/console/login\nEmail: {d['email']}\n"
-                              f"Temporary password: {temp_password}\n\nYou will be asked to set a new password at first sign-in.\n\nCICT, Chennai")
+                    uid, temp_password = _create_account(d["email"], d["name"], d["role"], d["phone"],
+                                                         chosen if d["role"] == "nodal" else (), agency_id, active)
                 flash("User saved." + (f" Temporary password: {temp_password}" if temp_password else ""), "success")
                 return redirect(url_for("admin.users"))
             except Exception:  # noqa: BLE001 - unique email clash
@@ -872,29 +860,225 @@ def user_form(uid=None):
                            all_states=_states(), preset=preset)
 
 
-@bp.route("/nodal")
+def _create_account(email, name, role, phone="", states=(), agency_id=None, active=1):
+    """
+    A new account of the console with a temporary password, which is mailed to its owner (and shown
+    once to the administrator who made it). Gives (id, temporary password).
+    """
+    temp_password = "Kts5-" + secrets.token_urlsafe(6)
+    uid = execute("INSERT INTO users(email, name, password_hash, role, agency_id, phone, active, must_change_password, created_at, states) "
+                  "VALUES(?,?,?,?,?,?,?,1,?,?)",
+                  (email, name, generate_password_hash(temp_password), role, agency_id, phone, active, utcnow(), "|".join(states)))
+    audit("user_created", "user", uid, detail=email, user=_user(), ip=client_ip())
+    send_mail(email, "Your KTS 5.0 portal account",
+              f"Dear {name},\n\nAn account has been created for you on the Kashi Tamil Sangamam 5.0 portal.\n\n"
+              + (NODAL.account_paragraph(list(states)) if role == "nodal" else "") +
+              f"Sign in: {current_app.config['BASE_URL']}/console/login\nEmail: {email}\n"
+              f"Temporary password: {temp_password}\n\nYou will be asked to set a new password at first sign-in.\n\nCICT, Chennai")
+    return uid, temp_password
+
+
+def _nodal_heis():
+    return json.loads((current_app.config["DATA_DIR"] / "nodal_heis.json").read_text(encoding="utf-8"))
+
+
+def _officers_by_state(active_only=False):
+    officers = {}
+    for u in query("SELECT * FROM users WHERE role = 'nodal'" + (" AND active = 1" if active_only else "") + " ORDER BY name"):
+        for s in NODAL.states_of(u):
+            officers.setdefault(s, []).append(u)
+    return officers
+
+
+@bp.route("/nodal", methods=["GET", "POST"])
 @login_required("nodal.manage")
 def nodal_access():
     """
     The 31 Nodal Higher Educational Institutions with the accounts of their Nodal Officers and the
-    applications of their States/UTs: awaiting verification, verified, rejected (1.2.38).
+    applications of their States/UTs: awaiting verification, how long, verified, rejected (1.2.38);
+    reminders to the officers, the accounts from a spreadsheet (1.2.39).
     """
-    heis = json.loads((current_app.config["DATA_DIR"] / "nodal_heis.json").read_text(encoding="utf-8"))
+    if request.method == "POST":
+        action = request.form.get("action")
+        if action == "remind":
+            state = request.form.get("state") or ""
+            targets = _officers_by_state(active_only=True).get(state, [])
+        elif action == "remind_all":
+            state = "all"
+            targets = query("SELECT * FROM users WHERE role = 'nodal' AND active = 1 ORDER BY id")
+        else:
+            abort(400)
+        sent = NODAL.remind(targets)
+        audit("nodal_reminder", "user", None, detail={"state": state, "mails": sent}, user=_user(), ip=client_ip())
+        if sent:
+            flash(f"Reminder queued to {sent} Nodal Officer(s); it goes out with the next round of the mail queue.", "success")
+        else:
+            flash("No reminder sent: no applications await these officers, or the State/UT has no active account.", "error")
+        return redirect(url_for("admin.nodal_access"))
+    heis = _nodal_heis()
     counts = {}
     for r in query("SELECT college_state AS s, status, COUNT(*) AS n FROM applications GROUP BY college_state, status"):
         counts.setdefault(r["s"], {})[r["status"]] = r["n"]
-    officers = {}
-    for u in query("SELECT * FROM users WHERE role = 'nodal' ORDER BY name"):
-        for s in (u["states"] or "").split("|"):
-            if s:
-                officers.setdefault(s, []).append(u)
+    officers = _officers_by_state()
+    figures, total = NODAL.figures(_states())
     covered = {h["state"] for h in heis}
-    rows = [{"state": h["state"], "hei": h["name"], "officers": officers.get(h["state"], []), "counts": counts.get(h["state"], {})}
-            for h in heis]
+
+    def row(state, hei):
+        return {"state": state, "hei": hei, "officers": officers.get(state, []), "total": sum(counts.get(state, {}).values()),
+                "f": figures.get(state) or {"awaiting": 0, "verified": 0, "rejected": 0, "waiting_days": None, "new": 0}}
+    rows = [row(h["state"], h["name"]) for h in heis]
     # the States/UTs without a Nodal Institution: their applications are verified by CICT, or by an officer given them
-    others = [{"state": s, "hei": "", "officers": officers.get(s, []), "counts": counts.get(s, {})}
-              for s in _states() if s not in covered]
-    return render_template("console/nodal.html", rows=rows, others=others, can_create=has_perm(_user(), "users"))
+    others = [row(s, "") for s in _states() if s not in covered]
+    settings = all_settings()
+    return render_template("console/nodal.html", rows=rows, others=others, total=total, can_create=has_perm(_user(), "users"),
+                           closes=NODAL.closes_line(), digest_on=settings.get("nodal.digest") == "1",
+                           digest_time=settings.get("nodal.digest_time") or "08:00",
+                           can_settings=has_perm(_user(), "settings"))
+
+
+NODAL_SHEET = ["State/UT", "Nodal HEI", "Name of the Nodal Officer", "E-mail", "Phone"]
+
+
+@bp.route("/nodal/sheet.xlsx")
+@login_required("users")
+def nodal_sheet():
+    """The sheet to fill in: every State/UT with its Nodal Institution and the accounts that exist."""
+    heis = _nodal_heis()
+    officers = _officers_by_state()
+    covered = {h["state"] for h in heis}
+    rows = []
+    for state, hei in [(h["state"], h["name"]) for h in heis] + [(s, "") for s in _states() if s not in covered]:
+        people = officers.get(state) or [None]
+        for u in people:
+            rows.append((state, hei, u["name"] if u else "", u["email"] if u else "", (u["phone"] or "") if u else ""))
+    return Response(xlsx_bytes(NODAL_SHEET, rows, "Nodal officers", text_cols=(3, 4)),
+                    mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    headers={"Content-Disposition": "attachment; filename=KTS5-nodal-officers.xlsx"})
+
+
+def _canon_state(value, known):
+    key = " ".join((value or "").replace("&", "and").split()).lower()
+    for s in known:
+        if " ".join(s.replace("&", "and").split()).lower() == key:
+            return s
+    return None
+
+
+def _sheet_columns(rows):
+    """The row of the headings and the columns of State/UT, name, e-mail and phone; None when the sheet has none."""
+    for i, row in enumerate(rows[:10]):
+        heads = [(c or "").strip().lower() for c in row]
+        mail = next((j for j, h in enumerate(heads) if "mail" in h), None)
+        state = next((j for j, h in enumerate(heads) if "state" in h), None)
+        name = next((j for j, h in enumerate(heads) if "name" in h and "officer" in h), None)
+        if name is None:
+            name = next((j for j, h in enumerate(heads) if "name" in h and "hei" not in h and "institution" not in h), None)
+        phone = next((j for j, h in enumerate(heads) if "phone" in h or "mobile" in h), None)
+        if mail is not None and state is not None and name is not None:
+            return i, {"state": state, "name": name, "email": mail, "phone": phone}
+    return None
+
+
+def _nodal_plan(entries):
+    """
+    What the rows of the sheet will do: a new account, a State/UT added to an existing account of a
+    Nodal Officer, nothing (the account has it, a repeated row), or an error. One officer may take
+    several States/UTs: the same e-mail on several rows makes one account.
+    """
+    known = _states()
+    users = {u["email"].lower(): u for u in query("SELECT email, role, states FROM users")}
+    seen, plan = set(), []
+    for e in entries:
+        p = dict(e, error="", action="")
+        p["email"] = (e.get("email") or "").strip().lower()
+        p["name"] = " ".join((e.get("name") or "").split())
+        p["phone"] = (e.get("phone") or "").strip()
+        state = _canon_state(e.get("state"), known)
+        if not state:
+            p["error"] = f"unknown State/UT “{e.get('state')}”" if e.get("state") else "no State/UT"
+        elif not p["name"]:
+            p["error"] = "no name"
+        elif not valid_email(p["email"]):
+            p["error"] = "the e-mail address is not valid"
+        else:
+            p["state"] = state
+            u = users.get(p["email"])
+            if (p["email"], state) in seen:
+                p["action"] = "repeated"
+            elif u is None:
+                p["action"] = "new"
+            elif u["role"] != "nodal":
+                p["error"] = f"the e-mail belongs to an account with the role {u['role']}; change that account under Users & roles"
+            elif state in (u["states"] or "").split("|"):
+                p["action"] = "has"
+            else:
+                p["action"] = "add"
+            seen.add((p["email"], state))
+        plan.append(p)
+    return plan
+
+
+@bp.route("/nodal/import", methods=["POST"])
+@login_required("users")
+def nodal_import():
+    """The accounts of the Nodal Officers from the sheet: first what will happen, then, when confirmed, the accounts."""
+    if request.form.get("step") == "confirm":
+        try:
+            entries = json.loads(request.form.get("entries") or "[]")
+        except ValueError:
+            entries = []
+        entries = [{k: str(e.get(k) or "") for k in ("line", "state", "name", "email", "phone")}
+                   for e in entries if isinstance(e, dict)][:500]
+        new, more = {}, {}
+        for p in _nodal_plan(entries):
+            if p["action"] == "new":
+                new.setdefault(p["email"], {"name": p["name"], "phone": p["phone"], "states": []})["states"].append(p["state"])
+            elif p["action"] == "add":
+                more.setdefault(p["email"], []).append(p["state"])
+        for email, a in new.items():
+            _create_account(email, a["name"], "nodal", a["phone"], a["states"])
+        for email, states in more.items():
+            u = query("SELECT id, states FROM users WHERE lower(email) = ? AND role = 'nodal'", (email,), one=True)
+            merged = NODAL.states_of(u) + [s for s in states if s not in NODAL.states_of(u)]
+            execute("UPDATE users SET states = ? WHERE id = ?", ("|".join(merged), u["id"]))
+            audit("user_updated", "user", u["id"], detail={"states": merged}, user=_user(), ip=client_ip())
+        audit("nodal_accounts_imported", "user", None, detail={"created": len(new), "states_added": len(more)}, user=_user(), ip=client_ip())
+        flash(f"Created {len(new)} account(s) of Nodal Officers, each mailed a temporary password; "
+              f"added States/UTs to {len(more)} existing account(s).", "success")
+        return redirect(url_for("admin.nodal_access"))
+    f = request.files.get("file")
+    filename = (f.filename or "") if f else ""
+    if not filename.lower().endswith((".xlsx", ".csv")):
+        flash("Upload the sheet as an Excel file (.xlsx) or as .csv.", "error")
+        return redirect(url_for("admin.nodal_access"))
+    data = f.read(SHEET_MAX_BYTES + 1)
+    if len(data) > SHEET_MAX_BYTES:
+        flash("The sheet is larger than 1 MB.", "error")
+        return redirect(url_for("admin.nodal_access"))
+    try:
+        rows = sheet_rows(filename, data)
+    except Exception:  # noqa: BLE001 - not a spreadsheet, or a damaged one
+        flash("The file could not be read as a spreadsheet: save it from Excel as .xlsx and upload it again.", "error")
+        return redirect(url_for("admin.nodal_access"))
+    found = _sheet_columns(rows)
+    if not found:
+        flash("The sheet needs the columns State/UT, Name of the Nodal Officer and E-mail: download the sheet from this page and fill it in.", "error")
+        return redirect(url_for("admin.nodal_access"))
+    head, cols = found
+    entries = []
+    for n, cells in enumerate(rows[head + 1:], start=head + 2):
+        def cell(key):
+            j = cols[key]
+            return (cells[j] if j is not None and j < len(cells) else "").strip()
+        e = {"line": str(n), "state": cell("state"), "name": cell("name"), "email": cell("email"), "phone": cell("phone")}
+        if e["name"] or e["email"]:  # a State/UT not filled in is left alone
+            entries.append(e)
+    plan = _nodal_plan(entries)
+    keep = [{k: p[k] for k in ("line", "state", "name", "email", "phone")} for p in plan if p["action"] in ("new", "add")]
+    accounts = len({p["email"] for p in plan if p["action"] == "new"})
+    added = len({p["email"] for p in plan if p["action"] == "add"})
+    return render_template("console/nodal_import.html", plan=plan, entries=json.dumps(keep, ensure_ascii=False),
+                           accounts=accounts, added=added, filename=filename)
 
 
 # ---- settings / audit / outbox ----------------------------------------------
@@ -907,6 +1091,10 @@ SETTING_GROUPS = [
                    ("home.pm_quote", "Quotation (without quotation marks)", "text"),
                    ("home.pm_quote_by", "Attribution", "text"), ("home.pm_caption", "Photograph caption", "text")]),
     ("Registration", [("reg.open", "Registration enabled", "bool"), ("reg.start", "Opens on (YYYY-MM-DD)", "date"), ("reg.end", "Closes on (YYYY-MM-DD)", "date")]),
+    ("Verification by the Nodal Officers of the States/UTs", [
+        ("verify.end", "Verification by the Nodal Officers closes on (YYYY-MM-DD; shown to them and in their mails; CICT can still verify after it)", "date"),
+        ("nodal.digest", "Morning mail to every Nodal Officer with applications awaiting them, from the opening of registration to the close of verification", "bool"),
+        ("nodal.digest_time", "Time of the morning mail (HH:MM IST)", "text")]),
     ("Online test", [("exam.date", "Test date (YYYY-MM-DD)", "date"), ("exam.start_time", "Login window opens (HH:MM IST)", "text"),
                      ("exam.end_time", "The test closes for everyone (HH:MM IST): nobody starts after it, and every attempt ends at it", "text"), ("exam.duration_min", "Duration in minutes", "number"),
                      ("exam.questions", "Questions per paper", "number"), ("exam.marks_per_q", "Marks per question", "number"),

@@ -1,0 +1,23 @@
+{% extends "console/base.html" %}
+{% block title %}Nodal officers from a spreadsheet{% endblock %}
+{% block content %}
+<p class="dim">What the rows of <b>{{ filename }}</b> will do. Nothing has been created yet.</p>
+<div class="table-wrap"><table class="table">
+  <thead><tr><th class="num">Row</th><th>State/UT</th><th>Name</th><th>E-mail</th><th>Phone</th><th>What happens</th></tr></thead>
+  <tbody>{% for p in plan %}
+  <tr><td class="num">{{ p.line }}</td><td>{{ p.state }}</td><td>{{ p.name }}</td><td>{{ p.email }}</td><td>{{ p.phone }}</td>
+    <td>{% if p.error %}<span class="pill red">not taken</span> {{ p.error }}
+      {% elif p.action == 'new' %}<span class="pill green">new account</span>
+      {% elif p.action == 'add' %}<span class="pill saffron">add the State/UT to the existing account</span>
+      {% elif p.action == 'has' %}<span class="muted">nothing to do: the account already has this State/UT</span>
+      {% else %}<span class="muted">nothing to do: a repeated row</span>{% endif %}</td></tr>
+  {% else %}<tr><td colspan="6" class="muted">No row with a name or an e-mail.</td></tr>{% endfor %}</tbody>
+</table></div>
+<form method="post" class="btn-row" style="margin-top:14px">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <input type="hidden" name="step" value="confirm">
+  <input type="hidden" name="entries" value="{{ entries }}">
+  {% if accounts or added %}<button class="btn" type="submit">{% if accounts %}Create {{ accounts }} account(s) and mail their temporary passwords{% endif %}{% if accounts and added %} · {% endif %}{% if added %}add States/UTs to {{ added }} account(s){% endif %}</button>{% endif %}
+  <a class="btn ghost" href="{{ url_for('admin.nodal_access') }}">{{ 'Cancel' if accounts or added else 'Back' }}</a>
+</form>
+{% endblock %}

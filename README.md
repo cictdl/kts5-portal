@@ -193,6 +193,24 @@ each State/UT, with a link that opens the account form filled in; *Users & roles
 (role *nodal*, the State/UT), which mails the temporary password. The States/UTs without a Nodal
 Institution are verified by CICT, or by an officer given them.
 
+From 1.2.39:
+
+* *The accounts from a spreadsheet.* *Console → Nodal officers* offers the sheet (Excel) of every
+  State/UT with its Nodal Institution and the accounts that exist. Filled in with the name, e-mail
+  and phone of each officer (one officer may take several States/UTs: the same e-mail on several
+  rows) and uploaded as .xlsx or .csv, it first shows what each row will do (a new account, a
+  State/UT added to an existing account, nothing, or why a row is not taken); the accounts are made
+  when this is confirmed, each mailed a temporary password.
+* *The close of verification* (`verify.end`, by default the day before the test) is shown to the
+  officers above their applications and in every mail. CICT can still verify after it.
+* *The morning mail* (`nodal.digest`, at `nodal.digest_time` IST): every active officer with
+  applications awaiting them hears how many, how many are new, how long the oldest has waited and
+  what they have verified, from the opening of registration to the close of verification; once a
+  day, sent by the mail queue; on the last two days it is a reminder.
+* *Reminders.* The page shows how long the oldest application of each State/UT has waited (two days
+  and more stand out) and sends a reminder to the officer of one State/UT, or to every officer with
+  applications awaiting them.
+
 ## The mail queue
 
 From 1.2.35 no page sends a mail itself: every mail is written to the outbox, and one sender in the

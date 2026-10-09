@@ -209,6 +209,12 @@ def start(app):
     def loop():
         while True:
             try:
+                # the morning mail to the Nodal Officers of the States/UTs, once a day (kts/nodal.py)
+                from . import nodal
+                nodal.daily(app)
+            except Exception:  # noqa: BLE001
+                app.logger.exception("mail sender: the morning mail of the Nodal Officers failed")
+            try:
                 run_once(app)
             except Exception:  # noqa: BLE001 - the sender never stops for one bad round
                 app.logger.exception("mail sender: round failed")
