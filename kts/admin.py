@@ -16,6 +16,7 @@ from werkzeug.security import generate_password_hash
 
 from . import kural as K
 from . import backup as BACKUP
+from . import heis as HEI
 from . import nodal as NODAL
 from .auth import PERMS, ROLES, current_user, has_perm, login_required, state_scope
 from .db import (DEFAULT_SETTINGS, INSTITUTE_HEAD, NODAL_FIELDS, NODAL_OFFICERS, SOCIAL_LINKS, all_settings, audit, execute, executemany, get_setting, query,
@@ -90,7 +91,7 @@ def dashboard():
 # ---- applications -----------------------------------------------------------
 
 def _app_filters():
-    f = {k: (request.args.get(k) or "").strip() for k in ("status", "state", "lang", "q", "college", "exam")}
+    f = {k: (request.args.get(k) or "").strip() for k in ("status", "state", "lang", "q", "college", "exam", "inst")}
     sql = " FROM applications a WHERE 1=1"
     args = []
     if f["status"]:
@@ -112,6 +113,11 @@ def _app_filters():
         sql += " AND a.exam_score IS NOT NULL"
     elif f["exam"] == "pending":
         sql += " AND a.exam_score IS NULL"
+    # chosen from the list of participating institutions, or "not listed" (1.2.41)
+    if f["inst"] == "listed":
+        sql += " AND a.institution_id IS NOT NULL"
+    elif f["inst"] == "unlisted":
+        sql += " AND a.institution_id IS NULL"
     # a Nodal Officer: the applications of the institutions of their States/UTs, whatever is asked for
     scope = state_scope(_user())
     if scope is not None:
@@ -924,15 +930,20 @@ def nodal_access():
     officers = _officers_by_state()
     figures, total = NODAL.figures(_states())
     covered = {h["state"] for h in heis}
+    inst = {}
+    for r in query("SELECT state, status, COUNT(*) AS n FROM institutions GROUP BY state, status"):
+        inst.setdefault(r["state"], {})[r["status"]] = r["n"]
 
     def row(state, hei):
         return {"state": state, "hei": hei, "officers": officers.get(state, []), "total": sum(counts.get(state, {}).values()),
-                "f": figures.get(state) or {"awaiting": 0, "verified": 0, "rejected": 0, "waiting_days": None, "new": 0}}
+                "f": figures.get(state) or {"awaiting": 0, "verified": 0, "rejected": 0, "waiting_days": None, "new": 0},
+                "inst": inst.get(state, {})}
     rows = [row(h["state"], h["name"]) for h in heis]
     # the States/UTs without a Nodal Institution: their applications are verified by CICT, or by an officer given them
     others = [row(s, "") for s in _states() if s not in covered]
     settings = all_settings()
     return render_template("console/nodal.html", rows=rows, others=others, total=total, can_create=has_perm(_user(), "users"),
+                           most=HEI.max_per_state(),
                            closes=NODAL.closes_line(), digest_on=settings.get("nodal.digest") == "1",
                            digest_time=settings.get("nodal.digest_time") or "08:00",
                            can_settings=has_perm(_user(), "settings"))
@@ -1001,6 +1012,151 @@ def backups():
                            free=shutil.disk_usage(folder).free, uploads_files=files, uploads_bytes=size,
                            times=settings.get("backup.times") or "", keep=settings.get("backup.keep") or "",
                            db_bytes=Path(app.config["DATABASE"]).stat().st_size)
+
+
+# ---- the participating institutions of the States/UTs (1.2.41, kts/heis.py) ----------------------------------
+
+def _inst_filters(scope):
+    f = {k: (request.args.get(k) or "").strip() for k in ("state", "status", "q")}
+    sql, args = " FROM institutions i WHERE 1=1", []
+    if scope is not None:
+        sql += f" AND i.state IN ({','.join('?' * len(scope))})" if scope else " AND 0"
+        args += scope
+    if f["state"]:
+        sql += " AND i.state = ?"
+        args.append(f["state"])
+    if f["status"]:
+        sql += " AND i.status = ?"
+        args.append(f["status"])
+    if f["q"]:
+        sql += " AND (i.name LIKE ? OR i.ref LIKE ? OR i.aishe_code LIKE ? OR i.head_email LIKE ? OR i.coord_email LIKE ? OR i.district LIKE ?)"
+        args += [f"%{f['q']}%"] * 6
+    return f, sql, args
+
+
+INST_ROWS_SHOWN = 500
+
+
+@bp.route("/institutions", methods=["GET", "POST"])
+@login_required("hei.view")
+def institutions():
+    """
+    The institutions that applied to take part, State/UT by State/UT: the Nodal Officer of the State/UT
+    (or CICT) accepts or declines them, up to hei.max_per_state accepted in a State/UT (1.2.41).
+    """
+    user = _user()
+    scope = state_scope(user)
+    back = url_for("admin.institutions", **request.args.to_dict())
+    if request.method == "POST":
+        if not has_perm(user, "hei.decide"):
+            abort(403)
+        row = query("SELECT * FROM institutions WHERE id = ?", (safe_int(request.form.get("id")),), one=True)
+        if row is None or (scope is not None and row["state"] not in scope):
+            abort(404)
+        action = request.form.get("action")
+        note = (request.form.get("note") or "").strip()[:500]
+        if action == "accept":
+            taken = query("SELECT COUNT(*) AS n FROM institutions WHERE state = ? AND status = 'accepted' AND id != ?",
+                          (row["state"], row["id"]), one=True)["n"]
+            if taken >= HEI.max_per_state():
+                flash(f"{row['state']} has {taken} accepted institutions: that is the most (Settings › Participating institutions).", "error")
+                return redirect(back)
+            status = "accepted"
+        elif action == "decline":
+            status = "declined"
+        elif action == "pending":
+            status = "pending"
+        else:
+            abort(400)
+        now = utcnow()
+        execute("UPDATE institutions SET status = ?, decision_note = ?, decided_by = ?, decided_at = ?, updated_at = ? WHERE id = ?",
+                (status, note if status == "declined" else "", user["id"], now if status != "pending" else None, now, row["id"]))
+        audit("institution_" + status, "institution", row["id"], detail={"ref": row["ref"], "note": note}, user=user, ip=client_ip())
+        if status != "pending":
+            HEI.mail_decision(query("SELECT * FROM institutions WHERE id = ?", (row["id"],), one=True))
+        flash(f"{row['name']}: {status}" + (" – the Head of the Institution and the coordinator are informed by mail." if status != "pending" else "."),
+              "success")
+        return redirect(back)
+    f, sql, args = _inst_filters(scope)
+    rows = query("SELECT i.*, (SELECT COUNT(*) FROM applications a WHERE a.institution_id = i.id AND a.status != 'withdrawn') AS students"
+                 + sql + " ORDER BY i.state, CASE i.status WHEN 'pending' THEN 0 WHEN 'accepted' THEN 1 ELSE 2 END, i.name COLLATE NOCASE"
+                 + " LIMIT ?", args + [INST_ROWS_SHOWN + 1])
+    # the States/UTs: accepted, pending, declined, and the students who said their institution is not listed
+    summary = {}
+    s_sql, s_args = " FROM institutions WHERE 1=1", []
+    if scope is not None:
+        s_sql += f" AND state IN ({','.join('?' * len(scope))})" if scope else " AND 0"
+        s_args += scope
+    for r in query("SELECT state, status, COUNT(*) AS n" + s_sql + " GROUP BY state, status", s_args):
+        summary.setdefault(r["state"], {})[r["status"]] = r["n"]
+    unlisted = {r["s"]: r["n"] for r in query("SELECT college_state AS s, COUNT(*) AS n FROM applications "
+                                               "WHERE institution_id IS NULL AND status != 'withdrawn' GROUP BY college_state")}
+    states = scope if scope is not None else _states()
+    return render_template("console/institutions.html", rows=rows[:INST_ROWS_SHOWN], more=len(rows) > INST_ROWS_SHOWN, f=f,
+                           states=states, summary=summary, unlisted=unlisted, most=HEI.max_per_state(), scope=scope,
+                           can_decide=has_perm(user, "hei.decide"), window=HEI.window(all_settings()))
+
+
+@bp.route("/institutions/export.xlsx")
+@login_required("hei.view")
+def institutions_export():
+    """The list in the manner of Annexure-III: what the console shows, with the filters chosen."""
+    _f, sql, args = _inst_filters(state_scope(_user()))
+    rows = query("SELECT i.*, (SELECT COUNT(*) FROM applications a WHERE a.institution_id = i.id AND a.status != 'withdrawn') AS students"
+                 + sql + " ORDER BY i.state, i.name COLLATE NOCASE", args)
+    headers = ["Reference", "State/UT", "Institution", "Type", "District", "AISHE code", "Head of the Institution", "Designation",
+               "Head: e-mail", "Head: phone", "Coordinator / Faculty Supervisor", "Coordinator: e-mail", "Coordinator: mobile",
+               "Status", "Remark", "Applied on", "Decided on", "Students registered"]
+    data = [(r["ref"], r["state"], r["name"], r["itype"], r["district"], r["aishe_code"], r["head_name"], r["head_designation"],
+             r["head_email"], r["head_phone"], r["coord_name"], r["coord_email"], r["coord_mobile"], r["status"], r["decision_note"],
+             (r["created_at"] or "")[:10], (r["decided_at"] or "")[:10], r["students"]) for r in rows]
+    audit("institutions_exported", "institution", None, detail={"rows": len(data)}, user=_user(), ip=client_ip())
+    return Response(xlsx_bytes(headers, data, "Institutions", text_cols=(5, 9, 12)),
+                    mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    headers={"Content-Disposition": "attachment; filename=KTS5-participating-institutions.xlsx"})
+
+
+@bp.route("/institutions/<int:iid>/edit", methods=["GET", "POST"])
+@login_required("hei.decide")
+def institution_edit(iid):
+    """Corrects what an institution wrote; the applications of its students follow (1.2.41)."""
+    scope = state_scope(_user())
+    row = query("SELECT * FROM institutions WHERE id = ?", (iid,), one=True)
+    if row is None or (scope is not None and row["state"] not in scope):
+        abort(404)
+    known = _states()
+    ref = json.loads((current_app.config["DATA_DIR"] / "states.json").read_text(encoding="utf-8"))
+    data, errors = dict(row), {}
+    if request.method == "POST":
+        data.update({f: (request.form.get(f) or "").strip() for f in HEI.FIELDS})
+        for f in HEI.REQUIRED:
+            if not data[f]:
+                errors[f] = "required"
+        for f in ("head_email", "coord_email"):
+            data[f] = data[f].lower()
+            if data[f] and not valid_email(data[f]):
+                errors[f] = "not a valid e-mail address"
+        if data["state"] not in known or (scope is not None and data["state"] not in scope):
+            errors["state"] = "choose a State/UT" + (" of your own" if scope is not None else "")
+        if data["itype"] not in ref["college_types"]:
+            errors["itype"] = "choose a type"
+        data["aishe_code"] = data["aishe_code"].upper().replace(" ", "")[:20]
+        if not errors and HEI.duplicate(data, exclude_id=iid):
+            errors["name"] = "another application of this institution exists"
+        if not errors:
+            execute(f"UPDATE institutions SET {', '.join(f + ' = ?' for f in HEI.FIELDS)}, inst_key = ?, updated_at = ? WHERE id = ?",
+                    [data[f] for f in HEI.FIELDS] + [HEI.key_of(data), utcnow(), iid])
+            from .utils import college_key
+            execute("UPDATE applications SET college_name = ?, aishe_code = ?, college_type = ?, college_state = ?, college_district = ?, "
+                    "college_key = ? WHERE institution_id = ?",
+                    (data["name"], data["aishe_code"], data["itype"], data["state"], data["district"],
+                     college_key(data["name"], data["state"], data["aishe_code"]), iid))
+            audit("institution_updated", "institution", iid, detail=row["ref"], user=_user(), ip=client_ip())
+            flash(f"Saved {data['name']}.", "success")
+            return redirect(url_for("admin.institutions", state=data["state"]))
+        flash("Please correct the fields marked.", "error")
+    return render_template("console/institution_edit.html", d=data, errors=errors, row=row,
+                           states=scope if scope is not None else known, types=ref["college_types"])
 
 
 NODAL_SHEET = ["State/UT", "Nodal HEI", "Name of the Nodal Officer", "E-mail", "Phone"]
@@ -1162,6 +1318,11 @@ SETTING_GROUPS = [
         ("backup.on", "Copy the database by itself at the hours below, into instance\\backups", "bool"),
         ("backup.times", "Hours of the copies (HH:MM IST, separated by commas)", "text"),
         ("backup.keep", "Copies made at those hours that are kept (28: two weeks, at two a day)", "number")]),
+    ("Participating institutions (Console › Institutions; the website: /institutions)", [
+        ("hei.open", "Institutions may apply on the website (/institutions/register)", "bool"),
+        ("hei.end", "Last date for institutions to apply (YYYY-MM-DD; empty: none)", "date"),
+        ("hei.max_per_state", "Institutions accepted in one State/UT at most", "number"),
+        ("hei.public", "Show the participating institutions on the website, State/UT by State/UT", "bool")]),
     ("Verification by the Nodal Officers of the States/UTs", [
         ("verify.end", "Verification by the Nodal Officers closes on (YYYY-MM-DD; shown to them and in their mails; CICT can still verify after it)", "date"),
         ("nodal.digest", "Morning mail to every Nodal Officer with applications awaiting them, from the opening of registration to the close of verification", "bool"),

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ t('hei.done_title') }}{% endblock %}
+{% block content %}
+<div class="wrap section" style="max-width:760px">
+  <span class="eyebrow">{{ t('nav.institutions') }}</span>
+  <h1>{{ t('hei.done_title') }}</h1>
+  <div class="card" style="margin:16px 0">
+    <p style="margin:0 0 6px">{{ t('hei.done_ref') }}: <b dir="ltr" class="mono">{{ row.ref }}</b></p>
+    <p style="margin:0" lang="en" dir="ltr"><b>{{ row.name }}</b> · {{ row.district }}</p>
+  </div>
+  <p>{{ t('hei.done_next')|replace('{state}', place(row.state)) }}</p>
+  <p><a class="btn ghost" href="{{ url_for('public.institutions') }}">{{ t('hei.list_link') }}</a></p>
+</div>
+{% endblock %}

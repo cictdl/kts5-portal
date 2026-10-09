@@ -74,13 +74,26 @@
 
     <div class="form-section">
       <h2>{{ t('reg.sec_college') }}</h2>
-      <p class="hint">{{ t('reg.college_help') }}</p>
+      <p class="hint">{{ t('reg.college_help') }} {{ t('hei.ask') }} <a href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a></p>
       <div class="fields">
+        {{ select('college_state', t('reg.college_state'), ref.all_states, True, places=True) }}
+        <div class="field wide {{ 'has-err' if errors.get('institution_id') }}">
+          <label for="institution_id">{{ t('hei.pick') }} <span class="req">*</span></label>
+          <select id="institution_id" name="institution_id" data-hei-pick>
+            <option value="">—</option>
+            {% for state, items in heis %}<optgroup label="{{ place(state) }}" data-state="{{ state }}">{% for h in items %}<option value="{{ h.id }}" lang="en" {{ 'selected' if data.get('institution_pick') == h.id|string }}>{{ h.name }}{% if h.district %} · {{ h.district }}{% endif %}</option>{% endfor %}</optgroup>
+            {% endfor %}<option value="0" {{ 'selected' if data.get('institution_pick') == '0' }}>{{ t('hei.not_listed') }}</option>
+          </select>
+          {% if errors.get('institution_id') %}<span class="err">{{ errors['institution_id'] }}</span>{% else %}<span class="help">{{ t('hei.pick_help') }} <a href="{{ url_for('public.institutions') }}">{{ t('hei.list_link') }}</a></span>{% endif %}
+        </div>
+      </div>
+      <div class="fields" data-hei-free>
         {{ field('college_name', t('reg.college_name'), True, wide=True, attrs='maxlength="200" dir="ltr" lang="en"') }}
         {{ field('aishe_code', t('reg.aishe'), False, t('reg.aishe_help'), attrs='maxlength="20" dir="ltr" lang="en"') }}
         {{ select('college_type', t('reg.college_type'), ref.college_types, True, prefix='opt.ctype') }}
-        {{ select('college_state', t('reg.college_state'), ref.all_states, True, places=True) }}
         {{ field('college_district', t('reg.college_district'), attrs='maxlength="80" dir="ltr" lang="en"') }}
+      </div>
+      <div class="fields">
         {{ field('university', t('reg.university'), wide=True, attrs='maxlength="200" dir="ltr" lang="en"') }}
         {{ select('course_level', t('reg.course_level'), ref.course_levels, True, prefix='opt.level') }}
         {{ field('discipline', t('reg.discipline'), attrs='maxlength="120" dir="ltr" lang="en" placeholder="B.A. Economics, B.Tech CSE, M.Sc Physics…"') }}

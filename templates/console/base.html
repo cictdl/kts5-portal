@@ -21,6 +21,7 @@
     <div class="group">Participants</div>
     <a class="item {{ 'active' if ep.startswith('admin.application') }}" href="{{ url_for('admin.applications') }}">🗂 Applications</a>
     <a class="item {{ 'active' if ep == 'admin.applications' and request.args.get('status') == 'submitted' }}" href="{{ url_for('admin.applications', status='submitted') }}">✅ Verification queue</a>
+    {% if has_perm(u, 'hei.view') %}<a class="item {{ 'active' if ep.startswith('admin.institution') }}" href="{{ url_for('admin.institutions') }}">🏫 Institutions</a>{% endif %}
     {% if has_perm(u, 'nodal.manage') %}<a class="item {{ 'active' if ep == 'admin.nodal_access' }}" href="{{ url_for('admin.nodal_access') }}">🏛 Nodal officers</a>{% endif %}
     {% endif %}
     {% if has_perm(u, 'exam.view') %}
@@ -85,6 +86,6 @@
     {% block content %}{% endblock %}
   </div>
 </div>
-<script src="{{ url_for('static', filename='js/portal.js') }}?v=11" defer></script>
+<script src="{{ url_for('static', filename='js/portal.js') }}?v=12" defer></script>
 </body>
 </html>

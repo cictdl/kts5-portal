@@ -14,13 +14,14 @@ from markupsafe import escape
 from flask import (Blueprint, Response, abort, current_app, flash, g, redirect, render_template,
                    request, send_from_directory, session, url_for)
 
+from . import heis as HEI
 from . import kural as K
 from .db import all_settings, audit, execute, get_setting, query, utcnow
 from . import i18n
 from .i18n import get_lang, t
 from .utils import (DOC_EXT, IMAGE_EXT, age_on, check_captcha, client_ip, college_key, csv_bytes,
                     exam_window, fmt_date, limiter, make_app_no, new_captcha, now_ist, plain_english,
-                    qr_data_uri, registration_state, save_upload, send_mail, valid_email, valid_mobile,
+                    qr_data_uri, registration_state, safe_int, save_upload, send_mail, valid_email, valid_mobile,
                     valid_pincode)
 from .version import RELEASED, VERSION
 
@@ -239,6 +240,20 @@ def _validate(form, files):
     errors = {}
     data = {f: (form.get(f) or "").strip() for f in FIELDS}
     data["pwd"] = 1 if form.get("pwd") == "1" else 0
+    # the participating institution chosen from the list (1.2.41): its details are those of the list
+    choice = (form.get("institution_id") or "").strip()
+    data["institution_pick"], data["institution_id"] = choice, None
+    if choice not in ("", "0"):
+        inst = query("SELECT * FROM institutions WHERE id = ? AND status = 'accepted'", (safe_int(choice),), one=True)
+        if inst is None:
+            errors["institution_id"] = t("hei.pick_err_gone")
+        else:
+            data.update(college_name=inst["name"], aishe_code=inst["aishe_code"], college_type=inst["itype"],
+                        college_state=inst["state"], college_district=inst["district"], institution_id=inst["id"])
+            # one student per institution, while the first is neither withdrawn nor rejected
+            if query("SELECT 1 FROM applications WHERE institution_id = ? AND status NOT IN ('withdrawn', 'rejected')",
+                     (inst["id"],), one=True):
+                errors["institution_id"] = t("hei.pick_err_taken")
     for f in ENGLISH:
         data[f], english = plain_english(data[f])
         if not english:
@@ -294,7 +309,7 @@ def register():
     langs = [K.lang_info(c) | {"code": c} for c in K.ORIENTATION_LANGS]
     mother = [K.lang_info(c) | {"code": c} for c in ["ta"] + [c for c in K.SCHEDULED if c != "ta"]]
     ctx = dict(settings=settings, state=state, ref=ref, langs=langs, mother=mother,
-               dates=_key_dates(settings), data={}, errors={})
+               dates=_key_dates(settings), data={}, errors={}, heis=HEI.accepted_by_state(ref["all_states"]))
     if state != "open":
         return render_template("public/register_closed.html", **ctx)
 
@@ -335,8 +350,10 @@ def register():
 
         now = utcnow()
         data["college_key"] = college_key(data["college_name"], data["college_state"], data["aishe_code"])
-        cols = FIELDS + ["pwd", "college_key", "photo_path", "idproof_path", "nomination_path", "ip", "created_at", "updated_at", "status"]
-        values = [data[f] for f in FIELDS] + [data["pwd"], data["college_key"], photo[0], idproof[0], nomination[0], ip, now, now, "submitted"]
+        cols = FIELDS + ["pwd", "college_key", "photo_path", "idproof_path", "nomination_path", "ip", "created_at", "updated_at", "status",
+                         "institution_id"]
+        values = [data[f] for f in FIELDS] + [data["pwd"], data["college_key"], photo[0], idproof[0], nomination[0], ip, now, now, "submitted",
+                                              data["institution_id"]]
         row_id = execute(f"INSERT INTO applications({', '.join(cols)}) VALUES({', '.join('?' * len(cols))})", values)
         app_no = make_app_no(row_id)
         execute("UPDATE applications SET app_no = ? WHERE id = ?", (app_no, row_id))
@@ -361,6 +378,92 @@ def register():
 
     ctx["captcha"] = new_captcha()
     return render_template("public/register.html", **ctx)
+
+
+# ---- the participating institutions (1.2.41, kts/heis.py) --------------------------------------------------
+
+@bp.route("/institutions")
+def institutions():
+    settings = all_settings()
+    if settings.get("hei.public") != "1":
+        abort(404)
+    ref = _states()
+    groups = HEI.accepted_by_state(ref["all_states"])
+    nodal = {n["state"]: n["name"] for n in nodal_heis()}
+    return render_template("public/institutions.html", groups=groups, nodal=nodal, ref=ref,
+                           total=sum(len(items) for _state, items in groups), window=HEI.window(settings),
+                           settings=settings, most=HEI.max_per_state())
+
+
+@bp.route("/institutions/register", methods=["GET", "POST"])
+def hei_register():
+    settings = all_settings()
+    ref = _states()
+    ctx = dict(settings=settings, ref=ref, data={}, errors={}, window=HEI.window(settings))
+    if ctx["window"] != "open":
+        return render_template("public/hei_register.html", **ctx)
+    if request.method == "POST":
+        ip = client_ip()
+        form = request.form
+        data = {f: (form.get(f) or "").strip() for f in HEI.FIELDS}
+        errors = {}
+        for f in HEI.ENGLISH:
+            data[f], english = plain_english(data[f])
+            if not english:
+                errors[f] = t("reg.err_english")
+        for f in HEI.REQUIRED:
+            if not data[f]:
+                errors[f] = t("reg.err_required")
+        if data["itype"] and data["itype"] not in ref["college_types"]:
+            errors["itype"] = t("reg.err_required")
+        if data["state"] and data["state"] not in ref["all_states"]:
+            errors["state"] = t("reg.err_required")
+        for f in ("head_email", "coord_email"):
+            data[f] = data[f].lower()
+            if data[f] and not valid_email(data[f]):
+                errors[f] = t("reg.err_email")
+        if data["head_phone"]:
+            digits = HEI.phone_digits(data["head_phone"])
+            if digits:
+                data["head_phone"] = digits
+            else:
+                errors["head_phone"] = t("hei.err_phone")
+        if data["coord_mobile"] and not valid_mobile(data["coord_mobile"]):
+            errors["coord_mobile"] = t("reg.err_mobile")
+        data["aishe_code"] = data["aishe_code"].upper().replace(" ", "")[:20]
+        if form.get("declare") != "1":
+            errors["declare"] = t("hei.err_declare")
+        if form.get("website") or not check_captcha(form.get("captcha")):
+            errors["captcha"] = t("reg.err_captcha")
+        if not errors:
+            dup = HEI.duplicate(data)
+            if dup:
+                errors["name"] = t("hei.err_dup").replace("{ref}", dup["ref"])
+        refused = not errors and limiter.blocked("hei", ip, current_app.config["RATE_HEI_PER_HOUR"], 3600)
+        if errors or refused:
+            flash(t("reg.err_rate") if refused else t("reg.err_fix"), "error")
+            ctx.update(data=data, errors=errors, captcha=new_captcha())
+            return render_template("public/hei_register.html", **ctx), 400
+        now = utcnow()
+        cols = HEI.FIELDS + ["inst_key", "status", "ip", "created_at", "updated_at"]
+        rid = execute(f"INSERT INTO institutions({', '.join(cols)}) VALUES({', '.join('?' * len(cols))})",
+                      [data[f] for f in HEI.FIELDS] + [HEI.key_of(data), "pending", ip, now, now])
+        execute("UPDATE institutions SET ref = ? WHERE id = ?", (HEI.ref_of(rid), rid))
+        limiter.hit("hei", ip, 3600)
+        audit("institution_applied", "institution", rid, detail=HEI.ref_of(rid), ip=ip)
+        HEI.mail_received(query("SELECT * FROM institutions WHERE id = ?", (rid,), one=True))
+        session["hei_applied"] = rid
+        return redirect(url_for("public.hei_done", ref=HEI.ref_of(rid)))
+    ctx["captcha"] = new_captcha()
+    return render_template("public/hei_register.html", **ctx)
+
+
+@bp.route("/institutions/register/done/<ref>")
+def hei_done(ref):
+    row = query("SELECT * FROM institutions WHERE ref = ?", (ref,), one=True)
+    if row is None or session.get("hei_applied") != row["id"]:
+        return redirect(url_for("public.home"))
+    return render_template("public/hei_done.html", row=row)
 
 
 @bp.route("/register/done/<app_no>")
@@ -723,7 +826,8 @@ SITEMAP = [
                           ("public.gallery", {}, "nav.gallery"), ("public.contact", {}, "nav.contact")]),
     ("pol.sm_students", [("public.register", {}, "nav.register"), ("public.status", {}, "nav.status"),
                          ("public.examination", {}, "nav.exam"), ("public.merit", {}, "nav.merit"),
-                         ("public.stipend_guide", {}, "stip.title"), ("candidate.login", {}, "nav.candidate")]),
+                         ("public.stipend_guide", {}, "stip.title"), ("candidate.login", {}, "nav.candidate"),
+                         ("public.institutions", {}, "nav.institutions"), ("public.hei_register", {}, "hei.cta")]),
     ("pol.sm_learning", [("public.orientation", {}, "nav.orientation"), ("public.resources", {}, "nav.resources"),
                          ("public.kural_browser", {}, "nav.kural"), ("public.daily_kural", {}, "nav.daily"),
                          ("quiz.join", {}, "quiz.title")]),

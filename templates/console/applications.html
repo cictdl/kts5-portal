@@ -11,6 +11,7 @@
   <div class="field"><label for="state">College state</label><select id="state" name="state"><option value="">All</option>{% for s in states %}<option {{ 'selected' if f.state == s }}>{{ s }}</option>{% endfor %}</select></div>
   <div class="field"><label for="lang">Language</label><select id="lang" name="lang"><option value="">All</option>{% for l in langs %}<option value="{{ l }}" {{ 'selected' if f.lang == l }}>{{ l|langname }}</option>{% endfor %}</select></div>
   <div class="field"><label for="college">College</label><input type="text" id="college" name="college" value="{{ f.college }}"></div>
+  <div class="field"><label for="inst_filter">Institution</label><select id="inst_filter" name="inst"><option value="">Any</option><option value="listed" {{ 'selected' if f.inst == 'listed' }}>From the list</option><option value="unlisted" {{ 'selected' if f.inst == 'unlisted' }}>Not listed</option></select></div>
   <div class="field"><label for="exam_filter">Test</label><select id="exam_filter" name="exam"><option value="">Any</option><option value="done" {{ 'selected' if f.exam == 'done' }}>Taken</option><option value="pending" {{ 'selected' if f.exam == 'pending' }}>Not taken</option></select></div>
   <div class="field"><button class="btn" type="submit">Filter</button></div>
   {% if has_perm(current_user, 'apps.export') %}
@@ -28,7 +29,7 @@
   <tr>{% if has_perm(current_user, 'apps.verify') %}<td><input type="checkbox" name="ids" value="{{ a.id }}"></td>{% endif %}
     <td><a href="{{ url_for('admin.application', aid=a.id) }}"><code>{{ a.app_no }}</code></a></td>
     <td>{{ a.full_name }}<div class="small muted">{{ a.email }} · {{ a.mobile }}</div></td>
-    <td>{{ a.college_name|truncate(48) }}{% if a.aishe_code %}<div class="small muted">{{ a.aishe_code }}</div>{% endif %}</td>
+    <td>{{ a.college_name|truncate(48) }}{% if a.aishe_code %}<div class="small muted">{{ a.aishe_code }}</div>{% endif %}{% if a.institution_id is none %}<div><span class="pill grey">not listed</span></div>{% endif %}</td>
     <td>{{ a.college_state }}</td><td>{{ a.pref_lang|langname }}</td>
     <td><span class="status-chip st-{{ a.status }}">{{ a.status.replace('_', ' ') }}</span></td>
     <td class="num">{{ a.exam_score|int if a.exam_score is not none else '–' }}</td>

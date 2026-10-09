@@ -18,6 +18,7 @@
     {% if not o.active %}<span class="pill grey">disabled</span>{% elif o.must_change_password %}<span class="pill saffron">not signed in yet</span>{% else %}<span class="small muted">· last sign-in {{ o.last_login_at|datetime if o.last_login_at else 'never' }}</span>{% endif %}</div>
     {% else %}<span class="muted">{% if r.hei %}no account{% else %}verified by CICT{% endif %}</span>{% endfor %}
     {% if can_create and r.hei and not r.officers %}<div><a class="btn xs secondary" href="{{ url_for('admin.user_form', role='nodal', states=r.state) }}">+ Create the account</a></div>{% endif %}</td>
+  <td class="num">{{ r.inst.get('accepted', 0) }}<span class="small muted">/{{ most }}</span>{% if r.inst.get('pending') %}<div class="small"><a href="{{ url_for('admin.institutions', state=r.state, status='pending') }}">{{ r.inst.get('pending') }} pending</a></div>{% endif %}</td>
   <td class="num">{{ r.total }}</td>
   <td class="num">{% set w = r.f.awaiting %}{% if w %}<a href="{{ url_for('admin.applications', state=r.state, status='submitted') }}"><b>{{ w }}</b></a>{% else %}0{% endif %}</td>
   <td class="num">{% set d = r.f.waiting_days %}{% if d is none %}–{% elif d == 0 %}today{% elif d >= 2 %}<span class="pill saffron">{{ d }} days</span>{% else %}1 day{% endif %}</td>
@@ -26,7 +27,7 @@
   <td>{% if r.f.awaiting and r.officers %}<form method="post" style="margin:0"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="state" value="{{ r.state }}">
     <button class="btn xs ghost" name="action" value="remind" data-confirm="Send a reminder now to the Nodal Officer of {{ r.state }}?">Remind</button></form>{% endif %}</td></tr>
 {% endmacro %}
-{% set heads %}<thead><tr><th class="num">#</th><th>State/UT · Nodal HEI</th><th>Nodal Officer</th><th class="num">Applications</th><th class="num">Awaiting</th><th class="num">Waiting longest</th><th class="num">Verified</th><th class="num">Rejected</th><th></th></tr></thead>{% endset %}
+{% set heads %}<thead><tr><th class="num">#</th><th>State/UT · Nodal HEI</th><th>Nodal Officer</th><th class="num">Institutions</th><th class="num">Applications</th><th class="num">Awaiting</th><th class="num">Waiting longest</th><th class="num">Verified</th><th class="num">Rejected</th><th></th></tr></thead>{% endset %}
 <div class="table-wrap"><table class="table nodal-officers">
   {{ heads }}
   <tbody>{% for r in rows %}{{ line(r, loop.index) }}{% endfor %}</tbody>

@@ -189,6 +189,7 @@ class Config:
     # too. Sign-in and status look-up count failed attempts only.
     RATE_REGISTER_PER_HOUR = _int_env("KTS_RATE_REGISTER_PER_HOUR", 100)
     RATE_CONTACT_PER_HOUR = _int_env("KTS_RATE_CONTACT_PER_HOUR", 10)
+    RATE_HEI_PER_HOUR = _int_env("KTS_RATE_HEI_PER_HOUR", 20)
     RATE_STATUS_FAILS_PER_15MIN = _int_env("KTS_RATE_STATUS_FAILS", 300)
     RATE_LOGIN_FAILS_PER_15MIN = _int_env("KTS_RATE_LOGIN_FAILS", 12)
     RATE_CAND_FAILS_IP_PER_15MIN = _int_env("KTS_RATE_CANDIDATE_FAILS_IP", 600)

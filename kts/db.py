@@ -53,6 +53,34 @@ CREATE TABLE IF NOT EXISTS users (
     last_login_at TEXT
 );
 
+-- the participating Higher Educational Institutions of the States/UTs (1.2.41, kts/heis.py)
+CREATE TABLE IF NOT EXISTS institutions (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    ref              TEXT UNIQUE,
+    name             TEXT NOT NULL,
+    itype            TEXT NOT NULL DEFAULT '',
+    state            TEXT NOT NULL,
+    district         TEXT NOT NULL DEFAULT '',
+    aishe_code       TEXT NOT NULL DEFAULT '',
+    inst_key         TEXT NOT NULL,
+    head_name        TEXT NOT NULL DEFAULT '',
+    head_designation TEXT NOT NULL DEFAULT '',
+    head_email       TEXT NOT NULL DEFAULT '',
+    head_phone       TEXT NOT NULL DEFAULT '',
+    coord_name       TEXT NOT NULL DEFAULT '',
+    coord_email      TEXT NOT NULL DEFAULT '',
+    coord_mobile     TEXT NOT NULL DEFAULT '',
+    status           TEXT NOT NULL DEFAULT 'pending',
+    decision_note    TEXT NOT NULL DEFAULT '',
+    decided_by       INTEGER,
+    decided_at       TEXT,
+    ip               TEXT NOT NULL DEFAULT '',
+    created_at       TEXT NOT NULL,
+    updated_at       TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_institutions_state ON institutions(state, status);
+CREATE INDEX IF NOT EXISTS idx_institutions_key ON institutions(inst_key);
+
 CREATE TABLE IF NOT EXISTS applications (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     app_no          TEXT UNIQUE,
@@ -483,6 +511,8 @@ LATER_COLUMNS = [
     ("outbox", "next_try", "TEXT"),
     # the States/UTs of a Nodal Officer ('|' between them; 1.2.38)
     ("users", "states", "TEXT NOT NULL DEFAULT ''"),
+    # the participating institution that the student chose (1.2.41); empty: "not listed"
+    ("applications", "institution_id", "INTEGER"),
 ]
 
 # CICT on social media: (setting, name of the service, address). The links stand in the footer of
@@ -584,6 +614,11 @@ DEFAULT_SETTINGS = {
     "backup.on": "1",
     "backup.times": "02:00, 14:00",
     "backup.keep": "28",
+    # the participating institutions (1.2.41, kts/heis.py)
+    "hei.open": "1",
+    "hei.end": "2026-10-21",
+    "hei.max_per_state": "50",
+    "hei.public": "1",
     # the sender of mails (kts/mailq.py, 1.2.35): below the 2,000 mails a day of a Google Workspace account
     "mail.daily_limit": "1800",
     "mail.per_minute": "30",

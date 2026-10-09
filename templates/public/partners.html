@@ -32,5 +32,10 @@
     <div class="card flat"><h3>{{ t('nodal.p%d_t' % n) }}</h3><p class="dim small" style="margin:0">{{ t('nodal.p%d' % n) }}</p></div>
     {% endfor %}
   </div>
+
+  <h2 id="institutions" style="margin-top:36px">{{ t('nav.institutions') }}</h2>
+  <p class="dim" style="max-width:72ch">{{ t('hei.partners_note') }}</p>
+  <div class="btn-row"><a class="btn" href="{{ url_for('public.institutions') }}">{{ t('hei.list_link') }}</a>
+    <a class="btn ghost" href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a></div>
 </div>
 {% endblock %}

@@ -1,0 +1,19 @@
+{% extends "console/base.html" %}
+{% block title %}{{ row.name }}{% endblock %}
+{% block content %}
+<p class="dim">{{ row.ref }} · what the institution wrote, corrected here; the applications of its students take the new details.</p>
+<form method="post" class="card" style="max-width:820px">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <div class="fields">
+    {% for name, label in (('name', 'Name of the institution'), ('district', 'District'), ('aishe_code', 'AISHE code'), ('head_name', 'Head of the Institution'),
+                           ('head_designation', 'Designation'), ('head_email', 'Head: e-mail'), ('head_phone', 'Head: phone'),
+                           ('coord_name', 'Coordinator / Faculty Supervisor'), ('coord_email', 'Coordinator: e-mail'), ('coord_mobile', 'Coordinator: mobile')) %}
+    <div class="field {{ 'wide' if name == 'name' }} {{ 'has-err' if errors.get(name) }}"><label for="{{ name }}">{{ label }}</label>
+      <input type="text" id="{{ name }}" name="{{ name }}" value="{{ d[name] or '' }}">{% if errors.get(name) %}<span class="err">{{ errors[name] }}</span>{% endif %}</div>
+    {% endfor %}
+    <div class="field {{ 'has-err' if errors.get('itype') }}"><label for="itype">Type</label><select id="itype" name="itype">{% for o in types %}<option {{ 'selected' if d.itype == o }}>{{ o }}</option>{% endfor %}</select></div>
+    <div class="field {{ 'has-err' if errors.get('state') }}"><label for="state">State/UT</label><select id="state" name="state">{% for s in states %}<option {{ 'selected' if d.state == s }}>{{ s }}</option>{% endfor %}</select>{% if errors.get('state') %}<span class="err">{{ errors['state'] }}</span>{% endif %}</div>
+  </div>
+  <div class="btn-row"><button class="btn" type="submit">Save</button><a class="btn ghost" href="{{ url_for('admin.institutions', state=row.state) }}">Cancel</a></div>
+</form>
+{% endblock %}

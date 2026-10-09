@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ t('nav.institutions') }}{% endblock %}
+{% block content %}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('site.name') }}</span>
+  <h1>{{ t('nav.institutions') }}</h1>
+  <p class="lead dim" style="max-width:72ch">{{ t('hei.intro')|replace('{max}', most|string) }}</p>
+  {% if window == 'open' %}<p><a class="btn saffron" href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a>
+    {% if settings.get('hei.end') %}<span class="pill green" style="margin-inline-start:8px">{{ t('hei.last_date') }}: {{ settings['hei.end']|date }}</span>{% endif %}</p>{% endif %}
+  {% if groups %}
+  <p><b>{{ t('hei.count')|replace('{n}', total|string)|replace('{states}', groups|length|string) }}</b></p>
+  <p class="small">{% for state, items in groups %}<a href="#s{{ loop.index }}">{{ place(state) }}</a> ({{ items|length }}){{ ' · ' if not loop.last }}{% endfor %}</p>
+  {% for state, items in groups %}
+  {% set gi = loop.index %}
+  <h2 id="s{{ gi }}" style="margin-top:28px">{{ place(state) }} <span class="small muted">({{ items|length }})</span></h2>
+  {% if nodal.get(state) %}<p class="small dim" style="margin:0 0 8px">{{ t('hei.nodal') }}: <span lang="en" dir="ltr">{{ nodal[state] }}</span></p>{% endif %}
+  <div class="table-wrap"><table class="table">
+    <thead><tr><th class="num">#</th><th>{{ t('hei.col_name') }}</th><th>{{ t('reg.college_district') }}</th><th>{{ t('reg.college_type') }}</th></tr></thead>
+    <tbody>{% for h in items %}
+    {% set ti = ref.college_types.index(h.itype) + 1 if h.itype in ref.college_types else 0 %}
+    <tr><td class="num">{{ loop.index }}</td><td lang="en" dir="ltr">{{ h.name }}</td><td lang="en" dir="ltr">{{ h.district }}</td>
+      <td>{{ t('opt.ctype.%d' % ti) if ti else h.itype }}</td></tr>
+    {% endfor %}</tbody>
+  </table></div>
+  {% endfor %}
+  {% else %}
+  <p class="alert info">{{ t('hei.empty') }}</p>
+  {% endif %}
+</div>
+{% endblock %}

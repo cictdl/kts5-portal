@@ -97,16 +97,30 @@ def account_paragraph(states):
     return text + "\n\n"
 
 
+def institutions_pending(states):
+    """The institutions of these States/UTs that await the decision of the Nodal Officer (1.2.41)."""
+    if not states:
+        return 0
+    return query(f"SELECT COUNT(*) AS n FROM institutions WHERE status = 'pending' AND state IN ({','.join('?' * len(states))})",
+                 list(states), one=True)["n"]
+
+
 def officer_mail(user, reminder=False, now=None):
     """(subject, body) of the morning mail or of a reminder to one Nodal Officer; None when nothing awaits them."""
     states = states_of(user)
     per, total = figures(states, now)
-    if not total["awaiting"]:
+    pending = institutions_pending(states)
+    if not total["awaiting"] and not pending:
         return None
     base = current_app.config["BASE_URL"]
     stamp = (now or now_ist()).astimezone(now_ist().tzinfo)
     n = total["awaiting"]
-    what = f"{n} application{'s' if n != 1 else ''} await{'s' if n == 1 else ''} your verification"
+    parts = []
+    if n:
+        parts.append(f"{n} application{'s' if n != 1 else ''} await{'s' if n == 1 else ''} your verification")
+    if pending:
+        parts.append(f"{pending} institution{'s' if pending != 1 else ''} await{'s' if pending == 1 else ''} your decision")
+    what = "; ".join(parts)
     subject = f"KTS 5.0: {what} ({', '.join(states)})"
     end = verify_end()
     if reminder:
@@ -129,6 +143,8 @@ def officer_mail(user, reminder=False, now=None):
         for s in states:
             lines += [s] + block(per[s]) + [""]
         lines += [f"All together: {total['awaiting']} awaiting, {total['verified']} verified, {total['rejected']} rejected."]
+    if pending:
+        lines += ["", f"Institutions awaiting your decision: {pending}. Accept or decline them: {base}/console/institutions?status=pending"]
     close = closes_line()
     lines += ["", close] if close else []
     lines += ["", f"Open the verification queue: {base}/console/applications?status=submitted",
@@ -136,7 +152,7 @@ def officer_mail(user, reminder=False, now=None):
               "Open each application, look at the photograph, the ID proof and the nomination form signed by the head of "
               "the institution, and verify it, or reject it with a remark that the student will read.", "",
               "CICT, Chennai", "",
-              "This mail comes every morning while applications await your verification, until verification closes."]
+              "This mail comes every morning while applications or institutions await you, until verification closes."]
     return subject, "\n".join(lines)
 
 
@@ -161,7 +177,10 @@ def daily(app, now=None):
             return 0
         today = now.date()
         start, end = _day(get_setting("reg.start")), verify_end()
-        if (start and today < start) or (end and today > end):
+        if end and today > end:
+            return 0
+        # before registration opens, only for the institutions that await a decision (1.2.41)
+        if start and today < start and not query("SELECT 1 FROM institutions WHERE status = 'pending' LIMIT 1", one=True):
             return 0
         at = (get_setting("nodal.digest_time") or "08:00").strip()
         try:

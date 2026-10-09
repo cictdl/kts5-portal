@@ -481,8 +481,8 @@ def test_refused_message_is_said_at_the_top():
 def test_no_limit_is_written_into_the_code():
     source = (ROOT / "kts" / "public.py").read_text(encoding="utf-8")
     calls = re.findall(r"limiter\.(?:allow|blocked)\(([^\n]*)", source)
-    assert [call.split(",")[0] for call in calls] == ['"register"', '"status"', '"status_app"', '"contact"']
-    for call, name in zip(calls, ("RATE_REGISTER_PER_HOUR", "RATE_STATUS_FAILS_PER_15MIN",
+    assert [call.split(",")[0] for call in calls] == ['"register"', '"hei"', '"status"', '"status_app"', '"contact"']
+    for call, name in zip(calls, ("RATE_REGISTER_PER_HOUR", "RATE_HEI_PER_HOUR", "RATE_STATUS_FAILS_PER_15MIN",
                                   "RATE_CAND_FAILS_APP_PER_15MIN", "RATE_CONTACT_PER_HOUR")):
         assert f'current_app.config["{name}"]' in call, call
 
@@ -985,17 +985,17 @@ def test_version_of_style_sheet_and_script():
     for path in TEMPLATES:
         for name, version in re.findall(r"filename='((?:css|js)/portal\.(?:css|js))'\) \}\}\?v=(\d+)", path.read_text(encoding="utf-8")):
             linked.setdefault(path.relative_to(ROOT / "templates").as_posix(), []).append((name, version))
-    expected = {name: [("css/portal.css", "11"), ("js/portal.js", "11")]
+    expected = {name: [("css/portal.css", "11"), ("js/portal.js", "12")]
                 for name in ("base.html", "candidate/exam_paper.html", "console/base.html")}
     # the certificate has a style sheet of its own and the script for its print button
-    expected["public/certificate.html"] = [("js/portal.js", "11")]
-    expected["public/letter.html"] = [("js/portal.js", "11")]
+    expected["public/certificate.html"] = [("js/portal.js", "12")]
+    expected["public/letter.html"] = [("js/portal.js", "12")]
     # the pages of the classroom quiz have a frame of their own, with the style sheet and the script of the portal
-    expected["quiz/layout.html"] = [("css/portal.css", "11"), ("js/portal.js", "11")]
+    expected["quiz/layout.html"] = [("css/portal.css", "11"), ("js/portal.js", "12")]
     assert linked == expected
     for path in TEMPLATES:
         assert not re.search(r"portal\.css'\) \}\}(?!\?v=11\")", path.read_text(encoding="utf-8")), path
-        assert not re.search(r"portal\.js'\) \}\}(?!\?v=11\")", path.read_text(encoding="utf-8")), path
+        assert not re.search(r"portal\.js'\) \}\}(?!\?v=12\")", path.read_text(encoding="utf-8")), path
 
 
 # ---- B9 · alt texts of the logos ----------------------------------------------------------------
@@ -1035,7 +1035,7 @@ def test_alt_texts_use_keys_that_exist():
     # the 4 of the reels and shorts on the programme page (1.2.23), the note for visitors who host a quiz (1.2.30),
     # the 2 of the count of visitors (1.2.31), the note that the test closes for everyone at the end of the window (1.2.33),
     # the 14 of the website policies, help and sitemap (1.2.34), the message when the time of the test is up (1.2.36)
-    assert len(CATALOG["en"]) == 824
+    assert len(CATALOG["en"]) == 861
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1067,7 +1067,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.40" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.41" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

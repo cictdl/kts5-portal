@@ -211,6 +211,32 @@ From 1.2.39:
   and more stand out) and sends a reminder to the officer of one State/UT, or to every officer with
   applications awaiting them.
 
+## Participating institutions
+
+From 1.2.41, as the D.O. letter of CICT sets out (each Nodal Institution identifies up to 50
+institutions of its State/UT; each of them nominates one student and one Faculty Supervisor/Guide):
+
+* An institution applies at `/institutions/register` (*Register your institution*, linked from the
+  partners page, the footer and the registration form) while `hei.open` is on and up to `hei.end`:
+  name, type, State/UT, district, AISHE code, the Head of the Institution, and a coordinator /
+  Faculty Supervisor, in English, with a declaration and the arithmetic question. The Head and the
+  coordinator get a mail with the reference (`KTS5-HEI-00001`); so do the Nodal Officers of the
+  State/UT. The same institution (AISHE code, else name and State/UT) cannot apply twice while
+  pending or accepted.
+* *Console → Institutions* (`hei.view`; Nodal Officers for their States/UTs only): the summary of
+  every State/UT (accepted of `hei.max_per_state`, pending, declined, and the students who said their
+  institution is not listed), the list, Accept / Decline (with a remark) / Undo / Edit, and the
+  Excel file in the manner of Annexure-III. Every decision is mailed to the Head and the
+  coordinator; an edit reaches the applications of the institution's students. The morning mail
+  of the Nodal Officers counts the institutions awaiting them, also before registration opens.
+* `/institutions` lists the accepted institutions State/UT by State/UT under the Nodal Institution
+  (name, district, type; no contact details), when `hei.public` is on.
+* At registration the student chooses the State/UT of the institution and then the institution from
+  that list (`applications.institution_id`); the details of the institution are those of the list.
+  *My institution is not listed* keeps the fields of before; such applications are marked *not
+  listed* in the console. One student per institution: a second registration for the same
+  institution is refused while the first is neither withdrawn nor rejected.
+
 ## The mail queue
 
 From 1.2.35 no page sends a mail itself: every mail is written to the outbox, and one sender in the
@@ -644,6 +670,7 @@ missing key.
 | `KTS_ADMIN_EMAIL`, `KTS_ADMIN_PASSWORD` | `admin@kts5.local`, no password | First administrator (created only when no user exists). Without a password the portal makes one and writes it to `instance/first-admin.txt` |
 | `KTS_RATE_REGISTER_PER_HOUR` | `100` | Registrations from one address in an hour |
 | `KTS_RATE_CONTACT_PER_HOUR` | `10` | Messages of the contact form from one address in an hour |
+| `KTS_RATE_HEI_PER_HOUR` | `20` | Applications of institutions (*Register your institution*) from one address in an hour |
 | `KTS_RATE_STATUS_FAILS` | `300` | Failed status checks from one address in 15 minutes |
 | `KTS_RATE_LOGIN_FAILS` | `12` | Failed staff sign-ins from one address in 15 minutes |
 | `KTS_RATE_CANDIDATE_FAILS_IP` | `600` | Failed candidate sign-ins from one address in 15 minutes |

@@ -481,6 +481,7 @@ function Write-SettingsFile($file) {
     '# Limits, with the values that apply when nothing is set. Per address of the visitor, in one hour:',
     '# KTS_RATE_REGISTER_PER_HOUR=100',
     '# KTS_RATE_CONTACT_PER_HOUR=10',
+    '# KTS_RATE_HEI_PER_HOUR=20',
     '# Failed attempts in 15 minutes, per address: status check, staff sign-in, candidate sign-in.',
     '# KTS_RATE_STATUS_FAILS=300',
     '# KTS_RATE_LOGIN_FAILS=12',
