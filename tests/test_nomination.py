@@ -77,3 +77,11 @@ def test_the_registration_page_offers_the_form_before_and_while_it_is_open():
         set_setting("reg.end", "2026-01-02")
     page = client.get("/register?lang=en").get_data(as_text=True)
     assert "KTS5-nomination-form.pdf" not in page
+
+
+def test_the_form_gives_the_dates_of_the_timeline_of_8_october():
+    """CICT's form (Canva, 9 October 2026): registration from 15 October, the form uploaded on or before 21 October."""
+    import fitz
+    text = " ".join(fitz.open(str(ROOT / "static" / "KTS5-nomination-form.pdf"))[0].get_text().split())
+    assert "15 October" in text and "on or before 21 October 2026. The institution keeps" in text
+    assert "16 October" not in text and "10 October" not in text
