@@ -654,6 +654,10 @@ def get_db():
         conn = sqlite3.connect(str(path), detect_types=0, timeout=15)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA journal_mode=WAL")
+        # Under WAL, NORMAL writes the log to the disk at each checkpoint and not at each commit: the
+        # load test of 9 October 2026 found the saves of the online test waiting on the disk. A crash of
+        # the portal loses nothing; a power cut of the server may lose the last commits, never the database.
+        conn.execute("PRAGMA synchronous=NORMAL")
         conn.execute("PRAGMA foreign_keys=ON")
         g.db = conn
     return g.db

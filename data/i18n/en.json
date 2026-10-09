@@ -821,5 +821,6 @@
   "pol.sm_programme": "The programme",
   "pol.sm_students": "For students",
   "pol.sm_learning": "Learning",
-  "pol.sm_help": "Help and policies"
+  "pol.sm_help": "Help and policies",
+  "js.time_up": "Time is up. Your answers are saved and are being submitted; please wait and do not close this page."
 }

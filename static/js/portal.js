@@ -128,10 +128,18 @@
         .catch(function () { saving = false; setState(text("js.offline", "No internet connection. Trying again…")); Object.keys(payload).forEach(function (k) { dirty[k] = payload[k]; }); setTimeout(scheduleSave, 3000); });
     }
     function setState(t) { var s = document.getElementById("save-state"); if (s) s.textContent = t; }
-    function finish() {
+    // When the time is up, every page of the test would send its paper in the same second: the answers
+    // are locked, kept in the form, and the paper goes in after a random 0-20 seconds, well inside the
+    // 45 seconds that the portal still takes as in time (version 1.2.36, after the load test). A paper
+    // sent by the student, or one the portal already holds as over, goes in at once.
+    function finish(spread) {
       if (submitted) return; submitted = true; window.onbeforeunload = null;
       document.getElementById("answers-field").value = JSON.stringify(answers);
-      submitForm.submit();
+      if (!spread) { submitForm.submit(); return; }
+      exam.querySelectorAll("input[type=radio]").forEach(function (r) { r.disabled = true; });
+      submitForm.querySelectorAll("button").forEach(function (b) { b.disabled = true; });
+      setState(text("js.time_up", "Time is up. Your answers are saved and are being submitted; please wait and do not close this page."));
+      setTimeout(function () { submitForm.submit(); }, Math.floor(Math.random() * 20000));
     }
     function tick() {
       if (submitted) return;
@@ -139,7 +147,7 @@
       var m = Math.floor(Math.max(0, remaining) / 60), s = Math.max(0, remaining) % 60;
       timerEl.textContent = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
       if (remaining <= 120) timerEl.classList.add("low");
-      if (remaining <= 0) finish();
+      if (remaining <= 0) finish(true);
     }
     setInterval(tick, 1000); tick(); paint();
     submitForm.addEventListener("submit", function (e) {

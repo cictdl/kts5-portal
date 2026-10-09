@@ -272,7 +272,7 @@ def js_strings(lang=None):
     """The few strings the browser script needs."""
     lang = lang or get_lang()
     keys = ("js.wait", "js.saving", "js.saved", "js.not_saved", "js.offline", "js.file_big", "js.unanswered",
-            "exam.answered")
+            "exam.answered", "js.time_up")
     return {key: text(key, lang) for key in keys}
 
 

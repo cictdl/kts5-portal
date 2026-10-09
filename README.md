@@ -217,6 +217,12 @@ starts later has only what is left. Nobody starts after 12:00. The examination p
 page of the test say so. Opened by hand after the window (`exam.open` 1), an attempt keeps its whole
 duration.
 
+From 1.2.36, after a load test with 1,200 students: when the timer of a page reaches zero, the answers
+are locked and the paper goes in after a random 0-20 seconds (the portal takes a paper as in time for
+45 seconds after the close), so that the papers of the close do not all arrive in the same second; and
+the database writes its log to the disk at checkpoints, not at every save (`PRAGMA synchronous=NORMAL`
+under WAL): a crash of the portal loses nothing, a power cut of the server may lose the last seconds.
+
 ## Visitors
 
 From 1.2.31 the footer of every page shows *Visitors: total · Today: n*, and the console dashboard

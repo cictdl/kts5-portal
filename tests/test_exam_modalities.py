@@ -197,3 +197,23 @@ def test_the_result_page_names_the_merit_list_only_once_it_is_published():
         set_setting("merit.published", "1")
     page = client.get("/candidate/exam/result?lang=en").get_data(as_text=True)
     assert CATALOG["en"]["exam.merit_intro"] in page and 'href="/merit-list">Merit list →</a>' in page
+
+
+def test_the_close_is_spread_and_the_database_does_not_wait_for_the_disk():
+    """After the load test of 9 October 2026 (version 1.2.36)."""
+    from conftest import ROOT
+    script = (ROOT / "static" / "js" / "portal.js").read_text(encoding="utf-8")
+    # the timer at zero spreads the paper over 20 seconds; the student's own submit and an attempt the portal holds as over do not wait
+    assert "if (remaining <= 0) finish(true);" in script and "Math.floor(Math.random() * 20000)" in script
+    assert 'else if (res.j && res.j.reason === "expired") { finish(); }' in script and "if (window.confirm(question)) finish();" in script
+    # 20 seconds of spread stay well inside the 45 seconds that the portal takes as in time
+    import kts.candidate as candidate
+    import inspect
+    assert "timedelta(seconds=45)" in inspect.getsource(candidate._deadline_passed)
+    app, _students = _ready()
+    from kts.db import get_db
+    with app.app_context():
+        assert get_db().execute("PRAGMA synchronous").fetchone()[0] == 1
+        assert get_db().execute("PRAGMA journal_mode").fetchone()[0] == "wal"
+    page = app.test_client().get("/?lang=en").get_data(as_text=True)
+    assert '"js.time_up": "Time is up. Your answers are saved and are being submitted' in page
