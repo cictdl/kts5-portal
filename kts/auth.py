@@ -32,6 +32,8 @@ PERMS = {
     "apps.export":   {"superadmin", "admin", "verifier", "nodal"},
     # the page of the Nodal Officers: their accounts and the applications awaiting them
     "nodal.manage":  {"superadmin", "admin"},
+    # the copies of the database: they hold every applicant's data, and a restore replaces it all
+    "backup":        {"superadmin"},
     "apps.delete":   {"superadmin", "admin"},
     "exam.manage":   {"superadmin", "admin"},
     "exam.view":     {"superadmin", "admin", "verifier", "viewer"},

@@ -10,11 +10,12 @@ import secrets
 from datetime import timedelta
 from pathlib import Path
 
-from flask import (Blueprint, Response, abort, current_app, flash, g, redirect, render_template,
+from flask import (Blueprint, Response, abort, current_app, flash, g, redirect, render_template, send_file,
                    request, send_from_directory, url_for)
 from werkzeug.security import generate_password_hash
 
 from . import kural as K
+from . import backup as BACKUP
 from . import nodal as NODAL
 from .auth import PERMS, ROLES, current_user, has_perm, login_required, state_scope
 from .db import (DEFAULT_SETTINGS, INSTITUTE_HEAD, NODAL_FIELDS, NODAL_OFFICERS, SOCIAL_LINKS, all_settings, audit, execute, executemany, get_setting, query,
@@ -82,6 +83,7 @@ def dashboard():
                            colleges=colleges, states=states, days=days, max_day=max_day, top_states=top_states,
                            by_lang=by_lang, exam=exam, qbank=qbank, tasks={r["status"]: r["n"] for r in tasks},
                            overdue=overdue, messages=messages, recent=recent, reg_state=registration_state(settings),
+                           backup_warn=BACKUP.state()["warn"] if has_perm(user, "backup") else "",
                            exam_start=start, exam_end=end, exam_open=is_open)
 
 
@@ -936,6 +938,71 @@ def nodal_access():
                            can_settings=has_perm(_user(), "settings"))
 
 
+@bp.route("/backups", methods=["GET", "POST"])
+@login_required("backup")
+def backups():
+    """
+    The copies of the database (1.2.40): the last one and its check, the copies kept on the server,
+    a copy now, a download, a restore (kts/backup.py).
+    """
+    app = current_app._get_current_object()
+    if request.method == "POST":
+        action = request.form.get("action")
+        if action in ("now", "now_download"):
+            try:
+                info = BACKUP.make(app, "manual")
+            except Exception as exc:  # noqa: BLE001
+                audit("backup_failed", "backup", None, detail={"error": str(exc)[:300]}, user=_user(), ip=client_ip())
+                flash(f"The copy failed: {exc}", "error")
+                return redirect(url_for("admin.backups"))
+            audit("backup_made", "backup", None, detail=info, user=_user(), ip=client_ip())
+            if action == "now_download":
+                audit("backup_downloaded", "backup", None, detail=info["file"], user=_user(), ip=client_ip())
+                return send_file(BACKUP.path_of(app, info["file"]), mimetype="application/zip", as_attachment=True,
+                                 download_name=info["file"])
+            flash(f"Copy made: {info['file']} ({info['applications']} applications, check {'ok' if info['ok'] else 'NOT OK'}).",
+                  "success" if info["ok"] else "error")
+            return redirect(url_for("admin.backups"))
+        if action == "download":
+            path = BACKUP.path_of(app, request.form.get("name"))
+            if path is None:
+                abort(404)
+            audit("backup_downloaded", "backup", None, detail=path.name, user=_user(), ip=client_ip())
+            return send_file(path, mimetype="application/zip", as_attachment=True, download_name=path.name)
+        if action == "restore":
+            if (request.form.get("confirm") or "").strip() != "RESTORE":
+                flash("Nothing was restored: type RESTORE in capital letters to confirm.", "error")
+                return redirect(url_for("admin.backups"))
+            upload = request.files.get("file")
+            if upload and upload.filename:
+                source, named = upload.read(), upload.filename
+            else:
+                source = BACKUP.path_of(app, request.form.get("name"))
+                if source is None:
+                    flash("Nothing was restored: choose a copy, or upload one.", "error")
+                    return redirect(url_for("admin.backups"))
+                named = source.name
+            try:
+                done = BACKUP.restore(app, source)
+            except ValueError as exc:
+                flash(f"Nothing was restored: {exc}.", "error")
+                return redirect(url_for("admin.backups"))
+            audit("backup_restored", "backup", None, detail=dict(done, source=named), user=_user(), ip=client_ip())
+            flash(f"Restored {named}: {done['applications']} applications, {done['accounts']} accounts, {done['tests']} tests. "
+                  f"The state of before is kept as {done['before']}. {done['key']}", "success")
+            return redirect(url_for("admin.backups"))
+        abort(400)
+    import shutil
+    folder = BACKUP.folder(app)
+    folder.mkdir(parents=True, exist_ok=True)
+    files, size = BACKUP.uploads_size(app)
+    settings = all_settings()
+    return render_template("console/backups.html", st=BACKUP.state(), rows=BACKUP.listing(app), folder=folder,
+                           free=shutil.disk_usage(folder).free, uploads_files=files, uploads_bytes=size,
+                           times=settings.get("backup.times") or "", keep=settings.get("backup.keep") or "",
+                           db_bytes=Path(app.config["DATABASE"]).stat().st_size)
+
+
 NODAL_SHEET = ["State/UT", "Nodal HEI", "Name of the Nodal Officer", "E-mail", "Phone"]
 
 
@@ -1091,6 +1158,10 @@ SETTING_GROUPS = [
                    ("home.pm_quote", "Quotation (without quotation marks)", "text"),
                    ("home.pm_quote_by", "Attribution", "text"), ("home.pm_caption", "Photograph caption", "text")]),
     ("Registration", [("reg.open", "Registration enabled", "bool"), ("reg.start", "Opens on (YYYY-MM-DD)", "date"), ("reg.end", "Closes on (YYYY-MM-DD)", "date")]),
+    ("Backups of the database (Console › Backups)", [
+        ("backup.on", "Copy the database by itself at the hours below, into instance\\backups", "bool"),
+        ("backup.times", "Hours of the copies (HH:MM IST, separated by commas)", "text"),
+        ("backup.keep", "Copies made at those hours that are kept (28: two weeks, at two a day)", "number")]),
     ("Verification by the Nodal Officers of the States/UTs", [
         ("verify.end", "Verification by the Nodal Officers closes on (YYYY-MM-DD; shown to them and in their mails; CICT can still verify after it)", "date"),
         ("nodal.digest", "Morning mail to every Nodal Officer with applications awaiting them, from the opening of registration to the close of verification", "bool"),

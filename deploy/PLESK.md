@@ -247,7 +247,7 @@ then the task of Plesk (steps 1 to 5 above).
    page "The portal is being updated"; a form that is sent in those seconds
    is not stored and has to be sent again.
 3. **Read step 2 of the output.** It must read
-   `complete: portal version 1.2.39 with 23 interface languages`, with the
+   `complete: portal version 1.2.40 with 23 interface languages`, with the
    number that `kts\version.py` of the release names. If the line names no
    version, the old installer ran. Nothing is lost and the portal works, with
    the new code; wait ten minutes and run the task once more. That run does
@@ -359,7 +359,7 @@ portal, the vendored libraries, `web.config`, and empty `instance\`,
    `data\`, `instance\`, `uploads\`, `logs\` … directly inside `httpdocs`.
    Delete the zip afterwards.
 4. Open `http://kts.cict.in/healthz`. Expected:
-   `{"ok": true, "time": "…", "version": "1.2.39"}`.
+   `{"ok": true, "time": "…", "version": "1.2.40"}`.
    First start takes 10–20 seconds (it creates the database).
 5. If you get **502.3** instead, open `web.config` in the File Manager editor
    and replace the two values with the ones the probe printed:
@@ -483,8 +483,18 @@ untouched; saving `web.config` (or the extraction itself) restarts the app.
 
 ## 8. Backups
 
-In Plesk: **Backup & Restore** → schedule a daily backup of the subscription
-(it includes `httpdocs\instance\kts5.sqlite3` and `uploads\`). Additionally
+From version 1.2.40 the portal copies its database by itself, at 02:00 and
+14:00 IST (Settings › Backups of the database), into `instance\backups\`, and
+keeps two weeks of copies. **Console › Backups** (superadmin) shows the last
+copy and its check, makes a copy by hand, downloads any copy, and puts a copy
+back (*Restore*, into the running portal, after keeping a copy of the state of
+before). Those copies are on the same server: download one every evening of
+the registration week and keep it in CICT's own storage.
+
+The uploads are not in those copies. In Plesk: **Backup & Restore** → schedule
+a daily backup of the subscription (it includes
+`httpdocs\instance\kts5.sqlite3` and `uploads\`), to remote storage if the
+hosting offers it. Additionally
 download `instance\kts5.sqlite3` and `uploads\` before the test day and after
 the merit list is published. From version 1.2.0 download `instance\stipend.key`
 with the database every time: the bank details cannot be read without it.

@@ -775,7 +775,18 @@ that reads the second header: under another WSGI server every visitor would
 appear with the address of nginx, and the limits would count all visitors as
 one.
 
-**Backups.** Copy `instance/kts5.sqlite3` (WAL mode: use `sqlite3 ... ".backup"`
+**Backups.** From 1.2.40 the portal copies the database by itself (`kts/backup.py`): at the hours
+of `backup.times` (02:00 and 14:00 IST) into `instance/backups/`, each copy a ZIP with the database
+(taken with SQLite's backup interface, checked with `PRAGMA quick_check`), `stipend.key` and
+`RESTORE.txt`; `backup.keep` (28) of them are kept, and the 10 newest made by hand. A portal that was
+not running at the hour copies as soon as it runs again. *Console → Backups* (superadmin only) shows
+the last copy, makes one, downloads any, and restores one, from the server or uploaded, into the
+running portal: it keeps the state of before as a copy first, puts the copy in with the backup
+interface, brings the tables up to this version and puts the stipend key of the copy in place. The
+dashboard warns the superadmin when there is no copy, the last one failed, or it is older than 26
+hours. The uploads are not in these copies.
+
+By hand: copy `instance/kts5.sqlite3` (WAL mode: use `sqlite3 ... ".backup"`
 or stop the service first) and the `uploads/` folder. Both are small: ~1 KB
 per application plus the photo and ID upload. Copy `instance/stipend.key` with
 the database, every time: without it the bank account and Aadhaar numbers of

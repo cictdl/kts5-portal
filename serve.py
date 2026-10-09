@@ -90,4 +90,7 @@ if __name__ == "__main__":
     # the mails of the outbox go out in the background, within the limits of the mail account (1.2.35)
     from kts import mailq  # noqa: E402
     mailq.start(app)
+    # the copies of the database at the hours of backup.times (1.2.40)
+    from kts import backup  # noqa: E402
+    backup.start(app)
     serve(app, **server_options())

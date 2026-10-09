@@ -1,6 +1,7 @@
 {% extends "console/base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
+{% if backup_warn %}<div class="alert warning">💾 {{ backup_warn }} <a href="{{ url_for('admin.backups') }}">Backups</a></div>{% endif %}
 <div class="kpis">
   <div class="kpi"><div class="lbl">Applications</div><div class="num">{{ '{:,}'.format(total) }}</div><div class="sub">{{ by_status.get('submitted', 0) }} awaiting verification</div></div>
   <div class="kpi"><div class="lbl">Verified</div><div class="num">{{ '{:,}'.format(by_status.get('verified', 0) + by_status.get('selected', 0) + by_status.get('waitlisted', 0) + by_status.get('not_selected', 0)) }}</div><div class="sub">{{ by_status.get('rejected', 0) }} rejected</div></div>

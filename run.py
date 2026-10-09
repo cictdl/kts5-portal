@@ -24,6 +24,9 @@ if __name__ == "__main__":
     # the sender of mails, as serve.py starts it (1.2.35)
     from kts import mailq  # noqa: E402
     mailq.start(app)
+    # the copies of the database at the hours of backup.times (1.2.40)
+    from kts import backup  # noqa: E402
+    backup.start(app)
     port = int(os.environ.get("KTS_PORT", "8905"))
     app.run(host=os.environ.get("KTS_HOST", "127.0.0.1"), port=port,
             debug=os.environ.get("KTS_DEBUG") == "1", use_reloader=False, threaded=True)

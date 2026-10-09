@@ -1,0 +1,47 @@
+{% extends "console/base.html" %}
+{% block title %}Backups{% endblock %}
+{% macro size(n) %}{% if n >= 1073741824 %}{{ '%.1f'|format(n / 1073741824) }} GB{% elif n >= 1048576 %}{{ '%.1f'|format(n / 1048576) }} MB{% else %}{{ (n / 1024)|round|int }} KB{% endif %}{% endmacro %}
+{% block content %}
+<p class="dim" style="max-width:82ch">Everything of the portal is in one database: every application, every answer of the test, every account and setting.
+  The portal copies it by itself at <b>{{ times or 'no hour' }}</b> IST and keeps {{ keep }} of these copies, and the 10 newest made by hand,
+  in <code>{{ folder }}</code>. Each copy is a ZIP with the database, the key of the stipend module and the steps to put it back.</p>
+{% if st.warn %}<div class="alert warning">{{ st.warn }}</div>{% endif %}
+<div class="card" style="margin:12px 0">
+  {% if st.last.at %}<p style="margin:0 0 6px">Last copy: <b>{{ st.last.file }}</b>, {{ st.last.at|datetime }} ({{ {'scheduled': 'at the hour', 'manual': 'by hand', 'before-restore': 'before a restore'}.get(st.last.kind, st.last.kind) }}):
+    {{ st.last.applications }} applications, {{ st.last.accounts }} accounts, {{ st.last.tests }} tests;
+    check {% if st.last.ok %}<span class="pill green">ok</span>{% else %}<span class="pill red">NOT OK</span>{% endif %}.</p>{% endif %}
+  <p class="small muted" style="margin:0 0 10px">Database now: {{ size(db_bytes) }} · free on the disk: {{ size(free) }} ·
+    the uploads (photographs, ID proofs, nomination forms: {{ uploads_files }} files, {{ size(uploads_bytes) }}) are not in these copies; the backup of the subscription in Plesk keeps them.</p>
+  <form method="post" class="btn-row" style="margin:0"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <button class="btn sm" name="action" value="now">💾 Back up now</button>
+    <button class="btn sm secondary" name="action" value="now_download">⬇ Back up now and download</button>
+  </form>
+</div>
+<div class="alert info">These copies are on the same server as the portal: if the server is lost, they are lost with it. During the registration
+  week, download a copy every evening and keep it in CICT's own storage, on an encrypted drive; never send it by e-mail. It holds the personal data of every applicant.</div>
+<h3 style="margin-top:18px">The copies on the server</h3>
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Copy</th><th>Made</th><th>Kind</th><th class="num">Size</th><th></th></tr></thead>
+  <tbody>{% for r in rows %}
+  <tr><td><code>{{ r.name }}</code></td><td>{{ r.when.strftime('%d %b %Y, %I:%M %p') }}</td>
+    <td>{% if r.kind == 'scheduled' %}at the hour{% elif r.kind == 'manual' %}by hand{% else %}<span class="pill saffron">before a restore</span>{% endif %}</td>
+    <td class="num">{{ size(r.bytes) }}</td>
+    <td><form method="post" style="margin:0"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="name" value="{{ r.name }}">
+      <button class="btn xs ghost" name="action" value="download">⬇ Download</button></form></td></tr>
+  {% else %}<tr><td colspan="5" class="muted">No copy yet.</td></tr>{% endfor %}</tbody>
+</table></div>
+<h3 style="margin-top:22px">Restore</h3>
+<div class="card">
+  <p style="margin:0 0 8px">Puts a copy back in place of the whole database: every application, test and account goes back to the state of that copy,
+    and what came after it is no longer in the portal. The portal first keeps a copy of its state of now ("before a restore"), so a restore can be undone.
+    You may have to sign in again.</p>
+  <form method="post" enctype="multipart/form-data" class="fields" style="margin:0">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <div class="field"><label for="restore-name">A copy on the server</label><select id="restore-name" name="name"><option value="">—</option>
+      {% for r in rows %}<option value="{{ r.name }}">{{ r.name }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="restore-file">or a copy from your computer (.zip of the portal, up to 25 MB)</label><input type="file" id="restore-file" name="file" accept=".zip,.sqlite3"></div>
+    <div class="field"><label for="restore-confirm">Type RESTORE to confirm</label><input type="text" id="restore-confirm" name="confirm" autocomplete="off"></div>
+    <div class="field"><label>&nbsp;</label><button class="btn sm danger" name="action" value="restore" data-confirm="Put this copy back in place of the whole database?">Restore</button></div>
+  </form>
+</div>
+{% endblock %}

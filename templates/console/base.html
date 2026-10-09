@@ -66,6 +66,7 @@
     {% if has_perm(u, 'settings') %}<a class="item {{ 'active' if ep == 'admin.settings_page' }}" href="{{ url_for('admin.settings_page') }}">⚙️ Settings</a>
     <a class="item {{ 'active' if ep == 'admin.outbox' }}" href="{{ url_for('admin.outbox') }}">📤 Mail outbox</a>
     <a class="item {{ 'active' if ep.startswith('admin.certificate') }}" href="{{ url_for('admin.certificate_settings') }}">🏅 Certificate</a>{% endif %}
+    {% if has_perm(u, 'backup') %}<a class="item {{ 'active' if ep == 'admin.backups' }}" href="{{ url_for('admin.backups') }}">💾 Backups</a>{% endif %}
     {% if has_perm(u, 'audit') %}<a class="item {{ 'active' if ep == 'admin.audit_log' }}" href="{{ url_for('admin.audit_log') }}">🧾 Audit log</a>{% endif %}
     {% endif %}
     <div class="group">Account</div>

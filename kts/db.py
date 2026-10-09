@@ -580,6 +580,10 @@ DEFAULT_SETTINGS = {
     "verify.end": "2026-10-21",
     "nodal.digest": "1",
     "nodal.digest_time": "08:00",
+    # the copies of the database (1.2.40, kts/backup.py)
+    "backup.on": "1",
+    "backup.times": "02:00, 14:00",
+    "backup.keep": "28",
     # the sender of mails (kts/mailq.py, 1.2.35): below the 2,000 mails a day of a Google Workspace account
     "mail.daily_limit": "1800",
     "mail.per_minute": "30",
