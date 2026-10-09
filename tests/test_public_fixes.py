@@ -663,7 +663,7 @@ def test_templates_print_streams_through_the_filter():
                               "quiz/layout.html"},
                      "L.code": {"base.html", "public/orientation.html", "quiz/layout.html"}}
     assert set(printed) - set(plain) == {"stream|langtag", "info.code|langtag", "shown|langtag", "kotd_lang|langtag",
-                                         "qlang|langtag"}
+                                         "qlang|langtag", "body_lang|langtag"}
 
 
 def test_style_sheet_selects_the_tags():
@@ -1033,8 +1033,9 @@ def test_alt_texts_use_keys_that_exist():
     # the 3 tabs of the videos in the repository (1.2.12), the tab of music (1.2.13), the 8 of the gallery (1.2.20)
     # the 18 of the Nodal Higher Educational Institutions and the 4 of the nomination form (1.2.22),
     # the 4 of the reels and shorts on the programme page (1.2.23), the note for visitors who host a quiz (1.2.30),
-    # the 2 of the count of visitors (1.2.31), the note that the test closes for everyone at the end of the window (1.2.33)
-    assert len(CATALOG["en"]) == 809
+    # the 2 of the count of visitors (1.2.31), the note that the test closes for everyone at the end of the window (1.2.33),
+    # the 14 of the website policies, help and sitemap (1.2.34)
+    assert len(CATALOG["en"]) == 823
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1059,13 +1060,14 @@ def test_robots(app):
     r = app.test_client().get("/robots.txt")
     assert r.status_code == 200 and r.mimetype == "text/plain"
     lines = r.data.decode("utf-8").splitlines()
-    assert lines == ["User-agent: *", "Disallow: /console/", "Disallow: /candidate/", "Disallow: /hub/", "Disallow: /lang"]
+    assert lines == ["User-agent: *", "Disallow: /console/", "Disallow: /candidate/", "Disallow: /hub/", "Disallow: /lang",
+                     "Sitemap: " + app.config["BASE_URL"].rstrip("/") + "/sitemap.xml"]
 
 
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.33" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.34" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

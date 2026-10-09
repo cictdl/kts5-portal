@@ -181,6 +181,7 @@ def create_app(config_object=Config):
             },
             "get_setting": db.get_setting,
             "visit_figures": lambda: visits.visits(app).figures(),
+            "site_updated": public.site_updated,
             "certificate_link": certificate.certificate_link,
             "merit_link": certificate.merit_link,
             "letter_link": certificate.letter_link,

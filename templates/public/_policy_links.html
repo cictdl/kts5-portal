@@ -1,0 +1,4 @@
+{# the website policies, help and sitemap (GIGW, 1.2.34) #}
+<nav class="policy-links" aria-label="{{ t('pol.policies') }}"><ul>
+  {% for p in ('terms', 'privacy', 'copyright', 'hyperlinking', 'accessibility', 'help', 'sitemap') %}<li><a href="{{ url_for('public.policy', page=p) }}"{% if page is defined and page == p %} aria-current="page"{% endif %}>{{ t('pol.' ~ p) }}</a></li>{% endfor %}
+</ul></nav>

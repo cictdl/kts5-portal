@@ -1,0 +1,30 @@
+<h2>Finding your way</h2>
+<ul>
+  <li>The menu at the top leads to every part of the portal. On a phone, open it with the <b>Menu</b> button.</li>
+  <li>Choose your language with the selector at the top of the page or in the list at its foot. The portal remembers it.</li>
+  <li>The <a href="{{ url_for('public.policy', page='sitemap') }}">Sitemap</a> lists all the pages.</li>
+</ul>
+
+<h2>For students</h2>
+<ol>
+  <li>Download the <a href="{{ url_for('static', filename='KTS5-nomination-form.pdf') }}">nomination form</a>, fill it in, and have it signed and sealed by the head of your institution.</li>
+  <li><a href="{{ url_for('public.register') }}">Register</a> between <bdi>{{ settings['reg.start']|date }}</bdi> and <bdi>{{ settings['reg.end']|date }}</bdi>. You receive your application number by e-mail.</li>
+  <li>Follow your application on <a href="{{ url_for('public.status') }}">Application status</a> with your application number, your date of birth and the last four digits of your mobile number. The same details sign you in to the <a href="{{ url_for('candidate.login') }}">candidate portal</a>, where you find your admit card.</li>
+  <li>Take the online test on <bdi>{{ settings['exam.date']|date }}</bdi>, between <bdi>{{ settings['exam.start_time'] }}</bdi> and <bdi>{{ settings['exam.end_time'] }} IST</bdi>, in the candidate portal. See the <a href="{{ url_for('public.examination') }}">Examination</a> page.</li>
+  <li>The <a href="{{ url_for('public.merit') }}">merit list</a> is published after the test. Selected students give their bank details for the stipend (see the <a href="{{ url_for('public.stipend_guide') }}">guide</a>) and submit their research paper in the candidate portal.</li>
+</ol>
+
+<h2>Documents and videos</h2>
+<ul>
+  <li>Documents in PDF open in the browser. You can also use a free PDF reader, such as Adobe Acrobat Reader.</li>
+  <li>Videos open on YouTube, where captions can be switched on with the <b>CC</b> button when the video has them.</li>
+</ul>
+
+<h2>Screen readers</h2>
+<p>The portal can be used with screen readers, for example NVDA (free, for Windows), JAWS, Windows Narrator, VoiceOver on Apple devices and TalkBack on Android phones.</p>
+
+<h2>Browsers</h2>
+<p>Use a current version of Chrome, Edge, Firefox or Safari, with JavaScript switched on: the online test and the classroom quiz need it. For the test, use a steady internet connection and keep the window open until you have submitted.</p>
+
+<h2>Helpdesk</h2>
+<p>Write to <a href="mailto:{{ get_setting('contact.email') }}" dir="ltr">{{ get_setting('contact.email') }}</a>, call <bdi dir="ltr">{{ get_setting('contact.phone') }}</bdi>, or use the <a href="{{ url_for('public.contact') }}">contact page</a>.</p>

@@ -2,12 +2,14 @@
 Public site: home, programme, registration, status, repository, notices.
 """
 import json
-import json
 import posixpath
+import time
 from functools import lru_cache
 from datetime import date, datetime
 from pathlib import Path
 from urllib.parse import unquote_plus, urlsplit
+
+from markupsafe import escape
 
 from flask import (Blueprint, Response, abort, current_app, flash, g, redirect, render_template,
                    request, send_from_directory, session, url_for)
@@ -20,7 +22,7 @@ from .utils import (DOC_EXT, IMAGE_EXT, age_on, check_captcha, client_ip, colleg
                     exam_window, fmt_date, limiter, make_app_no, new_captcha, now_ist, plain_english,
                     qr_data_uri, registration_state, save_upload, send_mail, valid_email, valid_mobile,
                     valid_pincode)
-from .version import VERSION
+from .version import RELEASED, VERSION
 
 bp = Blueprint("public", __name__)
 
@@ -699,8 +701,81 @@ def healthz():
 @bp.route("/robots.txt")
 def robots():
     # /lang/<code> only switches the language and leads back to the page the visitor came from
-    return Response("User-agent: *\nDisallow: /console/\nDisallow: /candidate/\nDisallow: /hub/\nDisallow: /lang\n",
-                    mimetype="text/plain")
+    base = current_app.config["BASE_URL"].rstrip("/")
+    return Response("User-agent: *\nDisallow: /console/\nDisallow: /candidate/\nDisallow: /hub/\nDisallow: /lang\n"
+                    f"Sitemap: {base}/sitemap.xml\n", mimetype="text/plain")
+
+
+# ---- website policies, help and sitemap (GIGW 3.0, version 1.2.34) -------------------------------------
+
+POLICY_PAGES = {"terms": "/terms-of-use", "privacy": "/privacy-policy", "copyright": "/copyright-policy",
+                "hyperlinking": "/hyperlinking-policy", "accessibility": "/accessibility-statement", "help": "/help",
+                "sitemap": "/sitemap"}
+# the texts of the policies are written in these languages (templates/public/policies/<page>.<lang>.html);
+# in the other interface languages the English text is shown, with a note in the language of the page
+POLICY_LANGS = ("en", "hi", "ta")
+
+# the sitemap: (heading, [(endpoint, arguments, label)]), the public pages only
+SITEMAP = [
+    ("pol.sm_programme", [("public.home", {}, "nav.home"), ("public.about", {}, "nav.about"),
+                          ("public.programme", {}, "nav.programme"), ("public.schedule", {}, "nav.schedule"),
+                          ("public.notices", {}, "nav.notices"), ("public.partners", {}, "nav.partners"),
+                          ("public.gallery", {}, "nav.gallery"), ("public.contact", {}, "nav.contact")]),
+    ("pol.sm_students", [("public.register", {}, "nav.register"), ("public.status", {}, "nav.status"),
+                         ("public.examination", {}, "nav.exam"), ("public.merit", {}, "nav.merit"),
+                         ("public.stipend_guide", {}, "stip.title"), ("candidate.login", {}, "nav.candidate")]),
+    ("pol.sm_learning", [("public.orientation", {}, "nav.orientation"), ("public.resources", {}, "nav.resources"),
+                         ("public.kural_browser", {}, "nav.kural"), ("public.daily_kural", {}, "nav.daily"),
+                         ("quiz.join", {}, "quiz.title")]),
+    ("pol.sm_help", [("public.policy", {"page": p}, "pol." + p) for p in POLICY_PAGES if p != "sitemap"]),
+]
+
+
+def site_updated():
+    """
+    The day on which the portal last changed, for the line "Last updated" (GIGW): the day of the
+    release, or a later day on which a notice, an entry of the repository, an event or a photograph
+    was published or changed. Worked out at most every five minutes.
+    """
+    cache = current_app.extensions.setdefault("kts_updated", {})
+    moment = time.monotonic()
+    if cache.get("at") is not None and moment - cache["at"] < 300:
+        return cache["day"]
+    days = [RELEASED]
+    for table, column in (("notices", "updated_at"), ("resources", "updated_at"), ("events", "updated_at"),
+                          ("gallery_photos", "created_at")):
+        row = query(f"SELECT MAX({column}) AS d FROM {table} WHERE published = 1", one=True)
+        if row and row["d"]:
+            days.append(str(row["d"])[:10])
+    cache.update(at=moment, day=max(days))
+    return cache["day"]
+
+
+def policy(page):
+    if page == "sitemap":
+        groups = [(heading, [(url_for(ep, **args), label) for ep, args, label in links]) for heading, links in SITEMAP]
+        return render_template("public/sitemap.html", page=page, groups=groups, updated=site_updated())
+    lang = get_lang()
+    return render_template("public/policy.html", page=page, body_lang=lang if lang in POLICY_LANGS else "en",
+                           settings=all_settings(), updated=site_updated())
+
+
+for _page, _path in POLICY_PAGES.items():
+    bp.add_url_rule(_path, "policy", policy, defaults={"page": _page})
+
+
+@bp.route("/sitemap.xml")
+def sitemap_xml():
+    """The public pages for search engines; each page carries all the languages (?lang=)."""
+    base = current_app.config["BASE_URL"].rstrip("/")
+    day = site_updated()
+    paths = [url_for(ep, **args) for _heading, links in SITEMAP for ep, args, _label in links]
+    paths.append(url_for("public.policy", page="sitemap"))
+    body = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for path in dict.fromkeys(paths):
+        body.append(f"  <url><loc>{escape(base + path)}</loc><lastmod>{day}</lastmod></url>")
+    body.append("</urlset>")
+    return Response("\n".join(body) + "\n", mimetype="application/xml")
 
 
 @bp.route("/favicon.ico")

@@ -1,0 +1,23 @@
+<p>The Central Institute of Classical Tamil (CICT) wants this portal to be usable by everyone, whatever the device, the technology or the ability of the visitor. The portal aims to follow the Guidelines for Indian Government Websites (GIGW 3.0) and the Web Content Accessibility Guidelines (WCAG 2.1) at level AA.</p>
+
+<h2>What the portal offers</h2>
+<ul>
+  <li>The interface in 23 languages, the 22 scheduled languages of India and English, which can be chosen at the top and the foot of every page.</li>
+  <li>The online test, and the orientation, in the language that each student chooses.</li>
+  <li>Pages that work on mobile phones, tablets and computers, in all current browsers, and that can be enlarged with the zoom of the browser.</li>
+  <li>Headings that give the structure of each page, form fields with their labels, and text alternatives for images.</li>
+  <li>Use with the keyboard as well as with the mouse, and with screen readers; a link at the start of every page skips straight to its content.</li>
+  <li>No content that flashes or moves by itself in a way that cannot be stopped.</li>
+  <li>The Thirukkural in Indian Sign Language: 44 videos of CICT in the <a href="{{ url_for('public.resources', cat='video_sign') }}">Resources</a>.</li>
+</ul>
+
+<h2>Known limitations</h2>
+<ul>
+  <li>Some documents, such as scanned notices in PDF, may not be fully readable by screen readers.</li>
+  <li>The captions of videos on YouTube depend on YouTube.</li>
+  <li>Translations of the interface into some languages are still being reviewed.</li>
+</ul>
+
+<h2>Tell us</h2>
+<p>If you find a page or a document that you cannot use, write to <a href="mailto:{{ get_setting('contact.email') }}" dir="ltr">{{ get_setting('contact.email') }}</a> or use the <a href="{{ url_for('public.contact') }}">contact page</a>. Please give the address of the page and describe the problem. CICT will try to resolve it, or to give you the information in another form, as soon as possible.</p>
+<p>See also the <a href="{{ url_for('public.policy', page='help') }}">Help</a> page for screen readers and documents.</p>

@@ -142,6 +142,11 @@
     <span class="lbl">{{ t('site.lang_menu') }}</span>
     <ul dir="ltr">{% for L in LANGUAGES %}<li><a href="{{ url_for('public.set_lang', code=L.code) }}" hreflang="{{ L.code }}" lang="{{ L.code }}" title="{{ L.name }}" class="{{ 'on' if L.code == lang }}">{{ L.native }}</a></li>{% endfor %}</ul>
   </div></div>
+  <div class="langs policies"><div class="wrap">
+    <span class="lbl">{{ t('pol.policies') }}</span>
+    <ul>{% for p in ('terms', 'privacy', 'copyright', 'hyperlinking', 'accessibility', 'help', 'sitemap') %}<li><a href="{{ url_for('public.policy', page=p) }}">{{ t('pol.' ~ p) }}</a></li>{% endfor %}</ul>
+    <span class="lbl updated">{{ t('pol.updated') }}: <bdi>{{ site_updated()|date }}</bdi></span>
+  </div></div>
   <div class="bottom"><div class="wrap">
     <span>© {{ now_ist().year }} {{ t('site.name') }}. {{ t('site.rights') }}</span>
     {% if get_setting('site.visitors') == '1' %}{% set vf = visit_figures() %}

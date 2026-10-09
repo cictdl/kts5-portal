@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ t('pol.' ~ page) }}{% endblock %}
+{% block content %}
+<div class="wrap-narrow section policy-page">
+  <span class="eyebrow">{{ t('site.organiser') }}</span>
+  <h1>{{ t('pol.' ~ page) }}</h1>
+  {% if body_lang != lang %}<p class="alert info small">{{ t('pol.body_note') }}</p>{% endif %}
+  <div class="card prose policy-text" lang="{{ body_lang|langtag }}" dir="ltr">
+{% include "public/policies/" ~ page ~ "." ~ body_lang ~ ".html" %}
+  </div>
+  <p class="small muted" style="margin-top:14px">{{ t('pol.updated') }}: <bdi>{{ updated|date }}</bdi></p>
+  {% include "public/_policy_links.html" %}
+</div>
+{% endblock %}

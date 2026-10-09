@@ -180,6 +180,20 @@ page). The image of the signature is uploaded in *Console → Certificate*
 `.jpg`), outside the web folder; it is written into each certificate page
 itself. Without it the certificates show the name above an empty line.
 
+## Website policies, help and sitemap (GIGW)
+
+From 1.2.34 the portal carries the pages that the Guidelines for Indian Government Websites
+(GIGW 3.0) ask for: *Terms of use* (`/terms-of-use`), *Privacy policy* (`/privacy-policy`),
+*Copyright policy* (`/copyright-policy`), *Hyperlinking policy* (`/hyperlinking-policy`),
+*Accessibility statement* (`/accessibility-statement`), *Help* (`/help`) and *Sitemap* (`/sitemap`),
+with `/sitemap.xml` for search engines (named in `robots.txt`). Their texts are in
+`templates/public/policies/<page>.<en|hi|ta>.html`; in the other interface languages the English
+text is shown with a note in the language of the page. The texts take the helpdesk address and the
+dates of the programme from the settings. Every page links to them at its foot, with *Last updated*:
+the day of the release (`RELEASED` in `kts/version.py`, to be moved with every release) or a later
+day on which a notice, repository entry, event or photograph was published or changed. The privacy
+policy describes what the portal does; change it together with the portal.
+
 ## The time of the test
 
 From 1.2.33 the test of 22 October 2026 runs from 11:30 to 12:00 IST for everyone (settings

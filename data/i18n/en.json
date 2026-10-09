@@ -807,5 +807,19 @@
   "quiz.guest_note": "Anybody may host a quiz. It belongs to this browser: keep this window on the projector until the end; on another device, start a new quiz.",
   "site.visitors": "Visitors",
   "site.visitors_today": "Today",
-  "exam.ends_note": "The test closes at {end} IST for everyone. Start at {start} to have the full {minutes} minutes; if you start later, you have only the time left until {end}."
+  "exam.ends_note": "The test closes at {end} IST for everyone. Start at {start} to have the full {minutes} minutes; if you start later, you have only the time left until {end}.",
+  "pol.policies": "Website policies",
+  "pol.terms": "Terms of use",
+  "pol.privacy": "Privacy policy",
+  "pol.copyright": "Copyright policy",
+  "pol.hyperlinking": "Hyperlinking policy",
+  "pol.accessibility": "Accessibility statement",
+  "pol.help": "Help",
+  "pol.sitemap": "Sitemap",
+  "pol.updated": "Last updated",
+  "pol.body_note": "This page is published in English, Hindi and Tamil. The English text prevails.",
+  "pol.sm_programme": "The programme",
+  "pol.sm_students": "For students",
+  "pol.sm_learning": "Learning",
+  "pol.sm_help": "Help and policies"
 }

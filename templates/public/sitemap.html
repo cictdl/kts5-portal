@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ t('pol.sitemap') }}{% endblock %}
+{% block content %}
+<div class="wrap-narrow section policy-page">
+  <span class="eyebrow">{{ t('site.organiser') }}</span>
+  <h1>{{ t('pol.sitemap') }}</h1>
+  <div class="grid grid-2" style="margin-top:14px">
+    {% for heading, links in groups %}
+    <div class="card"><h2 style="font-size:1.1rem;margin-top:0">{{ t(heading) }}</h2>
+      <ul>{% for href, label in links %}<li><a href="{{ href }}">{{ t(label) }}</a></li>{% endfor %}</ul></div>
+    {% endfor %}
+  </div>
+  <p class="small muted" style="margin-top:14px">{{ t('pol.updated') }}: <bdi>{{ updated|date }}</bdi></p>
+</div>
+{% endblock %}
