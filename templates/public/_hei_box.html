@@ -1,0 +1,6 @@
+{# institutions apply before their students register (1.2.42) #}
+<div class="card flat" style="margin:16px 0;max-width:900px">
+  <p style="margin:0 0 10px"><b>{{ t('nav.institutions') }}</b> · {{ t('hei.ask') }}</p>
+  <div class="btn-row" style="margin:0">{% if get_setting('hei.open') == '1' %}<a class="btn saffron" href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a>{% endif %}
+    <a class="btn ghost" href="{{ url_for('public.institutions') }}">{{ t('hei.list_link') }}</a></div>
+</div>

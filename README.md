@@ -216,8 +216,9 @@ From 1.2.39:
 From 1.2.41, as the D.O. letter of CICT sets out (each Nodal Institution identifies up to 50
 institutions of its State/UT; each of them nominates one student and one Faculty Supervisor/Guide):
 
-* An institution applies at `/institutions/register` (*Register your institution*, linked from the
-  partners page, the footer and the registration form) while `hei.open` is on and up to `hei.end`:
+* An institution applies at `/institutions/register` (*Register your institution*: in the menu under
+  *Register* from 1.2.42, on the registration page and the page before registration opens, on the
+  partners page, in the footer) while `hei.open` is on and up to `hei.end`:
   name, type, State/UT, district, AISHE code, the Head of the Institution, and a coordinator /
   Faculty Supervisor, in English, with a declaration and the arithmetic question. The Head and the
   coordinator get a mail with the reference (`KTS5-HEI-00001`); so do the Nodal Officers of the

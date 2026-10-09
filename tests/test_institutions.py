@@ -186,3 +186,33 @@ def test_the_morning_mail_names_the_institutions_awaiting():
         mail = query("SELECT * FROM outbox WHERE to_addr = 'nodal.kerala@tests.example' ORDER BY id DESC LIMIT 1", one=True)
     assert mail["subject"] == "KTS 5.0: 1 institution awaits your decision (Kerala)"
     assert "Institutions awaiting your decision: 1." in mail["body"]
+
+
+def test_register_leads_to_the_institutions():
+    """Version 1.2.42: Register opens a short menu, and the registration pages offer the institutions."""
+    from kts.db import set_setting
+    app = _app()
+    client = app.test_client()
+    page = client.get("/?lang=en").get_data(as_text=True)
+    sub = page.split('id="primary-menu"')[1].split('class="has-sub"')[1].split("</ul></li>")[0]
+    assert '<ul class="sub">' in sub
+    for href, label in (("/register", "Participant registration"), ("/institutions/register", "Register your institution"),
+                        ("/institutions", "Participating institutions")):
+        assert f'<a href="{href}">{label}</a>' in sub
+    # Register is lit on the pages of the institutions
+    for path in ("/institutions/register?lang=en", "/institutions?lang=en"):
+        assert '<a href="/register" class="active" aria-haspopup="true">' in client.get(path).get_data(as_text=True)
+    # the registration form, and the page before registration opens, offer the institutions
+    def content(path):
+        html = client.get(path).get_data(as_text=True)
+        return html.split('class="nav"')[1].split("</nav>", 1)[1].split("<footer")[0]
+    assert 'href="/institutions/register"' in content("/register?lang=en")
+    with app.app_context():
+        set_setting("reg.start", "2099-01-01")
+        set_setting("reg.end", "2099-01-31")
+    page = content("/register?lang=en")
+    assert 'name="full_name"' not in page and 'href="/institutions/register"' in page and 'href="/institutions"' in page
+    with app.app_context():
+        set_setting("hei.open", "0")
+    page = content("/register?lang=en")
+    assert 'href="/institutions/register"' not in page and 'href="/institutions"' in page
