@@ -1,0 +1,29 @@
+{% extends "console/base.html" %}
+{% block title %}Nodal officers{% endblock %}
+{% block content %}
+<p class="dim" style="max-width:80ch">The Nodal Higher Educational Institutions of the States/UTs and the console accounts of their Nodal Officers.
+  A Nodal Officer sees, exports and verifies the applications of the institutions of their State/UT only; only verified students
+  take the online test. The figures are the applications by the State/UT of the institution.</p>
+{% macro line(r, n) %}
+<tr><td class="num">{{ n }}</td><td><b>{{ r.state }}</b>{% if r.hei %}<div class="small muted">{{ r.hei }}</div>{% endif %}</td>
+  <td>{% for o in r.officers %}<div><a href="{{ url_for('admin.user_form', uid=o.id) }}">{{ o.name }}</a> <span class="small muted">{{ o.email }}</span>
+    {% if not o.active %}<span class="pill grey">disabled</span>{% elif o.must_change_password %}<span class="pill saffron">not signed in yet</span>{% else %}<span class="small muted">· last sign-in {{ o.last_login_at|datetime if o.last_login_at else 'never' }}</span>{% endif %}</div>
+    {% else %}<span class="muted">{% if r.hei %}no account{% else %}verified by CICT{% endif %}</span>{% endfor %}
+    {% if can_create and r.hei and not r.officers %}<div><a class="btn xs secondary" href="{{ url_for('admin.user_form', role='nodal', states=r.state) }}">+ Create the account</a></div>{% endif %}</td>
+  <td class="num">{{ r.counts.values()|sum }}</td>
+  <td class="num">{% set w = r.counts.get('submitted', 0) %}{% if w %}<a href="{{ url_for('admin.applications', state=r.state, status='submitted') }}"><b>{{ w }}</b></a>{% else %}0{% endif %}</td>
+  <td class="num">{{ r.counts.get('verified', 0) + r.counts.get('selected', 0) + r.counts.get('waitlisted', 0) + r.counts.get('not_selected', 0) }}</td>
+  <td class="num">{{ r.counts.get('rejected', 0) }}</td></tr>
+{% endmacro %}
+<div class="table-wrap"><table class="table nodal-officers">
+  <thead><tr><th class="num">#</th><th>State/UT · Nodal HEI</th><th>Nodal Officer</th><th class="num">Applications</th><th class="num">Awaiting</th><th class="num">Verified</th><th class="num">Rejected</th></tr></thead>
+  <tbody>{% for r in rows %}{{ line(r, loop.index) }}{% endfor %}</tbody>
+</table></div>
+{% if others %}
+<h3 style="margin-top:22px">States/UTs without a Nodal Institution</h3>
+<div class="table-wrap"><table class="table">
+  <thead><tr><th class="num">#</th><th>State/UT</th><th>Verified by</th><th class="num">Applications</th><th class="num">Awaiting</th><th class="num">Verified</th><th class="num">Rejected</th></tr></thead>
+  <tbody>{% for r in others %}{{ line(r, loop.index) }}{% endfor %}</tbody>
+</table></div>
+{% endif %}
+{% endblock %}

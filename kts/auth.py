@@ -5,6 +5,8 @@ Roles
   superadmin  everything, including users and settings
   admin       everything except user management
   verifier    application verification and exports
+  nodal       Nodal Officer of a State/UT (1.2.38): sees, exports and verifies the applications of the
+              institutions of their States/UTs only (users.states), and nothing else of the console
   content     notices, resources, events
   agency      coordination hub for their own agency (tasks, documents, calendar)
   viewer      read-only dashboard and lists
@@ -20,13 +22,16 @@ from .utils import client_ip, limiter
 
 bp = Blueprint("auth", __name__, url_prefix="/console")
 
-ROLES = ["superadmin", "admin", "verifier", "content", "agency", "viewer"]
+ROLES = ["superadmin", "admin", "verifier", "nodal", "content", "agency", "viewer"]
 
 PERMS = {
     "dashboard":     {"superadmin", "admin", "verifier", "content", "viewer", "agency"},
-    "apps.view":     {"superadmin", "admin", "verifier", "viewer"},
-    "apps.verify":   {"superadmin", "admin", "verifier"},
-    "apps.export":   {"superadmin", "admin", "verifier"},
+    # a Nodal Officer: the applications of their States/UTs only (state_scope)
+    "apps.view":     {"superadmin", "admin", "verifier", "viewer", "nodal"},
+    "apps.verify":   {"superadmin", "admin", "verifier", "nodal"},
+    "apps.export":   {"superadmin", "admin", "verifier", "nodal"},
+    # the page of the Nodal Officers: their accounts and the applications awaiting them
+    "nodal.manage":  {"superadmin", "admin"},
     "apps.delete":   {"superadmin", "admin"},
     "exam.manage":   {"superadmin", "admin"},
     "exam.view":     {"superadmin", "admin", "verifier", "viewer"},
@@ -45,8 +50,27 @@ PERMS = {
     "papers.view":   {"superadmin", "admin", "verifier", "content", "viewer"},
     "papers.review": {"superadmin", "admin", "verifier", "content"},
     # the classroom quiz: every member of staff may host one
-    "quiz.host":     {"superadmin", "admin", "verifier", "content", "agency", "viewer"},
+    "quiz.host":     {"superadmin", "admin", "verifier", "content", "agency", "viewer", "nodal"},
 }
+
+
+def state_scope(user):
+    """
+    The States/UTs whose applications a Nodal Officer works on (users.states, '|' between them),
+    as the applications name the State/UT of the institution; None for every other role, who see all.
+    """
+    if user and user["role"] == "nodal":
+        return [s for s in (user["states"] or "").split("|") if s]
+    return None
+
+
+def home_url(user):
+    """The first page of the console for this account."""
+    if user["role"] == "agency":
+        return url_for("agency.home")
+    if user["role"] == "nodal":
+        return url_for("admin.applications", status="submitted")
+    return url_for("admin.dashboard")
 
 
 def has_perm(user, perm):
@@ -118,7 +142,7 @@ def _local_path(value):
 @bp.route("/login", methods=["GET", "POST"])
 def login():
     if current_user():
-        return redirect(url_for("admin.dashboard"))
+        return redirect(home_url(current_user()))
     error = None
     if request.method == "POST":
         ip = client_ip()
@@ -144,9 +168,9 @@ def login():
                 audit("login", "user", user["id"], user=user, ip=ip)
                 if user["must_change_password"]:
                     return redirect(url_for("auth.password"))
-                if user["role"] == "agency":
-                    return redirect(url_for("agency.home"))
-                return redirect(nxt if _local_path(nxt) else url_for("admin.dashboard"))
+                if user["role"] in ("agency", "nodal"):
+                    return redirect(home_url(user))
+                return redirect(nxt if _local_path(nxt) else home_url(user))
             limiter.hit("login", ip, 15 * 60)
             error = "Incorrect email or password."
             # what was typed may be of any length; an e-mail address has 254 characters at most
@@ -195,5 +219,5 @@ def password():
             except OSError as exc:
                 current_app.logger.warning("%s could not be removed: %s", "instance/first-admin.txt", exc)
             flash("Password updated.", "success")
-            return redirect(url_for("agency.home") if user["role"] == "agency" else url_for("admin.dashboard"))
+            return redirect(home_url(user))
     return render_template("console/password.html", error=error, forced=bool(user["must_change_password"]))

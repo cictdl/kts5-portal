@@ -481,6 +481,8 @@ LATER_COLUMNS = [
     ("outbox", "priority", "INTEGER NOT NULL DEFAULT 0"),
     ("outbox", "attempts", "INTEGER NOT NULL DEFAULT 0"),
     ("outbox", "next_try", "TEXT"),
+    # the States/UTs of a Nodal Officer ('|' between them; 1.2.38)
+    ("users", "states", "TEXT NOT NULL DEFAULT ''"),
 ]
 
 # CICT on social media: (setting, name of the service, address). The links stand in the footer of

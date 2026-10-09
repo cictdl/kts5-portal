@@ -15,7 +15,7 @@ from flask import (Blueprint, Response, abort, current_app, flash, g, redirect, 
 from werkzeug.security import generate_password_hash
 
 from . import kural as K
-from .auth import PERMS, ROLES, current_user, has_perm, login_required
+from .auth import PERMS, ROLES, current_user, has_perm, login_required, state_scope
 from .db import (DEFAULT_SETTINGS, INSTITUTE_HEAD, NODAL_FIELDS, NODAL_OFFICERS, SOCIAL_LINKS, all_settings, audit, execute, executemany, get_setting, query,
                  set_setting, utcnow)
 from .public import CATEGORIES
@@ -109,6 +109,11 @@ def _app_filters():
         sql += " AND a.exam_score IS NOT NULL"
     elif f["exam"] == "pending":
         sql += " AND a.exam_score IS NULL"
+    # a Nodal Officer: the applications of the institutions of their States/UTs, whatever is asked for
+    scope = state_scope(_user())
+    if scope is not None:
+        sql += f" AND a.college_state IN ({','.join('?' * len(scope))})" if scope else " AND 0"
+        args += scope
     return f, sql, args
 
 
@@ -119,8 +124,9 @@ def applications():
     total = query("SELECT COUNT(*) AS n" + sql, args, one=True)["n"]
     pg = paginate(total, safe_int(request.args.get("page"), 1), 50)
     rows = query("SELECT a.*" + sql + " ORDER BY a.id DESC LIMIT ? OFFSET ?", args + [pg["per_page"], pg["offset"]])
+    scope = state_scope(_user())
     return render_template("console/applications.html", rows=rows, f=f, pg=pg, statuses=APP_STATUSES,
-                           states=_states(), langs=K.ORIENTATION_LANGS)
+                           states=scope if scope is not None else _states(), langs=K.ORIENTATION_LANGS, scope=scope)
 
 
 @bp.route("/applications/export.<fmt>")
@@ -154,13 +160,18 @@ def applications_export(fmt):
 @login_required("apps.view")
 def application(aid):
     row = query("SELECT * FROM applications WHERE id = ?", (aid,), one=True)
-    if row is None:
-        abort(404)
     user = _user()
+    scope = state_scope(user)
+    # an application of another State/UT does not exist for a Nodal Officer
+    if row is None or (scope is not None and row["college_state"] not in scope):
+        abort(404)
     if request.method == "POST":
         if not has_perm(user, "apps.verify"):
             abort(403)
         action = request.form.get("action")
+        # a Nodal Officer verifies, rejects and writes remarks; withdrawing and deleting stay with CICT
+        if scope is not None and action not in ("verify", "reject", "note"):
+            abort(403)
         note = (request.form.get("remarks") or "").strip()
         now = utcnow()
         if action in ("verify", "reject"):
@@ -256,6 +267,12 @@ def _delete_application(row):
 def applications_bulk():
     ids = [safe_int(i) for i in request.form.getlist("ids") if safe_int(i)]
     action = request.form.get("action")
+    scope = state_scope(_user())
+    if ids and scope is not None:
+        # a Nodal Officer: the applications of their States/UTs among those ticked
+        marks = ",".join("?" * len(ids))
+        ids = [r["id"] for r in query(f"SELECT id FROM applications WHERE id IN ({marks}) AND college_state IN "
+                                      f"({','.join('?' * len(scope)) or 'NULL'})", ids + scope)]
     if ids and action in ("verify", "reject"):
         new_status = "verified" if action == "verify" else "rejected"
         now = utcnow()
@@ -269,7 +286,7 @@ def applications_bulk():
 
 
 @bp.route("/files/<path:relpath>")
-@login_required("dashboard")
+@login_required()
 def staff_file(relpath):
     user = _user()
     # the folder is tested on the path as it will be opened
@@ -279,7 +296,17 @@ def staff_file(relpath):
     folder = relpath.partition("/")[0]
     if folder not in ("photos", "idproofs", "nominations", "bankproofs", "notices", "resources", "tasks", "documents", "gallery"):
         abort(404)
-    if folder in ("photos", "idproofs", "nominations") and not has_perm(user, "apps.view"):
+    if folder in ("photos", "idproofs", "nominations"):
+        if not has_perm(user, "apps.view"):
+            abort(403)
+        # a Nodal Officer: the files of the applications of their States/UTs only
+        scope = state_scope(user)
+        if scope is not None:
+            owner = query("SELECT college_state FROM applications WHERE photo_path = ? OR idproof_path = ? OR nomination_path = ?",
+                          (relpath, relpath, relpath), one=True)
+            if owner is None or owner["college_state"] not in scope:
+                abort(404)
+    elif not has_perm(user, "dashboard"):
         abort(403)
     if folder == "bankproofs":
         if not has_perm(user, "stipend"):
@@ -797,17 +824,22 @@ def user_form(uid=None):
     if request.method == "POST":
         d = {k: (request.form.get(k) or "").strip() for k in ("email", "name", "role", "agency_id", "phone")}
         d["email"] = d["email"].lower()
+        known = _states()
+        chosen = [s for s in request.form.getlist("states") if s in known]
+        states = "|".join(chosen) if d["role"] == "nodal" else ""
         if not d["email"] or not d["name"] or d["role"] not in ROLES:
             flash("Email, name and a valid role are required.", "error")
         elif d["role"] == "agency" and not safe_int(d["agency_id"]):
             flash("Agency users must be linked to an agency.", "error")
+        elif d["role"] == "nodal" and not chosen:
+            flash("A Nodal Officer needs the State/UT (or States/UTs) whose applications they verify.", "error")
         else:
             agency_id = safe_int(d["agency_id"]) or None
             active = 1 if request.form.get("active") else 0
             try:
                 if row:
-                    execute("UPDATE users SET email=?, name=?, role=?, agency_id=?, phone=?, active=? WHERE id=?",
-                            (d["email"], d["name"], d["role"], agency_id, d["phone"], active, uid))
+                    execute("UPDATE users SET email=?, name=?, role=?, agency_id=?, phone=?, active=?, states=? WHERE id=?",
+                            (d["email"], d["name"], d["role"], agency_id, d["phone"], active, states, uid))
                     if request.form.get("reset"):
                         temp_password = "Kts5-" + secrets.token_urlsafe(6)
                         execute("UPDATE users SET password_hash = ?, must_change_password = 1 WHERE id = ?",
@@ -815,19 +847,54 @@ def user_form(uid=None):
                     audit("user_updated", "user", uid, detail=d["email"], user=_user(), ip=client_ip())
                 else:
                     temp_password = "Kts5-" + secrets.token_urlsafe(6)
-                    uid = execute("INSERT INTO users(email, name, password_hash, role, agency_id, phone, active, must_change_password, created_at) "
-                                  "VALUES(?,?,?,?,?,?,?,1,?)",
-                                  (d["email"], d["name"], generate_password_hash(temp_password), d["role"], agency_id, d["phone"], active, utcnow()))
+                    uid = execute("INSERT INTO users(email, name, password_hash, role, agency_id, phone, active, must_change_password, created_at, states) "
+                                  "VALUES(?,?,?,?,?,?,?,1,?,?)",
+                                  (d["email"], d["name"], generate_password_hash(temp_password), d["role"], agency_id, d["phone"], active,
+                                   utcnow(), states))
                     audit("user_created", "user", uid, detail=d["email"], user=_user(), ip=client_ip())
+                    nodal = ""
+                    if d["role"] == "nodal":
+                        nodal = (f"As Nodal Officer for {', '.join(chosen)}, you see the applications of the students of the institutions "
+                                 f"of your State/UT, with their photograph, ID proof and signed nomination form, and you verify them: "
+                                 f"Console > Verification queue. Only verified students can take the online test.\n\n")
                     send_mail(d["email"], "Your KTS 5.0 portal account",
                               f"Dear {d['name']},\n\nAn account has been created for you on the Kashi Tamil Sangamam 5.0 portal.\n\n"
+                              + nodal +
                               f"Sign in: {current_app.config['BASE_URL']}/console/login\nEmail: {d['email']}\n"
                               f"Temporary password: {temp_password}\n\nYou will be asked to set a new password at first sign-in.\n\nCICT, Chennai")
                 flash("User saved." + (f" Temporary password: {temp_password}" if temp_password else ""), "success")
                 return redirect(url_for("admin.users"))
             except Exception:  # noqa: BLE001 - unique email clash
                 flash("That email address is already registered.", "error")
-    return render_template("console/user_form.html", u=row, roles=ROLES, agencies=agencies, perms=PERMS)
+    # a new Nodal Officer from the page of the Nodal Officers comes with role and State/UT filled in
+    preset = {"role": request.args.get("role") or "", "states": request.args.getlist("states")}
+    return render_template("console/user_form.html", acct=row, roles=ROLES, agencies=agencies, perms=PERMS,
+                           all_states=_states(), preset=preset)
+
+
+@bp.route("/nodal")
+@login_required("nodal.manage")
+def nodal_access():
+    """
+    The 31 Nodal Higher Educational Institutions with the accounts of their Nodal Officers and the
+    applications of their States/UTs: awaiting verification, verified, rejected (1.2.38).
+    """
+    heis = json.loads((current_app.config["DATA_DIR"] / "nodal_heis.json").read_text(encoding="utf-8"))
+    counts = {}
+    for r in query("SELECT college_state AS s, status, COUNT(*) AS n FROM applications GROUP BY college_state, status"):
+        counts.setdefault(r["s"], {})[r["status"]] = r["n"]
+    officers = {}
+    for u in query("SELECT * FROM users WHERE role = 'nodal' ORDER BY name"):
+        for s in (u["states"] or "").split("|"):
+            if s:
+                officers.setdefault(s, []).append(u)
+    covered = {h["state"] for h in heis}
+    rows = [{"state": h["state"], "hei": h["name"], "officers": officers.get(h["state"], []), "counts": counts.get(h["state"], {})}
+            for h in heis]
+    # the States/UTs without a Nodal Institution: their applications are verified by CICT, or by an officer given them
+    others = [{"state": s, "hei": "", "officers": officers.get(s, []), "counts": counts.get(s, {})}
+              for s in _states() if s not in covered]
+    return render_template("console/nodal.html", rows=rows, others=others, can_create=has_perm(_user(), "users"))
 
 
 # ---- settings / audit / outbox ----------------------------------------------

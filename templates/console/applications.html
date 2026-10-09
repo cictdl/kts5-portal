@@ -1,6 +1,9 @@
 {% extends "console/base.html" %}
 {% block title %}Applications{% endblock %}
 {% block content %}
+{% if scope is not none %}<div class="alert info">You see the applications of the students of the institutions of
+  <b>{{ scope|join(', ') if scope else 'no State/UT yet: ask CICT to give your account its State/UT' }}</b>. Open an application to see its
+  photograph, ID proof and signed nomination form, and verify it; or tick several and verify them together.</div>{% endif %}
 <form method="get" class="filters">
   <div class="field grow"><label for="q">Search</label><input type="search" id="q" name="q" value="{{ f.q }}" placeholder="Name, email, mobile, application no, AISHE"></div>
   <div class="field"><label for="status">Status</label><select id="status" name="status"><option value="">All</option>{% for s in statuses %}<option value="{{ s }}" {{ 'selected' if f.status == s }}>{{ s.replace('_', ' ') }}</option>{% endfor %}</select></div>

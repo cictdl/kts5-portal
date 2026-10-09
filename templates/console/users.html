@@ -5,7 +5,7 @@
 <div class="table-wrap"><table class="table">
   <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Agency</th><th>Status</th><th>Last sign-in</th><th></th></tr></thead>
   <tbody>{% for u in rows %}
-  <tr><td><b>{{ u.name }}</b></td><td>{{ u.email }}</td><td><span class="pill">{{ u.role }}</span></td><td>{{ u.agency or '' }}</td>
+  <tr><td><b>{{ u.name }}</b></td><td>{{ u.email }}</td><td><span class="pill">{{ u.role }}</span>{% if u.role == 'nodal' %}<div class="small muted">{{ (u.states or '')|replace('|', ', ') }}</div>{% endif %}</td><td>{{ u.agency or '' }}</td>
     <td>{% if u.active %}<span class="pill green">active</span>{% else %}<span class="pill grey">disabled</span>{% endif %}{% if u.must_change_password %} <span class="pill saffron">temp password</span>{% endif %}</td>
     <td class="small">{{ u.last_login_at|datetime if u.last_login_at else 'never' }}</td>
     <td><a class="btn xs secondary" href="{{ url_for('admin.user_form', uid=u.id) }}">Edit</a></td></tr>

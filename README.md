@@ -180,6 +180,19 @@ page). The image of the signature is uploaded in *Console → Certificate*
 `.jpg`), outside the web folder; it is written into each certificate page
 itself. Without it the certificates show the name above an empty line.
 
+## Nodal Officers
+
+From 1.2.38 the console has the role *nodal*: the Nodal Officer of a Nodal Higher Educational
+Institution, with the State/UT (or States/UTs) of its account (`users.states`). A Nodal Officer sees,
+exports and verifies the applications whose institution is in those States/UTs, with their
+photograph, ID proof and signed nomination form, and nothing else of the console: an application or
+file of another State/UT does not exist for them, and withdrawing and deleting stay with CICT. After
+the sign-in they land on the verification queue of their State/UT. *Console → Nodal officers* lists
+the 31 Nodal Institutions with their officers' accounts and the applications awaiting verification in
+each State/UT, with a link that opens the account form filled in; *Users & roles* creates the account
+(role *nodal*, the State/UT), which mails the temporary password. The States/UTs without a Nodal
+Institution are verified by CICT, or by an officer given them.
+
 ## The mail queue
 
 From 1.2.35 no page sends a mail itself: every mail is written to the outbox, and one sender in the
