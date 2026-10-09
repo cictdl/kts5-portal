@@ -87,4 +87,7 @@ def server_options():
 
 if __name__ == "__main__":
     app = create_app()
+    # the mails of the outbox go out in the background, within the limits of the mail account (1.2.35)
+    from kts import mailq  # noqa: E402
+    mailq.start(app)
     serve(app, **server_options())

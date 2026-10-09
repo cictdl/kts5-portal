@@ -868,6 +868,9 @@ SETTING_GROUPS = [
                  ("stipend.amount", "Stipend in rupees", "number"),
                  ("stipend.aadhaar", "Ask for the Aadhaar number", "bool")]),
     ("Orientation", [("orientation.note", "Note shown on the orientation page", "text")]),
+    ("Mail", [("mail.daily_limit", "Mails sent in 24 hours at most (a Google Workspace account sends about 2,000 a day)", "number"),
+              ("mail.per_minute", "Mails sent in one minute at most", "number"),
+              ("mail.paused", "Sending paused (new mails wait in the queue)", "bool")]),
     ("Contact", [("contact.email", "Helpdesk email", "text"), ("contact.phone", "Helpdesk phone", "text"), ("contact.address", "Postal address", "text"),
                  ("contact.notify", "Every message of the contact form is also e-mailed to this address (empty: none)", "text")]),
     ("Social media (an empty address hides the link)", [(key, name, "text") for key, name, _address in SOCIAL_LINKS]),
@@ -940,7 +943,7 @@ def outbox():
                                    "This is a test message of the portal of Kashi Tamil Sangamam 5.0 "
                                    f"({cfg['BASE_URL']}), sent from Console → Mail outbox on "
                                    f"{now_ist().strftime('%d %b %Y, %H:%M')} IST by {user['name']}.\n\n"
-                                   "If it has arrived, the portal can send its mails.")
+                                   "If it has arrived, the portal can send its mails.", now=True)
                 row = query("SELECT status, error FROM outbox WHERE id = ?", (row_id,), one=True)
                 audit("mail_test", "outbox", row_id, detail={"to": to, "status": row["status"]}, user=user, ip=client_ip())
                 if row["status"] == "sent":
@@ -953,16 +956,24 @@ def outbox():
             if not cfg.get("SMTP_HOST"):
                 flash("Mail is not configured: nothing can be sent.", "error")
             else:
-                rows = query("SELECT id, to_addr, subject, body FROM outbox WHERE status IN ('queued', 'failed') "
-                             "ORDER BY id LIMIT ?", (SEND_AGAIN_MOST,))
-                send_again(rows)
-                audit("mail_again", "outbox", None, detail=f"{len(rows)} message(s)", user=user, ip=client_ip())
-                flash(f"{len(rows)} waiting or failed message(s) are being sent again; reload this page in a minute.", "success")
+                rows = query("SELECT id FROM outbox WHERE status = 'failed' ORDER BY id LIMIT ?", (SEND_AGAIN_MOST,))
+                count = send_again(rows)
+                audit("mail_again", "outbox", None, detail=f"{count} message(s)", user=user, ip=client_ip())
+                flash(f"{count} failed message(s) are back in the queue and will be sent with the others.", "success")
+        elif action in ("pause", "resume"):
+            set_setting("mail.paused", "1" if action == "pause" else "0")
+            if action == "resume":
+                from .mailq import wake
+                wake()
+            audit("mail_" + action, "outbox", None, user=user, ip=client_ip())
+            flash("Sending is paused: new mails wait in the queue." if action == "pause" else "Sending goes on.", "success")
         if check is None:
             return redirect(url_for("admin.outbox"))
     rows = query("SELECT * FROM outbox ORDER BY id DESC LIMIT 200")
     counts = {r["status"]: r["n"] for r in query("SELECT status, COUNT(*) AS n FROM outbox GROUP BY status")}
+    from .mailq import figures
+    queue = figures()
     smtp = {"host": cfg.get("SMTP_HOST") or "", "port": cfg.get("SMTP_PORT"), "user": cfg.get("SMTP_USER") or "",
             "sender": cfg.get("SMTP_FROM") or "", "tls": bool(cfg.get("SMTP_TLS")), "password": bool(cfg.get("SMTP_PASSWORD"))}
     return render_template("console/outbox.html", rows=rows, smtp=smtp, counts=counts, me=user["email"],
-                           most=SEND_AGAIN_MOST, check=check)
+                           most=SEND_AGAIN_MOST, check=check, queue=queue)

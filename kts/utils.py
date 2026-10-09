@@ -488,64 +488,59 @@ def qr_data_uri(text):
 
 # ---- mail -------------------------------------------------------------------
 
-def send_mail(to_addr, subject, body):
-    """Queue a message in the outbox and try SMTP if it is configured."""
+def send_mail(to_addr, subject, body, now=False):
+    """
+    Queue a message to one person in the outbox (kts/mailq.py sends it in the background, before the
+    mails of lists). now=True sends it at once and waits for the answer of the mail server: for the
+    test message of the console only.
+    """
     row_id = execute(
-        "INSERT INTO outbox(to_addr, subject, body, status, created_at) VALUES(?,?,?,?,?)",
+        "INSERT INTO outbox(to_addr, subject, body, status, created_at, priority) VALUES(?,?,?,?,?,0)",
         (to_addr, subject, body, "queued", utcnow()),
     )
-    if current_app.config.get("SMTP_HOST"):
+    if now and current_app.config.get("SMTP_HOST"):
         _deliver(row_id, to_addr, subject, body)
+    else:
+        from . import mailq
+        mailq.wake()
     return row_id
 
 
 def send_later(messages):
     """
-    Many messages at once, each (address, subject, body): all of them are queued in the outbox
-    together and, where SMTP is configured, sent one after the other by a thread of their own,
-    so that the page that caused them does not wait for a thousand deliveries. Gives the
-    thread, or None when nothing is sent.
+    The mails of a list, each (address, subject, body): queued together in the outbox as mails of a
+    list (priority 1), which kts/mailq.py sends after the mails to one person and within the limits
+    of the mail account. Gives the number queued.
     """
     conn = get_db()
     now = utcnow()
-    queued = []
+    count = 0
     for to_addr, subject, body in messages:
-        cur = conn.execute("INSERT INTO outbox(to_addr, subject, body, status, created_at) VALUES(?,?,?,?,?)",
-                           (to_addr, subject, body, "queued", now))
-        queued.append((cur.lastrowid, to_addr, subject, body))
+        conn.execute("INSERT INTO outbox(to_addr, subject, body, status, created_at, priority) VALUES(?,?,?,?,?,1)",
+                     (to_addr, subject, body, "queued", now))
+        count += 1
     conn.commit()
-    if not queued or not current_app.config.get("SMTP_HOST"):
-        return None
-    app = current_app._get_current_object()
-
-    def run():
-        with app.app_context():
-            for item in queued:
-                _deliver(*item)
-
-    thread = threading.Thread(target=run, name="kts-mail", daemon=True)
-    thread.start()
-    return thread
+    if count:
+        from . import mailq
+        mailq.wake()
+    return count
 
 
 def send_again(rows):
     """
-    Messages of the outbox that are waiting or failed, sent once more by a thread of their own,
-    each in its own row. Gives the thread, or None when SMTP is not configured or nothing is given.
+    Failed messages of the outbox put back in the queue, as if new: the sender tries them again.
+    Gives the number put back.
     """
-    if not rows or not current_app.config.get("SMTP_HOST"):
-        return None
-    app = current_app._get_current_object()
-    items = [(r["id"], r["to_addr"], r["subject"], r["body"]) for r in rows]
-
-    def run():
-        with app.app_context():
-            for item in items:
-                _deliver(*item)
-
-    thread = threading.Thread(target=run, name="kts-mail-again", daemon=True)
-    thread.start()
-    return thread
+    ids = [r["id"] for r in rows]
+    if not ids:
+        return 0
+    conn = get_db()
+    conn.executemany("UPDATE outbox SET status = 'queued', attempts = 0, next_try = NULL, error = '' "
+                     "WHERE id = ? AND status IN ('queued', 'failed')", [(i,) for i in ids])
+    conn.commit()
+    from . import mailq
+    mailq.wake()
+    return len(ids)
 
 
 def _smtp(cfg, timeout=15):

@@ -476,6 +476,11 @@ LATER_COLUMNS = [
     # the stipend per student as a payment list went out: the list is paid at that sum, not at the
     # setting of the day it is marked
     ("stipend_batches", "amount", "INTEGER"),
+    # the outbox as a queue (kts/mailq.py, 1.2.35): mails to one person (0) before those of a list (1),
+    # the attempts made and the moment of the next one
+    ("outbox", "priority", "INTEGER NOT NULL DEFAULT 0"),
+    ("outbox", "attempts", "INTEGER NOT NULL DEFAULT 0"),
+    ("outbox", "next_try", "TEXT"),
 ]
 
 # CICT on social media: (setting, name of the service, address). The links stand in the footer of
@@ -569,6 +574,10 @@ DEFAULT_SETTINGS = {
     "quiz.candidates": "1",
     # anybody may host a classroom quiz, without an account (1.2.30)
     "quiz.public": "1",
+    # the sender of mails (kts/mailq.py, 1.2.35): below the 2,000 mails a day of a Google Workspace account
+    "mail.daily_limit": "1800",
+    "mail.per_minute": "30",
+    "mail.paused": "0",
     # the count of visitors in the footer of every page (1.2.31)
     "site.visitors": "1",
     "quiz.max_players": "200",

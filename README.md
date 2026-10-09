@@ -180,6 +180,20 @@ page). The image of the signature is uploaded in *Console → Certificate*
 `.jpg`), outside the web folder; it is written into each certificate page
 itself. Without it the certificates show the name above an empty line.
 
+## The mail queue
+
+From 1.2.35 no page sends a mail itself: every mail is written to the outbox, and one sender in the
+background (`kts/mailq.py`, started by `serve.py`) sends them, within the limits of the mail account.
+A Google Workspace account sends about 2,000 mails a day and refuses every mail for a day past that,
+so the sender keeps to *Settings → Mail*: `mail.daily_limit` (1,800 in 24 hours) and
+`mail.per_minute` (30). Mails to one person (acknowledgements, passwords, verifications) go before
+the mails of lists (stipend payments). A mail that fails for a passing reason is tried again after
+2, 4, 8 and 16 minutes, five times in all; one the server refuses for good fails at once; when Google
+reports its daily quota used up, the sender waits an hour; when the portal cannot reach or sign in to
+the mail server, the mails wait 15 minutes without losing a try. *Console → Mail outbox* shows the
+queue, pauses and resumes the sender, and puts failed mails back in the queue. The test message of
+that page is still sent at once.
+
 ## Website policies, help and sitemap (GIGW)
 
 From 1.2.34 the portal carries the pages that the Guidelines for Indian Government Websites

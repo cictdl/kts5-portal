@@ -76,22 +76,12 @@ def test_the_waiting_messages_are_sent_again(server):
             execute("INSERT INTO outbox(to_addr, subject, body, status, created_at) VALUES(?,?,?,?,?)",
                     (f"student{n}@tests.example", f"Subject {n}", "Body", status, utcnow()))
     admin = _staff(app, "admin@tests.example", "admin")
-    assert "2 message(s) are waiting or failed" in admin.get("/console/outbox").get_data(as_text=True)
-    import kts.admin as admin_module
-    threads = []
-    real = admin_module.send_again
-
-    def keep(rows):
-        threads.append(real(rows))
-        return threads[-1]
-
-    admin_module.send_again = keep
-    try:
-        page = _post(admin, action="again")
-    finally:
-        admin_module.send_again = real
-    threads[0].join(10)
-    assert "2 waiting or failed message(s) are being sent again" in page
+    assert "1 message(s) failed" in admin.get("/console/outbox").get_data(as_text=True)
+    page = _post(admin, action="again")
+    assert "1 failed message(s) are back in the queue" in page
+    # the sender sends the waiting one and the failed one put back
+    from kts import mailq
+    assert mailq.run_once(app)["sent"] == 2
     assert sorted(to for to, _s, _f in server.sent) == ["student0@tests.example", "student1@tests.example"]
     with app.app_context():
         assert [r["status"] for r in query("SELECT status FROM outbox ORDER BY id")] == ["sent", "sent", "sent"]

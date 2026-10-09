@@ -16,7 +16,20 @@
       <code>KTS_SMTP_HOST</code>, <code>KTS_SMTP_PORT</code>, <code>KTS_SMTP_USER</code>, <code>KTS_SMTP_PASSWORD</code>,
       <code>KTS_SMTP_FROM</code> and <code>KTS_SMTP_TLS</code> in <code>instance\portal.env</code> and run the installation task again.</div>
     {% endif %}
-    <p class="small muted">Messages: {{ counts.get('sent', 0) }} sent · {{ counts.get('queued', 0) }} waiting · {{ counts.get('failed', 0) }} failed.</p>
+    <p class="small muted">Messages: {{ counts.get('sent', 0) }} sent · {{ counts.get('queued', 0) + counts.get('sending', 0) }} waiting · {{ counts.get('failed', 0) }} failed.</p>
+    <div class="mail-queue" style="margin:10px 0">
+      <h4 style="margin:0 0 6px">The queue</h4>
+      <dl class="detail">
+        <dt>Waiting</dt><dd><b>{{ queue.waiting_one }}</b> to one person · <b>{{ queue.waiting_list }}</b> of lists (sent after the others)</dd>
+        <dt>Sent</dt><dd><b>{{ queue.sent_day }}</b> of at most {{ queue.daily_limit }} in the last 24 hours · {{ queue.sent_minute }} of {{ queue.per_minute }} in the last minute</dd>
+        <dt>Sender</dt><dd>{% if queue.paused %}<span class="pill kumkum">paused</span>{% elif queue.quota_pause %}<span class="pill kumkum">waiting</span> the mail account has used its daily quota; it tries again at {{ queue.quota_pause|datetime }}{% elif queue.sent_day >= queue.daily_limit %}<span class="pill saffron">waiting</span> the limit of 24 hours is reached; the queue goes on as older mails leave the 24 hours{% else %}<span class="pill green">sending</span>{% endif %}</dd>
+      </dl>
+      <form method="post" class="btn-row">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        {% if queue.paused %}<button class="btn sm" name="action" value="resume">Resume sending</button>{% else %}<button class="btn sm secondary" name="action" value="pause">Pause sending</button>{% endif %}
+        <a class="btn sm ghost" href="{{ url_for('admin.settings_page') }}">Limits</a>
+      </form>
+    </div>
     {% if smtp.host %}
     <form method="post" class="btn-row">
       <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
@@ -43,18 +56,18 @@
       <div class="btn-row" style="margin-top:10px"><button class="btn sm" name="action" value="test">Send the test message</button></div>
       <p class="small muted" style="margin:8px 0 0">The result is shown at once: sent, or the reason the mail server gave.</p>
     </form>
-    {% if smtp.host and (counts.get('queued') or counts.get('failed')) %}
+    {% if smtp.host and counts.get('failed') %}
     <form method="post" class="card" style="margin-top:14px">
       <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
-      <h3>Send the waiting messages again</h3>
-      <p class="small dim">{{ counts.get('queued', 0) + counts.get('failed', 0) }} message(s) are waiting or failed, for example those
-        written before mail was configured. They are sent again, the oldest first, {{ most }} at most in one go.</p>
-      <button class="btn sm secondary" name="action" value="again" data-confirm="Send the waiting and failed messages again?">Send them again</button>
+      <h3>Try the failed messages again</h3>
+      <p class="small dim">{{ counts.get('failed', 0) }} message(s) failed: the mail server refused them, or they could not be sent in
+        five tries. They go back into the queue, the oldest first, {{ most }} at most in one go.</p>
+      <button class="btn sm secondary" name="action" value="again" data-confirm="Put the failed messages back in the queue?">Try them again</button>
     </form>
     {% endif %}
   </div>
 </div>
 <div class="table-wrap"><table class="table">
   <thead><tr><th>Queued</th><th>To</th><th>Subject</th><th>Status</th><th>Body</th></tr></thead>
-  <tbody>{% for m in rows %}<tr><td class="small" style="white-space:nowrap">{{ m.created_at|datetime }}</td><td class="small">{{ m.to_addr }}</td><td>{{ m.subject }}</td><td>{% if m.status == 'sent' %}<span class="pill green">sent</span>{% elif m.status == 'failed' %}<span class="pill kumkum">failed</span><div class="small muted" style="max-width:260px">{{ m.error }}</div>{% else %}<span class="pill grey">queued</span>{% endif %}</td><td class="small" style="white-space:pre-line;max-width:520px">{{ m.body|truncate(400) }}</td></tr>{% else %}<tr><td colspan="5" class="muted">Nothing queued.</td></tr>{% endfor %}</tbody></table></div>
+  <tbody>{% for m in rows %}<tr><td class="small" style="white-space:nowrap">{{ m.created_at|datetime }}</td><td class="small">{{ m.to_addr }}</td><td>{{ m.subject }}</td><td>{% if m.status == 'sent' %}<span class="pill green">sent</span>{% elif m.status == 'failed' %}<span class="pill kumkum">failed</span><div class="small muted" style="max-width:260px">{{ m.error }}</div>{% else %}<span class="pill grey">{{ 'list' if m.priority else 'queued' }}</span>{% if m.attempts %}<div class="small muted" style="max-width:260px">try {{ m.attempts + 1 }}{% if m.next_try %} at {{ m.next_try|datetime }}{% endif %} · {{ m.error }}</div>{% endif %}{% endif %}</td><td class="small" style="white-space:pre-line;max-width:520px">{{ m.body|truncate(400) }}</td></tr>{% else %}<tr><td colspan="5" class="muted">Nothing queued.</td></tr>{% endfor %}</tbody></table></div>
 {% endblock %}

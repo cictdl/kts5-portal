@@ -992,11 +992,14 @@ def test_the_mails_of_a_payment_to_all_go_out_in_the_background(monkeypatch):
     app.config["SMTP_HOST"] = "mail.tests.example"
     r = _pay_list(admin, "BATCH-TEST-8")
     assert r.status_code == 302
-    import threading
-    for thread in threading.enumerate():
-        if thread.name == "kts-mail":
-            thread.join(10)
-    assert sorted(sent) == sorted([students[0]["email"], students[1]["email"]])
+    # the page only queues them, as mails of a list (1.2.35): the sender of the outbox sends them
+    assert sent == []
+    queued = _query(app, "SELECT status, priority FROM outbox WHERE subject LIKE '%stipend paid%'")
+    assert [(m["status"], m["priority"]) for m in queued] == [("queued", 1), ("queued", 1)]
+    from kts import mailq
+    # with them go the mails to one person queued before (bank details submitted, approved), these first
+    assert mailq.run_once(app)["sent"] == len(_query(app, "SELECT id FROM outbox"))
+    assert sent[-2:] == [students[0]["email"], students[1]["email"]] or sorted(sent[-2:]) == sorted([students[0]["email"], students[1]["email"]])
     subjects = _query(app, "SELECT status FROM outbox WHERE subject LIKE '%stipend paid%'")
     assert [m["status"] for m in subjects] == ["sent", "sent"]
 
