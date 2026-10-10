@@ -1099,6 +1099,34 @@ def _first_passwords(app, conn, now):
                            "password at the first sign-in and then removes the file.", email, path)
 
 
+NODAL_NOTICE_LINK = "/nodal-institutions"
+
+
+def nodal_notice(heis):
+    """(title, body) of the circular with the State/UT-wise list of the Nodal Higher Educational Institutions."""
+    lines = [f"{i}. {h['state']}: {h['name']} ({h['allocation']})" for i, h in enumerate(heis, 1)]
+    total = sum(h["allocation"] for h in heis)
+    body = "\n".join([
+        "As communicated by the Ministry of Education, Government of India: the Nodal Higher Educational Institution of each "
+        "State/UT for the Students' Engagement Programme of Kashi Tamil Sangamam 5.0 (Thirukkural Payilvom). The number in "
+        "brackets is the tentative number of participating HEIs (Central/State/Private Universities and Colleges) to be "
+        "identified in that State/UT.",
+        "",
+        *lines,
+        "",
+        f"Total: {total:,} participating HEIs.",
+        "",
+        "The State/UT-wise allocation is tentative and indicates the number of participating HEIs to be identified. "
+        "Nodal Institutions may nominate additional HEIs beyond the indicated allocation.",
+        "",
+        "The Nodal Higher Educational Institution of each State/UT identifies the participating institutions of its State/UT, "
+        "ensures that they register on this portal (Register › Register your institution), and coordinates their assessments, "
+        "nominations and campus activities. The list with the participating institutions accepted so far is on the page "
+        "of the Nodal Institutions.",
+    ])
+    return "State/UT-wise list of Nodal Higher Educational Institutions", body
+
+
 def init_db(app):
     """Create tables, apply additive migrations and seed reference data."""
     path = app.config["DATABASE"]
@@ -1186,6 +1214,19 @@ def init_db(app):
                 continue
             for old in olds:
                 conn.execute("UPDATE events SET title = ?, updated_at = ? WHERE title = ?", (e["title"], now, old))
+
+    # The State/UT-wise list of the Nodal Higher Educational Institutions (data/nodal_heis.json), as
+    # a circular pinned among the notices (1.2.51). Put in once for each database, as the events are:
+    # a notice that CICT has changed or deleted in the console stays so, and none is added when a
+    # notice with the same title is there already.
+    seed_path = app.config["DATA_DIR"] / "nodal_heis.json"
+    mark = "seed.notice.nodal_heis"
+    if seed_path.exists() and not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
+        title, body = nodal_notice(json.loads(seed_path.read_text(encoding="utf-8")))
+        if not conn.execute("SELECT 1 FROM notices WHERE title = ?", (title,)).fetchone():
+            conn.execute("INSERT INTO notices(title, body, category, lang, pinned, published, attachment, link, created_at, updated_at) "
+                         "VALUES(?,?,'circular','en',1,1,'',?,?,?)", (title, body, NODAL_NOTICE_LINK, now, now))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
 
     # The role of an agency as seeded by an earlier version becomes the present wording, so that
     # the partner page keeps finding its translation; wording changed in the console is left alone.
