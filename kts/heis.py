@@ -28,11 +28,17 @@ from .utils import college_key, now_ist, send_later, send_mail
 # identified: in the list of the Nodal Institution (Annexure-II), invited, not yet registered (1.2.43)
 STATUSES = ["identified", "pending", "accepted", "declined"]
 # what an institution writes, in English, as the student does
-ENGLISH = ["name", "district", "head_name", "head_designation", "coord_name"]
+# Annexure-IV of the D.O. letter of 9 October 2026: the Institutional Coordinator and the Faculty Supervisor/Guide, each with
+# name, designation, mobile and e-mail (1.2.46)
+ENGLISH = ["name", "district", "head_name", "head_designation", "coord_name", "coord_designation", "guide_name", "guide_designation"]
 REQUIRED = ["name", "itype", "state", "district", "head_name", "head_designation", "head_email", "head_phone",
-            "coord_name", "coord_email", "coord_mobile"]
+            "coord_name", "coord_designation", "coord_email", "coord_mobile",
+            "guide_name", "guide_designation", "guide_email", "guide_mobile"]
 FIELDS = ["name", "itype", "state", "district", "aishe_code", "head_name", "head_designation", "head_email", "head_phone",
-          "coord_name", "coord_email", "coord_mobile"]
+          "coord_name", "coord_designation", "coord_email", "coord_mobile",
+          "guide_name", "guide_designation", "guide_email", "guide_mobile"]
+EMAILS = ["head_email", "coord_email", "guide_email"]
+MOBILES = ["coord_mobile", "guide_mobile"]
 
 
 def ref_of(row_id):
@@ -119,7 +125,10 @@ def _details(row):
     return (f"Institution: {row['name']}\nType: {row['itype']}\nState/UT: {row['state']}\nDistrict: {row['district']}\n"
             + (f"AISHE code: {row['aishe_code']}\n" if row["aishe_code"] else "")
             + f"Head of the Institution: {row['head_name']}, {row['head_designation']}\n"
-            f"Coordinator / Faculty Supervisor: {row['coord_name']} ({row['coord_email']}, {row['coord_mobile']})\n")
+            f"Institutional Coordinator: {row['coord_name']}" + (f", {row['coord_designation']}" if row["coord_designation"] else "")
+            + f" ({row['coord_email']}, {row['coord_mobile']})\n"
+            + (f"Faculty Supervisor/Guide: {row['guide_name']}, {row['guide_designation']} ({row['guide_email']}, {row['guide_mobile']})\n"
+               if row["guide_name"] else ""))
 
 
 def _to_institution(row):

@@ -39,12 +39,13 @@
   <div class="field"><label>&nbsp;</label><a class="btn ghost" href="{{ url_for('admin.institutions_export', **request.args.to_dict()) }}">Excel (Annexure-II)</a></div>
 </form>
 <div class="table-wrap"><table class="table institutions">
-  <thead><tr><th>Institution</th><th>Head of the Institution</th><th>Coordinator</th><th>Status</th><th>Assessment · selected student</th>{% if can_decide %}<th></th>{% endif %}</tr></thead>
+  <thead><tr><th>Institution</th><th>Head of the Institution</th><th>Coordinator · Faculty Supervisor/Guide</th><th>Status</th><th>Assessment · selected student</th>{% if can_decide %}<th></th>{% endif %}</tr></thead>
   <tbody>{% for r in rows %}
   <tr><td><b>{{ r.name }}</b><div class="small muted">{{ r.ref }} · {{ r.state }} · {{ r.district }} · {{ r.itype }}{% if r.aishe_code %} · AISHE {{ r.aishe_code }}{% endif %}</div>
       <div class="small muted">{{ 'identified' if r.status == 'identified' else 'applied' }} {{ r.created_at|datetime }}</div></td>
     <td>{% if r.head_name %}{{ r.head_name }}<div class="small muted">{{ r.head_designation }}<br>{{ r.head_email }} · {{ r.head_phone }}</div>{% else %}<span class="muted">–</span>{% endif %}</td>
-    <td>{{ r.coord_name }}<div class="small muted">{{ r.coord_email }} · {{ r.coord_mobile }}</div></td>
+    <td>{{ r.coord_name }}<div class="small muted">{% if r.coord_designation %}{{ r.coord_designation }}<br>{% endif %}{{ r.coord_email }} · {{ r.coord_mobile }}</div>
+      {% if r.guide_name %}<div class="small" style="margin-top:6px"><b>Guide:</b> {{ r.guide_name }}<div class="muted">{{ r.guide_designation }}<br>{{ r.guide_email }} · {{ r.guide_mobile }}</div></div>{% endif %}</td>
     <td>{% if r.status == 'accepted' %}<span class="pill green">participating</span>{% elif r.status == 'identified' %}<span class="pill grey">identified · invited</span>{% elif r.status == 'declined' %}<span class="pill red">declined</span>{% if r.decision_note %}<div class="small muted">{{ r.decision_note }}</div>{% endif %}{% else %}<span class="pill saffron">pending</span>{% endif %}</td>
     <td class="small">{% if r.status == 'accepted' %}{% if r.test_on %}online {{ r.test_from|date }} – {{ r.test_to|date }}: {{ r.assessed }} of {{ r.students }} students{% else %}no online assessment{% endif %}
       <div>{% if r.app_no %}<b>{{ r.app_name }}</b> · <a href="{{ url_for('admin.applications', q=r.app_no) }}"><code>{{ r.app_no }}</code></a> · {{ r.app_status.replace('_', ' ') }}{% elif r.winner_name %}<b>{{ r.winner_name }}</b> selected · registration link sent{% else %}<span class="muted">no student selected yet</span>{% endif %}</div>{% else %}–{% endif %}</td>

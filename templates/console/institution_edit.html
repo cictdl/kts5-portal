@@ -7,7 +7,9 @@
   <div class="fields">
     {% for name, label in (('name', 'Name of the institution'), ('district', 'District'), ('aishe_code', 'AISHE code'), ('head_name', 'Head of the Institution'),
                            ('head_designation', 'Designation'), ('head_email', 'Head: e-mail'), ('head_phone', 'Head: phone'),
-                           ('coord_name', 'Coordinator / Faculty Supervisor'), ('coord_email', 'Coordinator: e-mail'), ('coord_mobile', 'Coordinator: mobile')) %}
+                           ('coord_name', 'Institutional Coordinator'), ('coord_designation', 'Coordinator: designation'), ('coord_email', 'Coordinator: e-mail'),
+                           ('coord_mobile', 'Coordinator: mobile'), ('guide_name', 'Faculty Supervisor/Guide'), ('guide_designation', 'Guide: designation'),
+                           ('guide_email', 'Guide: e-mail'), ('guide_mobile', 'Guide: mobile')) %}
     <div class="field {{ 'wide' if name == 'name' }} {{ 'has-err' if errors.get(name) }}"><label for="{{ name }}">{{ label }}</label>
       <input type="text" id="{{ name }}" name="{{ name }}" value="{{ d[name] or '' }}">{% if errors.get(name) %}<span class="err">{{ errors[name] }}</span>{% endif %}</div>
     {% endfor %}

@@ -112,7 +112,8 @@
         <div class="detail"><dl>
           <dt>Status</dt><dd>{% if inst.status == 'accepted' %}<span class="pill green">participating institution</span>{% elif inst.status == 'pending' %}<span class="pill saffron">awaiting the Nodal Officer</span>{% else %}<span class="pill grey">{{ inst.status }}</span>{% endif %}</dd>
           <dt>Head of the Institution</dt><dd>{{ inst.head_name }}, {{ inst.head_designation }}<br><span class="small muted">{{ inst.head_email }} · {{ inst.head_phone }}</span></dd>
-          <dt>Institutional Coordinator</dt><dd>{{ inst.coord_name }}<br><span class="small muted">{{ inst.coord_email }} · {{ inst.coord_mobile }}</span></dd>
+          <dt>Institutional Coordinator</dt><dd>{{ inst.coord_name }}{% if inst.coord_designation %}, {{ inst.coord_designation }}{% endif %}<br><span class="small muted">{{ inst.coord_email }} · {{ inst.coord_mobile }}</span></dd>
+          <dt>Faculty Supervisor/Guide</dt><dd>{% if inst.guide_name %}{{ inst.guide_name }}, {{ inst.guide_designation }}<br><span class="small muted">{{ inst.guide_email }} · {{ inst.guide_mobile }}</span>{% else %}<span class="muted">not given yet: write to the Nodal Officer of {{ inst.state }} or to CICT</span>{% endif %}</dd>
           <dt>Nodal Institution</dt><dd>{{ nodal_of(inst.state) or inst.state }}</dd>
         </dl></div>
         <p class="small muted" style="margin:10px 0 0">To correct these details, write to the Nodal Officer of {{ inst.state }} or to CICT (<a href="mailto:{{ settings['contact.email'] }}">{{ settings['contact.email'] }}</a>).</p>

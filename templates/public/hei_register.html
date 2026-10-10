@@ -57,8 +57,19 @@
       <p class="hint">{{ t('hei.coord_help') }}</p>
       <div class="fields">
         {{ field('coord_name', t('hei.f_name'), True, attrs='maxlength="120" dir="ltr" lang="en"') }}
+        {{ field('coord_designation', t('hei.f_designation'), True, attrs='maxlength="120" dir="ltr" lang="en"') }}
         {{ field('coord_email', t('hei.f_email'), True, type='email', attrs='maxlength="160" dir="ltr"') }}
         {{ field('coord_mobile', t('reg.mobile'), True, type='tel', attrs='inputmode="numeric" maxlength="10" dir="ltr"') }}
+      </div>
+    </div>
+    <div class="form-section">
+      <h2>{{ t('hei.sec_guide') }}</h2>
+      <p class="hint">{{ t('hei.guide_help') }}</p>
+      <div class="fields">
+        {{ field('guide_name', t('hei.f_name'), True, attrs='maxlength="120" dir="ltr" lang="en"') }}
+        {{ field('guide_designation', t('hei.f_designation'), True, attrs='maxlength="120" dir="ltr" lang="en"') }}
+        {{ field('guide_email', t('hei.f_email'), True, type='email', attrs='maxlength="160" dir="ltr"') }}
+        {{ field('guide_mobile', t('reg.mobile'), True, type='tel', attrs='inputmode="numeric" maxlength="10" dir="ltr"') }}
       </div>
     </div>
     <div class="form-section">

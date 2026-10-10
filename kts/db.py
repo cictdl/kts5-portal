@@ -557,6 +557,12 @@ LATER_COLUMNS = [
     ("institutions", "winner_at", "TEXT"),
     ("institutions", "reg_token", "TEXT"),
     ("institutions", "application_id", "INTEGER"),
+    # the Institutional Coordinator's designation and the Faculty Supervisor/Guide of the institution (1.2.46, Annexure-IV)
+    ("institutions", "coord_designation", "TEXT NOT NULL DEFAULT ''"),
+    ("institutions", "guide_name", "TEXT NOT NULL DEFAULT ''"),
+    ("institutions", "guide_designation", "TEXT NOT NULL DEFAULT ''"),
+    ("institutions", "guide_email", "TEXT NOT NULL DEFAULT ''"),
+    ("institutions", "guide_mobile", "TEXT NOT NULL DEFAULT ''"),
     # the designation of a Nodal Officer, as the Ministry's format asks (1.2.43)
     ("users", "designation", "TEXT NOT NULL DEFAULT ''"),
 ]

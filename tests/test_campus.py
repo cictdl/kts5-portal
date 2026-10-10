@@ -295,6 +295,8 @@ def test_the_selected_student_registers_with_the_link_of_the_institution():
     # the form comes with the institution fixed and the student filled in
     form, r = _register_with(app, link)
     assert "from your registration link" in form and inst["name"] in form and 'value="Priya Student"' in form
+    # the Faculty Supervisor/Guide of the institution comes filled in (1.2.46)
+    assert 'value="Dr. C. Guide"' in form and 'value="guide@gac.example"' in form
     assert 'name="college_name"' not in form
     assert r.status_code == 302, r.get_data(as_text=True)[:1500]
     with app.app_context():

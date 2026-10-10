@@ -14,7 +14,9 @@ from test_public_fixes import _staff
 FORM = {"name": "Government Arts College Thrissur", "itype": "Government college", "state": "Kerala", "district": "Thrissur",
         "aishe_code": "c-12345", "head_name": "Dr. A. Principal", "head_designation": "Principal",
         "head_email": "Principal@gac.example", "head_phone": "0487-2251234", "coord_name": "Dr. B. Coordinator",
-        "coord_email": "coord@gac.example", "coord_mobile": "9876543210", "declare": "1"}
+        "coord_email": "coord@gac.example", "coord_mobile": "9876543210", "coord_designation": "Assistant Professor of Tamil",
+        "guide_name": "Dr. C. Guide", "guide_designation": "Associate Professor of History", "guide_email": "guide@gac.example",
+        "guide_mobile": "9876501234", "declare": "1"}
 
 
 def _apply(client, **changes):
@@ -179,3 +181,27 @@ def test_register_leads_to_the_institutions():
         set_setting("hei.open", "0")
     page = content("/register?lang=en")
     assert 'href="/institutions/register"' not in page and 'href="/institutions"' in page
+
+
+def test_the_coordinator_and_the_faculty_supervisor_are_two_people():
+    """1.2.46, Annexure-IV: the Institutional Coordinator and the Faculty Supervisor/Guide, each with name, designation, e-mail, mobile."""
+    from kts.db import query
+    app = _app()
+    page = app.test_client().get("/institutions/register?lang=en").get_data(as_text=True)
+    assert "3 · Institutional Coordinator" in page and "4 · Faculty Supervisor/Guide" in page and "5 · Declaration" in page
+    for name in ("coord_designation", "guide_name", "guide_designation", "guide_email", "guide_mobile"):
+        assert f'name="{name}"' in page, name
+    # each is required, and checked
+    r = _apply(app.test_client(), guide_name="", guide_email="nope", guide_mobile="123", coord_designation="")
+    page = r.get_data(as_text=True)
+    assert r.status_code == 400 and page.count("This field is required.") >= 2
+    assert "Enter a valid email address" in page and "Enter a valid 10-digit Indian mobile number" in page
+    r = _apply(app.test_client())
+    assert r.status_code == 302
+    with app.app_context():
+        row = query("SELECT * FROM institutions", one=True)
+        mail = query("SELECT body FROM outbox WHERE to_addr = 'coord@gac.example' ORDER BY id LIMIT 1", one=True)["body"]
+    assert (row["coord_designation"], row["guide_name"], row["guide_email"], row["guide_mobile"]) == (
+        "Assistant Professor of Tamil", "Dr. C. Guide", "guide@gac.example", "9876501234")
+    assert "Institutional Coordinator: Dr. B. Coordinator, Assistant Professor of Tamil" in mail
+    assert "Faculty Supervisor/Guide: Dr. C. Guide, Associate Professor of History" in mail

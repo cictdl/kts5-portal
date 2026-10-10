@@ -315,6 +315,10 @@ def register():
         if winner:
             ctx["data"] = {"full_name": winner["name"], "email": winner["email"], "mobile": winner["mobile"],
                            "roll_no": winner["roll_no"], "pref_lang": winner["lang"] if winner["lang"] in K.ORIENTATION_LANGS else ""}
+        # the Faculty Supervisor/Guide that the institution nominated (1.2.46); the form may still change it
+        if inst["guide_name"]:
+            ctx["data"].update(mentor_name=inst["guide_name"], mentor_designation=inst["guide_designation"],
+                               mentor_email=inst["guide_email"], mentor_phone=inst["guide_mobile"])
 
     if request.method == "POST":
         ip = client_ip()
@@ -434,7 +438,7 @@ def hei_register():
             errors["itype"] = t("reg.err_required")
         if data["state"] and data["state"] not in ref["all_states"]:
             errors["state"] = t("reg.err_required")
-        for f in ("head_email", "coord_email"):
+        for f in HEI.EMAILS:
             data[f] = data[f].lower()
             if data[f] and not valid_email(data[f]):
                 errors[f] = t("reg.err_email")
@@ -444,8 +448,9 @@ def hei_register():
                 data["head_phone"] = digits
             else:
                 errors["head_phone"] = t("hei.err_phone")
-        if data["coord_mobile"] and not valid_mobile(data["coord_mobile"]):
-            errors["coord_mobile"] = t("reg.err_mobile")
+        for f in HEI.MOBILES:
+            if data[f] and not valid_mobile(data[f]):
+                errors[f] = t("reg.err_mobile")
         data["aishe_code"] = data["aishe_code"].upper().replace(" ", "")[:20]
         if form.get("declare") != "1":
             errors["declare"] = t("hei.err_declare")

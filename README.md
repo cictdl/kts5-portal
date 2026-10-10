@@ -219,8 +219,10 @@ institutions of its State/UT; each of them nominates one student and one Faculty
 * An institution applies at `/institutions/register` (*Register your institution*: in the menu under
   *Register* from 1.2.42, on the registration page and the page before registration opens, on the
   partners page, in the footer) while `hei.open` is on and up to `hei.end`:
-  name, type, State/UT, district, AISHE code, the Head of the Institution, and a coordinator /
-  Faculty Supervisor, in English, with a declaration and the arithmetic question. The Head and the
+  name, type, State/UT, district, AISHE code, the Head of the Institution, the Institutional
+  Coordinator and the Faculty Supervisor/Guide (each with name, designation, e-mail and mobile, as
+  Annexure-IV asks, from 1.2.46; the Guide comes filled in on the registration of the selected
+  student), in English, with a declaration and the arithmetic question. The Head and the
   coordinator get a mail with the reference (`KTS5-HEI-00001`); so do the Nodal Officers of the
   State/UT. The same institution (AISHE code, else name and State/UT) cannot apply twice while
   pending or accepted.

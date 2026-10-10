@@ -1235,17 +1235,19 @@ def institutions_export():
                  + " ORDER BY i.state, i.name COLLATE NOCASE", args)
     nodal = {h["state"]: h["name"] for h in _nodal_heis()}
     headers = ["State/UT", "Name of Nodal HEI"] + ANNEXURE_II + ["Status", "Reference", "Head of the Institution", "Designation",
-               "Head: e-mail", "Head: phone", "Online assessment", "Students assessed", "Selected student", "Registered (application)",
+               "Head: e-mail", "Head: phone", "Coordinator: designation", "Faculty Supervisor/Guide", "Guide: designation",
+               "Guide: e-mail", "Guide: mobile", "Online assessment", "Students assessed", "Selected student", "Registered (application)",
                "Application status", "Remark", "Applied on", "Decided on"]
     data = []
     for n, r in enumerate(rows, start=1):
         test = "off" if not r["test_on"] else f"{r['test_from']} to {r['test_to']}"
         data.append((r["state"], nodal.get(r["state"], ""), n, r["name"], r["district"], r["itype"], r["aishe_code"], r["coord_name"],
                      r["coord_mobile"], r["coord_email"], r["status"], r["ref"], r["head_name"], r["head_designation"], r["head_email"],
-                     r["head_phone"], test, r["assessed"], r["winner_name"] or "", r["app_no"] or "", r["app_status"] or "",
+                     r["head_phone"], r["coord_designation"], r["guide_name"], r["guide_designation"], r["guide_email"], r["guide_mobile"],
+                     test, r["assessed"], r["winner_name"] or "", r["app_no"] or "", r["app_status"] or "",
                      r["decision_note"], (r["created_at"] or "")[:10], (r["decided_at"] or "")[:10]))
     audit("institutions_exported", "institution", None, detail={"rows": len(data)}, user=_user(), ip=client_ip())
-    return Response(xlsx_bytes(headers, data, "Institutions", text_cols=(6, 8, 15)),
+    return Response(xlsx_bytes(headers, data, "Institutions", text_cols=(6, 8, 15, 20)),
                     mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     headers={"Content-Disposition": "attachment; filename=KTS5-participating-institutions.xlsx"})
 
@@ -1263,10 +1265,11 @@ def institution_edit(iid):
     data, errors = dict(row), {}
     if request.method == "POST":
         data.update({f: (request.form.get(f) or "").strip() for f in HEI.FIELDS})
+        # an institution registered before 1.2.46 has no Faculty Supervisor/Guide yet: CICT may save it without one
         for f in HEI.REQUIRED:
-            if not data[f]:
+            if not data[f] and not f.startswith(("guide_", "coord_designation")):
                 errors[f] = "required"
-        for f in ("head_email", "coord_email"):
+        for f in HEI.EMAILS:
             data[f] = data[f].lower()
             if data[f] and not valid_email(data[f]):
                 errors[f] = "not a valid e-mail address"
