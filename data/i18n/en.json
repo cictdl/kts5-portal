@@ -879,5 +879,10 @@
   "timeline.engage": "Nationwide Students' Engagement Programme in the participating institutions",
   "timeline.hei_list": "Nodal Institutions furnish the details of their Nodal Officer and the preliminary list of institutions",
   "timeline.hei_final": "Last date for the list of participating institutions",
-  "timeline.assess": "Completion of the institution-level assessments: each institution selects one student on merit"
+  "timeline.assess": "Completion of the institution-level assessments: each institution selects one student on merit",
+  "nav.nodal": "Nodal Institutions",
+  "nodal.col_alloc": "Tentative number of participating HEIs (Central/State/Private Universities and Colleges)",
+  "nodal.col_now": "Participating institutions so far",
+  "nodal.total": "Total",
+  "nodal.alloc_note": "The State/UT-wise allocation is tentative and indicates the number of participating HEIs to be identified. Nodal Institutions may nominate additional HEIs beyond the indicated allocation."
 }

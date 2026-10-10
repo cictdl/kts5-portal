@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ t('nav.nodal') }}{% endblock %}
+{% block content %}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('site.ministry') }}</span>
+  <h1>{{ t('nodal.title') }}</h1>
+  <p class="lead dim" style="max-width:76ch">{{ t('nodal.intro') }}</p>
+  <div class="btn-row" style="margin:0 0 18px">
+    {% if public_list %}<a class="btn" href="{{ url_for('public.institutions') }}">{{ t('hei.list_link') }}</a>{% endif %}
+    {% if window == 'open' %}<a class="btn saffron" href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a>{% endif %}
+    <a class="btn ghost" href="{{ url_for('campus.login') }}">{{ t('camp.login_title') }}</a>
+  </div>
+  {% include "public/_nodal_table.html" %}
+
+  <h2 style="margin-top:36px">{{ t('nodal.how_title') }}</h2>
+  <div class="grid grid-2" style="margin-top:14px">
+    {% for n in (1, 2, 3, 4) %}
+    <div class="card flat"><h3>{{ t('nodal.p%d_t' % n) }}</h3><p class="dim small" style="margin:0">{{ t('nodal.p%d' % n) }}</p></div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

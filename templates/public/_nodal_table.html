@@ -1,0 +1,14 @@
+{# The Nodal Institutions of Annexure-I of the D.O. letter of 9 October 2026, with the tentative allocation (1.2.45) #}
+{% set alloc = t('nodal.col_alloc') %}
+<div class="table-wrap"><table class="table nodal">
+  <thead><tr><th class="num">#</th><th>{{ t('nodal.col_state') }}</th><th>{{ t('nodal.col_hei') }}</th>
+    <th class="num" style="white-space:normal;min-width:9em">{% if '(' in alloc %}{{ alloc.split('(', 1)[0] }}<div class="small" style="text-transform:none;letter-spacing:0;font-weight:400">({{ alloc.split('(', 1)[1] }}</div>{% else %}{{ alloc }}{% endif %}</th>
+    <th class="num" style="white-space:normal;min-width:7em">{{ t('nodal.col_now') }}</th></tr></thead>
+  <tbody>{% for n in nodal %}
+  <tr><td class="num">{{ loop.index }}</td><td>{{ place(n.state) }}</td><td lang="en" dir="ltr">{{ n.name }}</td>
+    <td class="num"><b>{{ n.allocation }}</b></td>
+    <td class="num">{% if n.now and public_list %}<a href="{{ url_for('public.institutions') }}#{{ n.anchor }}">{{ n.now }}</a>{% else %}{{ n.now }}{% endif %}</td></tr>
+  {% endfor %}</tbody>
+  <tfoot><tr><th></th><th colspan="2">{{ t('nodal.total') }}</th><th class="num">{{ '{:,}'.format(nodal_total.allocation) }}</th><th class="num">{{ '{:,}'.format(nodal_total.now) }}</th></tr></tfoot>
+</table></div>
+<p class="small muted" style="max-width:80ch;margin-top:8px"><i>{{ t('nodal.alloc_note') }}</i></p>

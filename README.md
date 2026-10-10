@@ -245,7 +245,9 @@ From 1.2.43 the portal follows the D.O. letter of the Ministry of Education of 9
 institution assesses its students, selects one on merit and registers that student.
 
 * *Annexure-I.* `data/nodal_heis.json` carries the 31 Nodal Institutions of the letter with their
-  tentative allocation of participating institutions (1,385 in all); `hei.max_per_state` is 0, no
+  tentative allocation of participating institutions (1,385 in all), shown with the institutions
+  accepted so far on `/nodal-institutions` (from 1.2.45; in the menu of *Register*, in the footer and
+  on the partners page); `hei.max_per_state` is 0, no
   limit, since the allocation is tentative. The Nodal Officer's designation is kept (`users.designation`).
 * *Annexure-II.* *Console → Institutions* takes the list of institutions identified by the Nodal
   Institution (.xlsx or .csv in the format of the annexure; the format can be downloaded there).

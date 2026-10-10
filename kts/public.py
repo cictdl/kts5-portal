@@ -3,6 +3,7 @@ Public site: home, programme, registration, status, repository, notices.
 """
 import json
 import posixpath
+import re
 import time
 from functools import lru_cache
 from datetime import date, datetime
@@ -394,7 +395,7 @@ def institutions():
     ref = _states()
     groups = HEI.accepted_by_state(ref["all_states"])
     nodal = {n["state"]: n["name"] for n in nodal_heis()}
-    return render_template("public/institutions.html", groups=groups, nodal=nodal, ref=ref,
+    return render_template("public/institutions.html", groups=groups, nodal=nodal, ref=ref, state_anchor=state_anchor,
                            total=sum(len(items) for _state, items in groups), window=HEI.window(settings),
                            settings=settings, most=HEI.max_per_state())
 
@@ -757,10 +758,36 @@ def nodal_heis():
     return tuple(json.loads((current_app.config["DATA_DIR"] / "nodal_heis.json").read_text(encoding="utf-8")))
 
 
+def _nodal_table():
+    """
+    The Nodal Institutions of Annexure-I with the tentative allocation of each State/UT and the
+    participating institutions accepted so far; the total of both (1.2.45).
+    """
+    heis = nodal_heis()
+    now = {r["state"]: r["n"] for r in query("SELECT state, COUNT(*) AS n FROM institutions WHERE status = 'accepted' GROUP BY state")}
+    rows = [dict(h, now=now.get(h["state"], 0), anchor=state_anchor(h["state"])) for h in heis]
+    return rows, {"allocation": sum(int(h.get("allocation") or 0) for h in heis), "now": sum(r["now"] for r in rows)}
+
+
+def state_anchor(state):
+    """The anchor of a State/UT on the page of the participating institutions: st-andhra-pradesh."""
+    return "st-" + re.sub(r"[^a-z0-9]+", "-", state.lower()).strip("-")
+
+
 @bp.route("/partners")
 def partners():
     rows = query("SELECT * FROM agencies WHERE active = 1 ORDER BY sort_order, name")
-    return render_template("public/partners.html", rows=rows, nodal=nodal_heis())
+    nodal, total = _nodal_table()
+    return render_template("public/partners.html", rows=rows, nodal=nodal, nodal_total=total,
+                           public_list=get_setting("hei.public") == "1")
+
+
+@bp.route("/nodal-institutions")
+def nodal_institutions():
+    """The State/UT-wise list of Nodal Higher Educational Institutions (Annexure-I of the D.O. letter of 9 October 2026)."""
+    nodal, total = _nodal_table()
+    return render_template("public/nodal_institutions.html", nodal=nodal, nodal_total=total,
+                           public_list=get_setting("hei.public") == "1", window=HEI.window(all_settings()))
 
 
 @bp.route("/contact", methods=["GET", "POST"])
@@ -851,6 +878,7 @@ SITEMAP = [
     ("pol.sm_students", [("public.register", {}, "nav.register"), ("public.status", {}, "nav.status"),
                          ("public.examination", {}, "nav.exam"), ("public.merit", {}, "nav.merit"),
                          ("public.stipend_guide", {}, "stip.title"), ("candidate.login", {}, "nav.candidate"),
+                         ("public.nodal_institutions", {}, "nav.nodal"),
                          ("public.institutions", {}, "nav.institutions"), ("public.hei_register", {}, "hei.cta"),
                          ("campus.login", {}, "camp.login_title")]),
     ("pol.sm_learning", [("public.orientation", {}, "nav.orientation"), ("public.resources", {}, "nav.resources"),
