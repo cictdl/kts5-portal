@@ -696,6 +696,10 @@ DEFAULT_SETTINGS = {
     "remind.test_by": "2026-10-17",
     "remind.select_by": "2026-10-20",
     "remind.register_by": "2026-10-21",
+    # the practice test for students (1.2.54, kts/practice.py)
+    "practice.on": "1",
+    "practice.questions": "10",
+    "practice.minutes": "6",
     "hei.orientation": "",
     # the sender of mails (kts/mailq.py, 1.2.35): below the 2,000 mails a day of a Google Workspace account
     "mail.daily_limit": "1800",

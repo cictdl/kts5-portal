@@ -4,7 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {% set who_line = who if who is defined else (cand.app_no ~ ' · ' ~ cand.full_name) %}
-<title>{{ t('camp.title') if who is defined else t('exam.title') }} · {{ who_line }}</title>
+{# the heading: the candidates' test, an institution's assessment, or the practice test (1.2.54) #}
+{% set head = heading if heading is defined else (t('camp.title') if who is defined else t('exam.title')) %}
+<title>{{ head }} · {{ who_line }}</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=14">
 <meta name="robots" content="noindex">
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
@@ -12,7 +14,7 @@
 <body>
 <div class="exam-top">
   <div class="wrap">
-    <div class="brand"><img class="exam-mark" src="{{ url_for('static', filename='img/kts-mark.png') }}" alt="" width="42" height="42"><div><b><bdi>{{ site.short }}</bdi> · {{ t('camp.title') if who is defined else t('exam.title') }}</b><br><span class="small dim"><bdi>{{ who_line }}</bdi> · {{ qlang|langnative }}</span></div></div>
+    <div class="brand"><img class="exam-mark" src="{{ url_for('static', filename='img/kts-mark.png') }}" alt="" width="42" height="42"><div><b><bdi>{{ site.short }}</bdi> · {{ head }}</b><br><span class="small dim"><bdi>{{ who_line }}</bdi> · {{ qlang|langnative }}</span></div></div>
     <div style="display:flex;gap:14px;align-items:center"><span class="small dim">{{ t('exam.time_left') }}</span><span class="timer" id="timer" aria-live="polite" dir="ltr">--:--</span></div>
   </div>
 </div>

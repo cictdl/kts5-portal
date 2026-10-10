@@ -718,6 +718,7 @@ missing key.
 | `KTS_RATE_REGISTER_PER_HOUR` | `100` | Registrations from one address in an hour |
 | `KTS_RATE_CONTACT_PER_HOUR` | `10` | Messages of the contact form from one address in an hour |
 | `KTS_RATE_HEI_PER_HOUR` | `20` | Applications of institutions (*Register your institution*) from one address in an hour |
+| `KTS_RATE_PRACTICE_PER_HOUR` | `300` | Practice tests begun from one address in an hour (`/practice`; a whole campus may practise through one address) |
 | `KTS_RATE_STATUS_FAILS` | `300` | Failed status checks from one address in 15 minutes |
 | `KTS_RATE_LOGIN_FAILS` | `12` | Failed staff sign-ins from one address in 15 minutes |
 | `KTS_RATE_CANDIDATE_FAILS_IP` | `600` | Failed candidate sign-ins from one address in 15 minutes |

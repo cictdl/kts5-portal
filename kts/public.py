@@ -945,7 +945,7 @@ SITEMAP = [
                           ("public.programme", {}, "nav.programme"), ("public.schedule", {}, "nav.schedule"),
                           ("public.notices", {}, "nav.notices"), ("public.partners", {}, "nav.partners"),
                           ("public.gallery", {}, "nav.gallery"), ("public.contact", {}, "nav.contact")]),
-    ("pol.sm_students", [("public.guide", {}, "guide.title"), ("public.register", {}, "nav.register"), ("public.status", {}, "nav.status"),
+    ("pol.sm_students", [("public.guide", {}, "guide.title"), ("practice.home", {}, "prac.title"), ("public.register", {}, "nav.register"), ("public.status", {}, "nav.status"),
                          ("public.examination", {}, "nav.exam"), ("public.merit", {}, "nav.merit"),
                          ("public.stipend_guide", {}, "stip.title"), ("candidate.login", {}, "nav.candidate"),
                          ("public.nodal_institutions", {}, "nav.nodal"),

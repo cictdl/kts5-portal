@@ -72,6 +72,8 @@ def create_app(config_object=Config):
     app.register_blueprint(quiz.bp)
     from . import campus  # the institutions' area and their online assessment (1.2.43)
     app.register_blueprint(campus.bp)
+    from . import practice  # the practice test for students (1.2.54)
+    app.register_blueprint(practice.bp)
 
     # ---- request guards -------------------------------------------------
     @app.before_request

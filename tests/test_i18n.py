@@ -17,7 +17,7 @@ EN = json.loads((I18N / "en.json").read_text(encoding="utf-8"))
 CODES = sorted(p.stem for p in I18N.glob("*.json") if p.stem != "en")
 PAGES = ["/", "/about", "/programme", "/register", "/status", "/examination", "/merit-list", "/resources",
          "/thirukkural", "/thirukkural/1", "/daily-kural", "/orientation", "/notices", "/schedule", "/partners", "/gallery",
-         "/contact", "/candidate/login", "/how-to-take-part", "/how-to-take-part/institutions", "/no-such-page"]
+         "/contact", "/candidate/login", "/how-to-take-part", "/how-to-take-part/institutions", "/practice", "/no-such-page"]
 
 
 def test_twenty_three_languages():
@@ -66,7 +66,7 @@ def test_pages_render(client, code):
         assert f'<html lang="{code}" dir="{LANG_INFO[code]["dir"]}"' in html, (code, path)
         # no key of the catalogue may be shown in place of its text
         leaked = re.findall(r">\s*((?:nav|site|home|common|reg|status|cand|exam|res|notices|schedule|partners|contact|about|"
-                            r"programme|prog|daily|kural|admit|merit|orient|opt|q|js|err|tag|state|agency|set|guide)\.[a-z0-9_.]+)\s*<", html)
+                            r"programme|prog|daily|kural|admit|merit|orient|opt|q|js|err|tag|state|agency|set|guide|prac)\.[a-z0-9_.]+)\s*<", html)
         assert not leaked, (code, path, leaked[:5])
     client.get("/lang/en")
 

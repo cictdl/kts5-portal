@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ t('prac.result') }}{% endblock %}
+{% block content %}
+<div class="wrap-narrow section">
+  <span class="eyebrow">{{ t('prac.title') }} · {{ qlang|langnative }}</span>
+  <h1>{{ t('prac.result') }}</h1>
+  <div class="card green">
+    <p style="font-size:1.4rem;margin:0 0 6px"><b>{{ t('prac.score')|replace('{correct}', a.correct|string)|replace('{total}', questions|length|string) }}</b></p>
+    {% if a.late %}<p class="small" style="margin:0 0 6px"><span class="pill kumkum" style="white-space:normal">{{ t('exam.auto_submitted') }}</span></p>{% endif %}
+    <p class="small dim" style="margin:0 0 12px">{{ t('prac.note') }}</p>
+    <div class="btn-row" style="margin:0">
+      <form method="post" action="{{ url_for('practice.start') }}" style="margin:0"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="lang" value="{{ a.lang }}"><button class="btn saffron" type="submit">{{ t('prac.again') }}</button></form>
+      <a class="btn secondary" href="{{ url_for('practice.home') }}">{{ t('prac.lang') }}</a>
+      <a class="btn ghost" href="{{ url_for('public.guide') }}#students">{{ t('guide.title') }}</a>
+    </div>
+  </div>
+  <h2 style="margin-top:24px">{{ t('prac.review') }}</h2>
+  {% for q in questions %}{% set mine = answers.get(q.id|string) %}
+  <div class="card prac-q" style="margin-top:12px">
+    <div class="small muted">{{ t('exam.question') }} {{ q.no }} {{ t('exam.of') }} {{ questions|length }}
+      {% if mine == q.correct %}<span class="pill green">✓</span>{% elif mine %}<span class="pill kumkum">✗</span>{% else %}<span class="pill grey">{{ t('prac.none') }}</span>{% endif %}</div>
+    <div dir="auto" lang="{{ qlang|langtag }}" style="white-space:pre-line;font-weight:600;margin:6px 0 10px">{{ q.text }}</div>
+    <ol class="prac-opts" dir="{{ qdir }}" lang="{{ qlang|langtag }}" style="margin:0;padding-inline-start:22px">
+      {% for letter, text in q.options %}
+      <li style="margin:4px 0;{{ 'font-weight:700;color:var(--green)' if letter == q.correct }}{{ 'text-decoration:line-through;color:var(--kumkum)' if mine == letter and letter != q.correct }}"><span dir="auto">{{ text }}</span>
+        {% if letter == q.correct %}<span class="pill green">{{ t('prac.right') }}</span>{% endif %}{% if mine == letter %} <span class="pill {{ 'green' if letter == q.correct else 'kumkum' }}">{{ t('prac.your') }}</span>{% endif %}</li>
+      {% endfor %}
+    </ol>
+    {% if q.kural_no %}<p class="small" style="margin:10px 0 0"><a href="{{ url_for('public.kural_single', n=q.kural_no) }}">{{ t('prac.study') }} · {{ t('common.verse') }} {{ q.kural_no }} {{ fwd }}</a></p>{% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

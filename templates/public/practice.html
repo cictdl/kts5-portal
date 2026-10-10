@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ t('prac.title') }}{% endblock %}
+{% block content %}
+{# The practice test for students (1.2.54): questions made afresh from the Thirukkural, never those of the question bank #}
+<div class="wrap-narrow section">
+  <span class="eyebrow">{{ t('site.name') }}</span>
+  <h1>{{ t('prac.title') }}</h1>
+  <p class="lead dim">{{ t('prac.intro')|replace('{questions}', n|string)|replace('{minutes}', minutes|string) }}</p>
+  {% if not on %}
+  <p class="alert info">{{ t('prac.closed') }}</p>
+  {% else %}
+  <div class="card accent">
+    <ul class="prose" style="margin-top:0">
+      <li>{{ t('prac.h1') }}</li><li>{{ t('prac.h2') }}</li><li>{{ t('prac.h3') }}</li>
+    </ul>
+    <form method="post" action="{{ url_for('practice.start') }}">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <div class="field" style="max-width:420px"><label for="prac-lang">{{ t('prac.lang') }}</label>
+        <select id="prac-lang" name="lang">{% for info in langs %}<option value="{{ info.code }}" lang="{{ info.code|langtag }}" {{ 'selected' if info.code == chosen }}>{{ info.native or info.code }}{% if info.name and info.native != info.name %} · {{ info.name }}{% endif %}</option>{% endfor %}</select></div>
+      <button class="btn saffron" type="submit" style="margin-top:12px">{{ t('prac.start') }}</button>
+    </form>
+    {% if attempt and not attempt.done %}<p class="small" style="margin:12px 0 0"><a href="{{ url_for('practice.paper') }}">{{ t('prac.resume') }} {{ fwd }}</a></p>{% endif %}
+  </div>
+  <p class="small muted" style="margin-top:12px">{{ t('prac.note') }}</p>
+  {% endif %}
+  <div class="btn-row" style="margin-top:16px">
+    <a class="btn secondary" href="{{ url_for('public.guide') }}#students">{{ t('guide.title') }}</a>
+    <a class="btn secondary" href="{{ url_for('public.examination') }}">{{ t('nav.exam') }}</a>
+    <a class="btn ghost" href="{{ url_for('public.kural_browser') }}">{{ t('nav.kural') }}</a>
+  </div>
+</div>
+{% endblock %}
