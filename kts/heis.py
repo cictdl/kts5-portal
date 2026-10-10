@@ -17,6 +17,7 @@ nominates one student and one Faculty Supervisor/Guide, endorsed by the Head of 
   institution: a second registration for the same institution is refused while the first is
   neither withdrawn nor rejected.
 """
+import json
 import re
 
 from flask import current_app
@@ -24,7 +25,8 @@ from flask import current_app
 from .db import get_setting, query
 from .utils import college_key, now_ist, send_later, send_mail
 
-STATUSES = ["pending", "accepted", "declined"]
+# identified: in the list of the Nodal Institution (Annexure-II), invited, not yet registered (1.2.43)
+STATUSES = ["identified", "pending", "accepted", "declined"]
 # what an institution writes, in English, as the student does
 ENGLISH = ["name", "district", "head_name", "head_designation", "coord_name"]
 REQUIRED = ["name", "itype", "state", "district", "head_name", "head_designation", "head_email", "head_phone",
@@ -58,10 +60,40 @@ def window(settings):
 
 
 def max_per_state():
+    """The institutions accepted in one State/UT at most; 0: no limit (the allocation of Annexure-I is tentative)."""
     try:
-        return max(1, int(get_setting("hei.max_per_state") or 50))
+        return max(0, int(get_setting("hei.max_per_state") or 0))
     except ValueError:
-        return 50
+        return 0
+
+
+def nodal_heis():
+    return json.loads((current_app.config["DATA_DIR"] / "nodal_heis.json").read_text(encoding="utf-8"))
+
+
+def allocation_of(state):
+    """The tentative number of participating institutions of the State/UT (Annexure-I of the D.O. letter), or 0."""
+    for h in nodal_heis():
+        if h["state"] == state:
+            return int(h.get("allocation") or 0)
+    return 0
+
+
+def mail_invited(row):
+    """The invitation to an institution identified by the Nodal Institution: it completes its registration with the link."""
+    base = current_app.config["BASE_URL"]
+    link = f"{base}/institutions/register?invite={row['invite_token']}"
+    for address in [a for a in dict.fromkeys([row["coord_email"], row["head_email"]]) if a]:
+        send_mail(address, f"KTS 5.0: {row['name']} is identified as a participating institution",
+                  f"Dear Sir/Madam,\n\nThe Nodal Institution of {row['state']} has identified {row['name']} as a participating "
+                  f"institution of Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom, the nationwide Students' Engagement "
+                  f"Programme of the Ministry of Education (15 October – 15 November 2026).\n\n"
+                  f"Please complete the registration of the institution on the KTS 5.0 portal with this link:\n\n{link}\n\n"
+                  f"It asks for the Head of the Institution and confirms the Institutional Coordinator. The institution then "
+                  f"assesses its students on the Thirukkural (the portal offers a ready online test), selects one student on "
+                  f"merit and registers that student on the portal by 22 October 2026. The steps and the dates are on the "
+                  f"institution's page of the portal after the registration.\n\nReference: {row['ref']}\n\n"
+                  f"Central Institute of Classical Tamil, Chennai")
 
 
 def accepted_by_state(states):
@@ -79,7 +111,7 @@ def key_of(data):
 
 def duplicate(data, exclude_id=None):
     """An application of the same institution that is pending or accepted."""
-    return query("SELECT * FROM institutions WHERE inst_key = ? AND status IN ('pending', 'accepted') AND id != ?",
+    return query("SELECT * FROM institutions WHERE inst_key = ? AND status IN ('identified', 'pending', 'accepted') AND id != ?",
                  (key_of(data), exclude_id or 0), one=True)
 
 

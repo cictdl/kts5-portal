@@ -46,21 +46,11 @@
 <section class="section">
   <div class="wrap">
     <div class="section-head"><div><span class="eyebrow">{{ t('home.kicker') }}</span><h2>{{ t('home.dates') }}</h2></div>
-      {% if dates.exam_start and dates.exam_start > now_ist() %}
-      <div class="countdown" dir="ltr" data-countdown="{{ dates.exam_start.isoformat() }}" data-done="{{ t('exam.online') }}" title="{{ t('home.countdown') }}">
-        <div class="units" style="display:contents">
-          <div class="unit"><b data-u="d">–</b><span>{{ t('home.days') }}</span></div>
-          <div class="unit"><b data-u="h">–</b><span>{{ t('home.hours') }}</span></div>
-          <div class="unit"><b data-u="m">–</b><span>{{ t('home.minutes') }}</span></div>
-          <div class="unit"><b data-u="s">–</b><span>{{ t('home.seconds') }}</span></div>
-        </div>
-      </div>
-      {% endif %}
     </div>
     <div class="dates">
       <div class="date-tile"><div class="lbl">{{ t('home.reg_window') }}</div><div class="val"><bdi>{{ dates.reg_start|date }} – {{ dates.reg_end|date }}</bdi></div>
         <div class="sub">{% if dates.reg_state == 'open' %}<span class="pill green">{{ t('home.open') }}</span>{% elif dates.reg_state == 'not_yet' %}<span class="pill saffron">{{ t('reg.not_yet') }} {{ dates.reg_start|date }}</span>{% else %}<span class="pill kumkum">{{ t('reg.closed') }}</span>{% endif %}</div></div>
-      <div class="date-tile"><div class="lbl">{{ t('home.exam_date') }}</div><div class="val">{{ dates.exam_date|date }}</div><div class="sub"><bdi>{{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST</bdi> · {{ settings['exam.duration_min'] }} {{ t('exam.minutes') }} · {{ t('exam.online') }}</div></div>
+      <div class="date-tile"><div class="lbl">{{ t('home.exam_date') }}</div><div class="val">{{ dates.assess_to|date }}</div><div class="sub">{{ settings['exam.questions'] }} {{ t('exam.pattern_text') }} · {{ settings['exam.duration_min'] }} {{ t('exam.minutes') }} · {{ t('exam.online') }}</div></div>
       <div class="date-tile"><div class="lbl">{{ t('home.merit') }}</div><div class="val">{% if settings['merit.published'] == '1' %}<a href="{{ url_for('public.merit') }}">{{ t('home.published') }}</a>{% else %}{{ t('home.tba') }}{% endif %}</div><div class="sub">{{ t('home.merit_sub') }}</div></div>
       <div class="date-tile"><div class="lbl">{{ t('home.orientation') }}</div><div class="val">{{ t('home.orient_val') }}</div><div class="sub">{{ t('home.orient_sub') }}</div></div>
     </div>
@@ -72,7 +62,7 @@
     <div class="section-head"><h2>{{ t('home.pathway') }}</h2><a class="btn sm secondary" href="{{ url_for('public.programme') }}">{{ t('home.cta_programme') }}</a></div>
     <div class="steps">
       <div class="step"><b>{{ t('home.step_register') }}</b><small><bdi>{{ dates.reg_start|date }} – {{ dates.reg_end|date }}</bdi></small></div>
-      <div class="step"><b>{{ t('home.step_exam') }}</b><small>{{ dates.exam_date|date }} · {{ settings['exam.questions'] }} {{ t('exam.pattern_text') }}</small></div>
+      <div class="step"><b>{{ t('home.step_exam') }}</b><small>{{ dates.assess_to|date }} · {{ settings['exam.questions'] }} {{ t('exam.pattern_text') }}</small></div>
       <div class="step"><b>{{ t('home.step_merit') }}</b><small>{{ t('home.step_merit_sub') }}</small></div>
       <div class="step"><b>{{ t('home.step_orient') }}</b><small>{{ t('home.step_orient_sub') }}</small></div>
       <div class="step"><b>{{ t('home.step_present') }}</b><small>{{ t('home.step_present_sub') }}</small></div>

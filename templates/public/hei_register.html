@@ -31,6 +31,7 @@
   {% if settings.get('hei.end') %}<p><span class="pill green">{{ t('hei.last_date') }}: {{ settings['hei.end']|date }}</span></p>{% endif %}
   <form method="post" novalidate class="wrap-narrow" style="margin-inline:0;max-width:900px" data-once>
     <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    {% if invite %}<input type="hidden" name="invite" value="{{ invite }}">{% endif %}
     <div class="honey" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
     <div class="form-section">
       <h2>{{ t('hei.sec_inst') }}</h2>

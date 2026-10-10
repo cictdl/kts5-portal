@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ t('camp.title') }} · {{ inst.name }}{% endblock %}
+{% block content %}
+<div class="wrap-narrow section">
+  <span class="eyebrow"><bdi>{{ inst.name }}</bdi> · <bdi>{{ student.name }}</bdi></span>
+  <h1>{{ t('camp.title') }}</h1>
+  <div class="card accent">
+    <div class="grid grid-2" style="margin-bottom:12px">
+      <div class="date-tile"><div class="lbl">{{ t('exam.duration') }}</div><div class="val">{{ settings['exam.duration_min'] }} {{ t('exam.minutes') }}</div><div class="sub">{{ settings['exam.questions'] }} {{ t('exam.pattern_text') }} · {{ settings['exam.marks_per_q'] }} {{ t('exam.marks_each') }}</div></div>
+      <div class="date-tile"><div class="lbl">{{ t('common.language') }}</div><div class="val">{{ student.lang|langnative }}</div><div class="sub">{{ student.lang|langname }}</div></div>
+    </div>
+    <h3>{{ t('exam.guidelines') }}</h3>
+    <ol class="prose"><li>{{ t('exam.g1') }}</li><li>{{ t('exam.g2') }}</li><li>{{ t('exam.g3') }}</li><li>{{ t('exam.g4') }}</li></ol>
+    <p class="alert info"><b>{{ t('camp.start_text')|replace('{minutes}', settings['exam.duration_min']|string) }}</b></p>
+    {% if state == 'open' %}
+    <form method="post" data-confirm="{{ t('exam.g2') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn saffron" type="submit">▶ {{ t('exam.start') }}</button></form>
+    {% else %}
+    <div class="alert info">{{ t('camp.closed') }}</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

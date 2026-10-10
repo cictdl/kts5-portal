@@ -13,6 +13,7 @@
       <span class="help">A Nodal Officer sees, exports and verifies the applications of the institutions of these States/UTs only.</span></div>
     <div class="field"><label for="agency_id">Agency (required for the agency role)</label><select id="agency_id" name="agency_id"><option value="">—</option>{% for a in agencies %}<option value="{{ a.id }}" {{ 'selected' if acct and acct.agency_id == a.id }}>{{ a.short_name }} · {{ a.name|truncate(40) }}</option>{% endfor %}</select></div>
     <div class="field"><label for="phone">Phone</label><input type="text" id="phone" name="phone" value="{{ acct.phone if acct else '' }}"></div>
+    <div class="field"><label for="designation">Designation (of a Nodal Officer, as the Ministry's format asks)</label><input type="text" id="designation" name="designation" value="{{ acct.designation if acct else '' }}" maxlength="120"></div>
     <div class="field"><label>&nbsp;</label><label class="check"><input type="checkbox" name="active" value="1" {{ 'checked' if (acct and acct.active) or not acct }}> Active</label>{% if acct %}<label class="check"><input type="checkbox" name="reset" value="1"> Issue a new temporary password</label>{% endif %}</div>
   </div>
   <p class="small muted" style="margin-top:10px">{% if not acct %}A temporary password is generated and shown once after saving (and mailed if SMTP is configured). The user must change it at first sign-in.{% endif %}</p>

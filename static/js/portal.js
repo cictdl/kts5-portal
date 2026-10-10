@@ -161,29 +161,3 @@
     window.addEventListener("keydown", function (e) { if (e.key === "F5" || (e.ctrlKey && e.key.toLowerCase() === "r")) e.preventDefault(); });
   }
 })();
-
-// Registration (1.2.41): the list of institutions shows those of the State/UT chosen; the details of an
-// institution are typed only when it is not listed.
-(function () {
-  var pick = document.querySelector("[data-hei-pick]");
-  if (!pick) return;
-  var state = document.getElementById("college_state");
-  var free = document.querySelector("[data-hei-free]");
-  function update() {
-    var chosen = state ? state.value : "";
-    pick.querySelectorAll("optgroup").forEach(function (g) {
-      var on = !chosen || g.getAttribute("data-state") === chosen;
-      g.hidden = !on; g.disabled = !on;
-    });
-    var opt = pick.options[pick.selectedIndex];
-    if (opt && opt.parentNode.tagName === "OPTGROUP" && opt.parentNode.disabled) pick.value = "";
-    var listed = pick.value !== "" && pick.value !== "0";
-    if (free) {
-      free.hidden = listed;
-      free.querySelectorAll("input, select").forEach(function (el) { el.disabled = listed; });
-    }
-  }
-  if (state) state.addEventListener("change", update);
-  pick.addEventListener("change", update);
-  update();
-})();

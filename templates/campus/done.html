@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ t('exam.done_title') }}{% endblock %}
+{% block content %}
+<div class="wrap-narrow section">
+  <span class="eyebrow"><bdi>{{ inst.name }}</bdi> · <bdi>{{ student.name }}</bdi></span>
+  <h1>{{ t('exam.done_title') }}</h1>
+  <div class="card green">
+    <p>{{ t('camp.done') }}</p>
+    <div class="detail"><dl>
+      <dt>{{ t('common.submitted') }}</dt><dd><bdi>{{ attempt.submitted_at|datetime }} IST</bdi>{% if attempt.status == 'expired' %} <span class="pill kumkum" style="white-space:normal">{{ t('exam.auto_submitted') }}</span>{% endif %}</dd>
+      <dt>{{ t('exam.questions_lbl') }}</dt><dd>{{ total }}</dd>
+      <dt>{{ t('exam.time_taken') }}</dt><dd>{{ (attempt.time_taken_sec // 60) }} {{ t('exam.min_short') }} {{ attempt.time_taken_sec % 60 }} {{ t('exam.sec_short') }}</dd>
+      {% if show_score %}<dt>{{ t('status.score') }}</dt><dd><bdi><b style="font-size:1.4rem">{{ attempt.score|int }}</b> / {{ max_score|int }}</bdi> · {{ attempt.correct_count }} {{ t('exam.correct') }}</dd>{% endif %}
+    </dl></div>
+    <p style="margin:12px 0 0"><a class="btn" href="{{ url_for('public.home') }}">{{ t('nav.home') }}</a></p>
+  </div>
+</div>
+{% endblock %}

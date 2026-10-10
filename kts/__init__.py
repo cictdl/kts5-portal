@@ -70,6 +70,8 @@ def create_app(config_object=Config):
     app.register_blueprint(admin.bp)
     app.register_blueprint(agency.bp)
     app.register_blueprint(quiz.bp)
+    from . import campus  # the institutions' area and their online assessment (1.2.43)
+    app.register_blueprint(campus.bp)
 
     # ---- request guards -------------------------------------------------
     @app.before_request

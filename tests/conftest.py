@@ -58,6 +58,8 @@ def make_app(**settings):
         from kts.db import set_setting
         set_setting("reg.start", "2026-01-01")
         set_setting("reg.end", "2030-12-31")
+        # the tests of the open registration of the versions before 1.2.43; those of the links of the institutions set it to 1
+        set_setting("reg.by_institution", "0")
     return app
 
 

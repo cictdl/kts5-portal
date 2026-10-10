@@ -81,6 +81,38 @@ CREATE TABLE IF NOT EXISTS institutions (
 CREATE INDEX IF NOT EXISTS idx_institutions_state ON institutions(state, status);
 CREATE INDEX IF NOT EXISTS idx_institutions_key ON institutions(inst_key);
 
+-- the online assessment of the participating institutions (1.2.43, kts/campus.py)
+CREATE TABLE IF NOT EXISTS campus_students (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    institution_id  INTEGER NOT NULL REFERENCES institutions(id),
+    name            TEXT NOT NULL,
+    email           TEXT NOT NULL DEFAULT '',
+    mobile          TEXT NOT NULL DEFAULT '',
+    roll_no         TEXT NOT NULL DEFAULT '',
+    course          TEXT NOT NULL DEFAULT '',
+    lang            TEXT NOT NULL DEFAULT 'en',
+    source          TEXT NOT NULL DEFAULT 'online',
+    created_at      TEXT NOT NULL,
+    ip              TEXT NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS idx_campus_students_inst ON campus_students(institution_id);
+CREATE TABLE IF NOT EXISTS campus_attempts (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id      INTEGER NOT NULL UNIQUE REFERENCES campus_students(id),
+    lang            TEXT NOT NULL,
+    paper_json      TEXT NOT NULL,
+    answers_json    TEXT NOT NULL DEFAULT '{}',
+    started_at      TEXT NOT NULL,
+    deadline_at     TEXT NOT NULL,
+    submitted_at    TEXT,
+    status          TEXT NOT NULL DEFAULT 'in_progress',
+    score           REAL,
+    correct_count   INTEGER,
+    time_taken_sec  INTEGER,
+    ip              TEXT DEFAULT '',
+    user_agent      TEXT DEFAULT ''
+);
+
 CREATE TABLE IF NOT EXISTS applications (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     app_no          TEXT UNIQUE,
@@ -513,6 +545,20 @@ LATER_COLUMNS = [
     ("users", "states", "TEXT NOT NULL DEFAULT ''"),
     # the participating institution that the student chose (1.2.41); empty: "not listed"
     ("applications", "institution_id", "INTEGER"),
+    # the institutions identified by the Nodal Institution, their online assessment and their selected student (1.2.43)
+    ("institutions", "invite_token", "TEXT"),
+    ("institutions", "invited_by", "INTEGER"),
+    ("institutions", "test_on", "INTEGER NOT NULL DEFAULT 0"),
+    ("institutions", "test_from", "TEXT"),
+    ("institutions", "test_to", "TEXT"),
+    ("institutions", "test_slug", "TEXT"),
+    ("institutions", "test_code", "TEXT"),
+    ("institutions", "winner_id", "INTEGER"),
+    ("institutions", "winner_at", "TEXT"),
+    ("institutions", "reg_token", "TEXT"),
+    ("institutions", "application_id", "INTEGER"),
+    # the designation of a Nodal Officer, as the Ministry's format asks (1.2.43)
+    ("users", "designation", "TEXT NOT NULL DEFAULT ''"),
 ]
 
 # CICT on social media: (setting, name of the service, address). The links stand in the footer of
@@ -549,7 +595,8 @@ DEFAULT_SETTINGS = {
     "reg.open": "1",
     # the dates of the tentative timeline of KTS 5.0 (28.11.2026 – 12.12.2026)
     "reg.start": "2026-10-15",
-    "reg.end": "2026-10-21",
+    # the D.O. letter of the Ministry of 9 October 2026: the institutions register their selected students by 22 October
+    "reg.end": "2026-10-22",
     "exam.date": "2026-10-22",
     "exam.start_time": "11:30",
     "exam.end_time": "12:00",
@@ -558,7 +605,8 @@ DEFAULT_SETTINGS = {
     "exam.marks_per_q": "2",
     "exam.negative": "0",
     "exam.show_score": "1",
-    "exam.open": "auto",
+    # no central test by CICT since the D.O. letter of 9 October 2026 (1.2.43): the institutions assess (kts/campus.py)
+    "exam.open": "0",
     "exam.instructions_url": "",
     "merit.published": "0",
     "merit.select_count": "1000",
@@ -607,7 +655,7 @@ DEFAULT_SETTINGS = {
     # anybody may host a classroom quiz, without an account (1.2.30)
     "quiz.public": "1",
     # the Nodal Officers of the States/UTs (1.2.39): verification closes the day before the test
-    "verify.end": "2026-10-21",
+    "verify.end": "2026-10-24",
     "nodal.digest": "1",
     "nodal.digest_time": "08:00",
     # the copies of the database (1.2.40, kts/backup.py)
@@ -617,8 +665,15 @@ DEFAULT_SETTINGS = {
     # the participating institutions (1.2.41, kts/heis.py)
     "hei.open": "1",
     "hei.end": "2026-10-21",
-    "hei.max_per_state": "50",
+    "hei.max_per_state": "0",
     "hei.public": "1",
+    # the D.O. letter of 9 October 2026 (1.2.43): registration by the institutions' links; their online assessment
+    "reg.by_institution": "1",
+    "camp.on": "1",
+    "camp.from": "2026-10-15",
+    "camp.to": "2026-10-21",
+    "camp.show_score": "1",
+    "hei.orientation": "",
     # the sender of mails (kts/mailq.py, 1.2.35): below the 2,000 mails a day of a Google Workspace account
     "mail.daily_limit": "1800",
     "mail.per_minute": "30",
@@ -648,12 +703,25 @@ RETIRED_DEFAULTS = {
     # timeline up to 1.2.31 (registration 10-16 October, test 19 October), moved by the timeline of
     # 8 October 2026 (registration 15-21 October, test 22 October)
     "reg.start": ["2026-09-25", "2026-10-10"],
-    "reg.end": ["2026-11-15", "2026-10-16"],
+    "reg.end": ["2026-11-15", "2026-10-16", "2026-10-21"],
     "exam.date": ["2026-11-29", "2026-10-19"],
     "letter.date": ["2026-10-22"],
     "internship.start": ["2026-10-23"],
     # the test begins at 11:30 (8 October 2026); the window still closes at 12:00
     "exam.start_time": ["11:00"],
+    # the D.O. letter of 9 October 2026 (1.2.43): the institutions register their students by 22 October, the Nodal
+    # Officers verify until the consolidation, no central test, no cap on the institutions of a State/UT
+    "exam.open": ["auto"],
+    "verify.end": ["2026-10-21"],
+    "hei.max_per_state": ["50"],
+}
+
+# Titles of the events of data/timeline.json as earlier versions put them in, by the key of the event: an event
+# that still holds one receives the present title, so that the schedule keeps finding its translation.
+RETIRED_EVENT_TITLES = {
+    "selection": ["Selection of the 1,000 students"],
+    "letters": ["Issue of confirmation letters"],
+    "live": ["Live sessions: 20 question-and-answer sessions"],
 }
 
 # Days of the events of data/timeline.json as earlier versions put them in, by the key of the event:
@@ -1102,6 +1170,12 @@ def init_db(app):
                 conn.execute("UPDATE events SET starts_at = ?, ends_at = ?, updated_at = ? "
                              "WHERE title = ? AND starts_at = ? AND ends_at IS ?",
                              (new[0], new[1], now, e["title"], starts, ends))
+        for key, olds in RETIRED_EVENT_TITLES.items():
+            e = seeds.get(key)
+            if e is None:
+                continue
+            for old in olds:
+                conn.execute("UPDATE events SET title = ?, updated_at = ? WHERE title = ?", (e["title"], now, old))
 
     # The role of an agency as seeded by an earlier version becomes the present wording, so that
     # the partner page keeps finding its translation; wording changed in the console is left alone.

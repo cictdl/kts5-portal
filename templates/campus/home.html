@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}{{ inst.name }} · KTS 5.0{% endblock %}
+{% block content %}
+<div class="wrap section" lang="en" dir="ltr">
+  <div class="section-head">
+    <div><span class="eyebrow">Participating institution · {{ inst.ref }}</span><h1>{{ inst.name }}</h1>
+      <p class="dim" style="margin:4px 0 0">{{ inst.district }}, {{ inst.state }} · {{ inst.itype }}{% if inst.aishe_code %} · AISHE {{ inst.aishe_code }}{% endif %}</p></div>
+    <form method="post" action="{{ url_for('campus.logout') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn ghost sm" type="submit">Sign out</button></form>
+  </div>
+  {% if others %}<p class="small muted">Your e-mail address is also that of: {% for o in others %}<a href="{{ url_for('campus.switch', iid=o.id) }}">{{ o.name }}</a>{{ ', ' if not loop.last }}{% endfor %}.</p>{% endif %}
+
+  {% if inst.status == 'pending' %}
+  <div class="alert info">The application of your institution awaits the decision of the Nodal Officer of {{ inst.state }}. You will hear by e-mail. The online assessment and the registration of your student open once it is accepted.</div>
+  {% elif inst.status == 'identified' %}
+  <div class="alert info">Your institution was identified by the Nodal Institution of {{ inst.state }} but has not completed its registration. Use the link in the invitation e-mail, or <a href="{{ url_for('public.hei_register') }}">register the institution</a>.</div>
+  {% endif %}
+
+  <div class="two-col" style="align-items:start">
+    <div>
+      <div class="card accent">
+        <h3>The steps and the dates</h3>
+        <ol class="prose" style="margin:0">
+          <li><b>Assess your students</b> on the theme <i>Thirukkural Payilvom – Thirukkural Abhyas Karen</i>, by the online assessment below or by any other suitable mode, on or before <b>{{ period[1].strftime('%d %B %Y') if period[1] else 'the date given by CICT' }}</b>. The study material in 22 languages and English is in the <a href="{{ url_for('public.resources') }}">repository</a> and the <a href="{{ url_for('public.kural_browser') }}">Thirukkural browser</a>.</li>
+          <li><b>Select one student</b> as the winner, on merit, and nominate them with one Faculty Supervisor/Guide, endorsed by the Director/Registrar/Principal/Head of the Institution (<a href="{{ url_for('static', filename='KTS5-nomination-form.pdf') }}">nomination form</a>).</li>
+          <li><b>Register the selected student</b> on this portal with the personal link that the portal sends when you select the student below, on or before <b>{{ reg_end.strftime('%d %B %Y') if reg_end else 'the date given by CICT' }}</b>: photograph, ID proof, the signed nomination form and the Faculty Supervisor/Guide.</li>
+          <li>CICT consolidates the selected students; the selected students receive a confirmation, the study material, the online orientation and a stipend of ₹10,000, write a 4–5 page research paper and deliver a one-hour presentation in your institution. Your institution organises campus activities on the theme and reports to the Nodal Institution.</li>
+        </ol>
+        {% if settings.get('hei.orientation') %}<p class="alert info" style="margin:12px 0 0"><b>Pre-assessment orientation session by CICT:</b> {{ settings['hei.orientation'] }}</p>{% endif %}
+      </div>
+
+      <div class="card" style="margin-top:14px" id="assessment">
+        <div class="section-head" style="margin-bottom:6px"><h3>The online assessment of the portal</h3>
+          <span class="pill {{ {'open': 'green', 'off': 'grey', 'not_yet': 'saffron', 'over': 'kumkum'}.get(state, 'grey') }}">{{ {'open': 'open to your students now', 'off': 'off', 'not_yet': 'on, opens ' ~ (inst.test_from|date), 'over': 'over', 'not_accepted': 'after acceptance'}.get(state, state) }}</span></div>
+        <p class="small dim">{{ settings['exam.questions'] }} multiple-choice questions on the Thirukkural in {{ settings['exam.duration_min'] }} minutes, in the language each student chooses (22 languages and English), one attempt, scored at once: {{ settings['exam.marks_per_q'] }} marks a question{% if settings['exam.negative'] not in ('0', '', none) %}, {{ settings['exam.negative'] }} off for a wrong answer{% endif %}. You switch it on for the days you choose
+          {% if period[0] and period[1] %}(between {{ period[0].strftime('%d %b') }} and {{ period[1].strftime('%d %b %Y') }}){% endif %}, give your students the link and the access code, and see every score below. You may equally assess in your own way and enter the student you select.</p>
+        {% if inst.status == 'accepted' and settings.get('camp.on') == '1' %}
+        {% if inst.test_on %}
+        <div class="detail"><dl>
+          <dt>Link for the students</dt><dd><code dir="ltr">{{ test_url }}</code></dd>
+          <dt>Access code</dt><dd><b style="font-size:1.3rem;letter-spacing:.1em">{{ inst.test_code }}</b></dd>
+          <dt>Days</dt><dd>{{ inst.test_from|date }} – {{ inst.test_to|date }} (IST, whole days)</dd>
+        </dl></div>
+        <div class="btn-row" style="margin-top:10px">
+          <form method="post" action="{{ url_for('campus.assessment') }}" style="margin:0"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+            <button class="btn sm ghost" name="action" value="newcode" data-confirm="Set a new access code? The old one stops working.">New access code</button>
+            <button class="btn sm danger" name="action" value="off" data-confirm="Switch the assessment off? Students can no longer sign up or start it.">Switch off</button></form>
+        </div>
+        {% endif %}
+        <form method="post" action="{{ url_for('campus.assessment') }}" class="fields" style="margin-top:12px">
+          <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+          <div class="field"><label for="test_from">First day</label><input type="date" id="test_from" name="test_from" value="{{ inst.test_from or (period[0].isoformat() if period[0] else '') }}" {% if period[0] %}min="{{ period[0].isoformat() }}"{% endif %} {% if period[1] %}max="{{ period[1].isoformat() }}"{% endif %} required></div>
+          <div class="field"><label for="test_to">Last day</label><input type="date" id="test_to" name="test_to" value="{{ inst.test_to or (period[1].isoformat() if period[1] else '') }}" {% if period[0] %}min="{{ period[0].isoformat() }}"{% endif %} {% if period[1] %}max="{{ period[1].isoformat() }}"{% endif %} required></div>
+          <div class="field"><label>&nbsp;</label><button class="btn sm saffron" name="action" value="on">{{ 'Change the days' if inst.test_on else 'Switch on' }}</button></div>
+        </form>
+        {% elif inst.status == 'accepted' %}
+        <p class="alert info">CICT has not opened the online assessment of the portal; assess your students in your own way and enter the selected student below.</p>
+        {% endif %}
+      </div>
+
+      {% if inst.status == 'accepted' %}
+      <div class="card" style="margin-top:14px" id="students">
+        <div class="section-head" style="margin-bottom:6px"><h3>Students who took the online assessment</h3>
+          {% if students %}<a class="btn sm secondary" href="{{ url_for('campus.students_xlsx') }}">Excel</a>{% endif %}</div>
+        {% if students %}
+        <div class="table-wrap"><table class="table">
+          <thead><tr><th>#</th><th>Student</th><th>Language</th><th>Status</th><th class="num">Score</th><th class="num">Time</th>{% if not application %}<th></th>{% endif %}</tr></thead>
+          <tbody>{% set ns = namespace(rank=0) %}{% for s in students %}{% set done = s.t_status in ('submitted', 'expired') %}{% if done %}{% set ns.rank = ns.rank + 1 %}{% endif %}
+          <tr{% if winner and winner.id == s.id %} style="background:var(--saffron-soft)"{% endif %}><td class="num">{{ ns.rank if done else '–' }}</td>
+            <td><b>{{ s.name }}</b>{% if winner and winner.id == s.id %} <span class="pill saffron">selected</span>{% endif %}<div class="small muted">{{ s.roll_no }}{% if s.course %} · {{ s.course }}{% endif %}<br>{{ s.email }} · {{ s.mobile }}{% if s.source == 'entered' %} · entered by the institution{% endif %}</div></td>
+            <td>{{ s.lang|langnative }}</td>
+            <td>{% if done %}submitted {{ s.submitted_at|datetime }}{% if s.t_status == 'expired' %} <span class="small muted">(time over)</span>{% endif %}{% elif s.t_status == 'in_progress' %}in progress{% elif s.source == 'entered' %}assessed by the institution{% else %}signed up, not started{% endif %}</td>
+            <td class="num">{% if done %}<b>{{ s.score|int }}</b><div class="small muted">{{ s.correct_count }} correct</div>{% else %}–{% endif %}</td>
+            <td class="num">{% if done %}{{ s.time_taken_sec // 60 }}:{{ '%02d' % (s.time_taken_sec % 60) }}{% else %}–{% endif %}</td>
+            {% if not application %}<td>{% if not winner or winner.id != s.id %}<form method="post" action="{{ url_for('campus.winner') }}" style="margin:0"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="student_id" value="{{ s.id }}">
+              <button class="btn xs" name="action" value="select" data-confirm="Select {{ s.name }} as the student of {{ inst.name }}? The registration link is mailed to the student and to you.">Select</button></form>{% endif %}</td>{% endif %}</tr>
+          {% endfor %}</tbody>
+        </table></div>
+        {% else %}<p class="small muted">No student has signed up yet.</p>{% endif %}
+      </div>
+
+      <div class="card {{ 'green' if application else 'accent' }}" style="margin-top:14px" id="winner">
+        <h3>The selected student</h3>
+        {% if application %}
+        <p><b>{{ application.full_name }}</b> has registered: application <b>{{ application.app_no }}</b>, {{ application.created_at|datetime }} · status: <span class="status-chip st-{{ application.status }}">{{ application.status.replace('_', ' ') }}</span>{% if application.exam_score is not none %} · score of the online assessment {{ application.exam_score|int }}{% endif %}.</p>
+        <p class="small muted">The Nodal Officer of {{ inst.state }} verifies the application; the student follows it on the <a href="{{ url_for('public.status') }}">status page</a> and in the candidate portal.</p>
+        {% elif winner %}
+        <p><b>{{ winner.name }}</b> ({{ winner.email }} · {{ winner.mobile }}){% if winner.t_status in ('submitted', 'expired') %}, score {{ winner.score|int }} in the online assessment{% else %}, assessed by the institution{% endif %}, selected {{ inst.winner_at|datetime }}.</p>
+        <p>Registration link, mailed to the student and to you; the student (or you, with the student's details and documents) fills it in on or before {{ reg_end.strftime('%d %B %Y') if reg_end else 'the date given by CICT' }}:</p>
+        <p><code dir="ltr" style="word-break:break-all">{{ reg_url }}</code></p>
+        <form method="post" action="{{ url_for('campus.winner') }}" class="btn-row" style="margin:0"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+          <a class="btn sm saffron" href="{{ reg_url }}">Open the registration</a>
+          <button class="btn sm ghost" name="action" value="clear" data-confirm="Withdraw the selection of {{ winner.name }}? The registration link stops working.">Withdraw the selection</button></form>
+        {% else %}
+        <p class="small dim">Select a student in the list above, or enter the student your institution selected after assessing in another way:</p>
+        <form method="post" action="{{ url_for('campus.winner') }}" class="fields" style="margin:0" data-once>
+          <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+          <div class="field wide"><label for="w_name">Name of the student (in English letters)</label><input type="text" id="w_name" name="name" maxlength="120" required></div>
+          <div class="field"><label for="w_email">E-mail of the student</label><input type="email" id="w_email" name="email" maxlength="160" required></div>
+          <div class="field"><label for="w_mobile">Mobile of the student (10 digits)</label><input type="tel" id="w_mobile" name="mobile" maxlength="10" inputmode="numeric" required></div>
+          <div class="field"><label for="w_roll">Roll number</label><input type="text" id="w_roll" name="roll_no" maxlength="40"></div>
+          <div class="field"><label for="w_course">Course and year</label><input type="text" id="w_course" name="course" maxlength="120"></div>
+          <div class="field"><label for="w_lang">Language for the orientation and the study material</label><select id="w_lang" name="lang" required><option value="">—</option>{% for l in langs %}<option value="{{ l.code }}">{{ l.native }} · {{ l.name }}</option>{% endfor %}</select></div>
+          <div class="field"><label>&nbsp;</label><button class="btn sm saffron" name="action" value="enter" data-confirm="Select this student as the student of {{ inst.name }}? The registration link is mailed to the student and to you.">Select and send the registration link</button></div>
+        </form>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+    <div>
+      <div class="card">
+        <h3>Your institution</h3>
+        <div class="detail"><dl>
+          <dt>Status</dt><dd>{% if inst.status == 'accepted' %}<span class="pill green">participating institution</span>{% elif inst.status == 'pending' %}<span class="pill saffron">awaiting the Nodal Officer</span>{% else %}<span class="pill grey">{{ inst.status }}</span>{% endif %}</dd>
+          <dt>Head of the Institution</dt><dd>{{ inst.head_name }}, {{ inst.head_designation }}<br><span class="small muted">{{ inst.head_email }} · {{ inst.head_phone }}</span></dd>
+          <dt>Institutional Coordinator</dt><dd>{{ inst.coord_name }}<br><span class="small muted">{{ inst.coord_email }} · {{ inst.coord_mobile }}</span></dd>
+          <dt>Nodal Institution</dt><dd>{{ nodal_of(inst.state) or inst.state }}</dd>
+        </dl></div>
+        <p class="small muted" style="margin:10px 0 0">To correct these details, write to the Nodal Officer of {{ inst.state }} or to CICT (<a href="mailto:{{ settings['contact.email'] }}">{{ settings['contact.email'] }}</a>).</p>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3>For your students</h3>
+        <div class="btn-row"><a class="btn sm secondary" href="{{ url_for('public.resources', cat='study') }}">Study material</a><a class="btn sm secondary" href="{{ url_for('public.kural_browser') }}">Thirukkural in 23 languages</a><a class="btn sm secondary" href="{{ url_for('quiz.join') }}">Classroom quiz</a></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3>{{ t('common.help') }}</h3>
+        <p class="small dim">{{ settings['contact.email'] }} · {{ settings['contact.phone'] }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

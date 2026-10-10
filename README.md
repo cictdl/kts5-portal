@@ -238,6 +238,46 @@ institutions of its State/UT; each of them nominates one student and one Faculty
   listed* in the console. One student per institution: a second registration for the same
   institution is refused while the first is neither withdrawn nor rejected.
 
+## The D.O. letter of 9 October 2026: assessment by the institutions
+
+From 1.2.43 the portal follows the D.O. letter of the Ministry of Education of 9 October 2026
+(Annexures I–IV). There is no central test by CICT (`exam.open` is 0): each participating
+institution assesses its students, selects one on merit and registers that student.
+
+* *Annexure-I.* `data/nodal_heis.json` carries the 31 Nodal Institutions of the letter with their
+  tentative allocation of participating institutions (1,385 in all); `hei.max_per_state` is 0, no
+  limit, since the allocation is tentative. The Nodal Officer's designation is kept (`users.designation`).
+* *Annexure-II.* *Console → Institutions* takes the list of institutions identified by the Nodal
+  Institution (.xlsx or .csv in the format of the annexure; the format can be downloaded there).
+  Each becomes an institution *identified* and is invited by mail to complete its registration at
+  `/institutions/register?invite=…` (the Head of the Institution, the declaration); it is then a
+  participating institution at once. The Excel file of the console is in the format of Annexure-II,
+  with the state of each institution's assessment and registration (the tracker of the letter).
+* *The institution's page* (`kts/campus.py`): the Institutional Coordinator or the Head signs in at
+  `/institution/login` with the e-mail address of the registration; the portal mails a six-digit
+  code (15 minutes). `/institution` shows the steps and dates, the online assessment, the students
+  and their scores, and the selected student.
+* *The online assessment.* The coordinator switches it on for days within `camp.from`–`camp.to`
+  and gives the students the link `/assessment/<slug>` and the access code. A student signs up
+  (name, roll number, e-mail, mobile, language) and takes the paper once: `exam.questions`
+  questions of the question bank in the language chosen, `exam.duration_min` minutes, scored as
+  before (`exam.marks_per_q`, `exam.negative`); the score is shown when `camp.show_score` is on.
+  Tables `campus_students` and `campus_attempts`.
+* *The selected student.* The coordinator selects a student of the list, or enters one assessed
+  in another way. The portal mails the student and the coordinator a personal registration link
+  (`institutions.reg_token`); while `reg.by_institution` is on, `/register` takes only such links
+  (the institution is fixed by the link, the student's details come filled in), one registration
+  per institution; the score of the online assessment goes with the application as its exam
+  session, so that the status page, the selection and the merit list work as before. A student
+  assessed in another way has no score and is ranked after those with one.
+* *The timeline* (`data/timeline.json`, Annexure-III): the Nodal Officer's details and the
+  preliminary list by 13 October, the list of participating institutions by 15 October, the
+  Students' Engagement Programme 15 October – 15 November, assessments complete by 21 October,
+  registration of the selected students by 22 October (`reg.end`), consolidation 23–24 October,
+  confirmation 25 October, engagement and live orientation from 26 October, papers 5 November,
+  CIIL review 7–12 November, booklet 13–16 November, presentations by 15 November, booklet ready
+  20 November, inauguration 28 November, valedictory 12 December.
+
 ## The mail queue
 
 From 1.2.35 no page sends a mail itself: every mail is written to the outbox, and one sender in the

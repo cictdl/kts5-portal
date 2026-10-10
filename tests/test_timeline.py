@@ -14,10 +14,11 @@ from markupsafe import escape
 from conftest import ROOT, make_app
 
 SEEDS = json.loads((ROOT / "data" / "timeline.json").read_text(encoding="utf-8"))
+S = {s["key"]: s for s in SEEDS}
 NAMES = ("INSTANCE_DIR", "DATABASE", "UPLOAD_DIR")
 # the rows in the order of the timeline; those marked are dates kept as settings
-ORDER = ["circular", "reg_open*", "reg_close*", "exam*", "selection", "letters", "internship", "live", "papers", "forward",
-         "eval_start", "eval_end", "booklet", "present", "printed", "inauguration*", "valedictory*"]
+ORDER = ["circular", "hei_list", "hei_final", "engage", "reg_open*", "assess", "reg_close*", "selection", "letters", "internship", "live",
+         "papers", "forward", "eval_start", "eval_end", "booklet", "present", "printed", "inauguration*", "valedictory*"]
 KEYS = ["timeline." + name.rstrip("*") for name in ORDER]
 
 
@@ -91,8 +92,8 @@ def _banner(page):
 
 def test_the_dates_of_the_timeline_are_the_defaults():
     from kts.db import DEFAULT_SETTINGS
-    # the timeline of 8 October 2026
-    assert DEFAULT_SETTINGS["reg.start"] == "2026-10-15" and DEFAULT_SETTINGS["reg.end"] == "2026-10-21"
+    # the timeline of 8 October 2026, and the D.O. letter of 9 October: the institutions register their students by 22 October
+    assert DEFAULT_SETTINGS["reg.start"] == "2026-10-15" and DEFAULT_SETTINGS["reg.end"] == "2026-10-22"
     assert DEFAULT_SETTINGS["exam.date"] == "2026-10-22"
     assert (DEFAULT_SETTINGS["exam.start_time"], DEFAULT_SETTINGS["exam.end_time"]) == ("11:30", "12:00")
     assert DEFAULT_SETTINGS["letter.date"] == "2026-10-25" and DEFAULT_SETTINGS["internship.start"] == "2026-10-26"
@@ -100,7 +101,7 @@ def test_the_dates_of_the_timeline_are_the_defaults():
     assert DEFAULT_SETTINGS["kts.start"] == "2026-11-28" and DEFAULT_SETTINGS["kts.end"] == "2026-12-12"
     # the days of the week as the calendar has them
     days = [datetime.fromisoformat(DEFAULT_SETTINGS[key]).strftime("%a") for key in ("reg.start", "reg.end", "exam.date", "kts.start", "kts.end")]
-    assert days == ["Thu", "Wed", "Thu", "Sat", "Sat"]
+    assert days == ["Thu", "Thu", "Thu", "Sat", "Sat"]
 
 
 def test_a_database_of_an_earlier_version_receives_the_dates():
@@ -109,7 +110,7 @@ def test_a_database_of_an_earlier_version_receives_the_dates():
         _sql(app, "UPDATE settings SET value = ? WHERE key = ?", (old, key))
     _sql(app, "DELETE FROM settings WHERE key IN ('kts.start', 'kts.end', 'schedule.tentative')")
     settings = _settings(_start(app))
-    assert (settings["reg.start"], settings["reg.end"], settings["exam.date"]) == ("2026-10-15", "2026-10-21", "2026-10-22")
+    assert (settings["reg.start"], settings["reg.end"], settings["exam.date"]) == ("2026-10-15", "2026-10-22", "2026-10-22")
     assert (settings["kts.start"], settings["kts.end"], settings["schedule.tentative"]) == ("2026-11-28", "2026-12-12", "1")
 
 def test_the_live_database_moves_to_the_timeline_of_8_october():
@@ -118,24 +119,24 @@ def test_the_live_database_moves_to_the_timeline_of_8_october():
     for key, old in (("reg.start", "2026-10-10"), ("reg.end", "2026-10-16"), ("exam.date", "2026-10-19"),
                      ("letter.date", "2026-10-22"), ("internship.start", "2026-10-23"), ("exam.start_time", "11:00")):
         _sql(app, "UPDATE settings SET value = ? WHERE key = ?", (old, key))
-    for title, starts, ends in ((SEEDS[1]["title"], "2026-10-20T00:00", "2026-10-21T00:00"),
-                                (SEEDS[2]["title"], "2026-10-22T00:00", None),
-                                (SEEDS[3]["title"], "2026-10-23T00:00", None)):
+    for title, starts, ends in ((S["selection"]["title"], "2026-10-20T00:00", "2026-10-21T00:00"),
+                                (S["letters"]["title"], "2026-10-22T00:00", None),
+                                (S["internship"]["title"], "2026-10-23T00:00", None)):
         _sql(app, "UPDATE events SET starts_at = ?, ends_at = ? WHERE title = ?", (starts, ends, title))
     # another event that an administrator moved by hand
-    _sql(app, "UPDATE events SET starts_at = '2026-11-06T10:00' WHERE title = ?", (SEEDS[7]["title"],))
+    _sql(app, "UPDATE events SET starts_at = '2026-11-06T10:00' WHERE title = ?", (S["eval_start"]["title"],))
     again = _start(app)
     settings = _settings(again)
     moved = [settings[k] for k in ("reg.start", "reg.end", "exam.date", "letter.date", "internship.start", "exam.start_time")]
-    assert moved == ["2026-10-15", "2026-10-21", "2026-10-22", "2026-10-25", "2026-10-26", "11:30"]
+    assert moved == ["2026-10-15", "2026-10-22", "2026-10-22", "2026-10-25", "2026-10-26", "11:30"]
     rows = {t: (s, e) for t, s, e in _sql(again, "SELECT title, starts_at, ends_at FROM events")}
-    assert rows[SEEDS[1]["title"]] == ("2026-10-23T00:00", "2026-10-24T00:00")
-    assert rows[SEEDS[2]["title"]] == ("2026-10-25T00:00", None) and rows[SEEDS[3]["title"]] == ("2026-10-26T00:00", None)
-    assert rows[SEEDS[7]["title"]][0] == "2026-11-06T10:00"
+    assert rows[S["selection"]["title"]] == ("2026-10-23T00:00", "2026-10-24T00:00")
+    assert rows[S["letters"]["title"]] == ("2026-10-25T00:00", None) and rows[S["internship"]["title"]] == ("2026-10-26T00:00", None)
+    assert rows[S["eval_start"]["title"]][0] == "2026-11-06T10:00"
     # an event that the administrator moved away from the old days stays where it was put
     app = make_app(ADMIN_PASSWORD=None)
-    _sql(app, "UPDATE events SET starts_at = '2026-10-22T15:00', ends_at = NULL WHERE title = ?", (SEEDS[2]["title"],))
-    assert _sql(_start(app), "SELECT starts_at FROM events WHERE title = ?", (SEEDS[2]["title"],)) == [("2026-10-22T15:00",)]
+    _sql(app, "UPDATE events SET starts_at = '2026-10-22T15:00', ends_at = NULL WHERE title = ?", (S["letters"]["title"],))
+    assert _sql(_start(app), "SELECT starts_at FROM events WHERE title = ?", (S["letters"]["title"],)) == [("2026-10-22T15:00",)]
 
 
 def test_dates_set_by_the_administrator_are_left_alone():
@@ -147,7 +148,7 @@ def test_dates_set_by_the_administrator_are_left_alone():
     assert settings["kts.end"] == "2026-12-14"
 
 
-@pytest.mark.parametrize("day, state", [("2026-10-14", "not_yet"), ("2026-10-15", "open"), ("2026-10-21", "open"), ("2026-10-22", "closed")])
+@pytest.mark.parametrize("day, state", [("2026-10-14", "not_yet"), ("2026-10-15", "open"), ("2026-10-22", "open"), ("2026-10-23", "closed")])
 def test_registration_follows_the_dates(monkeypatch, day, state):
     app = _portal()
     _on(monkeypatch, day)
@@ -182,13 +183,12 @@ def test_the_schedule_shows_the_timeline_in_order(monkeypatch):
     assert past == ""
     places = [upcoming.index("<bdi>" + _text(key) + "</bdi>") for key in KEYS]
     assert places == sorted(places)
-    for day in ("07 Oct 2026", "15 Oct 2026", "21 Oct 2026", "23 Oct 2026", "– 24 Oct 2026", "25 Oct 2026", "26 Oct 2026",
+    for day in ("07 Oct 2026", "13 Oct 2026", "15 Oct 2026", "– 15 Nov 2026", "21 Oct 2026", "22 Oct 2026", "23 Oct 2026", "– 24 Oct 2026", "25 Oct 2026", "26 Oct 2026",
                 "05 Nov 2026", "06 Nov 2026", "07 Nov 2026", "12 Nov 2026", "13 Nov 2026", "– 16 Nov 2026", "15 Nov 2026", "20 Nov 2026",
                 "28 Nov 2026", "12 Dec 2026"):
         assert day in upcoming, day
     # a day without a time of day stands alone; the test has the hours of its settings
     assert "12:00 AM" not in upcoming
-    assert "22 Oct 2026, 11:30 AM" in upcoming and "– 22 Oct 2026, 12:00 PM" in upcoming
     assert _text("timeline.present_note") in upcoming
     # the evaluation is the work of CIIL
     row = upcoming[upcoming.index(_text("timeline.eval_start")):upcoming.index(_text("timeline.eval_end"))]
@@ -199,15 +199,17 @@ def test_what_is_over_moves_to_the_past(monkeypatch):
     app = _portal()
     _on(monkeypatch, "2026-10-24")
     upcoming, past = _halves(_page(app, "/schedule?lang=en"))
-    for key in ("timeline.circular", "timeline.reg_open", "timeline.reg_close", "timeline.exam"):
+    for key in ("timeline.circular", "timeline.hei_list", "timeline.reg_open", "timeline.assess", "timeline.reg_close"):
         assert _text(key) in past and _text(key) not in upcoming, key
+    # the Students' Engagement Programme runs until 15 November
+    assert _text("timeline.engage") in upcoming
     # the selection takes two days and is not over on its second
     assert _text("timeline.selection") in upcoming and _text("timeline.selection") not in past
     _on(monkeypatch, "2026-10-25")
     upcoming, past = _halves(_page(app, "/schedule?lang=en"))
     assert _text("timeline.selection") in past and _text("timeline.letters") in upcoming
     # the last that is over stands first
-    assert past.index(_text("timeline.selection")) < past.index(_text("timeline.exam")) < past.index(_text("timeline.circular"))
+    assert past.index(_text("timeline.selection")) < past.index(_text("timeline.reg_close")) < past.index(_text("timeline.circular"))
 
 
 def test_the_home_page_shows_the_next_four_and_the_days_of_the_sangamam(monkeypatch):
@@ -233,13 +235,13 @@ def test_the_timeline_is_in_the_language_of_the_page(monkeypatch, lang):
         assert _text(key, lang) != _text(key), key
         assert _text(key, lang) in page, key
     assert _text("timeline.circular") not in page
-    assert "07-10-2026" in page and "22-10-2026, 11:30" in page
+    assert "07-10-2026" in page and "22-10-2026" in page
 
 
 def test_wording_entered_in_the_console_is_shown_as_it_is(monkeypatch):
     app = _portal()
     _on(monkeypatch, "2026-10-01")
-    _sql(app, "UPDATE events SET title = 'Circular sent to all colleges' WHERE title = ?", (SEEDS[0]["title"],))
+    _sql(app, "UPDATE events SET title = 'Circular sent to all colleges' WHERE title = ?", (S["circular"]["title"],))
     for lang in ("en", "ta"):
         page = _page(app, f"/schedule?lang={lang}")
         assert "Circular sent to all colleges" in page
@@ -260,25 +262,23 @@ def _plain(key):
 
 
 def test_the_five_dates_of_the_settings_stand_in_one_place_only(monkeypatch):
-    app = _portal(**{"exam.date": "2026-10-25", "exam.start_time": "15:00", "exam.end_time": "16:30", "reg.end": "2026-10-18",
-                     "kts.start": "2026-11-30"})
+    app = _portal(**{"reg.end": "2026-10-28", "kts.start": "2026-11-30"})
     _on(monkeypatch, "2026-10-01")
     titles = [row[0] for row in _sql(app, "SELECT title FROM events")]
     assert sorted(titles) == sorted(s["title"] for s in SEEDS)
     upcoming, _past = _halves(_page(app, "/schedule?lang=en"))
-    assert "25 Oct 2026, 03:00 PM" in upcoming and "– 25 Oct 2026, 04:30 PM" in upcoming and "19 Oct 2026" not in upcoming
-    assert "18 Oct 2026" in upcoming and "30 Nov 2026" in upcoming and "28 Nov 2026" not in upcoming
-    # the test now comes after the selection of the seed file, and the page follows
-    assert upcoming.index(_text("timeline.letters")) < upcoming.index(_text("timeline.exam")) < upcoming.index(_text("timeline.live"))
+    assert "28 Oct 2026" in upcoming and "30 Nov 2026" in upcoming and "28 Nov 2026" not in upcoming
+    # the close of registration now comes after the letters of the seed file, and the page follows
+    assert upcoming.index(_text("timeline.letters")) < upcoming.index(_text("timeline.reg_close")) < upcoming.index(_text("timeline.papers"))
 
 
 def test_a_date_that_cannot_be_read_leaves_its_row_out(monkeypatch):
-    app = _portal(**{"kts.start": "", "kts.end": "soon", "exam.start_time": "eleven"})
+    app = _portal(**{"kts.start": "", "kts.end": "soon", "reg.start": "never"})
     _on(monkeypatch, "2026-10-01")
     page = _page(app, "/schedule?lang=en")
-    for key in ("timeline.inauguration", "timeline.valedictory", "timeline.exam"):
+    for key in ("timeline.inauguration", "timeline.valedictory", "timeline.reg_open"):
         assert _text(key) not in page, key
-    assert _text("timeline.reg_open") in page
+    assert _text("timeline.reg_close") in page
     home = _page(app, "/?lang=en")
     assert '<span class="kicker">' + _text("home.kicker") + "</span>" in home
 
@@ -314,7 +314,8 @@ def test_a_new_installation_carries_the_timeline():
     assert [row[0] for row in rows] == [s["title"] for s in SEEDS]
     assert all(row[4] == 1 for row in rows)
     assert rows[0][2] == "2026-10-07T00:00" and rows[0][3] is None
-    assert rows[1][2:4] == ("2026-10-23T00:00", "2026-10-24T00:00")
+    assert rows[1][2:4] == ("2026-10-13T00:00", None)
+    assert rows[[r[0] for r in rows].index(S["selection"]["title"])][2:4] == ("2026-10-23T00:00", "2026-10-24T00:00")
 
 
 def test_the_timeline_is_put_in_once():
@@ -324,7 +325,7 @@ def test_the_timeline_is_put_in_once():
 
 def test_a_deleted_event_does_not_come_back():
     app = make_app(ADMIN_PASSWORD=None)
-    _sql(app, "DELETE FROM events WHERE title = ?", (SEEDS[0]["title"],))
+    _sql(app, "DELETE FROM events WHERE title = ?", (S["circular"]["title"],))
     assert _titles(_start(app)) == [s["title"] for s in SEEDS[1:]]
 
 
@@ -333,10 +334,10 @@ def test_an_event_entered_by_hand_is_not_doubled():
     _sql(app, "DELETE FROM events")
     _sql(app, "DELETE FROM settings WHERE key LIKE 'seed.event.%'")
     _sql(app, "INSERT INTO events(title, starts_at, created_at, updated_at) VALUES(?, '2026-11-06T10:30', '2026-10-01', '2026-10-01')",
-         (SEEDS[5]["title"],))
+         (S["papers"]["title"],))
     again = _start(app)
     assert sorted(_titles(again)) == sorted(s["title"] for s in SEEDS)
-    assert _sql(again, "SELECT starts_at FROM events WHERE title = ?", (SEEDS[5]["title"],)) == [("2026-11-06T10:30",)]
+    assert _sql(again, "SELECT starts_at FROM events WHERE title = ?", (S["papers"]["title"],)) == [("2026-11-06T10:30",)]
 
 
 def test_the_live_database_receives_the_timeline():
@@ -368,7 +369,7 @@ def test_the_banner_announces_them_while_they_are_open(monkeypatch):
 
 def test_the_banner_says_so_when_registration_is_closed(monkeypatch):
     app = _portal()
-    _on(monkeypatch, "2026-10-22")
+    _on(monkeypatch, "2026-10-23")
     banner = _banner(_page(app, "/?lang=en"))
     assert _text("reg.closed") in banner and "are open" not in banner
     # also when the administrator has switched the registration off inside the dates

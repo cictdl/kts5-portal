@@ -8,7 +8,7 @@
   {% if settings['schedule.tentative'] == '1' %}<p><span class="pill saffron">{{ t('schedule.tentative') }}</span></p>{% endif %}
   <div class="dates" style="margin-bottom:24px">
     <div class="date-tile"><div class="lbl">{{ t('home.reg_window') }}</div><div class="val"><bdi>{{ dates.reg_start|date }} – {{ dates.reg_end|date }}</bdi></div></div>
-    <div class="date-tile"><div class="lbl">{{ t('home.exam_date') }}</div><div class="val">{{ dates.exam_date|date }}</div><div class="sub"><bdi>{{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST</bdi></div></div>
+    <div class="date-tile"><div class="lbl">{{ t('home.exam_date') }}</div><div class="val">{{ dates.assess_to|date }}</div><div class="sub">{{ t('exam.online') }} · {{ settings['exam.duration_min'] }} {{ t('exam.minutes') }}</div></div>
     <div class="date-tile"><div class="lbl">{{ t('home.merit') }}</div><div class="val">{% if settings['merit.published'] == '1' %}<a href="{{ url_for('public.merit') }}">{{ t('home.published') }}</a>{% else %}{{ t('home.tba') }}{% endif %}</div></div>
     <div class="date-tile"><div class="lbl">{{ t('home.orientation') }}</div><div class="val">{{ t('schedule.after_merit') }}</div></div>
   </div>

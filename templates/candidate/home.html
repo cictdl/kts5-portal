@@ -78,21 +78,15 @@
 
       <div class="card" style="margin-top:14px">
         <h3>{{ t('exam.title') }}</h3>
-        <p class="small dim"><b>{{ t('cand.exam_window') }}:</b> <bdi>{{ settings['exam.date']|date }}, {{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST</bdi> · {{ settings['exam.duration_min'] }} {{ t('exam.minutes') }} · {{ settings['exam.questions'] }} {{ t('exam.pattern_text') }}</p>
         {% if exam and exam.status != 'in_progress' %}
           <div class="alert success">{{ t('status.exam_done') }} · {{ exam.submitted_at|datetime }}{% if settings['exam.show_score'] == '1' %} · {{ t('status.score') }}: <b>{{ exam.score|int }}</b>{% endif %}</div>
           <a class="btn sm secondary" href="{{ url_for('candidate.result') }}">{{ t('exam.done_title') }}</a>
         {% elif exam %}
           <div class="alert warning">{{ t('cand.in_progress') }}</div><a class="btn saffron" href="{{ url_for('candidate.paper') }}">{{ t('cand.resume_exam') }} {{ fwd }}</a>
-        {% elif cand.status == 'submitted' %}
-          <div class="alert info">{{ t('exam.not_eligible') }}</div>
-        {% elif cand.status in ('rejected', 'withdrawn') %}
-          <div class="alert error">{{ t('status.rejected') }}</div>
-        {% elif is_open %}
+        {% elif is_open and cand.status in ('verified', 'selected', 'waitlisted', 'not_selected') %}
           <a class="btn saffron" href="{{ url_for('candidate.exam') }}">{{ t('cand.take_exam') }} {{ fwd }}</a>
         {% else %}
-          <div class="alert info">{{ t('exam.not_open') }} {% if start %}<br><b><bdi>{{ start|datetime }} IST</bdi></b>{% endif %}</div>
-          <a class="btn sm secondary" href="{{ url_for('candidate.exam') }}">{{ t('exam.guidelines') }}</a>
+          <div class="alert info">{{ t('status.exam_pending') }}</div>
         {% endif %}
       </div>
     </div>

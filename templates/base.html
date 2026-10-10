@@ -62,6 +62,7 @@
           <li><a href="{{ url_for('public.register') }}">{{ t('reg.title') }}</a></li>
           <li><a href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a></li>
           <li><a href="{{ url_for('public.institutions') }}">{{ t('nav.institutions') }}</a></li>
+          <li><a href="{{ url_for('campus.login') }}">{{ t('camp.login_title') }}</a></li>
         </ul></li>
       <li><a href="{{ url_for('public.examination') }}" class="{{ 'active' if ep in ('public.examination', 'public.merit') }}">{{ t('nav.exam') }}</a></li>
       <li><a href="{{ url_for('public.orientation') }}" class="{{ 'active' if ep == 'public.orientation' }}">{{ t('nav.orientation') }}</a></li>
@@ -117,6 +118,7 @@
         <li><a href="{{ url_for('public.register') }}">{{ t('nav.register') }}</a></li>
         <li><a href="{{ url_for('public.status') }}">{{ t('nav.status') }}</a></li>
         <li><a href="{{ url_for('public.institutions') }}">{{ t('nav.institutions') }}</a></li>
+        <li><a href="{{ url_for('campus.login') }}">{{ t('camp.login_title') }}</a></li>
         <li><a href="{{ url_for('public.examination') }}">{{ t('nav.exam') }}</a></li>
         <li><a href="{{ url_for('public.merit') }}">{{ t('nav.merit') }}</a></li>
         <li><a href="{{ url_for('public.stipend_guide') }}">{{ t('stip.title') }}</a></li>
@@ -161,7 +163,7 @@
   </div></div>
 </footer>
 <script type="application/json" id="i18n">{{ js_strings|tojson }}</script>
-<script src="{{ url_for('static', filename='js/portal.js') }}?v=12" defer></script>
+<script src="{{ url_for('static', filename='js/portal.js') }}?v=13" defer></script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

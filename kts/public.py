@@ -14,6 +14,7 @@ from markupsafe import escape
 from flask import (Blueprint, Response, abort, current_app, flash, g, redirect, render_template,
                    request, send_from_directory, session, url_for)
 
+from . import campus as CAMP
 from . import heis as HEI
 from . import kural as K
 from .db import all_settings, audit, execute, get_setting, query, utcnow
@@ -45,6 +46,8 @@ def _key_dates(settings):
         "exam_date": settings.get("exam.date"),
         "exam_start": start,
         "exam_end": end,
+        # the institution-level assessments end (1.2.43)
+        "assess_to": settings.get("camp.to"),
         "reg_state": registration_state(settings),
         "kts_start": _iso_day(settings.get("kts.start")),
         "kts_end": _iso_day(settings.get("kts.end")),
@@ -73,9 +76,6 @@ def _timeline(settings):
                                     ("timeline.reg_close", "registration", _iso_day(settings.get("reg.end"))),
                                     ("timeline.inauguration", "general", _iso_day(settings.get("kts.start"))),
                                     ("timeline.valedictory", "general", _iso_day(settings.get("kts.end")))) if day]
-    start, end, _ = exam_window(settings)
-    if start and end:
-        fixed.append(("timeline.exam", "examination", start.strftime("%Y-%m-%dT%H:%M"), end.strftime("%Y-%m-%dT%H:%M")))
     for key, kind, starts_at, ends_at in fixed:
         rows.append({"id": None, "title": i18n.text(key, "en"), "description": "", "kind": kind, "lang": "",
                      "starts_at": starts_at, "ends_at": ends_at, "venue": "", "link": "", "agency": None})
@@ -236,24 +236,15 @@ ENGLISH = ["full_name", "address", "district", "college_name", "aishe_code", "co
            "discipline", "roll_no", "mentor_name", "mentor_designation"]
 
 
-def _validate(form, files):
+def _validate(form, files, inst=None):
     errors = {}
     data = {f: (form.get(f) or "").strip() for f in FIELDS}
     data["pwd"] = 1 if form.get("pwd") == "1" else 0
-    # the participating institution chosen from the list (1.2.41): its details are those of the list
-    choice = (form.get("institution_id") or "").strip()
-    data["institution_pick"], data["institution_id"] = choice, None
-    if choice not in ("", "0"):
-        inst = query("SELECT * FROM institutions WHERE id = ? AND status = 'accepted'", (safe_int(choice),), one=True)
-        if inst is None:
-            errors["institution_id"] = t("hei.pick_err_gone")
-        else:
-            data.update(college_name=inst["name"], aishe_code=inst["aishe_code"], college_type=inst["itype"],
-                        college_state=inst["state"], college_district=inst["district"], institution_id=inst["id"])
-            # one student per institution, while the first is neither withdrawn nor rejected
-            if query("SELECT 1 FROM applications WHERE institution_id = ? AND status NOT IN ('withdrawn', 'rejected')",
-                     (inst["id"],), one=True):
-                errors["institution_id"] = t("hei.pick_err_taken")
+    # registered with the link of a participating institution (1.2.43): the institution is that one
+    data["institution_id"] = None
+    if inst is not None:
+        data.update(college_name=inst["name"], aishe_code=inst["aishe_code"], college_type=inst["itype"],
+                    college_state=inst["state"], college_district=inst["district"], institution_id=inst["id"])
     for f in ENGLISH:
         data[f], english = plain_english(data[f])
         if not english:
@@ -309,13 +300,24 @@ def register():
     langs = [K.lang_info(c) | {"code": c} for c in K.ORIENTATION_LANGS]
     mother = [K.lang_info(c) | {"code": c} for c in ["ta"] + [c for c in K.SCHEDULED if c != "ta"]]
     ctx = dict(settings=settings, state=state, ref=ref, langs=langs, mother=mother,
-               dates=_key_dates(settings), data={}, errors={}, heis=HEI.accepted_by_state(ref["all_states"]))
+               dates=_key_dates(settings), data={}, errors={}, inst=None, token="")
     if state != "open":
         return render_template("public/register_closed.html", **ctx)
+    # since the D.O. letter of 9 October 2026: the institution registers its selected student with a personal link
+    token = (request.args.get("token") or request.form.get("token") or "").strip()
+    inst = CAMP.registration_token(token)
+    if inst is None and (token or settings.get("reg.by_institution") == "1"):
+        return render_template("public/register_by_institution.html", token_bad=bool(token), **ctx), (404 if token else 200)
+    ctx.update(inst=inst, token=token)
+    if inst is not None and request.method == "GET":
+        winner = CAMP.winner_of(inst)
+        if winner:
+            ctx["data"] = {"full_name": winner["name"], "email": winner["email"], "mobile": winner["mobile"],
+                           "roll_no": winner["roll_no"], "pref_lang": winner["lang"] if winner["lang"] in K.ORIENTATION_LANGS else ""}
 
     if request.method == "POST":
         ip = client_ip()
-        data, errors = _validate(request.form, request.files)
+        data, errors = _validate(request.form, request.files, inst)
         if not check_captcha(request.form.get("captcha")):
             errors["captcha"] = t("reg.err_captcha")
         if not errors:
@@ -359,6 +361,8 @@ def register():
         execute("UPDATE applications SET app_no = ? WHERE id = ?", (app_no, row_id))
         limiter.hit("register", ip, 3600)  # only applications that were stored are counted
         audit("application_submitted", "application", row_id, detail=app_no, ip=ip)
+        if inst is not None:
+            CAMP.bind_application(inst, row_id)
         from .certificate import certificate_link
         cert = certificate_link(query("SELECT * FROM applications WHERE id = ?", (row_id,), one=True), external=True)
         send_mail(
@@ -399,8 +403,19 @@ def institutions():
 def hei_register():
     settings = all_settings()
     ref = _states()
-    ctx = dict(settings=settings, ref=ref, data={}, errors={}, window=HEI.window(settings))
-    if ctx["window"] != "open":
+    ctx = dict(settings=settings, ref=ref, data={}, errors={}, window=HEI.window(settings), invite="")
+    # identified by the Nodal Institution (1.2.43): the invitation fills in what the Nodal Institution gave
+    invite = (request.args.get("invite") or request.form.get("invite") or "").strip()
+    identified = None
+    if invite and len(invite) <= 64:
+        identified = query("SELECT * FROM institutions WHERE invite_token = ? AND status = 'identified'", (invite,), one=True)
+    if invite and identified is None:
+        flash("This invitation link is not valid or has been used: register the institution with the form, or write to the Nodal Officer.", "error")
+        invite = ""
+    if identified is not None:
+        ctx["data"] = {f: identified[f] for f in HEI.FIELDS}
+        ctx["invite"] = invite
+    elif ctx["window"] != "open":
         return render_template("public/hei_register.html", **ctx)
     if request.method == "POST":
         ip = client_ip()
@@ -436,7 +451,7 @@ def hei_register():
         if form.get("website") or not check_captcha(form.get("captcha")):
             errors["captcha"] = t("reg.err_captcha")
         if not errors:
-            dup = HEI.duplicate(data)
+            dup = HEI.duplicate(data, exclude_id=identified["id"] if identified else None)
             if dup:
                 errors["name"] = t("hei.err_dup").replace("{ref}", dup["ref"])
         refused = not errors and limiter.blocked("hei", ip, current_app.config["RATE_HEI_PER_HOUR"], 3600)
@@ -445,6 +460,15 @@ def hei_register():
             ctx.update(data=data, errors=errors, captcha=new_captcha())
             return render_template("public/hei_register.html", **ctx), 400
         now = utcnow()
+        if identified is not None:
+            # identified by the Nodal Institution: a participating institution at once
+            execute(f"UPDATE institutions SET {', '.join(f + ' = ?' for f in HEI.FIELDS)}, inst_key = ?, status = 'accepted', "
+                    f"invite_token = NULL, decided_by = invited_by, decided_at = ?, ip = ?, updated_at = ? WHERE id = ?",
+                    [data[f] for f in HEI.FIELDS] + [HEI.key_of(data), now, ip, now, identified["id"]])
+            audit("institution_registered", "institution", identified["id"], detail=identified["ref"], ip=ip)
+            HEI.mail_decision(query("SELECT * FROM institutions WHERE id = ?", (identified["id"],), one=True))
+            session["hei_applied"] = identified["id"]
+            return redirect(url_for("public.hei_done", ref=identified["ref"]))
         cols = HEI.FIELDS + ["inst_key", "status", "ip", "created_at", "updated_at"]
         rid = execute(f"INSERT INTO institutions({', '.join(cols)}) VALUES({', '.join('?' * len(cols))})",
                       [data[f] for f in HEI.FIELDS] + [HEI.key_of(data), "pending", ip, now, now])
@@ -827,7 +851,8 @@ SITEMAP = [
     ("pol.sm_students", [("public.register", {}, "nav.register"), ("public.status", {}, "nav.status"),
                          ("public.examination", {}, "nav.exam"), ("public.merit", {}, "nav.merit"),
                          ("public.stipend_guide", {}, "stip.title"), ("candidate.login", {}, "nav.candidate"),
-                         ("public.institutions", {}, "nav.institutions"), ("public.hei_register", {}, "hei.cta")]),
+                         ("public.institutions", {}, "nav.institutions"), ("public.hei_register", {}, "hei.cta"),
+                         ("campus.login", {}, "camp.login_title")]),
     ("pol.sm_learning", [("public.orientation", {}, "nav.orientation"), ("public.resources", {}, "nav.resources"),
                          ("public.kural_browser", {}, "nav.kural"), ("public.daily_kural", {}, "nav.daily"),
                          ("quiz.join", {}, "quiz.title")]),

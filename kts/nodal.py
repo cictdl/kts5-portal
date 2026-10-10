@@ -9,7 +9,7 @@ The Nodal Officers of the States/UTs (versions 1.2.38 and 1.2.39): what the port
   daily() at each round (kts/mailq.py).
 * The reminder that CICT sends from Console > Nodal officers (remind()).
 
-Only verified students take the online test: verify.end is the day before the test.
+Only verified students are consolidated by CICT: verify.end is the last day of the consolidation.
 """
 from datetime import date, datetime, timedelta, timezone
 
@@ -43,13 +43,11 @@ def verify_end():
 
 def closes_line():
     """Verification closes on 21 October 2026 (end of the day, IST); only verified students take the test."""
-    end, exam = verify_end(), _day(get_setting("exam.date"))
+    end = verify_end()
     if not end:
         return ""
-    line = f"Verification closes on {long_date(end)} (end of the day, IST)."
-    if exam:
-        line += f" Only verified students can take the online test on {long_date(exam)}."
-    return line
+    return (f"Verification closes on {long_date(end)} (end of the day, IST). Only verified students are consolidated by CICT "
+            f"into the list of the selected students.")
 
 
 def figures(states, now=None):
@@ -90,7 +88,7 @@ def account_paragraph(states):
     """The part of the mail of a new account that a Nodal Officer reads."""
     text = (f"As Nodal Officer for {', '.join(states)}, you see the applications of the students of the institutions "
             f"of your State/UT, with their photograph, ID proof and signed nomination form, and you verify them: "
-            f"Console > Verification queue. Only verified students can take the online test.")
+            f"Console > Verification queue. Only verified students are consolidated by CICT into the list of the selected students.")
     end = verify_end()
     if end:
         text += f" Verification closes on {long_date(end)}."

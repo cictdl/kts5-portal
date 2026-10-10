@@ -69,6 +69,8 @@ def test_an_institution_applies_and_the_nodal_officer_accepts_it():
     listing = client.get("/institutions?lang=en").get_data(as_text=True)
     assert "Government Arts College Thrissur" in listing and "Central University of Kerala" in listing
     assert "1 institutions from 1 States/UTs" in listing
+    # the institution signs in and sees its page
+    assert "Government Arts College Thrissur" in page
     # the export of the console
     r = officer.get("/console/institutions/export.xlsx")
     assert r.status_code == 200 and r.data[:2] == b"PK"
@@ -81,7 +83,7 @@ def test_a_nodal_officer_decides_for_their_state_only_and_the_most_is_kept():
         _apply(app.test_client(), name=name, state=state, aishe_code="", head_email=f"h{n}@x.example", coord_email=f"c{n}@x.example")
     with app.app_context():
         ids = {r["name"]: r["id"] for r in query("SELECT id, name FROM institutions")}
-        set_setting("hei.max_per_state", "1")
+        set_setting("hei.max_per_state", "1")   # 0, the default since 1.2.43, is no limit
     officer = _nodal(app, "nodal.kerala@tests.example", ["Kerala"])
     page = officer.get("/console/institutions").get_data(as_text=True)
     assert "College One" in page and "College Three" not in page
@@ -106,46 +108,7 @@ def test_a_nodal_officer_decides_for_their_state_only_and_the_most_is_kept():
     # the page of the Nodal Officers counts them
     admin = _staff(app, "admin@tests.example", "superadmin")
     kerala = admin.get("/console/nodal").get_data(as_text=True).split("Central University of Kerala")[1].split("</tr>")[0]
-    assert "1<span class=\"small muted\">/1</span>" in kerala
-
-
-def test_the_student_chooses_the_institution_or_says_it_is_not_listed():
-    from kts.db import query
-    from test_public_fixes import _register
-    app = _app()
-    _apply(app.test_client())
-    admin = _staff(app, "admin@tests.example", "superadmin")
-    with app.app_context():
-        iid = query("SELECT id FROM institutions", one=True)["id"]
-    admin.post("/console/institutions", data={"_csrf": _token(admin), "id": str(iid), "action": "accept"})
-    page = app.test_client().get("/register?lang=en").get_data(as_text=True)
-    assert "data-hei-pick" in page and '<optgroup label="Kerala" data-state="Kerala">' in page
-    assert f'<option value="{iid}" lang="en" >Government Arts College Thrissur · Thrissur</option>' in page
-    assert "My institution is not listed" in page and "data-hei-free" in page
-    # chosen from the list: the details are those of the list, whatever was typed
-    r = _register(app, 1, institution_id=str(iid), college_name="Something else", college_state="Assam")
-    assert r.status_code == 302, r.get_data(as_text=True)[:2000]
-    with app.app_context():
-        a = query("SELECT * FROM applications WHERE email = 'student1@tests.example'", one=True)
-    assert (a["institution_id"], a["college_name"], a["college_state"], a["aishe_code"]) == (iid, "Government Arts College Thrissur", "Kerala", "C-12345")
-    # one student per institution
-    r = _register(app, 2, institution_id=str(iid))
-    assert r.status_code == 400 and "A student of this institution has already registered" in r.get_data(as_text=True)
-    # an institution that is not (or no longer) accepted
-    r = _register(app, 4, institution_id="99999")
-    assert r.status_code == 400 and "no longer in the list" in r.get_data(as_text=True)
-    # not listed: the details typed
-    r = _register(app, 3, institution_id="0")
-    assert r.status_code == 302
-    with app.app_context():
-        a = query("SELECT * FROM applications WHERE email = 'student3@tests.example'", one=True)
-    assert a["institution_id"] is None and a["college_name"] == "Government College Thrissur"
-    page = admin.get("/console/applications?inst=unlisted").get_data(as_text=True)
-    assert "student3@tests.example" in page and "student1@tests.example" not in page and "not listed" in page
-    # the edit of the institution reaches the application of its student
-    admin.post(f"/console/institutions/{iid}/edit", data=dict(FORM, _csrf=_token(admin), name="Government Arts College, Thrissur"))
-    with app.app_context():
-        assert query("SELECT college_name FROM applications WHERE email = 'student1@tests.example'", one=True)["college_name"] == "Government Arts College, Thrissur"
+    assert "1<span class=\"small muted\">/45</span>" in kerala
 
 
 def test_the_form_checks_and_closes():

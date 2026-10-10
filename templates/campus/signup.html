@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ t('camp.title') }} · {{ inst.name }}{% endblock %}
+{% macro field(name, label, required=False, help='', type='text', wide=False, attrs='') %}
+<div class="field {{ 'wide' if wide }} {{ 'has-err' if errors.get(name) }}">
+  <label for="{{ name }}">{{ label }}{% if required %} <span class="req">*</span>{% endif %}</label>
+  <input type="{{ type }}" id="{{ name }}" name="{{ name }}" value="{{ data.get(name, '') }}" {{ 'required' if required }} {{ attrs|safe }}>
+  {% if errors.get(name) %}<span class="err">{{ errors[name] }}</span>{% elif help %}<span class="help">{{ help }}</span>{% endif %}
+</div>
+{% endmacro %}
+{% block content %}
+<div class="wrap-narrow section">
+  <span class="eyebrow">{{ t('camp.title') }}</span>
+  <h1>{{ t('camp.by')|replace('{inst}', inst.name) }}</h1>
+  <p class="lead dim">{{ t('camp.intro')|replace('{n}', settings['exam.questions']|string)|replace('{minutes}', settings['exam.duration_min']|string) }}</p>
+  <p><span class="pill green">{{ t('camp.window')|replace('{from}', inst.test_from|date)|replace('{to}', inst.test_to|date) }}</span></p>
+  <form method="post" novalidate class="card accent" data-once>
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <div class="honey" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+    <div class="fields">
+      {{ field('code', t('camp.code'), True, attrs='inputmode="numeric" maxlength="7" dir="ltr" autocomplete="off"') }}
+      {{ field('name', t('reg.full_name'), True, wide=True, attrs='maxlength="120" dir="ltr" lang="en" autocomplete="name"') }}
+      {{ field('email', t('reg.email'), True, type='email', attrs='maxlength="160" dir="ltr" autocomplete="email"') }}
+      {{ field('mobile', t('reg.mobile'), True, type='tel', attrs='inputmode="numeric" maxlength="10" dir="ltr" autocomplete="tel-national"') }}
+      {{ field('roll_no', t('reg.roll'), attrs='maxlength="40" dir="ltr" lang="en"') }}
+      {{ field('course', t('camp.course'), attrs='maxlength="120" dir="ltr" lang="en"') }}
+      <div class="field wide {{ 'has-err' if errors.get('lang') }}"><label for="lang">{{ t('camp.lang') }} <span class="req">*</span></label>
+        <select id="lang" name="lang" required><option value="">—</option>{% for l in langs %}<option value="{{ l.code }}" {{ 'selected' if data.get('lang') == l.code }}>{{ l.native }} · {{ l.name }}</option>{% endfor %}</select>
+        {% if errors.get('lang') %}<span class="err">{{ errors['lang'] }}</span>{% endif %}</div>
+    </div>
+    <p class="small muted" style="margin:10px 0 0">{{ t('camp.resume_hint') }}</p>
+    <label class="check" style="margin-top:12px"><input type="checkbox" name="declare" value="1" {{ 'checked' if data.get('declare') }}> {{ t('camp.declare') }}</label>
+    {% if errors.get('declare') %}<span class="err" style="color:var(--kumkum);font-weight:600">{{ errors['declare'] }}</span>{% endif %}
+    <div class="fields" style="margin-top:14px">
+      <div class="field {{ 'has-err' if errors.get('captcha') }}"><label for="captcha">{{ t('common.captcha') }}: <b dir="ltr">{{ captcha }}</b> <span class="req">*</span></label>
+        <input type="text" id="captcha" name="captcha" inputmode="numeric" required autocomplete="off" style="max-width:160px" dir="ltr">
+        {% if errors.get('captcha') %}<span class="err">{{ errors['captcha'] }}</span>{% else %}<span class="help">{{ t('common.captcha_help') }}</span>{% endif %}</div>
+    </div>
+    <div class="btn-row"><button class="btn saffron" type="submit" data-busy="{{ t('reg.submitting') }}">{{ t('camp.signup') }} {{ fwd }}</button></div>
+  </form>
+</div>
+{% endblock %}

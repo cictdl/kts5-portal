@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ t('exam.title') }} · {{ cand.app_no }}</title>
+{% set who_line = who if who is defined else (cand.app_no ~ ' · ' ~ cand.full_name) %}
+<title>{{ t('camp.title') if who is defined else t('exam.title') }} · {{ who_line }}</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=12">
 <meta name="robots" content="noindex">
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
@@ -11,11 +12,11 @@
 <body>
 <div class="exam-top">
   <div class="wrap">
-    <div class="brand"><img class="exam-mark" src="{{ url_for('static', filename='img/kts-mark.png') }}" alt="" width="42" height="42"><div><b><bdi>{{ site.short }}</bdi> · {{ t('exam.title') }}</b><br><span class="small dim"><bdi>{{ cand.app_no }}</bdi> · <bdi>{{ cand.full_name }}</bdi> · {{ qlang|langnative }}</span></div></div>
+    <div class="brand"><img class="exam-mark" src="{{ url_for('static', filename='img/kts-mark.png') }}" alt="" width="42" height="42"><div><b><bdi>{{ site.short }}</bdi> · {{ t('camp.title') if who is defined else t('exam.title') }}</b><br><span class="small dim"><bdi>{{ who_line }}</bdi> · {{ qlang|langnative }}</span></div></div>
     <div style="display:flex;gap:14px;align-items:center"><span class="small dim">{{ t('exam.time_left') }}</span><span class="timer" id="timer" aria-live="polite" dir="ltr">--:--</span></div>
   </div>
 </div>
-<main class="wrap section" id="exam-app" data-remaining="{{ remaining }}" data-save="{{ url_for('candidate.save') }}" data-csrf="{{ csrf_token() }}" data-total="{{ questions|length }}" data-confirm="{{ t('exam.confirm_submit') }}">
+<main class="wrap section" id="exam-app" data-remaining="{{ remaining }}" data-save="{{ save_url if save_url is defined else url_for('candidate.save') }}" data-csrf="{{ csrf_token() }}" data-total="{{ questions|length }}" data-confirm="{{ t('exam.confirm_submit') }}">
   <div class="exam-shell">
     <div>
       {% for q in questions %}
@@ -29,7 +30,7 @@
         </div>
       </div>
       {% endfor %}
-      <form method="post" action="{{ url_for('candidate.submit') }}" id="submit-form">
+      <form method="post" action="{{ submit_url if submit_url is defined else url_for('candidate.submit') }}" id="submit-form">
         <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
         <input type="hidden" name="answers" id="answers-field" value="">
         <button class="btn saffron" type="submit">{{ t('exam.submit') }}</button>
@@ -48,6 +49,6 @@
   </div>
 </main>
 <script type="application/json" id="i18n">{{ js_strings|tojson }}</script>
-<script src="{{ url_for('static', filename='js/portal.js') }}?v=12" defer></script>
+<script src="{{ url_for('static', filename='js/portal.js') }}?v=13" defer></script>
 </body>
 </html>

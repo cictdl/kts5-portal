@@ -1,0 +1,12 @@
+{% extends "console/base.html" %}
+{% block title %}Institutions identified{% endblock %}
+{% block content %}
+<p class="dim">The list <b>{{ filename }}</b>: {{ created|length }} institution(s) identified and invited by e-mail; {{ skipped|length }} row(s) not taken.</p>
+{% if created %}<h3>Identified and invited</h3>
+<div class="table-wrap"><table class="table"><thead><tr><th class="num">Row</th><th>Institution</th><th>State/UT</th></tr></thead>
+<tbody>{% for n, name, state in created %}<tr><td class="num">{{ n }}</td><td>{{ name }}</td><td>{{ state }}</td></tr>{% endfor %}</tbody></table></div>{% endif %}
+{% if skipped %}<h3 style="margin-top:18px">Not taken</h3>
+<div class="table-wrap"><table class="table"><thead><tr><th class="num">Row</th><th>Institution</th><th>Why</th></tr></thead>
+<tbody>{% for n, name, why in skipped %}<tr><td class="num">{{ n }}</td><td>{{ name }}</td><td>{{ why }}</td></tr>{% endfor %}</tbody></table></div>{% endif %}
+<p style="margin-top:16px"><a class="btn" href="{{ url_for('admin.institutions') }}">Institutions</a></p>
+{% endblock %}

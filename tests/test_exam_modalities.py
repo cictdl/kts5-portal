@@ -164,7 +164,7 @@ def test_the_test_closes_at_the_end_of_the_window_for_everyone(monkeypatch):
     # the pages tell it before the start
     page = third.get("/candidate/exam?lang=en").get_data(as_text=True)
     note = "The test closes at 12:00 IST for everyone. Start at 11:30 to have the full 30 minutes"
-    assert note in page and note in app.test_client().get("/examination?lang=en").get_data(as_text=True)
+    assert note in page  # the public page no longer names a central test (the D.O. letter of 9 October 2026)
     # opened by hand after the window, an attempt has its whole duration
     with app.app_context():
         set_setting("exam.open", "1")

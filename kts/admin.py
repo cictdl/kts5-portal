@@ -6,6 +6,7 @@ import csv
 import io
 import json
 import posixpath
+import re
 import secrets
 from datetime import timedelta
 from pathlib import Path
@@ -515,10 +516,11 @@ def run_selection(select_count, wait_count, user):
     for stale in query("SELECT * FROM exam_sessions WHERE status = 'in_progress' AND deadline_at < ?",
                        ((now_ist() - timedelta(seconds=45)).isoformat(),)):
         _finalise(stale, "expired")
-    rows = query("SELECT a.id, a.college_key, s.score, s.time_taken_sec, a.created_at "
-                 "FROM applications a JOIN exam_sessions s ON s.application_id = a.id "
-                 "WHERE a.status IN ('verified','selected','waitlisted','not_selected') AND s.status != 'in_progress' "
-                 "ORDER BY s.score DESC, s.time_taken_sec ASC, a.created_at ASC")
+    # a student assessed by the institution in another way has no score here: ranked after those with one (1.2.43)
+    rows = query("SELECT a.id, a.college_key, COALESCE(s.score, 0) AS score, COALESCE(s.time_taken_sec, 0) AS time_taken_sec, a.created_at "
+                 "FROM applications a LEFT JOIN exam_sessions s ON s.application_id = a.id "
+                 "WHERE a.status IN ('verified','selected','waitlisted','not_selected') AND (s.id IS NULL OR s.status != 'in_progress') "
+                 "ORDER BY (s.score IS NULL), s.score DESC, s.time_taken_sec ASC, a.created_at ASC")
     seen = set()
     ranked, runners_up = [], []
     for r in rows:
@@ -832,7 +834,7 @@ def user_form(uid=None):
     agencies = query("SELECT id, short_name, name FROM agencies ORDER BY sort_order")
     temp_password = None
     if request.method == "POST":
-        d = {k: (request.form.get(k) or "").strip() for k in ("email", "name", "role", "agency_id", "phone")}
+        d = {k: (request.form.get(k) or "").strip() for k in ("email", "name", "role", "agency_id", "phone", "designation")}
         d["email"] = d["email"].lower()
         known = _states()
         chosen = [s for s in request.form.getlist("states") if s in known]
@@ -848,8 +850,8 @@ def user_form(uid=None):
             active = 1 if request.form.get("active") else 0
             try:
                 if row:
-                    execute("UPDATE users SET email=?, name=?, role=?, agency_id=?, phone=?, active=?, states=? WHERE id=?",
-                            (d["email"], d["name"], d["role"], agency_id, d["phone"], active, states, uid))
+                    execute("UPDATE users SET email=?, name=?, role=?, agency_id=?, phone=?, active=?, states=?, designation=? WHERE id=?",
+                            (d["email"], d["name"], d["role"], agency_id, d["phone"], active, states, d["designation"], uid))
                     if request.form.get("reset"):
                         temp_password = "Kts5-" + secrets.token_urlsafe(6)
                         execute("UPDATE users SET password_hash = ?, must_change_password = 1 WHERE id = ?",
@@ -857,7 +859,7 @@ def user_form(uid=None):
                     audit("user_updated", "user", uid, detail=d["email"], user=_user(), ip=client_ip())
                 else:
                     uid, temp_password = _create_account(d["email"], d["name"], d["role"], d["phone"],
-                                                         chosen if d["role"] == "nodal" else (), agency_id, active)
+                                                         chosen if d["role"] == "nodal" else (), agency_id, active, d["designation"])
                 flash("User saved." + (f" Temporary password: {temp_password}" if temp_password else ""), "success")
                 return redirect(url_for("admin.users"))
             except Exception:  # noqa: BLE001 - unique email clash
@@ -868,15 +870,15 @@ def user_form(uid=None):
                            all_states=_states(), preset=preset)
 
 
-def _create_account(email, name, role, phone="", states=(), agency_id=None, active=1):
+def _create_account(email, name, role, phone="", states=(), agency_id=None, active=1, designation=""):
     """
     A new account of the console with a temporary password, which is mailed to its owner (and shown
     once to the administrator who made it). Gives (id, temporary password).
     """
     temp_password = "Kts5-" + secrets.token_urlsafe(6)
-    uid = execute("INSERT INTO users(email, name, password_hash, role, agency_id, phone, active, must_change_password, created_at, states) "
-                  "VALUES(?,?,?,?,?,?,?,1,?,?)",
-                  (email, name, generate_password_hash(temp_password), role, agency_id, phone, active, utcnow(), "|".join(states)))
+    uid = execute("INSERT INTO users(email, name, password_hash, role, agency_id, phone, active, must_change_password, created_at, states, designation) "
+                  "VALUES(?,?,?,?,?,?,?,1,?,?,?)",
+                  (email, name, generate_password_hash(temp_password), role, agency_id, phone, active, utcnow(), "|".join(states), designation))
     audit("user_created", "user", uid, detail=email, user=_user(), ip=client_ip())
     send_mail(email, "Your KTS 5.0 portal account",
               f"Dear {name},\n\nAn account has been created for you on the Kashi Tamil Sangamam 5.0 portal.\n\n"
@@ -943,7 +945,7 @@ def nodal_access():
     others = [row(s, "") for s in _states() if s not in covered]
     settings = all_settings()
     return render_template("console/nodal.html", rows=rows, others=others, total=total, can_create=has_perm(_user(), "users"),
-                           most=HEI.max_per_state(),
+                           allocation={h["state"]: h.get("allocation", 0) for h in heis},
                            closes=NODAL.closes_line(), digest_on=settings.get("nodal.digest") == "1",
                            digest_time=settings.get("nodal.digest_time") or "08:00",
                            can_settings=has_perm(_user(), "settings"))
@@ -1041,8 +1043,10 @@ INST_ROWS_SHOWN = 500
 @login_required("hei.view")
 def institutions():
     """
-    The institutions that applied to take part, State/UT by State/UT: the Nodal Officer of the State/UT
-    (or CICT) accepts or declines them, up to hei.max_per_state accepted in a State/UT (1.2.41).
+    The participating institutions of the States/UTs: identified by the Nodal Institution (Annexure-II of the
+    D.O. letter of 9 October 2026, uploaded here, each invited by mail), applied on the website (accepted or
+    declined by the Nodal Officer of the State/UT, or CICT), followed through their assessment and the
+    registration of their selected student (1.2.41, 1.2.43).
     """
     user = _user()
     scope = state_scope(user)
@@ -1056,9 +1060,10 @@ def institutions():
         action = request.form.get("action")
         note = (request.form.get("note") or "").strip()[:500]
         if action == "accept":
+            cap = HEI.max_per_state()
             taken = query("SELECT COUNT(*) AS n FROM institutions WHERE state = ? AND status = 'accepted' AND id != ?",
                           (row["state"], row["id"]), one=True)["n"]
-            if taken >= HEI.max_per_state():
+            if cap and taken >= cap:
                 flash(f"{row['state']} has {taken} accepted institutions: that is the most (Settings › Participating institutions).", "error")
                 return redirect(back)
             status = "accepted"
@@ -1066,10 +1071,15 @@ def institutions():
             status = "declined"
         elif action == "pending":
             status = "pending"
+        elif action == "invite" and row["status"] == "identified":
+            HEI.mail_invited(row)
+            audit("institution_invited", "institution", row["id"], detail=row["ref"], user=user, ip=client_ip())
+            flash(f"{row['name']}: the invitation is mailed again to {row['coord_email']}.", "success")
+            return redirect(back)
         else:
             abort(400)
         now = utcnow()
-        execute("UPDATE institutions SET status = ?, decision_note = ?, decided_by = ?, decided_at = ?, updated_at = ? WHERE id = ?",
+        execute("UPDATE institutions SET status = ?, decision_note = ?, decided_by = ?, decided_at = ?, invite_token = NULL, updated_at = ? WHERE id = ?",
                 (status, note if status == "declined" else "", user["id"], now if status != "pending" else None, now, row["id"]))
         audit("institution_" + status, "institution", row["id"], detail={"ref": row["ref"], "note": note}, user=user, ip=client_ip())
         if status != "pending":
@@ -1078,40 +1088,164 @@ def institutions():
               "success")
         return redirect(back)
     f, sql, args = _inst_filters(scope)
-    rows = query("SELECT i.*, (SELECT COUNT(*) FROM applications a WHERE a.institution_id = i.id AND a.status != 'withdrawn') AS students"
-                 + sql + " ORDER BY i.state, CASE i.status WHEN 'pending' THEN 0 WHEN 'accepted' THEN 1 ELSE 2 END, i.name COLLATE NOCASE"
+    rows = query("SELECT i.*, a.app_no AS app_no, a.status AS app_status, a.full_name AS app_name, "
+                 "(SELECT COUNT(*) FROM campus_students s WHERE s.institution_id = i.id) AS students, "
+                 "(SELECT COUNT(*) FROM campus_students s JOIN campus_attempts t ON t.student_id = s.id "
+                 " WHERE s.institution_id = i.id AND t.status != 'in_progress') AS assessed, "
+                 "w.name AS winner_name"
+                 + sql.replace(" FROM institutions i WHERE", " FROM institutions i LEFT JOIN applications a ON a.id = i.application_id "
+                                                             "LEFT JOIN campus_students w ON w.id = i.winner_id WHERE")
+                 + " ORDER BY i.state, CASE i.status WHEN 'pending' THEN 0 WHEN 'identified' THEN 1 WHEN 'accepted' THEN 2 ELSE 3 END, i.name COLLATE NOCASE"
                  + " LIMIT ?", args + [INST_ROWS_SHOWN + 1])
-    # the States/UTs: accepted, pending, declined, and the students who said their institution is not listed
+    # the States/UTs: identified, pending, accepted, declined, assessing, winners selected and registered
     summary = {}
     s_sql, s_args = " FROM institutions WHERE 1=1", []
     if scope is not None:
         s_sql += f" AND state IN ({','.join('?' * len(scope))})" if scope else " AND 0"
         s_args += scope
-    for r in query("SELECT state, status, COUNT(*) AS n" + s_sql + " GROUP BY state, status", s_args):
-        summary.setdefault(r["state"], {})[r["status"]] = r["n"]
-    unlisted = {r["s"]: r["n"] for r in query("SELECT college_state AS s, COUNT(*) AS n FROM applications "
-                                               "WHERE institution_id IS NULL AND status != 'withdrawn' GROUP BY college_state")}
+    for r in query("SELECT state, status, COUNT(*) AS n, SUM(test_on) AS testing, SUM(winner_id IS NOT NULL) AS winners, "
+                   "SUM(application_id IS NOT NULL) AS registered" + s_sql + " GROUP BY state, status", s_args):
+        c = summary.setdefault(r["state"], {"testing": 0, "winners": 0, "registered": 0})
+        c[r["status"]] = r["n"]
+        if r["status"] == "accepted":
+            c.update(testing=r["testing"] or 0, winners=r["winners"] or 0, registered=r["registered"] or 0)
     states = scope if scope is not None else _states()
+    allocation = {h["state"]: h.get("allocation", 0) for h in _nodal_heis()}
     return render_template("console/institutions.html", rows=rows[:INST_ROWS_SHOWN], more=len(rows) > INST_ROWS_SHOWN, f=f,
-                           states=states, summary=summary, unlisted=unlisted, most=HEI.max_per_state(), scope=scope,
-                           can_decide=has_perm(user, "hei.decide"), window=HEI.window(all_settings()))
+                           states=states, summary=summary, allocation=allocation, scope=scope,
+                           can_decide=has_perm(user, "hei.decide"), window=HEI.window(all_settings()),
+                           reg_end=all_settings().get("reg.end"), assess_to=all_settings().get("camp.to"))
+
+
+ANNEXURE_II = ["S. No.", "Name of Institution", "District/City", "Type", "AISHE/Institution Code", "Institutional Coordinator Name",
+               "Mobile No.", "Official Email ID"]
+
+
+@bp.route("/institutions/annexure-ii.xlsx")
+@login_required("hei.decide")
+def institutions_format():
+    """The format of Annexure-II to fill in (the State/UT column takes the list of a Nodal Officer of several States/UTs)."""
+    return Response(xlsx_bytes(ANNEXURE_II + ["State/UT"], [], "Annexure-II", text_cols=(4, 6)),
+                    mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    headers={"Content-Disposition": "attachment; filename=KTS5-Annexure-II-institutions.xlsx"})
+
+
+def _annexure_columns(rows):
+    for i, row in enumerate(rows[:10]):
+        heads = [(c or "").strip().lower() for c in row]
+        name = next((j for j, h in enumerate(heads) if "institution" in h and "name" in h and "coordinator" not in h), None)
+        if name is None:
+            name = next((j for j, h in enumerate(heads) if h in ("institution", "name")), None)
+        mail = next((j for j, h in enumerate(heads) if "mail" in h), None)
+        if name is None or mail is None:
+            continue
+        return i, {"name": name, "email": mail,
+                   "district": next((j for j, h in enumerate(heads) if "district" in h or "city" in h), None),
+                   "itype": next((j for j, h in enumerate(heads) if h.startswith("type")), None),
+                   "aishe": next((j for j, h in enumerate(heads) if "aishe" in h or "code" in h), None),
+                   "coord": next((j for j, h in enumerate(heads) if "coordinator" in h), None),
+                   "mobile": next((j for j, h in enumerate(heads) if "mobile" in h or "phone" in h), None),
+                   "state": next((j for j, h in enumerate(heads) if "state" in h), None)}
+    return None
+
+
+@bp.route("/institutions/identified", methods=["POST"])
+@login_required("hei.decide")
+def institutions_identified():
+    """
+    The list of institutions identified by the Nodal Institution (Annexure-II), uploaded as .xlsx or .csv: each
+    becomes an institution 'identified', invited by mail to complete its registration (then accepted at once).
+    """
+    user = _user()
+    scope = state_scope(user)
+    known = _states()
+    chosen_state = (request.form.get("state") or "").strip()
+    f = request.files.get("file")
+    filename = (f.filename or "") if f else ""
+    if not filename.lower().endswith((".xlsx", ".csv")):
+        flash("Upload the list as an Excel file (.xlsx) or as .csv, in the format of Annexure-II.", "error")
+        return redirect(url_for("admin.institutions"))
+    data = f.read(SHEET_MAX_BYTES + 1)
+    if len(data) > SHEET_MAX_BYTES:
+        flash("The list is larger than 1 MB.", "error")
+        return redirect(url_for("admin.institutions"))
+    try:
+        rows = sheet_rows(filename, data)
+    except Exception:  # noqa: BLE001
+        flash("The file could not be read as a spreadsheet: save it from Excel as .xlsx and upload it again.", "error")
+        return redirect(url_for("admin.institutions"))
+    found = _annexure_columns(rows)
+    if not found:
+        flash("The list needs at least the columns Name of Institution and Official Email ID (the format of Annexure-II).", "error")
+        return redirect(url_for("admin.institutions"))
+    head, cols = found
+    ref = json.loads((current_app.config["DATA_DIR"] / "states.json").read_text(encoding="utf-8"))
+    types = {t.lower(): t for t in ref["college_types"]}
+    created, skipped = [], []
+    now = utcnow()
+    for n, cells in enumerate(rows[head + 1:], start=head + 2):
+        def cell(key):
+            j = cols[key]
+            return (cells[j] if j is not None and j < len(cells) else "").strip()
+        name = " ".join(cell("name").split())
+        if not name:
+            continue
+        state = _canon_state(cell("state"), known) if cols["state"] is not None and cell("state") else chosen_state
+        if not state or state not in known:
+            skipped.append((n, name, "no State/UT"))
+            continue
+        if scope is not None and state not in scope:
+            skipped.append((n, name, f"{state} is not yours"))
+            continue
+        email = cell("email").lower()
+        if not valid_email(email):
+            skipped.append((n, name, "no valid e-mail address"))
+            continue
+        itype = cell("itype")
+        itype = types.get(itype.lower()) or next((t for low, t in types.items() if itype and (itype.lower() in low or low in itype.lower())), "Other")
+        aishe = cell("aishe").upper().replace(" ", "")[:20]
+        d = {"name": name, "state": state, "aishe_code": aishe}
+        if HEI.duplicate(d):
+            skipped.append((n, name, "is in the list already"))
+            continue
+        mobile = re.sub(r"\D", "", cell("mobile"))[-10:]
+        token = secrets.token_urlsafe(18)
+        rid = execute("INSERT INTO institutions(name, itype, state, district, aishe_code, inst_key, coord_name, coord_email, coord_mobile, "
+                      "status, invite_token, invited_by, ip, created_at, updated_at) VALUES(?,?,?,?,?,?,?,?,?,'identified',?,?,?,?,?)",
+                      (name, itype, state, cell("district"), aishe, HEI.key_of(d), cell("coord"), email, mobile, token, user["id"],
+                       client_ip(), now, now))
+        execute("UPDATE institutions SET ref = ? WHERE id = ?", (HEI.ref_of(rid), rid))
+        HEI.mail_invited(query("SELECT * FROM institutions WHERE id = ?", (rid,), one=True))
+        created.append((n, name, state))
+    audit("institutions_identified", "institution", None, detail={"created": len(created), "skipped": len(skipped), "file": filename},
+          user=user, ip=client_ip())
+    return render_template("console/institutions_identified.html", created=created, skipped=skipped, filename=filename)
 
 
 @bp.route("/institutions/export.xlsx")
 @login_required("hei.view")
 def institutions_export():
-    """The list in the manner of Annexure-III: what the console shows, with the filters chosen."""
+    """The list in the format of Annexure-II, with the state of each institution's assessment and registration."""
     _f, sql, args = _inst_filters(state_scope(_user()))
-    rows = query("SELECT i.*, (SELECT COUNT(*) FROM applications a WHERE a.institution_id = i.id AND a.status != 'withdrawn') AS students"
-                 + sql + " ORDER BY i.state, i.name COLLATE NOCASE", args)
-    headers = ["Reference", "State/UT", "Institution", "Type", "District", "AISHE code", "Head of the Institution", "Designation",
-               "Head: e-mail", "Head: phone", "Coordinator / Faculty Supervisor", "Coordinator: e-mail", "Coordinator: mobile",
-               "Status", "Remark", "Applied on", "Decided on", "Students registered"]
-    data = [(r["ref"], r["state"], r["name"], r["itype"], r["district"], r["aishe_code"], r["head_name"], r["head_designation"],
-             r["head_email"], r["head_phone"], r["coord_name"], r["coord_email"], r["coord_mobile"], r["status"], r["decision_note"],
-             (r["created_at"] or "")[:10], (r["decided_at"] or "")[:10], r["students"]) for r in rows]
+    rows = query("SELECT i.*, a.app_no AS app_no, a.status AS app_status, w.name AS winner_name, "
+                 "(SELECT COUNT(*) FROM campus_students s JOIN campus_attempts t ON t.student_id = s.id "
+                 " WHERE s.institution_id = i.id AND t.status != 'in_progress') AS assessed"
+                 + sql.replace(" FROM institutions i WHERE", " FROM institutions i LEFT JOIN applications a ON a.id = i.application_id "
+                                                             "LEFT JOIN campus_students w ON w.id = i.winner_id WHERE")
+                 + " ORDER BY i.state, i.name COLLATE NOCASE", args)
+    nodal = {h["state"]: h["name"] for h in _nodal_heis()}
+    headers = ["State/UT", "Name of Nodal HEI"] + ANNEXURE_II + ["Status", "Reference", "Head of the Institution", "Designation",
+               "Head: e-mail", "Head: phone", "Online assessment", "Students assessed", "Selected student", "Registered (application)",
+               "Application status", "Remark", "Applied on", "Decided on"]
+    data = []
+    for n, r in enumerate(rows, start=1):
+        test = "off" if not r["test_on"] else f"{r['test_from']} to {r['test_to']}"
+        data.append((r["state"], nodal.get(r["state"], ""), n, r["name"], r["district"], r["itype"], r["aishe_code"], r["coord_name"],
+                     r["coord_mobile"], r["coord_email"], r["status"], r["ref"], r["head_name"], r["head_designation"], r["head_email"],
+                     r["head_phone"], test, r["assessed"], r["winner_name"] or "", r["app_no"] or "", r["app_status"] or "",
+                     r["decision_note"], (r["created_at"] or "")[:10], (r["decided_at"] or "")[:10]))
     audit("institutions_exported", "institution", None, detail={"rows": len(data)}, user=_user(), ip=client_ip())
-    return Response(xlsx_bytes(headers, data, "Institutions", text_cols=(5, 9, 12)),
+    return Response(xlsx_bytes(headers, data, "Institutions", text_cols=(6, 8, 15)),
                     mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     headers={"Content-Disposition": "attachment; filename=KTS5-participating-institutions.xlsx"})
 
@@ -1159,7 +1293,7 @@ def institution_edit(iid):
                            states=scope if scope is not None else known, types=ref["college_types"])
 
 
-NODAL_SHEET = ["State/UT", "Nodal HEI", "Name of the Nodal Officer", "E-mail", "Phone"]
+NODAL_SHEET = ["State/UT", "Nodal HEI", "Name of the Nodal Officer", "Designation", "E-mail", "Phone"]
 
 
 @bp.route("/nodal/sheet.xlsx")
@@ -1173,8 +1307,9 @@ def nodal_sheet():
     for state, hei in [(h["state"], h["name"]) for h in heis] + [(s, "") for s in _states() if s not in covered]:
         people = officers.get(state) or [None]
         for u in people:
-            rows.append((state, hei, u["name"] if u else "", u["email"] if u else "", (u["phone"] or "") if u else ""))
-    return Response(xlsx_bytes(NODAL_SHEET, rows, "Nodal officers", text_cols=(3, 4)),
+            rows.append((state, hei, u["name"] if u else "", (u["designation"] or "") if u else "", u["email"] if u else "",
+                         (u["phone"] or "") if u else ""))
+    return Response(xlsx_bytes(NODAL_SHEET, rows, "Nodal officers", text_cols=(4, 5)),
                     mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     headers={"Content-Disposition": "attachment; filename=KTS5-nodal-officers.xlsx"})
 
@@ -1197,8 +1332,9 @@ def _sheet_columns(rows):
         if name is None:
             name = next((j for j, h in enumerate(heads) if "name" in h and "hei" not in h and "institution" not in h), None)
         phone = next((j for j, h in enumerate(heads) if "phone" in h or "mobile" in h), None)
+        designation = next((j for j, h in enumerate(heads) if "designation" in h), None)
         if mail is not None and state is not None and name is not None:
-            return i, {"state": state, "name": name, "email": mail, "phone": phone}
+            return i, {"state": state, "name": name, "email": mail, "phone": phone, "designation": designation}
     return None
 
 
@@ -1216,6 +1352,7 @@ def _nodal_plan(entries):
         p["email"] = (e.get("email") or "").strip().lower()
         p["name"] = " ".join((e.get("name") or "").split())
         p["phone"] = (e.get("phone") or "").strip()
+        p["designation"] = " ".join((e.get("designation") or "").split())
         state = _canon_state(e.get("state"), known)
         if not state:
             p["error"] = f"unknown State/UT “{e.get('state')}”" if e.get("state") else "no State/UT"
@@ -1250,16 +1387,16 @@ def nodal_import():
             entries = json.loads(request.form.get("entries") or "[]")
         except ValueError:
             entries = []
-        entries = [{k: str(e.get(k) or "") for k in ("line", "state", "name", "email", "phone")}
+        entries = [{k: str(e.get(k) or "") for k in ("line", "state", "name", "email", "phone", "designation")}
                    for e in entries if isinstance(e, dict)][:500]
         new, more = {}, {}
         for p in _nodal_plan(entries):
             if p["action"] == "new":
-                new.setdefault(p["email"], {"name": p["name"], "phone": p["phone"], "states": []})["states"].append(p["state"])
+                new.setdefault(p["email"], {"name": p["name"], "phone": p["phone"], "designation": p["designation"], "states": []})["states"].append(p["state"])
             elif p["action"] == "add":
                 more.setdefault(p["email"], []).append(p["state"])
         for email, a in new.items():
-            _create_account(email, a["name"], "nodal", a["phone"], a["states"])
+            _create_account(email, a["name"], "nodal", a["phone"], a["states"], designation=a["designation"])
         for email, states in more.items():
             u = query("SELECT id, states FROM users WHERE lower(email) = ? AND role = 'nodal'", (email,), one=True)
             merged = NODAL.states_of(u) + [s for s in states if s not in NODAL.states_of(u)]
@@ -1293,11 +1430,12 @@ def nodal_import():
         def cell(key):
             j = cols[key]
             return (cells[j] if j is not None and j < len(cells) else "").strip()
-        e = {"line": str(n), "state": cell("state"), "name": cell("name"), "email": cell("email"), "phone": cell("phone")}
+        e = {"line": str(n), "state": cell("state"), "name": cell("name"), "email": cell("email"), "phone": cell("phone"),
+             "designation": cell("designation")}
         if e["name"] or e["email"]:  # a State/UT not filled in is left alone
             entries.append(e)
     plan = _nodal_plan(entries)
-    keep = [{k: p[k] for k in ("line", "state", "name", "email", "phone")} for p in plan if p["action"] in ("new", "add")]
+    keep = [{k: p[k] for k in ("line", "state", "name", "email", "phone", "designation")} for p in plan if p["action"] in ("new", "add")]
     accounts = len({p["email"] for p in plan if p["action"] == "new"})
     added = len({p["email"] for p in plan if p["action"] == "add"})
     return render_template("console/nodal_import.html", plan=plan, entries=json.dumps(keep, ensure_ascii=False),
@@ -1319,15 +1457,23 @@ SETTING_GROUPS = [
         ("backup.times", "Hours of the copies (HH:MM IST, separated by commas)", "text"),
         ("backup.keep", "Copies made at those hours that are kept (28: two weeks, at two a day)", "number")]),
     ("Participating institutions (Console › Institutions; the website: /institutions)", [
-        ("hei.open", "Institutions may apply on the website (/institutions/register)", "bool"),
+        ("hei.open", "Institutions may apply on the website (/institutions/register); those identified by a Nodal Institution register with their invitation at any time", "bool"),
         ("hei.end", "Last date for institutions to apply (YYYY-MM-DD; empty: none)", "date"),
-        ("hei.max_per_state", "Institutions accepted in one State/UT at most", "number"),
-        ("hei.public", "Show the participating institutions on the website, State/UT by State/UT", "bool")]),
+        ("hei.max_per_state", "Institutions accepted in one State/UT at most (0: no limit; the allocation of Annexure-I is tentative)", "number"),
+        ("hei.public", "Show the participating institutions on the website, State/UT by State/UT", "bool"),
+        ("hei.orientation", "Pre-assessment orientation session by CICT for the institutions: date, time and link, shown on the institutions' page (empty: nothing)", "text")]),
+    ("The assessment by the institutions and the registration of their students (D.O. letter of 9 October 2026)", [
+        ("reg.by_institution", "Students register only with the link that the portal sends when their institution selects them (off: anybody may register, as before 1.2.43)", "bool"),
+        ("camp.on", "The portal offers the participating institutions its online assessment (the question bank, in the language of each student)", "bool"),
+        ("camp.from", "Institution-level assessments from (YYYY-MM-DD)", "date"),
+        ("camp.to", "Institution-level assessments complete by (YYYY-MM-DD)", "date"),
+        ("camp.show_score", "Show each student the score at the end of the online assessment", "bool")]),
     ("Verification by the Nodal Officers of the States/UTs", [
         ("verify.end", "Verification by the Nodal Officers closes on (YYYY-MM-DD; shown to them and in their mails; CICT can still verify after it)", "date"),
         ("nodal.digest", "Morning mail to every Nodal Officer with applications awaiting them, from the opening of registration to the close of verification", "bool"),
         ("nodal.digest_time", "Time of the morning mail (HH:MM IST)", "text")]),
-    ("Online test", [("exam.date", "Test date (YYYY-MM-DD)", "date"), ("exam.start_time", "Login window opens (HH:MM IST)", "text"),
+    ("The pattern of the online assessment (and the central test of earlier versions: exam.open stays 0 since the D.O. letter of 9 October 2026)",
+     [("exam.date", "Test date (YYYY-MM-DD)", "date"), ("exam.start_time", "Login window opens (HH:MM IST)", "text"),
                      ("exam.end_time", "The test closes for everyone (HH:MM IST): nobody starts after it, and every attempt ends at it", "text"), ("exam.duration_min", "Duration in minutes", "number"),
                      ("exam.questions", "Questions per paper", "number"), ("exam.marks_per_q", "Marks per question", "number"),
                      ("exam.negative", "Negative marks per wrong answer", "number"), ("exam.show_score", "Show score to candidates", "bool"),

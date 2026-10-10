@@ -4,7 +4,7 @@
 <div class="wrap section">
   <span class="eyebrow">{{ t('site.name') }}</span>
   <h1>{{ t('nav.institutions') }}</h1>
-  <p class="lead dim" style="max-width:72ch">{{ t('hei.intro')|replace('{max}', most|string) }}</p>
+  <p class="lead dim" style="max-width:72ch">{{ t('hei.intro') }}</p>
   {% if window == 'open' %}<p><a class="btn saffron" href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a>
     {% if settings.get('hei.end') %}<span class="pill green" style="margin-inline-start:8px">{{ t('hei.last_date') }}: {{ settings['hei.end']|date }}</span>{% endif %}</p>{% endif %}
   {% if groups %}

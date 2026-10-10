@@ -12,7 +12,7 @@ from datetime import datetime
 from test_nodal_access import _nodal, _portal, _token
 from test_public_fixes import _staff
 
-HEAD = ["State/UT", "Nodal HEI", "Name of the Nodal Officer", "E-mail", "Phone"]
+HEAD = ["State/UT", "Nodal HEI", "Name of the Nodal Officer", "Designation", "E-mail", "Phone"]
 
 
 def _upload(client, data, name):
@@ -36,18 +36,18 @@ def test_the_accounts_from_a_spreadsheet():
     assert r.status_code == 200 and "spreadsheetml" in r.mimetype
     rows = xlsx_rows(r.data)
     assert rows[0] == HEAD and len(rows) == 1 + 36
-    assert ["Kerala", "Central University of Kerala", "", "", ""] in rows
-    assert next(row for row in rows if row[0] == "Assam")[3] == "assam.old@tests.example"
+    assert ["Kerala", "Central University of Kerala", "", "", "", ""] in rows
+    assert next(row for row in rows if row[0] == "Assam")[4] == "assam.old@tests.example"
     assert next(row for row in rows if row[0] == "Ladakh")[1] == ""
-    filled = [("Kerala", "Central University of Kerala", "Dr.  K. Nair", "K.Nair@ker.example", "9876543210"),
-              ("tamil  nadu", "", "Dr. K. Nair", "k.nair@ker.example", ""),          # the same officer, a second State/UT
-              ("Delhi", "", "Dr. Delhi", "verifier@tests.example", ""),             # the e-mail of another role
-              ("Assam", "", "Dr. Assam", "assam.old@tests.example", ""),            # has it already
-              ("Bihar", "", "Dr. Assam", "assam.old@tests.example", ""),            # one more for an existing account
-              ("Atlantis", "", "Dr. X", "x@x.example", ""),                         # no such State/UT
-              ("Goa", "Indian Institute of Technology Goa", "", "", ""),            # not filled in
-              ("Punjab", "", "Dr. P", "not-an-email", "")]
-    page = _upload(admin, xlsx_bytes(HEAD, filled, "Nodal officers", text_cols=(3, 4)), "officers.xlsx").get_data(as_text=True)
+    filled = [("Kerala", "Central University of Kerala", "Dr.  K. Nair", "Registrar", "K.Nair@ker.example", "9876543210"),
+              ("tamil  nadu", "", "Dr. K. Nair", "Registrar", "k.nair@ker.example", ""),          # the same officer, a second State/UT
+              ("Delhi", "", "Dr. Delhi", "", "verifier@tests.example", ""),             # the e-mail of another role
+              ("Assam", "", "Dr. Assam", "", "assam.old@tests.example", ""),            # has it already
+              ("Bihar", "", "Dr. Assam", "", "assam.old@tests.example", ""),            # one more for an existing account
+              ("Atlantis", "", "Dr. X", "", "x@x.example", ""),                         # no such State/UT
+              ("Goa", "NIT Goa", "", "", "", ""),                                       # not filled in
+              ("Punjab", "", "Dr. P", "", "not-an-email", "")]
+    page = _upload(admin, xlsx_bytes(HEAD, filled, "Nodal officers", text_cols=(4, 5)), "officers.xlsx").get_data(as_text=True)
     assert page.count("new account") == 2 and "add the State/UT to the existing account" in page
     assert "the account already has this State/UT" in page and "the role verifier" in page
     assert "unknown State/UT “Atlantis”" in page and "not valid" in page and "Goa" not in page
@@ -59,15 +59,15 @@ def test_the_accounts_from_a_spreadsheet():
     assert "Created 1 account(s) of Nodal Officers" in r.get_data(as_text=True)
     with app.app_context():
         u = query("SELECT * FROM users WHERE email = 'k.nair@ker.example'", one=True)
-        assert (u["role"], u["states"], u["name"], u["phone"], u["must_change_password"]) == ("nodal", "Kerala|Tamil Nadu", "Dr. K. Nair", "9876543210", 1)
+        assert (u["role"], u["states"], u["name"], u["phone"], u["must_change_password"], u["designation"]) == ("nodal", "Kerala|Tamil Nadu", "Dr. K. Nair", "9876543210", 1, "Registrar")
         assert query("SELECT states FROM users WHERE email = 'assam.old@tests.example'", one=True)["states"] == "Assam|Bihar"
         assert query("SELECT role, states FROM users WHERE email = 'verifier@tests.example'", one=True)["role"] == "verifier"
         assert query("SELECT id FROM users WHERE email = 'x@x.example'", one=True) is None
         mail = query("SELECT body FROM outbox WHERE to_addr = 'k.nair@ker.example'", one=True)["body"]
-    assert "As Nodal Officer for Kerala, Tamil Nadu" in mail and "Verification closes on 21 October 2026." in mail
+    assert "As Nodal Officer for Kerala, Tamil Nadu" in mail and "Verification closes on 24 October 2026." in mail
     assert "Temporary password: Kts5-" in mail
     # the same sheet again: nothing more to do
-    page = _upload(admin, xlsx_bytes(HEAD, filled, "Nodal officers", text_cols=(3, 4)), "officers.xlsx").get_data(as_text=True)
+    page = _upload(admin, xlsx_bytes(HEAD, filled, "Nodal officers", text_cols=(4, 5)), "officers.xlsx").get_data(as_text=True)
     assert "new account" not in page and "Create " not in page and ">Back</a>" in page
     # the page of the officers
     page = admin.get("/console/nodal").get_data(as_text=True)
@@ -108,7 +108,7 @@ def test_who_may_do_what():
     assert officer.post("/console/nodal", data={"_csrf": _token(officer), "action": "remind_all"}).status_code == 403
     # the officer reads when verification closes
     page = officer.get("/console/applications?status=submitted").get_data(as_text=True)
-    assert "Verification closes on 21 October 2026 (end of the day, IST). Only verified students can take the online test on 22 October 2026." in page
+    assert "Verification closes on 24 October 2026 (end of the day, IST). Only verified students are consolidated by CICT" in page
 
 
 def _at(day, hour, minute=0):
@@ -125,7 +125,7 @@ def test_the_morning_mail():
     _nodal(app, "two@tests.example", ["Assam", "Delhi"])
     _nodal(app, "away@tests.example", ["Kerala"])
     with app.app_context():
-        for key, value in (("reg.start", "2026-10-15"), ("verify.end", "2026-10-21"), ("exam.date", "2026-10-22"),
+        for key, value in (("reg.start", "2026-10-15"), ("verify.end", "2026-10-21"),
                            ("nodal.digest", "1"), ("nodal.digest_time", "08:00")):
             set_setting(key, value)
         execute("UPDATE users SET active = 0 WHERE email = 'away@tests.example'")
@@ -143,8 +143,7 @@ def test_the_morning_mail():
     kerala = sent["kerala@tests.example"]
     assert kerala["subject"] == "KTS 5.0: 2 applications await your verification (Kerala)"
     assert "Awaiting your verification: 2" in kerala["body"] and "Waiting longest: " in kerala["body"]
-    assert ("Verification closes on 21 October 2026 (end of the day, IST). Only verified students can take the online test "
-            "on 22 October 2026.") in kerala["body"]
+    assert "Verification closes on 21 October 2026 (end of the day, IST). Only verified students are consolidated" in kerala["body"]
     assert "/console/applications?status=submitted" in kerala["body"] and "on 16 October 2026 at 8:05 AM IST" in kerala["body"]
     two = sent["two@tests.example"]["body"]
     assert "Assam\n  Awaiting your verification: 1" in two and "Delhi\n  Awaiting your verification: 1" in two
