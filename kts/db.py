@@ -596,7 +596,7 @@ INSTITUTE_HEAD = [
 ]
 
 DEFAULT_SETTINGS = {
-    "site.banner": "Applications for KTS 5.0 — Thirukkural Payilvom are open. One student from every college in India.",
+    "site.banner": "Applications for KTS 5.0 — Thirukkural Payilvom are open. One student from every participating institution.",
     "site.banner_on": "1",
     "reg.open": "1",
     # the dates of the tentative timeline of KTS 5.0 (28.11.2026 – 12.12.2026)
@@ -699,6 +699,8 @@ DEFAULT_SETTINGS = {
 # Defaults of earlier versions. A database that still holds one of them, unchanged by the
 # administrator, receives the present default when the portal starts.
 RETIRED_DEFAULTS = {
+    # the banner up to 1.2.47: one student from every participating institution since the D.O. letter of 9 October 2026
+    "site.banner": ["Applications for KTS 5.0 — Thirukkural Payilvom are open. One student from every college in India."],
     "contact.email": ["kts5@cict.in"],
     "contact.phone": ["+91-44-2254 2781"],
     "contact.address": ["Central Institute of Classical Tamil, 40 Institutional Area, Taramani, Chennai 600 113"],

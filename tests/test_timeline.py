@@ -401,3 +401,15 @@ def test_the_day_alone_for_an_event_without_a_time():
     assert fmt_when("2026-10-19T11:00", numeric=True) == "19-10-2026, 11:00"
     assert fmt_when("2026-10-19") == "19 Oct 2026"
     assert fmt_when("") == "" and fmt_when(None) == "" and fmt_when("soon") == "soon"
+
+
+def test_the_banner_names_the_participating_institutions(monkeypatch):
+    """1.2.48: one student from every participating institution; the live database, holding the old wording, receives it."""
+    from kts.db import DEFAULT_SETTINGS
+    assert DEFAULT_SETTINGS["site.banner"] == _text("set.banner") and "every participating institution" in DEFAULT_SETTINGS["site.banner"]
+    app = make_app(ADMIN_PASSWORD=None)
+    _sql(app, "UPDATE settings SET value = ? WHERE key = 'site.banner'", ("Applications for KTS 5.0 — Thirukkural Payilvom are open. One student from every college in India.",))
+    assert _settings(_start(app))["site.banner"] == DEFAULT_SETTINGS["site.banner"]
+    # wording of the administrator stays
+    _sql(app, "UPDATE settings SET value = 'Our own words.' WHERE key = 'site.banner'")
+    assert _settings(_start(app))["site.banner"] == "Our own words."

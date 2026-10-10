@@ -80,8 +80,10 @@ def test_the_registration_page_offers_the_form_before_and_while_it_is_open():
 
 
 def test_the_form_gives_the_dates_of_the_timeline_of_8_october():
-    """CICT's form (Canva, 9 October 2026): registration from 15 October, the form uploaded on or before 21 October."""
+    """CICT's form (Canva, 10 October 2026, the D.O. letter): from 15 October, uploaded on or before 22 October (1.2.48)."""
     import fitz
     text = " ".join(fitz.open(str(ROOT / "static" / "KTS5-nomination-form.pdf"))[0].get_text().split())
-    assert "15 October" in text and "on or before 21 October 2026. The institution keeps" in text
-    assert "16 October" not in text and "10 October" not in text
+    assert "15 October" in text and "on or before 22 October 2026. The institution keeps" in text
+    assert "16 October" not in text and "10 October" not in text and "21 October" not in text
+    # the participating institution's coordinator and its Nodal Institution, as Annexure-IV asks
+    assert "Institutional Coordinator" in text and "State/UT Nodal Higher Educational Institution" in text
