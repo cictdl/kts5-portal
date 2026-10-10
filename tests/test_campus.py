@@ -276,11 +276,12 @@ def test_the_selected_student_registers_with_the_link_of_the_institution():
     client, _r = _signup(app, "abcd1234")
     client.post("/assessment/abcd1234/start", data={"_csrf": _token(client)})
     client.post("/assessment/abcd1234/submit", data={"_csrf": _token(client), "answers": "{}"})
-    # without a link, nobody registers
+    # without a link: the form, with the participating institutions to choose from (1.2.47)
     page = app.test_client().get("/register?lang=en").get_data(as_text=True)
-    assert "Registration is by the participating institution" in page and 'name="full_name"' not in page
+    assert "Only the student whom a participating institution has selected" in page and 'name="full_name"' in page
+    assert 'data-hei-pick' in page and f'<option value="{inst["id"]}" lang="en"' in page and 'name="college_name"' not in page
     r = app.test_client().get("/register?token=nonsense&lang=en")
-    assert r.status_code == 404 and "This registration link is not valid" in r.get_data(as_text=True)
+    assert "This registration link is not valid" in r.get_data(as_text=True)
     # the coordinator selects the student
     coord, token = _coordinator(app, inst)
     with app.app_context():
@@ -310,7 +311,7 @@ def test_the_selected_student_registers_with_the_link_of_the_institution():
     assert "has registered" in _mails(app, inst["coord_email"])[-1]["subject"]
     # the link works once
     r = app.test_client().get(f"/register?token={link.split('token=')[1]}&lang=en")
-    assert r.status_code == 404
+    assert "This registration link is not valid" in r.get_data(as_text=True)
     # the coordinator's page and the console show the registration
     page = coord.get("/institution").get_data(as_text=True)
     assert "has registered: application" in page and a["app_no"] in page
@@ -337,7 +338,7 @@ def test_a_student_assessed_in_another_way_is_entered_and_ranked_after_those_wit
     link = re.search(r"https?://[^\s<]+/register\?token=[A-Za-z0-9_-]+", page).group(0)
     # withdrawn and selected again: a new link; the old one is dead
     coord.post("/institution/winner", data={"_csrf": token, "action": "clear"})
-    assert app.test_client().get(f"/register?token={link.split('token=')[1]}").status_code == 404
+    assert "This registration link is not valid" in app.test_client().get(f"/register?token={link.split('token=')[1]}&lang=en").get_data(as_text=True)
     with app.app_context():
         sid = query("SELECT id FROM campus_students", one=True)["id"]
     page = coord.post("/institution/winner", data={"_csrf": token, "action": "select", "student_id": str(sid)}, follow_redirects=True).get_data(as_text=True)
@@ -408,3 +409,57 @@ def test_a_wide_table_does_not_widen_the_page():
     css = (ROOT / "static" / "css" / "portal.css").read_text(encoding="utf-8")
     assert ".two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);" in css
     assert "@media (max-width: 899px) { .two-col { grid-template-columns: minmax(0, 1fr); } }" in css
+
+
+def _register_direct(app, inst_id, **changes):
+    """The registration at /register without the link: the student chooses the institution."""
+    client = app.test_client()
+    client.get("/register?lang=en")
+    with client.session_transaction() as s:
+        token = s["_csrf"]
+        s["_captcha"] = "7"
+    form = {
+        "_csrf": token, "institution_id": str(inst_id), "college_state": "Kerala", "full_name": "Priya Student", "gender": "F",
+        "dob": "2004-05-06", "category": "General", "mobile": "9123456780", "email": "priya@student.example", "state": "Kerala",
+        "course_level": "Undergraduate", "year_of_study": "2nd year", "pref_lang": "hi", "declare_true": "1", "declare_participate": "1",
+        "declare_consent": "1", "captcha": "7", "mentor_name": "Dr. K. Mentor", "mentor_designation": "Assistant Professor of Tamil",
+        "mentor_email": "mentor@tests.example", "mentor_phone": "9876012345",
+        "photo": (io.BytesIO(PNG), "photo.png"), "idproof": (io.BytesIO(PNG), "id.png"), "nomination": (io.BytesIO(PNG), "nomination.png"),
+    }
+    form.update(changes)
+    return client.post("/register", data=form, content_type="multipart/form-data")
+
+
+def test_the_selected_student_registers_without_the_link():
+    """1.2.47: at /register the student chooses the institution; only the student it selected is taken, once."""
+    from kts.db import query
+    app = _portal()
+    inst = _assessing(app)
+    # the institution has selected nobody yet
+    r = _register_direct(app, inst["id"])
+    assert r.status_code == 400 and "has not yet selected its student" in r.get_data(as_text=True)
+    client, _r = _signup(app, "abcd1234")
+    client.post("/assessment/abcd1234/start", data={"_csrf": _token(client)})
+    client.post("/assessment/abcd1234/submit", data={"_csrf": _token(client), "answers": "{}"})
+    coord, token = _coordinator(app, inst)
+    with app.app_context():
+        sid = query("SELECT id FROM campus_students", one=True)["id"]
+    coord.post("/institution/winner", data={"_csrf": token, "action": "select", "student_id": str(sid)})
+    # another student of the institution is refused
+    r = _register_direct(app, inst["id"], email="other@student.example", mobile="9123456799", full_name="Other Student")
+    assert r.status_code == 400 and "do not match the student selected by your institution" in r.get_data(as_text=True)
+    # no institution chosen
+    r = _register_direct(app, "")
+    assert r.status_code == 400 and "This field is required." in r.get_data(as_text=True)
+    # the selected student, by the mobile number alone (the e-mail written differently)
+    r = _register_direct(app, inst["id"], email="Priya.S@student.example")
+    assert r.status_code == 302, r.get_data(as_text=True)[:1500]
+    with app.app_context():
+        a = query("SELECT * FROM applications", one=True)
+        again = query("SELECT * FROM institutions WHERE id = ?", (inst["id"],), one=True)
+        session_row = query("SELECT * FROM exam_sessions WHERE application_id = ?", (a["id"],), one=True)
+    assert (a["institution_id"], a["college_name"], a["college_state"]) == (inst["id"], inst["name"], "Kerala")
+    assert again["application_id"] == a["id"] and session_row is not None and a["exam_score"] == session_row["score"]
+    # once
+    r = _register_direct(app, inst["id"], email="priya@student.example", mobile="9123456780")
+    assert r.status_code == 400 and "has already registered" in r.get_data(as_text=True)

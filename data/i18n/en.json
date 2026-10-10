@@ -873,8 +873,6 @@
   "camp.start_text": "The timer starts when you press Start and cannot be paused: {minutes} minutes, one attempt. Answers are saved automatically.",
   "camp.done": "Your answers are recorded. Your institution announces the result and selects its student.",
   "camp.already": "You have already taken this assessment.",
-  "reg.inst_only_title": "Registration is by the participating institution",
-  "reg.inst_only_text": "Each participating institution assesses its students, selects one on merit and registers the selected student here with a personal link, which the portal sends to the student and to the Institutional Coordinator. A student cannot apply directly: ask the Institutional Coordinator of your institution.",
   "reg.inst_locked": "Your institution, from your registration link",
   "reg.token_bad": "This registration link is not valid, has expired or has been used already. Ask your Institutional Coordinator.",
   "reg.token_hint": "Registration of the student selected by {inst}. Fill in the form in one sitting.",
@@ -886,5 +884,11 @@
   "nodal.col_alloc": "Tentative number of participating HEIs (Central/State/Private Universities and Colleges)",
   "nodal.col_now": "Participating institutions so far",
   "nodal.total": "Total",
-  "nodal.alloc_note": "The State/UT-wise allocation is tentative and indicates the number of participating HEIs to be identified. Nodal Institutions may nominate additional HEIs beyond the indicated allocation."
+  "nodal.alloc_note": "The State/UT-wise allocation is tentative and indicates the number of participating HEIs to be identified. Nodal Institutions may nominate additional HEIs beyond the indicated allocation.",
+  "reg.inst_pick": "Your institution",
+  "reg.inst_pick_help": "Choose the State/UT of your institution above, then your institution from the list of participating institutions.",
+  "reg.selected_only": "Only the student whom a participating institution has selected on this portal can register here. Use the email address or the mobile number that your Institutional Coordinator gave when selecting you.",
+  "reg.err_not_selected_yet": "Your institution has not yet selected its student on the portal. Please ask your Institutional Coordinator.",
+  "reg.err_not_the_selected": "This email address and mobile number do not match the student selected by your institution. Use the ones your Institutional Coordinator gave, or ask the coordinator.",
+  "reg.err_inst_registered": "The student selected by your institution has already registered."
 }

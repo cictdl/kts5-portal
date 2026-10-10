@@ -25,7 +25,10 @@
   <span class="eyebrow">{{ t('reg.subtitle') }}</span>
   <h1>{{ t('reg.title') }}</h1>
   <p class="lead dim" style="max-width:70ch">{{ t('reg.intro') }}</p>
-  {% if inst %}<p class="alert success" style="max-width:70ch"><b>{{ t('reg.token_hint')|replace('{inst}', inst.name) }}</b></p>{% else %}{% include "public/_hei_box.html" %}{% endif %}
+  {% if token_bad %}<p class="alert error" style="max-width:70ch"><b>{{ t('reg.token_bad') }}</b></p>{% endif %}
+  {% if inst %}<p class="alert success" style="max-width:70ch"><b>{{ t('reg.token_hint')|replace('{inst}', inst.name) }}</b></p>
+  {% elif by_inst %}<p class="alert warning" style="max-width:70ch"><b>{{ t('reg.selected_only') }}</b></p>
+  {% else %}{% include "public/_hei_box.html" %}{% endif %}
   <p class="alert info" style="max-width:70ch"><b>{{ t('reg.english_note') }}</b></p>
   {% include "public/_nomination_box.html" %}
   <p class="stipend-note" style="margin:0 0 14px"><span class="amt">₹10,000</span><span>{{ t('home.stipend') }}</span></p>
@@ -78,6 +81,19 @@
       <h2>{{ t('reg.sec_college') }}</h2>
       {% if inst %}
       <div class="card flat" style="margin:0 0 12px"><b>{{ t('reg.inst_locked') }}</b><div lang="en" dir="ltr" style="margin-top:4px">{{ inst.name }}{% if inst.district %} · {{ inst.district }}{% endif %} · {{ place(inst.state) }}</div></div>
+      {% elif by_inst %}
+      <div class="fields">
+        {{ select('college_state', t('reg.college_state'), ref.all_states, True, places=True) }}
+        <div class="field wide {{ 'has-err' if errors.get('institution_id') }}">
+          <label for="institution_id">{{ t('reg.inst_pick') }} <span class="req">*</span></label>
+          <select id="institution_id" name="institution_id" data-hei-pick required>
+            <option value="">—</option>
+            {% for state, items in heis %}<optgroup label="{{ place(state) }}" data-state="{{ state }}">{% for h in items %}<option value="{{ h.id }}" lang="en" {{ 'selected' if data.get('institution_pick') == h.id|string }}>{{ h.name }}{% if h.district %} · {{ h.district }}{% endif %}</option>{% endfor %}</optgroup>
+            {% endfor %}
+          </select>
+          {% if errors.get('institution_id') %}<span class="err">{{ errors['institution_id'] }}</span>{% else %}<span class="help">{{ t('reg.inst_pick_help') }} <a href="{{ url_for('public.institutions') }}">{{ t('hei.list_link') }}</a></span>{% endif %}
+        </div>
+      </div>
       {% else %}
       <p class="hint">{{ t('reg.college_help') }} {{ t('hei.ask') }} <a href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a></p>
       <div class="fields">

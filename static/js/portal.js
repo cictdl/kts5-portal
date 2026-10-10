@@ -161,3 +161,21 @@
     window.addEventListener("keydown", function (e) { if (e.key === "F5" || (e.ctrlKey && e.key.toLowerCase() === "r")) e.preventDefault(); });
   }
 })();
+
+// Registration (1.2.47): the list of participating institutions shows those of the State/UT chosen.
+(function () {
+  var pick = document.querySelector("[data-hei-pick]");
+  if (!pick) return;
+  var state = document.getElementById("college_state");
+  function update() {
+    var chosen = state ? state.value : "";
+    pick.querySelectorAll("optgroup").forEach(function (g) {
+      var on = !chosen || g.getAttribute("data-state") === chosen;
+      g.hidden = !on; g.disabled = !on;
+    });
+    var opt = pick.options[pick.selectedIndex];
+    if (opt && opt.parentNode.tagName === "OPTGROUP" && opt.parentNode.disabled) pick.value = "";
+  }
+  if (state) state.addEventListener("change", update);
+  update();
+})();

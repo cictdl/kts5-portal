@@ -269,9 +269,11 @@ institution assesses its students, selects one on merit and registers that stude
   Tables `campus_students` and `campus_attempts`.
 * *The selected student.* The coordinator selects a student of the list, or enters one assessed
   in another way. The portal mails the student and the coordinator a personal registration link
-  (`institutions.reg_token`); while `reg.by_institution` is on, `/register` takes only such links
-  (the institution is fixed by the link, the student's details come filled in), one registration
-  per institution; the score of the online assessment goes with the application as its exam
+  (`institutions.reg_token`). While `reg.by_institution` is on, `/register` takes only the student
+  an institution selected: with the link (the institution fixed by it, the student's details filled
+  in), or, from 1.2.47, without it, choosing the State/UT and the participating institution, the
+  e-mail address or the mobile number matching the student the coordinator selected; one
+  registration per institution; the score of the online assessment goes with the application as its exam
   session, so that the status page, the selection and the merit list work as before. A student
   assessed in another way has no score and is ranked after those with one.
 * *The timeline* (`data/timeline.json`, Annexure-III): the Nodal Officer's details and the
