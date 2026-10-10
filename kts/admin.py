@@ -19,6 +19,7 @@ from . import kural as K
 from . import backup as BACKUP
 from . import heis as HEI
 from . import nodal as NODAL
+from . import progress as PROGRESS
 from . import qbank as QBANK
 from .auth import PERMS, ROLES, current_user, has_perm, login_required, state_scope
 from .db import (DEFAULT_SETTINGS, INSTITUTE_HEAD, NODAL_FIELDS, NODAL_OFFICERS, SOCIAL_LINKS, all_settings, audit, execute, executemany, get_setting, query,
@@ -73,6 +74,7 @@ def dashboard():
     exam = {r["status"]: r["n"] for r in query("SELECT status, COUNT(*) AS n FROM exam_sessions GROUP BY status")}
     qbank = query("SELECT lang, COUNT(*) AS n FROM questions WHERE active = 1 GROUP BY lang ORDER BY lang")
     qcheck = QBANK.summary(settings.get("exam.questions", "50"))
+    prog = PROGRESS.board()["total"]
     tasks = query("SELECT t.status, COUNT(*) AS n FROM tasks t GROUP BY t.status")
     overdue = query("SELECT COUNT(*) AS n FROM tasks WHERE status NOT IN ('done') AND due_date IS NOT NULL AND due_date < ?",
                     (now_ist().strftime("%Y-%m-%d"),), one=True)["n"]
@@ -85,7 +87,7 @@ def dashboard():
     visit_rows = visit_days(30)
     return render_template("console/dashboard.html", visit_rows=visit_rows, settings=settings, by_status=by_status, total=total,
                            colleges=colleges, states=states, days=days, max_day=max_day, top_states=top_states,
-                           by_lang=by_lang, exam=exam, qbank=qbank, qcheck=qcheck, tasks={r["status"]: r["n"] for r in tasks},
+                           by_lang=by_lang, exam=exam, qbank=qbank, qcheck=qcheck, prog=prog, tasks={r["status"]: r["n"] for r in tasks},
                            overdue=overdue, messages=messages, recent=recent, reg_state=registration_state(settings),
                            backup_warn=BACKUP.state()["warn"] if has_perm(user, "backup") else "",
                            exam_start=start, exam_end=end, exam_open=is_open)
@@ -1158,6 +1160,69 @@ def institutions():
                            reg_end=all_settings().get("reg.end"), assess_to=all_settings().get("camp.to"))
 
 
+# ---- the progress of the institutions in the week of the assessments (1.2.52) ------------------------------------
+
+PROGRESS_STAGES = ("behind", "none", "testing", "selected", "registered", "verified", "all")
+
+
+@bp.route("/progress", methods=["GET", "POST"])
+@login_required("hei.view")
+def progress():
+    """
+    The stage of each participating institution, State/UT by State/UT; the institutions that are behind,
+    with their coordinators; the reminders mailed to them, and a reminder by hand (kts/progress.py).
+    """
+    user = _user()
+    scope = state_scope(user)
+    if request.method == "POST":
+        if not has_perm(user, "hei.decide"):
+            abort(403)
+        state = (request.form.get("state") or "").strip()
+        if state and scope is not None and state not in scope:
+            abort(404)
+        reg_end = PROGRESS.schedule()[1]
+        if reg_end and now_ist().date() > reg_end:
+            flash("The last date of registration has passed: no reminder is sent.", "error")
+        else:
+            n = PROGRESS.remind_now(PROGRESS.institutions(scope, state or None), user)
+            audit("institutions_reminded", "institution", None, detail={"count": n, "state": state or "all"}, user=user, ip=client_ip())
+            flash(f"A reminder is mailed to {n} institution(s) that are behind." if n
+                  else "No institution is behind, or each has had a reminder today.", "success" if n else "info")
+        return redirect(url_for("admin.progress", state=state or None))
+    f = {k: (request.args.get(k) or "").strip() for k in ("state", "stage")}
+    if f["state"] and scope is not None and f["state"] not in scope:
+        f["state"] = ""
+    stage = f["stage"] if f["stage"] in PROGRESS_STAGES else "behind"
+    rows = PROGRESS.institutions(scope, f["state"] or None)
+    behind = PROGRESS.behind(rows)
+    shown = behind if stage == "behind" else rows if stage == "all" else [r for r in rows if r["stage"] == stage]
+    settings = all_settings()
+    plan, reg_end = PROGRESS.schedule(settings)
+    return render_template("console/progress.html", board=PROGRESS.board(scope), rows=shown[:INST_ROWS_SHOWN],
+                           more=max(len(shown) - INST_ROWS_SHOWN, 0), shown_count=len(shown), behind_count=len(behind),
+                           f=f, stage=stage, stages=PROGRESS_STAGES, stage_names=PROGRESS.STAGE_NAMES, scope=scope,
+                           settings=settings, plan=plan, reg_end=reg_end, sent=PROGRESS.sent_counts(scope),
+                           can_remind=has_perm(user, "hei.decide"), today=now_ist().date())
+
+
+@bp.route("/progress.xlsx")
+@login_required("hei.view")
+def progress_export():
+    """Every participating institution (of the Nodal Officer's States/UTs) with its stage, for calls and follow-up."""
+    rows = PROGRESS.institutions(state_scope(_user()))
+    headers = ["State/UT", "Reference", "Institution", "District/City", "Stage", "Coordinator", "Coordinator e-mail", "Coordinator mobile",
+               "Head of the Institution", "Head e-mail", "Online assessment", "Students signed up", "Students tested", "Selected student",
+               "Application no.", "Application status", "Reminders sent", "Last reminder"]
+    data = [(r["state"], r["ref"], r["name"], r["district"], PROGRESS.STAGE_NAMES[r["stage"]], r["coord_name"], r["coord_email"],
+             r["coord_mobile"], r["head_name"], r["head_email"],
+             f"{r['test_from']} to {r['test_to']}" if r["test_on"] else "", r["signed_up"], r["tested"], r["winner_name"] or "",
+             r["app_no"] or "", (r["app_status"] or "").replace("_", " "), r["reminders"], (r["reminded_at"] or "")[:16].replace("T", " "))
+            for r in rows]
+    return Response(xlsx_bytes(headers, data, "Progress", text_cols=(7, 14)),
+                    mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    headers={"Content-Disposition": "attachment; filename=KTS5-institutions-progress.xlsx"})
+
+
 ANNEXURE_II = ["S. No.", "Name of Institution", "District/City", "Type", "AISHE/Institution Code", "Institutional Coordinator Name",
                "Mobile No.", "Official Email ID"]
 
@@ -1511,7 +1576,11 @@ SETTING_GROUPS = [
         ("camp.on", "The portal offers the participating institutions its online assessment (the question bank, in the language of each student)", "bool"),
         ("camp.from", "Institution-level assessments from (YYYY-MM-DD)", "date"),
         ("camp.to", "Institution-level assessments complete by (YYYY-MM-DD)", "date"),
-        ("camp.show_score", "Show each student the score at the end of the online assessment", "bool")]),
+        ("camp.show_score", "Show each student the score at the end of the online assessment", "bool"),
+        ("remind.on", "Reminders by mail to the participating institutions that are behind: each once, in the morning at the time of the Nodal Officers' mail, up to the last day of registration (Console › Progress)", "bool"),
+        ("remind.test_by", "Reminder to assess the students and select one, to the institutions that have done nothing yet, from (YYYY-MM-DD)", "date"),
+        ("remind.select_by", "Reminder to select the student, to those that have not, with the Head of the Institution in copy, from (YYYY-MM-DD)", "date"),
+        ("remind.register_by", "Reminder to register the selected student, to the coordinator and the student (the personal link again), from (YYYY-MM-DD)", "date")]),
     ("Verification by the Nodal Officers of the States/UTs", [
         ("verify.end", "Verification by the Nodal Officers closes on (YYYY-MM-DD; shown to them and in their mails; CICT can still verify after it)", "date"),
         ("nodal.digest", "Morning mail to every Nodal Officer with applications awaiting them, from the opening of registration to the close of verification", "bool"),

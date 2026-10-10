@@ -215,6 +215,12 @@ def start(app):
             except Exception:  # noqa: BLE001
                 app.logger.exception("mail sender: the morning mail of the Nodal Officers failed")
             try:
+                # the reminders to the participating institutions that are behind (kts/progress.py)
+                from . import progress
+                progress.daily(app)
+            except Exception:  # noqa: BLE001
+                app.logger.exception("mail sender: the reminders to the institutions failed")
+            try:
                 run_once(app)
             except Exception:  # noqa: BLE001 - the sender never stops for one bad round
                 app.logger.exception("mail sender: round failed")

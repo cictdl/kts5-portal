@@ -113,6 +113,16 @@ CREATE TABLE IF NOT EXISTS campus_attempts (
     user_agent      TEXT DEFAULT ''
 );
 
+-- the reminders mailed to the participating institutions, each once (1.2.52, kts/progress.py)
+CREATE TABLE IF NOT EXISTS institution_reminders (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    institution_id  INTEGER NOT NULL REFERENCES institutions(id),
+    kind            TEXT NOT NULL,
+    sent_at         TEXT NOT NULL,
+    sent_by         INTEGER,
+    UNIQUE(institution_id, kind)
+);
+
 CREATE TABLE IF NOT EXISTS applications (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     app_no          TEXT UNIQUE,
@@ -681,6 +691,11 @@ DEFAULT_SETTINGS = {
     "camp.from": "2026-10-15",
     "camp.to": "2026-10-21",
     "camp.show_score": "1",
+    # the reminders to the participating institutions that are behind (1.2.52, kts/progress.py)
+    "remind.on": "1",
+    "remind.test_by": "2026-10-17",
+    "remind.select_by": "2026-10-20",
+    "remind.register_by": "2026-10-21",
     "hei.orientation": "",
     # the sender of mails (kts/mailq.py, 1.2.35): below the 2,000 mails a day of a Google Workspace account
     "mail.daily_limit": "1800",

@@ -1,0 +1,72 @@
+{% extends "console/base.html" %}
+{% block title %}Progress of the institutions{% endblock %}
+{% block content %}
+{% set tot = board.total %}
+{% set pills = {'none': 'kumkum', 'testing': 'saffron', 'selected': 'saffron', 'registered': 'grey', 'verified': 'green'} %}
+<p class="dim" style="max-width:90ch">Each participating institution assesses its students on or before <b>{{ settings['camp.to']|date }}</b> (from {{ settings['camp.from']|date }}),
+  selects one on merit, and that student registers on or before <b>{{ settings['reg.end']|date }}</b>; the Nodal Officer verifies the application by <b>{{ settings['verify.end']|date }}</b>.
+  Today is {{ today.strftime('%d %b %Y') }}.{% if scope is not none %} You see the institutions of <b>{{ scope|join(', ') }}</b>.{% endif %}</p>
+
+<div class="kpis">
+  <div class="kpi"><div class="lbl">Participating</div><div class="num">{{ '{:,}'.format(tot.participating) }}</div><div class="sub">of {{ '{:,}'.format(tot.allocation) }} in Annexure-I</div></div>
+  <div class="kpi"><div class="lbl">Assessing online</div><div class="num">{{ '{:,}'.format(tot.testing) }}</div><div class="sub">{{ '{:,}'.format(tot.signed_up) }} students signed up · {{ '{:,}'.format(tot.tested) }} tested</div></div>
+  <div class="kpi"><div class="lbl">Student selected</div><div class="num">{{ '{:,}'.format(tot.selected) }}</div><div class="sub">{{ '{:,}'.format(tot.not_selected) }} not yet</div></div>
+  <div class="kpi"><div class="lbl">Registered</div><div class="num">{{ '{:,}'.format(tot.registered) }}</div><div class="sub">{{ '{:,}'.format(tot.not_registered) }} selected, not registered</div></div>
+  <div class="kpi"><div class="lbl">Verified</div><div class="num">{{ '{:,}'.format(tot.verified) }}</div><div class="sub">{{ '{:,}'.format(tot.registered - tot.verified) }} awaiting the Nodal Officer</div></div>
+</div>
+
+<h3 style="margin-top:18px">State/UT by State/UT</h3>
+<div class="table-wrap"><table class="table">
+  <thead><tr><th style="padding:8px">State/UT</th><th class="num" style="white-space:normal;padding:8px">Annexure-I</th><th class="num" style="white-space:normal;padding:8px">Participating</th><th class="num" style="white-space:normal;padding:8px">Assessing online</th><th class="num" style="white-space:normal;padding:8px">Signed up</th>
+    <th class="num" style="white-space:normal;padding:8px">Tested</th><th class="num" style="white-space:normal;padding:8px">Selected</th><th class="num" style="white-space:normal;padding:8px">Registered</th><th class="num" style="white-space:normal;padding:8px">Verified</th><th class="num" style="white-space:normal;padding:8px">Not yet selected</th><th class="num" style="white-space:normal;padding:8px">Selected, not registered</th></tr></thead>
+  <tbody>{% for s in board.states %}
+  <tr><td><a href="{{ url_for('admin.progress', state=s.state) }}">{{ s.state }}</a></td><td class="num muted">{{ s.allocation or '–' }}</td>
+    <td class="num"><b>{{ s.participating }}</b></td><td class="num">{{ s.testing }}</td><td class="num">{{ s.signed_up }}</td><td class="num">{{ s.tested }}</td>
+    <td class="num">{{ s.selected }}</td><td class="num">{{ s.registered }}</td><td class="num">{{ s.verified }}</td>
+    <td class="num">{% if s.not_selected %}<a href="{{ url_for('admin.progress', state=s.state, stage='behind') }}"><b>{{ s.not_selected }}</b></a>{% else %}0{% endif %}</td>
+    <td class="num">{% if s.not_registered %}<a href="{{ url_for('admin.progress', state=s.state, stage='selected') }}"><b>{{ s.not_registered }}</b></a>{% else %}0{% endif %}</td></tr>
+  {% endfor %}</tbody>
+  <tfoot><tr><th>Total</th><th class="num">{{ '{:,}'.format(tot.allocation) }}</th><th class="num">{{ '{:,}'.format(tot.participating) }}</th><th class="num">{{ tot.testing }}</th>
+    <th class="num">{{ '{:,}'.format(tot.signed_up) }}</th><th class="num">{{ '{:,}'.format(tot.tested) }}</th><th class="num">{{ tot.selected }}</th><th class="num">{{ tot.registered }}</th>
+    <th class="num">{{ tot.verified }}</th><th class="num">{{ tot.not_selected }}</th><th class="num">{{ tot.not_registered }}</th></tr></tfoot>
+</table></div>
+
+<div class="card" style="margin:18px 0">
+  <h3 style="margin-top:0">Reminders to the institutions that are behind</h3>
+  <p class="small" style="margin:0 0 8px">Automatic reminders: <b>{{ 'on' if settings['remind.on'] == '1' else 'off' }}</b>, each once, at {{ settings['nodal.digest_time'] or '08:00' }} IST, up to {{ reg_end.strftime('%d %b %Y') if reg_end else 'the last day of registration' }}
+    (Settings › The assessment by the institutions).</p>
+  <ul class="small" style="margin:0 0 10px;padding-left:18px">
+    {% for kind, first in plan %}
+    <li>{% if kind == 'start' %}From <b>{{ first.strftime('%d %b') if first else '–' }}</b>: to those that have done nothing yet – assess the students and select one{% elif kind == 'select' %}From <b>{{ first.strftime('%d %b') if first else '–' }}</b>: to those that have not selected a student, the Head of the Institution in copy{% else %}From <b>{{ first.strftime('%d %b') if first else '–' }}</b>: to those whose selected student has not registered, and to the student with the personal link again{% endif %}
+      – sent to {{ sent[kind] }} institution(s)</li>
+    {% endfor %}
+    <li>By hand from this page: {{ sent.manual }} institution(s)</li>
+  </ul>
+  {% if can_remind %}
+  <form method="post" class="btn-row" style="margin:0"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="state" value="{{ f.state }}">
+    <button class="btn sm" data-confirm="Mail a reminder now to the {{ behind_count }} institution(s) of {{ f.state or 'the list' }} that have not registered their student? Each receives at most one a day by hand.">✉ Remind the {{ behind_count }} institution(s) behind{% if f.state %} in {{ f.state }}{% endif %} now</button>
+    <span class="small muted">The ones that have not selected a student are asked to select; those whose student has not registered, to register.</span>
+  </form>
+  {% endif %}
+</div>
+
+<h3>Institutions</h3>
+<form method="get" class="filters">
+  <div class="field"><label for="state_f">State/UT</label><select id="state_f" name="state"><option value="">All</option>{% for s in board.states %}<option {{ 'selected' if f.state == s.state }}>{{ s.state }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="stage_f">Stage</label><select id="stage_f" name="stage">{% for s in stages %}<option value="{{ s }}" {{ 'selected' if stage == s }}>{{ {'behind': 'behind: student not registered yet', 'all': 'all'}.get(s, stage_names.get(s, s)) }}</option>{% endfor %}</select></div>
+  <div class="field"><label>&nbsp;</label><button class="btn" type="submit">Show</button></div>
+  <div class="field"><label>&nbsp;</label><a class="btn ghost" href="{{ url_for('admin.progress_export') }}">Excel (all, with contacts)</a></div>
+</form>
+<p class="small muted">{{ shown_count }} institution(s){% if more %}; the first {{ rows|length }} are shown, all are in the Excel{% endif %}.</p>
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Institution</th><th>Coordinator</th><th>Stage</th><th>Online assessment</th><th>Selected student</th><th>Reminders</th></tr></thead>
+  <tbody>{% for r in rows %}
+  <tr><td><b>{{ r.name }}</b><div class="small muted">{{ r.ref }} · {{ r.state }}{% if r.district %} · {{ r.district }}{% endif %}</div></td>
+    <td>{{ r.coord_name }}<div class="small muted">{{ r.coord_email }} · {{ r.coord_mobile }}</div></td>
+    <td><span class="pill {{ pills[r.stage] }}">{{ stage_names[r.stage] }}</span></td>
+    <td class="small">{% if r.test_on %}{{ r.test_from|date }} – {{ r.test_to|date }}<div class="muted">{{ r.signed_up }} signed up · {{ r.tested }} tested</div>{% else %}<span class="muted">not opened</span>{% endif %}</td>
+    <td class="small">{% if r.app_no %}<b>{{ r.app_name }}</b> · <a href="{{ url_for('admin.applications', q=r.app_no) }}"><code>{{ r.app_no }}</code></a>{% elif r.winner_name %}<b>{{ r.winner_name }}</b><div class="muted">selected {{ r.winner_at|datetime }}</div>{% else %}<span class="muted">–</span>{% endif %}</td>
+    <td class="small">{% if r.reminders %}{{ r.reminders }} · last {{ r.reminded_at|datetime }}{% else %}<span class="muted">none</span>{% endif %}</td></tr>
+  {% else %}<tr><td colspan="6" class="muted">No institution at this stage.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}
