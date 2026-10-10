@@ -24,7 +24,7 @@
 <div class="wrap section">
   <span class="eyebrow">{{ t('reg.subtitle') }}</span>
   <h1>{{ t('reg.title') }}</h1>
-  <p class="lead dim" style="max-width:70ch">{{ t('reg.intro') }}</p>
+  <p class="lead dim" style="max-width:70ch">{{ t('reg.intro') }} <a href="{{ url_for('public.guide') }}#students">{{ t('guide.title') }} {{ fwd }}</a></p>
   {% if token_bad %}<p class="alert error" style="max-width:70ch"><b>{{ t('reg.token_bad') }}</b></p>{% endif %}
   {% if inst %}<p class="alert success" style="max-width:70ch"><b>{{ t('reg.token_hint')|replace('{inst}', inst.name) }}</b></p>
   {% elif by_inst %}<p class="alert warning" style="max-width:70ch"><b>{{ t('reg.selected_only') }}</b></p>

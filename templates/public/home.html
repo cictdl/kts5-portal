@@ -25,7 +25,8 @@
       <p class="stipend-note"><span class="amt">₹10,000</span><span>{{ t('home.stipend') }} <a href="{{ url_for('public.stipend_guide') }}">{{ t('stip.link') }}</a></span></p>
       <div class="actions">
         {% if dates.reg_state == 'open' %}<a class="btn saffron" href="{{ url_for('public.register') }}">{{ t('home.cta_register') }}</a>{% endif %}
-        <a class="btn" href="{{ url_for('public.programme') }}">{{ t('home.cta_programme') }}</a>
+        <a class="btn" href="{{ url_for('public.guide') }}">{{ t('guide.title') }}</a>
+        <a class="btn secondary" href="{{ url_for('public.programme') }}">{{ t('home.cta_programme') }}</a>
         <a class="btn secondary" href="{{ url_for('public.status') }}">{{ t('home.cta_status') }}</a>
       </div>
     </div>

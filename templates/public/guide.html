@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{% if only %}{{ t('guide.print_head') }}{% else %}{{ t('guide.title') }}{% endif %}{% endblock %}
+{% block content %}
+{# How to take part (1.2.53): the steps of the students, the participating institutions and the Nodal Officers, with the dates of the settings #}
+{% macro g(key) %}{{ t(key)|replace('{hei_end}', settings['hei.end']|date)|replace('{camp_from}', settings['camp.from']|date)|replace('{camp_to}', settings['camp.to']|date)|replace('{reg_end}', settings['reg.end']|date)|replace('{verify_end}', settings['verify.end']|date)|replace('{questions}', settings['exam.questions'])|replace('{minutes}', settings['exam.duration_min'])|replace('{email}', settings['contact.email'])|replace('{phone}', settings['contact.phone']) }}{% endmacro %}
+{% set parts = [('students', 's', 6), ('institutions', 'i', 6), ('nodal', 'n', 5)] %}
+<div class="wrap section guide-page">
+  <span class="eyebrow">{{ t('site.name') }}</span>
+  <h1>{% if only %}{{ t('guide.print_head') }}{% else %}{{ t('guide.title') }}{% endif %}</h1>
+  <p class="lead dim" style="max-width:78ch">{{ t('guide.intro') }}</p>
+  {% if not only %}
+  <div class="res-tabs no-print"><a href="#students">{{ t('guide.for_students') }}</a><a href="#institutions">{{ t('guide.for_institutions') }}</a><a href="#nodal">{{ t('guide.for_nodal') }}</a></div>
+  {% endif %}
+  <div class="dates" style="margin:18px 0 8px">
+    <div class="date-tile"><div class="lbl">{{ t('guide.date_hei') }}</div><div class="val">{{ settings['hei.end']|date }}</div></div>
+    <div class="date-tile"><div class="lbl">{{ t('guide.date_assess') }}</div><div class="val"><bdi>{{ settings['camp.from']|date }} – {{ settings['camp.to']|date }}</bdi></div></div>
+    <div class="date-tile"><div class="lbl">{{ t('guide.date_reg') }}</div><div class="val">{{ settings['reg.end']|date }}</div></div>
+    <div class="date-tile"><div class="lbl">{{ t('guide.date_verify') }}</div><div class="val">{{ settings['verify.end']|date }}</div></div>
+  </div>
+  {% for part, letter, count in parts if not only or only == part %}
+  <section id="{{ part }}" class="card guide-part" style="margin-top:18px">
+    {% if not only %}<h2 style="margin-top:0">{{ t('guide.for_' ~ part) }}</h2>{% endif %}
+    <ol class="guide-steps" style="padding-inline-start:24px;margin:0 0 14px">
+      {% for n in range(1, count + 1) %}
+      <li style="margin-bottom:12px"><b>{{ g('guide.%s%d_t' % (letter, n)) }}</b><p class="dim" style="margin:4px 0 0">{{ g('guide.%s%d' % (letter, n)) }}</p></li>
+      {% endfor %}
+    </ol>
+    <div class="btn-row no-print">
+      {% if part == 'students' %}
+      <a class="btn sm secondary" href="{{ url_for('public.institutions') }}">{{ t('nav.institutions') }}</a>
+      <a class="btn sm secondary" href="{{ url_for('public.examination') }}">{{ t('nav.exam') }}</a>
+      <a class="btn sm secondary" href="{{ url_for('public.register') }}">{{ t('reg.title') }}</a>
+      <a class="btn sm secondary" href="{{ url_for('static', filename='KTS5-nomination-form.pdf') }}" download>{{ t('reg.nomination_download') }}</a>
+      <a class="btn sm secondary" href="{{ url_for('public.status') }}">{{ t('nav.status') }}</a>
+      <a class="btn sm ghost" href="{{ url_for('public.stipend_guide') }}">{{ t('stip.title') }}</a>
+      <a class="btn sm ghost" href="{{ url_for('public.schedule') }}">{{ t('nav.schedule') }}</a>
+      {% elif part == 'institutions' %}
+      <a class="btn sm secondary" href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a>
+      <a class="btn sm secondary" href="{{ url_for('campus.login') }}">{{ t('camp.login_title') }}</a>
+      <a class="btn sm secondary" href="{{ url_for('static', filename='KTS5-nomination-form.pdf') }}" download>{{ t('reg.nomination_download') }}</a>
+      {% if only %}<button class="btn sm" type="button" data-print>🖨 {{ t('common.print') }}</button>{% else %}<a class="btn sm" href="{{ url_for('public.guide_institutions') }}">🖨 {{ t('guide.print') }}</a>{% endif %}
+      {% else %}
+      <a class="btn sm secondary" href="{{ url_for('public.nodal_institutions') }}">{{ t('nav.nodal') }}</a>
+      <a class="btn sm secondary" href="{{ url_for('auth.login') }}">{{ t('guide.console') }}</a>
+      {% endif %}
+    </div>
+  </section>
+  {% endfor %}
+  <p class="small" style="margin-top:18px">{{ g('guide.help') }}{% if only %} · <bdi dir="ltr">{{ base_url }}{{ url_for('public.guide') }}</bdi>{% endif %}</p>
+</div>
+{% endblock %}

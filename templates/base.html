@@ -57,8 +57,9 @@
       <li><a href="{{ url_for('public.home') }}" class="{{ 'active' if ep == 'public.home' }}">{{ t('nav.home') }}</a></li>
       <li><a href="{{ url_for('public.about') }}" class="{{ 'active' if ep == 'public.about' }}">{{ t('nav.about') }}</a></li>
       <li><a href="{{ url_for('public.programme') }}" class="{{ 'active' if ep == 'public.programme' }}">{{ t('nav.programme') }}</a></li>
-      <li class="has-sub"><a href="{{ url_for('public.register') }}" class="{{ 'active' if ep.startswith('public.register') or ep.startswith('public.hei_') or ep in ('public.institutions', 'public.nodal_institutions') }}" aria-haspopup="true">{{ t('nav.register') }}</a>
+      <li class="has-sub"><a href="{{ url_for('public.register') }}" class="{{ 'active' if ep.startswith('public.register') or ep.startswith('public.hei_') or ep in ('public.institutions', 'public.nodal_institutions', 'public.guide', 'public.guide_institutions') }}" aria-haspopup="true">{{ t('nav.register') }}</a>
         <ul class="sub">
+          <li><a href="{{ url_for('public.guide') }}">{{ t('guide.title') }}</a></li>
           <li><a href="{{ url_for('public.register') }}">{{ t('reg.title') }}</a></li>
           <li><a href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a></li>
           <li><a href="{{ url_for('public.institutions') }}">{{ t('nav.institutions') }}</a></li>

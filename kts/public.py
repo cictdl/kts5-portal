@@ -226,6 +226,18 @@ def programme():
     return render_template("public/programme.html", settings=all_settings(), reels=reels())
 
 
+@bp.route("/how-to-take-part")
+def guide():
+    """How to take part (1.2.53): the steps of the students, the participating institutions and the Nodal Officers."""
+    return render_template("public/guide.html", settings=all_settings(), only=None, base_url=current_app.config["BASE_URL"])
+
+
+@bp.route("/how-to-take-part/institutions")
+def guide_institutions():
+    """The steps of the participating institutions alone, to print or to forward."""
+    return render_template("public/guide.html", settings=all_settings(), only="institutions", base_url=current_app.config["BASE_URL"])
+
+
 @bp.route("/stipend")
 def stipend_guide():
     """
@@ -933,7 +945,7 @@ SITEMAP = [
                           ("public.programme", {}, "nav.programme"), ("public.schedule", {}, "nav.schedule"),
                           ("public.notices", {}, "nav.notices"), ("public.partners", {}, "nav.partners"),
                           ("public.gallery", {}, "nav.gallery"), ("public.contact", {}, "nav.contact")]),
-    ("pol.sm_students", [("public.register", {}, "nav.register"), ("public.status", {}, "nav.status"),
+    ("pol.sm_students", [("public.guide", {}, "guide.title"), ("public.register", {}, "nav.register"), ("public.status", {}, "nav.status"),
                          ("public.examination", {}, "nav.exam"), ("public.merit", {}, "nav.merit"),
                          ("public.stipend_guide", {}, "stip.title"), ("candidate.login", {}, "nav.candidate"),
                          ("public.nodal_institutions", {}, "nav.nodal"),
