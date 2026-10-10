@@ -99,3 +99,21 @@ def test_the_closed_registration_page_leads_to_the_guide():
         set_setting("reg.start", "2099-01-01")
     page = app.test_client().get("/register?lang=en").get_data(as_text=True)
     assert "Registration opens on" in page and 'class="btn" href="/how-to-take-part"' in page
+
+
+def test_the_home_page_tells_the_institutions_what_they_do(site):
+    """The paragraph for the Higher Educational Institutions under the hero (1.2.55), with its links."""
+    home = _page(site, "/")
+    text = ("Higher Educational Institutions identified by the designated Nodal Institution of their respective State/UT register on "
+            "this portal to participate in KTS 5.0. Participating institutions access multilingual study resources hosted here, "
+            "conduct their campus-level assessment on the theme “Thirukkural Payilvom – Thirukkural Abhyas Karen”, and register "
+            "one selected student on merit, duly endorsed by the Head of the Institution. Detailed programme guidelines and "
+            "timelines are available here.")
+    assert "<h2" in home and "For Higher Educational Institutions</h2>" in home and text in home
+    section = home.split('class="section hei-intro"')[1].split("</section>")[0]
+    assert re.findall(r'href="([^"]+)"', section) == ["/how-to-take-part", "/schedule", "/resources", "/institutions/register"]
+    assert ">Programme guidelines<" in section and ">Timelines<" in section
+    # right under the hero, before the dates
+    assert home.index("hei-intro") < home.index('class="dates"')
+    catalog = json.loads((ROOT / "data" / "i18n" / "ta.json").read_text(encoding="utf-8"))
+    assert catalog["home.hei_title"] in _page(site, "/", "ta")

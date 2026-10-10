@@ -1035,7 +1035,7 @@ def test_alt_texts_use_keys_that_exist():
     # the 4 of the reels and shorts on the programme page (1.2.23), the note for visitors who host a quiz (1.2.30),
     # the 2 of the count of visitors (1.2.31), the note that the test closes for everyone at the end of the window (1.2.33),
     # the 14 of the website policies, help and sitemap (1.2.34), the message when the time of the test is up (1.2.36)
-    assert len(CATALOG["en"]) == 962
+    assert len(CATALOG["en"]) == 966
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1067,7 +1067,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.54" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.55" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 
