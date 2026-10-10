@@ -22,7 +22,8 @@
     <dl class="detail" style="display:grid;grid-template-columns:160px 1fr;gap:6px 12px;font-size:.92rem">
       <dt class="muted">Registration</dt><dd>{% if reg_state == 'open' %}<span class="pill green">open</span>{% elif reg_state == 'not_yet' %}<span class="pill saffron">opens {{ settings['reg.start']|date }}</span>{% else %}<span class="pill kumkum">closed</span>{% endif %} {{ settings['reg.start']|date }} – {{ settings['reg.end']|date }}</dd>
       <dt class="muted">Online test</dt><dd>{{ settings['exam.date']|date }} · {{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST {% if exam_open %}<span class="pill green">window open</span>{% else %}<span class="pill grey">mode: {{ settings['exam.open'] }}</span>{% endif %}</dd>
-      <dt class="muted">Question bank</dt><dd>{% for q in qbank %}<span class="pill grey">{{ q.lang }} {{ q.n }}</span> {% else %}<span class="pill kumkum">empty – generate questions</span>{% endfor %}</dd>
+      <dt class="muted">Question bank</dt><dd>{% for q in qbank %}<span class="pill grey">{{ q.lang }} {{ q.n }}</span> {% else %}<span class="pill kumkum">empty – generate questions</span>{% endfor %}
+        <div class="small" style="margin-top:4px"><span class="pill {{ 'green' if qcheck.ok else 'kumkum' }}">{{ 'ready' if qcheck.ok else 'check' }}</span> {{ qcheck.line }}{% if has_perm(current_user, 'exam.view') %} · <a href="{{ url_for('admin.questions_check') }}">Check the bank</a>{% endif %}</div></dd>
       <dt class="muted">Merit list</dt><dd>{{ 'published' if settings['merit.published'] == '1' else 'not published' }} · select {{ settings['merit.select_count'] }} · waitlist {{ settings['merit.wait_count'] }}</dd>
       <dt class="muted">Helpdesk</dt><dd>{{ messages }} unanswered message(s) · <a href="{{ url_for('admin.messages') }}">open</a></dd>
     </dl>

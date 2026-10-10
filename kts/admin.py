@@ -19,6 +19,7 @@ from . import kural as K
 from . import backup as BACKUP
 from . import heis as HEI
 from . import nodal as NODAL
+from . import qbank as QBANK
 from .auth import PERMS, ROLES, current_user, has_perm, login_required, state_scope
 from .db import (DEFAULT_SETTINGS, INSTITUTE_HEAD, NODAL_FIELDS, NODAL_OFFICERS, SOCIAL_LINKS, all_settings, audit, execute, executemany, get_setting, query,
                  set_setting, utcnow)
@@ -71,6 +72,7 @@ def dashboard():
                     "GROUP BY pref_lang ORDER BY n DESC")
     exam = {r["status"]: r["n"] for r in query("SELECT status, COUNT(*) AS n FROM exam_sessions GROUP BY status")}
     qbank = query("SELECT lang, COUNT(*) AS n FROM questions WHERE active = 1 GROUP BY lang ORDER BY lang")
+    qcheck = QBANK.summary(settings.get("exam.questions", "50"))
     tasks = query("SELECT t.status, COUNT(*) AS n FROM tasks t GROUP BY t.status")
     overdue = query("SELECT COUNT(*) AS n FROM tasks WHERE status NOT IN ('done') AND due_date IS NOT NULL AND due_date < ?",
                     (now_ist().strftime("%Y-%m-%d"),), one=True)["n"]
@@ -83,7 +85,7 @@ def dashboard():
     visit_rows = visit_days(30)
     return render_template("console/dashboard.html", visit_rows=visit_rows, settings=settings, by_status=by_status, total=total,
                            colleges=colleges, states=states, days=days, max_day=max_day, top_states=top_states,
-                           by_lang=by_lang, exam=exam, qbank=qbank, tasks={r["status"]: r["n"] for r in tasks},
+                           by_lang=by_lang, exam=exam, qbank=qbank, qcheck=qcheck, tasks={r["status"]: r["n"] for r in tasks},
                            overdue=overdue, messages=messages, recent=recent, reg_state=registration_state(settings),
                            backup_warn=BACKUP.state()["warn"] if has_perm(user, "backup") else "",
                            exam_start=start, exam_end=end, exam_open=is_open)
@@ -372,6 +374,8 @@ def question_form(qid=None):
         d = {k: (request.form.get(k) or "").strip() for k in ("lang", "qtype", "text", "opt_a", "opt_b", "opt_c", "opt_d", "correct", "kural_no", "difficulty")}
         if not all(d[k] for k in ("lang", "text", "opt_a", "opt_b", "opt_c", "opt_d")) or d["correct"] not in ("A", "B", "C", "D"):
             flash("Fill the question, all four options and mark the correct one.", "error")
+        elif len({QBANK.norm(d[k]) for k in ("opt_a", "opt_b", "opt_c", "opt_d")}) < 4:
+            flash("Two of the options are the same. Give four different options.", "error")
         else:
             vals = (d["lang"], d["qtype"] or "manual", d["text"], d["opt_a"], d["opt_b"], d["opt_c"], d["opt_d"], d["correct"],
                     safe_int(d["kural_no"]) or None, safe_int(d["difficulty"], 1), 1 if request.form.get("active") else 0)
@@ -431,7 +435,9 @@ def questions_import():
     rows, bad = [], 0
     for r in reader:
         r = {k.strip().lower(): (v or "").strip() for k, v in r.items() if k}
-        if not r.get("lang") or not r.get("text") or r.get("correct", "").upper() not in ("A", "B", "C", "D"):
+        r["lang"] = (r.get("lang") or "").lower()
+        if (r["lang"] not in K.ORIENTATION_LANGS or not r.get("text") or r.get("correct", "").upper() not in ("A", "B", "C", "D")
+                or not all(r.get(k) for k in ("opt_a", "opt_b", "opt_c", "opt_d"))):
             bad += 1
             continue
         rows.append((r["lang"], r.get("qtype") or "manual", r["text"], r.get("opt_a", ""), r.get("opt_b", ""),
@@ -441,7 +447,9 @@ def questions_import():
         executemany("INSERT INTO questions(lang, qtype, text, opt_a, opt_b, opt_c, opt_d, correct, kural_no, difficulty, active, source, created_at) "
                     "VALUES(?,?,?,?,?,?,?,?,?,?,1,'import',?)", rows)
     audit("questions_imported", "question", None, detail={"rows": len(rows), "skipped": bad}, user=_user(), ip=client_ip())
-    flash(f"Imported {len(rows)} question(s); skipped {bad}.", "success" if rows else "error")
+    flash(f"Imported {len(rows)} question(s); skipped {bad}"
+          + (" (a language code that is not one of the 23, a blank option or an answer other than A–D)" if bad else "") + ".",
+          "success" if rows else "error")
     return redirect(url_for("admin.questions"))
 
 
@@ -452,6 +460,39 @@ def questions_export():
     data = csv_bytes(["lang", "qtype", "text", "opt_a", "opt_b", "opt_c", "opt_d", "correct", "kural_no", "difficulty", "active"],
                      [tuple(r) for r in rows])
     return Response(data, mimetype="text/csv", headers={"Content-Disposition": "attachment; filename=KTS5-question-bank.csv"})
+
+
+@bp.route("/questions/check", methods=["GET", "POST"])
+@login_required("exam.view")
+def questions_check():
+    """Whether a full paper can be drawn in each language, and the questions that should not be in one."""
+    n = all_settings().get("exam.questions", "50")
+    if request.method == "POST":
+        if not has_perm(_user(), "exam.manage"):
+            abort(403)
+        ids = QBANK.report(n)["faulty_ids"]
+        if ids:
+            executemany("UPDATE questions SET active = 0 WHERE id = ? AND active = 1", [(i,) for i in ids])
+            audit("questions_set_aside", "question", None, detail={"count": len(ids), "ids": ids[:200]}, user=_user(), ip=client_ip())
+            flash(f"Set aside {len(ids)} question(s). They stay in the bank as inactive; correct one and enable it to use it again.", "success")
+        else:
+            flash("No faulty question to set aside.", "info")
+        return redirect(url_for("admin.questions_check"))
+    lang = (request.args.get("lang") or "").strip()
+    rep = QBANK.report(n)
+    shown = [p for p in rep["problems"] if not lang or p["row"]["lang"] == lang]
+    return render_template("console/questions_check.html", rep=rep, shown=shown[:300], hidden=max(len(shown) - 300, 0), lang=lang)
+
+
+@bp.route("/questions/check.csv")
+@login_required("exam.manage")
+def questions_check_export():
+    rep = QBANK.report(all_settings().get("exam.questions", "50"))
+    rows = [(p["row"]["id"], p["row"]["lang"], p["kind"], "set aside" if p["kind"] in QBANK.FAULTS else "check", p["why"],
+             p["row"]["text"], p["row"]["opt_a"], p["row"]["opt_b"], p["row"]["opt_c"], p["row"]["opt_d"], p["row"]["correct"], p["row"]["source"])
+            for p in rep["problems"]]
+    data = csv_bytes(["id", "lang", "problem", "action", "explanation", "text", "opt_a", "opt_b", "opt_c", "opt_d", "correct", "source"], rows)
+    return Response(data, mimetype="text/csv", headers={"Content-Disposition": "attachment; filename=KTS5-question-bank-check.csv"})
 
 
 # ---- exam monitor -----------------------------------------------------------

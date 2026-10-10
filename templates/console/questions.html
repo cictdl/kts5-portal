@@ -9,6 +9,7 @@
       <div class="field"><label for="qtype">Type</label><select id="qtype" name="qtype"><option value="">All</option>{% for q in qtypes %}<option value="{{ q }}" {{ 'selected' if f.qtype == q }}>{{ q }}</option>{% endfor %}</select></div>
       <div class="field"><label for="active">Active</label><select id="active" name="active"><option value="">Any</option><option value="1" {{ 'selected' if f.active == '1' }}>Active</option><option value="0" {{ 'selected' if f.active == '0' }}>Inactive</option></select></div>
       <div class="field"><button class="btn" type="submit">Filter</button></div>
+      <div class="field"><a class="btn secondary" href="{{ url_for('admin.questions_check') }}">Check the bank</a></div>
       {% if has_perm(current_user, 'exam.manage') %}<div class="field"><a class="btn secondary" href="{{ url_for('admin.question_form') }}">+ New</a></div><div class="field"><a class="btn secondary" href="{{ url_for('admin.questions_export') }}">Export CSV</a></div>{% endif %}
     </form>
     <p class="small muted">{{ pg.total }} question(s)</p>
@@ -25,6 +26,7 @@
   <div>
     <div class="card">
       <h3>Bank by language</h3>
+      <p class="small dim">Whether a full paper can be drawn in each language: <a href="{{ url_for('admin.questions_check') }}">Check the bank</a>.</p>
       <table class="table"><thead><tr><th>Language</th><th class="num">Active</th><th class="num">Total</th></tr></thead><tbody>{% for c in counts %}<tr><td>{{ c.lang|langname }}</td><td class="num">{{ c.active }}</td><td class="num">{{ c.n }}</td></tr>{% else %}<tr><td colspan="3" class="muted">Empty</td></tr>{% endfor %}</tbody></table>
     </div>
     {% if has_perm(current_user, 'exam.manage') %}

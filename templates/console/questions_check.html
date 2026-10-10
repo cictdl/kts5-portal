@@ -1,0 +1,51 @@
+{% extends "console/base.html" %}
+{% block title %}Check of the question bank{% endblock %}
+{% block content %}
+{% set label = {'ready': ('green', 'ready'), 'thin': ('saffron', 'thin'), 'short': ('kumkum', 'short'), 'empty': ('kumkum', 'empty')} %}
+{% set kinds = {'blank': 'Blank question', 'option': 'Blank option', 'answer': 'Answer not A–D', 'same': 'Options alike', 'duplicate': 'Twice in the bank',
+                'script': 'Another script', 'code': 'Language code'} %}
+<p class="dim" style="max-width:86ch">From 15 October every institution's assessment draws its paper from this bank: <b>{{ rep.n }}</b> active questions
+  (Settings › exam.questions) in the language the student chose, in an order and with options shuffled for each student. When a language has too few,
+  the paper is topped up with English questions. Twice as many questions as a paper holds ({{ rep.n * 2 }}) keep the papers of students sitting side by side apart.</p>
+{% if rep.ok %}<div class="alert success">Every language can fill a paper of {{ rep.n }}, and no active question is faulty.</div>
+{% else %}<div class="alert warning">{{ rep.count.short + rep.count.empty }} language(s) cannot fill a paper of {{ rep.n }} by themselves{% if rep.faulty_ids %}, and {{ rep.faulty_ids|length }} active question(s) are faulty{% endif %}.
+  Generate or import questions under <a href="{{ url_for('admin.questions') }}">Question bank</a> before the assessments open.</div>{% endif %}
+
+<div class="btn-row" style="margin:12px 0">
+  <a class="btn sm secondary" href="{{ url_for('admin.questions') }}">← Question bank</a>
+  {% if has_perm(current_user, 'exam.manage') %}
+  <a class="btn sm secondary" href="{{ url_for('admin.questions_check_export') }}">⬇ Problems (CSV)</a>
+  {% if rep.faulty_ids %}<form method="post" style="display:inline;margin:0"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <button class="btn sm" name="action" value="set_aside" data-confirm="Make the {{ rep.faulty_ids|length }} faulty question(s) inactive? They stay in the bank and can be enabled again.">Set aside the {{ rep.faulty_ids|length }} faulty question(s)</button></form>{% endif %}
+  {% endif %}
+</div>
+
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Language</th><th class="num">Signed up</th><th class="num">Active</th><th class="num">Faulty</th><th class="num">Usable</th>
+    <th class="num">Other script</th><th class="num">Inactive</th><th style="min-width:320px">A paper of {{ rep.n }}</th></tr></thead>
+  <tbody>{% for s in rep.languages %}
+  <tr><td><a href="{{ url_for('admin.questions_check', lang=s.lang) }}">{{ s.lang|langname }}</a> <span class="small muted">{{ s.lang }}</span></td>
+    <td class="num">{{ s.students }}</td><td class="num">{{ s.active }}</td>
+    <td class="num">{% if s.faulty %}<b>{{ s.faulty }}</b>{% else %}0{% endif %}</td><td class="num"><b>{{ s.usable }}</b></td>
+    <td class="num">{{ s.other_script }}</td><td class="num">{{ s.inactive }}</td>
+    <td><span class="pill {{ label[s.status][0] }}">{{ label[s.status][1] }}</span> <span class="small">{{ s.say }}</span></td></tr>
+  {% endfor %}</tbody>
+</table></div>
+<p class="small muted">Signed up: students who have signed up for an institution's assessment in the language. Usable: active questions without a fault. Faulty: a blank question or option, an answer other than A to D, two options alike,
+  or the same question as an earlier one in the same language (the earlier one is kept). Other script: the question can be drawn,
+  but the student reads it in letters other than those of the language, as with the general-knowledge questions that the generator gives in English
+  to the languages other than English, Tamil and Hindi.</p>
+
+<h3 style="margin-top:20px">Problems{% if lang %} in {{ lang|langname }} <a class="small" href="{{ url_for('admin.questions_check') }}">(all languages)</a>{% endif %}</h3>
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>#</th><th>Lang</th><th>Problem</th><th>Question</th><th></th></tr></thead>
+  <tbody>{% for p in shown %}
+  <tr><td>{{ p.row.id }}</td><td>{{ p.row.lang }}</td>
+    <td><span class="pill {{ 'kumkum' if p.kind in ['blank', 'option', 'answer', 'same', 'duplicate'] else 'grey' }}">{{ kinds[p.kind] }}</span>
+      <div class="small">{{ p.why }}</div></td>
+    <td style="white-space:pre-line;max-width:520px">{{ p.row.text|truncate(160) }}<div class="small muted">A. {{ p.row.opt_a|truncate(40) }} · B. {{ p.row.opt_b|truncate(40) }} · C. {{ p.row.opt_c|truncate(40) }} · D. {{ p.row.opt_d|truncate(40) }}</div></td>
+    <td>{% if has_perm(current_user, 'exam.manage') %}<a class="btn xs secondary" href="{{ url_for('admin.question_form', qid=p.row.id) }}">Edit</a>{% endif %}</td></tr>
+  {% else %}<tr><td colspan="5" class="muted">No problem found.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% if hidden %}<p class="small muted">{{ hidden }} more in the CSV.</p>{% endif %}
+{% endblock %}
