@@ -22,11 +22,17 @@
     var target = new Date(el.getAttribute("data-countdown"));
     if (isNaN(target.getTime())) return;
     var units = ["d", "h", "m", "s"].map(function (k) { return el.querySelector("[data-u='" + k + "']"); });
+    var label = el.querySelector("[data-cd-label]"), ended = false;
     function tick() {
+      if (ended) return;
       var diff = Math.max(0, Math.floor((target - new Date()) / 1000));
       var d = Math.floor(diff / 86400), h = Math.floor(diff % 86400 / 3600), m = Math.floor(diff % 3600 / 60), s = diff % 60;
       [d, h, m, s].forEach(function (v, i) { if (units[i]) units[i].textContent = i ? String(v).padStart(2, "0") : v; });
-      if (diff <= 0 && el.dataset.done) el.querySelector(".units").innerHTML = "<b>" + el.dataset.done + "</b>";
+      if (diff > 0 || !el.dataset.done) return;
+      ended = true;
+      // the countdown to Kashi Tamil Sangamam 5.0 (1.2.50): the label says that it is under way
+      if (label) { label.textContent = el.dataset.done; el.classList.add("live"); el.querySelector(".units").remove(); }
+      else { var b = document.createElement("b"); b.textContent = el.dataset.done; el.querySelector(".units").replaceChildren(b); }
     }
     tick(); setInterval(tick, 1000);
   });

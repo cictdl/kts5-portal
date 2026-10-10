@@ -22,7 +22,7 @@ from .db import all_settings, audit, execute, get_setting, query, utcnow
 from . import i18n
 from .i18n import get_lang, t
 from .utils import (DOC_EXT, IMAGE_EXT, age_on, check_captcha, client_ip, college_key, csv_bytes,
-                    exam_window, fmt_date, limiter, make_app_no, new_captcha, now_ist, plain_english,
+                    IST, exam_window, fmt_date, limiter, make_app_no, new_captcha, now_ist, plain_english,
                     qr_data_uri, registration_state, safe_int, save_upload, send_mail, valid_email, valid_mobile,
                     valid_pincode)
 from .version import RELEASED, VERSION
@@ -52,7 +52,33 @@ def _key_dates(settings):
         "reg_state": registration_state(settings),
         "kts_start": _iso_day(settings.get("kts.start")),
         "kts_end": _iso_day(settings.get("kts.end")),
+        # the countdown on the home page (1.2.50)
+        "kts_at": kts_at(settings),
+        "kts_phase": kts_phase(settings),
     }
+
+
+def kts_at(settings):
+    """The moment Kashi Tamil Sangamam 5.0 begins, in IST: kts.start at kts.start_time (00:00 when empty), or None."""
+    day = _iso_day(settings.get("kts.start"))
+    if not day:
+        return None
+    hm = (settings.get("kts.start_time") or "").strip()
+    if not re.fullmatch(r"([01]\d|2[0-3]):[0-5]\d", hm):
+        hm = "00:00"
+    return datetime.fromisoformat(f"{day}T{hm}").replace(tzinfo=IST)
+
+
+def kts_phase(settings, now=None):
+    """'before' Kashi Tamil Sangamam 5.0, 'during' it (to the end of the day of kts.end), or None after it."""
+    at = kts_at(settings)
+    if at is None:
+        return None
+    now = now or now_ist()
+    if now < at:
+        return "before"
+    last = _iso_day(settings.get("kts.end")) or at.strftime("%Y-%m-%d")
+    return "during" if now.strftime("%Y-%m-%d") <= last else None
 
 
 def _iso_day(value):

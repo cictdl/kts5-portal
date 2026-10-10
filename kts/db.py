@@ -632,6 +632,8 @@ DEFAULT_SETTINGS = {
     **{key: address for key, _name, address in SOCIAL_LINKS},
     **{f"{prefix}.{field}": value for prefix, officer in INSTITUTE_HEAD + NODAL_OFFICERS for field, value in officer.items()},
     "kts.start": "2026-11-28",
+    # the hour of the inauguration, for the countdown on the home page (empty: 00:00 IST)
+    "kts.start_time": "",
     "kts.end": "2026-12-12",
     "schedule.tentative": "1",
     # every registered student receives a certificate of recognition (kts/certificate.py)

@@ -377,7 +377,8 @@ def test_the_letter_in_the_data_and_the_pages():
     app = make_app(ADMIN_PASSWORD=None)
     client = app.test_client()
     home = client.get("/?lang=en").get_data(as_text=True)
-    assert "Institution-level assessments" in home and "data-countdown" not in home and "Assessment at the institution" in home
+    # the countdown of the home page is to Kashi Tamil Sangamam 5.0 (1.2.50), no longer to a test of CICT
+    assert "Institution-level assessments" in home and 'data-countdown="2026-10-22' not in home and "Assessment at the institution" in home
     exam = client.get("/examination?lang=en").get_data(as_text=True)
     assert "Institution-level assessment" in exam and 'href="/institution/login"' in exam and "11:30" not in exam
     assert 'href="/institution/login">Institution sign-in</a>' in home

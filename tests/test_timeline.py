@@ -297,8 +297,8 @@ def test_the_settings_page_offers_the_days_of_the_sangamam():
     from kts.admin import SETTING_GROUPS
     group = [items for title, items in SETTING_GROUPS if title == "Kashi Tamil Sangamam 5.0"]
     assert len(group) == 1
-    # with the live stream of the inauguration and its attendance code (version 1.2.10)
-    assert [(key, kind) for key, _label, kind in group[0]] == [("kts.start", "date"), ("kts.end", "date"), ("inaug.link", "text"),
+    # with the live stream of the inauguration and its attendance code (version 1.2.10), and its hour for the countdown (1.2.50)
+    assert [(key, kind) for key, _label, kind in group[0]] == [("kts.start", "date"), ("kts.start_time", "text"), ("kts.end", "date"), ("inaug.link", "text"),
                                                               ("inaug.code", "text"), ("schedule.tentative", "bool")]
 
 

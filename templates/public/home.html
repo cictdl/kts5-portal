@@ -6,6 +6,19 @@
   <div class="wrap">
     <div>
       <span class="kicker">{% if dates.kts_start and dates.kts_end %}<bdi>{{ dates.kts_start|date }} – {{ dates.kts_end|date }}</bdi>{% else %}{{ t('home.kicker') }}{% endif %}</span>
+      {% if dates.kts_phase == 'before' %}
+      <div class="kts-countdown" data-countdown="{{ dates.kts_at.isoformat() }}" data-done="{{ t('home.kts_live') }}" role="timer" aria-live="off">
+        <span class="cd-label" data-cd-label>{{ t('home.kts_begins') }}</span>
+        <div class="units" dir="ltr">
+          <div class="unit"><b data-u="d">–</b><span>{{ t('home.days') }}</span></div>
+          <div class="unit"><b data-u="h">–</b><span>{{ t('home.hours') }}</span></div>
+          <div class="unit"><b data-u="m">–</b><span>{{ t('home.minutes') }}</span></div>
+          <div class="unit"><b data-u="s">–</b><span>{{ t('home.seconds') }}</span></div>
+        </div>
+      </div>
+      {% elif dates.kts_phase == 'during' %}
+      <div class="kts-countdown live"><span class="cd-label">{{ t('home.kts_live') }}</span></div>
+      {% endif %}
       <h1>{{ t('site.name') }}</h1>
       <div class="theme-lines" dir="ltr"><span class="ta">{{ site.theme_ta }}</span><span>{{ site.theme_en }}</span><span class="hi">{{ site.theme_hi }}</span><span lang="en">{{ site.theme_meaning }}</span></div>
       <p class="lead">{{ t('home.hero_sub') }}</p>
