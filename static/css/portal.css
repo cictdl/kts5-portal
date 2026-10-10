@@ -445,8 +445,9 @@ footer.site .bottom .wrap { display: flex; justify-content: space-between; gap: 
 .hbar .track { background: var(--bg2); border-radius: 4px; height: 12px; overflow: hidden; }
 .hbar .fill { background: var(--saffron); height: 100%; }
 .hbar .v { text-align: right; font-variant-numeric: tabular-nums; }
-.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-@media (max-width: 899px) { .two-col { grid-template-columns: 1fr; } }
+/* minmax(0, …): a wide table scrolls inside its .table-wrap instead of widening the column and the page (1.2.44) */
+.two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 899px) { .two-col { grid-template-columns: minmax(0, 1fr); } }
 .detail dl { display: grid; grid-template-columns: 180px 1fr; gap: 6px 12px; margin: 0; font-size: .93rem; }
 .detail dt { color: var(--mute); font-weight: 600; }
 .detail dd { margin: 0; }

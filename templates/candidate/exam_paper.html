@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {% set who_line = who if who is defined else (cand.app_no ~ ' · ' ~ cand.full_name) %}
 <title>{{ t('camp.title') if who is defined else t('exam.title') }} · {{ who_line }}</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=12">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=13">
 <meta name="robots" content="noindex">
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 </head>

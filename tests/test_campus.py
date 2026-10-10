@@ -399,3 +399,10 @@ def test_the_letter_in_the_data_and_the_pages():
     assert conn.execute("SELECT COUNT(*) FROM events WHERE title LIKE 'Consolidation of the selected%'").fetchone()[0] == 1
     assert dict(conn.execute("SELECT key, value FROM settings WHERE key IN ('exam.open', 'reg.end')")) == {"exam.open": "0", "reg.end": "2026-10-22"}
     conn.close()
+
+
+def test_a_wide_table_does_not_widen_the_page():
+    """1.2.44: the columns of .two-col may shrink below their content, so a wide table scrolls inside its frame."""
+    css = (ROOT / "static" / "css" / "portal.css").read_text(encoding="utf-8")
+    assert ".two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);" in css
+    assert "@media (max-width: 899px) { .two-col { grid-template-columns: minmax(0, 1fr); } }" in css
