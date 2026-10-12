@@ -62,17 +62,16 @@
     {% if college %}<p class="college">{{ college }}{% if place %}, {{ place }}{% endif %}</p>{% endif %}
     {% if kind == 'merit' and waitlisted %}
     <p class="text">for securing a place on the waiting list of the merit list of
-      <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural Payilvom</b>, through the online test on the
-      Thirukkural{% if test_date %} held on {{ test_date }}{% endif %} among students of colleges across India, in the spirit
-      of <b>Ek Bharat Shreshtha Bharat</b>.</p>
+      <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural Payilvom</b>, as the student selected on merit by the institution
+      in its assessment on the Thirukkural, in the spirit of <b>Ek Bharat Shreshtha Bharat</b>.</p>
     {% elif kind == 'inaugural' %}
     <p class="text">for participating online, as a student delegate of <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural
       Payilvom</b>, in the <b>Inauguration of Kashi Tamil Sangamam 5.0</b>{% if kts_start %} on {{ kts_start }}{% endif %},
       and joining the nationwide movement to learn the Thirukkural in the spirit of <b>Ek Bharat Shreshtha Bharat</b>.</p>
     {% elif kind == 'merit' %}
     <p class="text">for being selected in the merit list of <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural Payilvom</b>,
-      as one of the {{ selected or '1,000' }} students chosen from colleges across India through the online test on the
-      Thirukkural{% if test_date %} held on {{ test_date }}{% endif %}, in the spirit of <b>Ek Bharat Shreshtha Bharat</b>.</p>
+      as one of the {{ selected or '1,000' }} students chosen from colleges across India, each selected on merit by the
+      institution in its assessment on the Thirukkural, in the spirit of <b>Ek Bharat Shreshtha Bharat</b>.</p>
     {% else %}
     <p class="text">for registering for <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural Payilvom</b> and joining the
       nationwide movement to learn the Thirukkural, the timeless classic of Tamil, in the spirit of

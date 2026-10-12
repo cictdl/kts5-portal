@@ -204,7 +204,7 @@ def _sheet(name, college, place, number, issued_on, link, kind="recognition", ra
     selected = str(settings.get("merit.select_count") or "").strip()
     return render_template(
         "public/certificate.html", name=name, college=college, place=place, number=number, issued_on=issued_on,
-        kind=kind, rank=rank, waitlisted=waitlisted, test_date=_long_date(settings.get("exam.date")),
+        kind=kind, rank=rank, waitlisted=waitlisted,
         selected="{:,}".format(int(selected)) if selected.isdigit() and int(selected) > 0 else "",
         kts_start=_long_date(settings.get("kts.start")), kts_end=_long_date(settings.get("kts.end")),
         qr=qr_data_uri(link), link=link, host=urlsplit(link).netloc, signature=signature_data(),
@@ -295,7 +295,7 @@ def _letter(app, rank, link):
         app_no=app["app_no"], number="/".join(["CICT"] + number_of(app["app_no"], "letter").split("/")),
         letter_date=_long_date(settings.get("letter.date")) or fmt_date(now_ist()), rank=rank,
         selected="{:,}".format(int(selected)) if selected.isdigit() and int(selected) > 0 else "",
-        test_date=_long_date(settings.get("exam.date")), internship_start=_long_date(settings.get("internship.start")),
+        internship_start=_long_date(settings.get("internship.start")),
         papers_due=_long_date(settings.get("papers.due")), present_due=_long_date(settings.get("present.due")),
         stipend_last=_long_date(settings.get("stipend.last_date")),
         kts_start=_long_date(settings.get("kts.start")), kts_end=_long_date(settings.get("kts.end")),

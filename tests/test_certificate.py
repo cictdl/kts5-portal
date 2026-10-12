@@ -285,7 +285,10 @@ def test_a_student_of_the_merit_list_has_a_certificate_of_merit():
     assert '<main class="sheet merit"' in page and "OF MERIT" in page and "OF RECOGNITION" not in page
     assert "&#9733; Merit List &middot; Rank 7 &#9733;" in page and "This certificate is awarded to" in page
     assert "Student Certificate 1" in page and "Government College Thrissur, Kerala" in page
-    assert "as one of the 1,000 students chosen from colleges across India" in page and "held on 22 October 2026" in page
+    flat = " ".join(page.split())
+    assert "as one of the 1,000 students chosen from colleges across India, each selected on merit by the institution in its assessment on the Thirukkural," in flat
+    # since the D.O. letter of 9 October 2026 the institutions assess: no CICT test, no date of a test (1.2.62)
+    assert "online test" not in flat and "held on" not in flat
     number = "KTS5/CM/" + "/".join(row["app_no"].split("-")[1:])
     assert f"Certificate No. <b>{number}</b>" in page and "Date of issue: 21 Oct 2026" in page
     assert "<b>Prof. R. Chandrasekaran</b>" in page and '<span class="auto">An autonomous Institution under the Ministry of Education, Government of India</span>' in page
@@ -337,7 +340,10 @@ def test_a_waitlisted_student_has_a_certificate_of_merit_that_names_the_waiting_
     assert link and link.startswith(f"/certificate/merit/{row['app_no']}/")
     page = app.test_client().get(link).get_data(as_text=True)
     assert "OF MERIT" in page and "&#9733; Merit List &middot; Waiting List &middot; Rank 1042 &#9733;" in page
-    assert "for securing a place on the waiting list of the merit list of" in page and "held on 22 October 2026" in page
+    flat = " ".join(page.split())
+    assert "for securing a place on the waiting list of the merit list of" in page
+    assert "as the student selected on merit by the institution in its assessment on the Thirukkural," in flat
+    assert "online test" not in flat and "held on" not in flat
     # a waitlisted student is not said to be one of the students chosen
     assert "students chosen" not in page and "for being selected" not in page
     number = "KTS5/CM/" + "/".join(row["app_no"].split("-")[1:])
@@ -412,7 +418,10 @@ def test_a_selected_student_has_a_confirmation_letter():
     assert f"Ref. No. <b>{number}</b>" in page and "Date: <b>25 October 2026</b>" in page
     assert "<b>Student Certificate 1</b>" in page and "Government College Thrissur" in page and f"Application No. {row['app_no']}" in page
     assert "confirmation of selection" in page and "Dear Student Certificate 1," in page
-    assert "one of the 1,000 students" in page and "held on 22 October 2026" in page and "<b>12</b>" in page
+    flat = " ".join(page.split())
+    assert "one of the 1,000 students" in page and "<b>12</b>" in page
+    assert "on the basis of the assessment on the Thirukkural conducted by your institution." in flat
+    assert "online test" not in flat and "held on" not in flat
     assert "begins on 26 October 2026, under the guidance of your faculty mentor, Dr. K. Mentor, Assistant Professor of Tamil." in page
     assert "sessions in Hindi;" in page and "on or before 05 November 2026" in page and "on or before 15 November 2026" in page
     assert "&#8377;10,000" in page and "from 28 November 2026 to 12 December 2026" in page
