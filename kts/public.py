@@ -221,9 +221,18 @@ def reels():
     return {"count": len(rows), "langs": tuple(groups.values())}
 
 
+@lru_cache(maxsize=1)
+def banners():
+    """
+    The Kural Journey Banners (1.2.60): sample layouts of Thirukkural banners for airports (AAI) and Indian
+    Railways, each a vector PDF with a preview, and one PDF with all of them (data/banners.json, static/banners/).
+    """
+    return json.loads((current_app.config["DATA_DIR"] / "banners.json").read_text(encoding="utf-8"))
+
+
 @bp.route("/programme")
 def programme():
-    return render_template("public/programme.html", settings=all_settings(), reels=reels())
+    return render_template("public/programme.html", settings=all_settings(), reels=reels(), banners=banners())
 
 
 @bp.route("/how-to-take-part")

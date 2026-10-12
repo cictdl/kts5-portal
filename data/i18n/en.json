@@ -964,5 +964,10 @@
   "home.hei_title": "For Higher Educational Institutions",
   "home.hei_text": "Higher Educational Institutions identified by the designated Nodal Institution of their respective State/UT register on this portal to participate in KTS 5.0. Participating institutions access multilingual study resources hosted here, conduct their campus-level assessment on the theme “Thirukkural Payilvom – Thirukkural Abhyas Karen”, and register one selected student on merit, duly endorsed by the Head of the Institution. Detailed programme guidelines and timelines are available here.",
   "home.hei_guidelines": "Programme guidelines",
-  "home.hei_timelines": "Timelines"
+  "home.hei_timelines": "Timelines",
+  "prog.disp.cta": "Kural Journey Banners",
+  "prog.disp.title": "Kural Journey Banners: the Thirukkural at airports and railway stations",
+  "prog.disp.d": "Sample banner layouts for airports (AAI) and Indian Railways: a Thirukkural couplet for each moment of the journey, in Tamil with CICT's Hindi and English translations, and a QR code that opens the couplet in 23 languages. Each PDF is a vector layout that prints at any size; the logos go in the dashed boxes.",
+  "prog.disp.all": "Download all the banners (PDF)",
+  "prog.disp.pdf": "Download PDF"
 }

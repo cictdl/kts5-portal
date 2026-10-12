@@ -39,7 +39,8 @@
   <div class="grid grid-2" style="margin-top:14px">
     {% for n in range(1, 11) %}
     <div class="card"><h3>{{ t('prog.a%d.t' % n) }}</h3><p class="small dim">{{ t('prog.a%d.d' % n) }}</p>{% if n == 6 %}
-      <a class="btn sm secondary" href="#reels">▶ {{ t('prog.reels.count')|replace('{reels}', reels.count|string)|replace('{langs}', reels.langs|length|string) }}</a>{% endif %}</div>
+      <a class="btn sm secondary" href="#reels">▶ {{ t('prog.reels.count')|replace('{reels}', reels.count|string)|replace('{langs}', reels.langs|length|string) }}</a>{% elif n == 8 %}
+      <a class="btn sm secondary" href="#banners">⬇ {{ t('prog.disp.cta') }}</a>{% endif %}</div>
     {% endfor %}
   </div>
 
@@ -58,6 +59,20 @@
     {% endfor %}
   </div>
   <p style="margin-top:14px"><a class="btn sm secondary" href="https://www.youtube.com/@cicttamil/shorts" target="_blank" rel="noopener">{{ t('prog.reels.channel') }} ↗</a></p>
+
+  {# Public displays: the Kural Journey Banners for airports and railway stations, to download (1.2.60) #}
+  <h3 id="banners" style="margin-top:36px;scroll-margin-top:96px">{{ t('prog.disp.title') }}</h3>
+  <p class="dim" style="max-width:72ch">{{ t('prog.disp.d') }}</p>
+  <p><a class="btn sm saffron" href="{{ url_for('static', filename='banners/' ~ banners.all) }}" download>⬇ {{ t('prog.disp.all') }}</a></p>
+  <div class="grid grid-3 banner-grid" style="margin-top:14px">
+    {% for b in banners.banners %}
+    <figure class="card banner-card" style="margin:0;display:grid;gap:10px;align-content:start">
+      <a href="{{ url_for('static', filename='banners/' ~ b.file) }}" download><img src="{{ url_for('static', filename='banners/' ~ b.thumb) }}" alt="{{ b.title }}" width="{{ b.w }}" height="{{ b.h }}" loading="lazy" style="display:block;width:100%;height:auto;border-radius:8px;border:1px solid var(--border)"></a>
+      <figcaption lang="en" style="display:grid;gap:4px"><b>{{ b.title }}</b><span class="small dim">{{ b.where }} · {{ b.size }}{% if b.kural %} · Kural {{ b.kural }}{% endif %}</span></figcaption>
+      <a class="btn xs secondary" style="justify-self:start" href="{{ url_for('static', filename='banners/' ~ b.file) }}" download>⬇ {{ t('prog.disp.pdf') }}</a>
+    </figure>
+    {% endfor %}
+  </div>
 
   <h2 style="margin-top:36px"><span class="pill kumkum">III</span> {{ t('prog.part3') }}</h2>
   <div class="grid grid-3" style="margin-top:14px">
