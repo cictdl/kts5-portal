@@ -173,3 +173,19 @@ def test_found_from_the_examination_page_the_guide_and_the_sitemap():
     for path in ("/examination", "/how-to-take-part", "/sitemap"):
         assert 'href="/practice"' in client.get(f"{path}?lang=en").get_data(as_text=True), path
     assert "/practice" in client.get("/sitemap.xml").get_data(as_text=True)
+
+
+def test_the_classroom_quiz_under_the_heading_of_the_assessment():
+    """Under "Institution-level assessment", the link to the classroom quiz (1.2.56), while the quiz is on."""
+    from kts.db import set_setting
+    app = make_app(ADMIN_PASSWORD=None)
+    client = app.test_client()
+    page = client.get("/examination?lang=en").get_data(as_text=True)
+    head = page.index("<h1>Institution-level assessment</h1>")
+    link = page.index('<a class="btn sm secondary" href="/quiz/">🎯 Classroom quiz</a>')
+    assert head < link < page.index('class="two-col"')
+    from test_public_fixes import _text
+    assert f'href="/quiz/">🎯 {_text("quiz.title", "ta")}</a>' in client.get("/examination?lang=ta").get_data(as_text=True)
+    with app.app_context():
+        set_setting("quiz.on", "0")
+    assert 'href="/quiz/"' not in client.get("/examination?lang=en").get_data(as_text=True).split("<main")[1].split("</main>")[0]

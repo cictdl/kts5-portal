@@ -4,6 +4,8 @@
 <div class="wrap section">
   <span class="eyebrow">{{ t('reg.subtitle') }}</span>
   <h1>{{ t('exam.title') }}</h1>
+  {# the classroom quiz, under the heading of the institution-level assessment (1.2.56) #}
+  {% if settings['quiz.on'] == '1' %}<p class="exam-quiz-link" style="margin:-4px 0 18px"><a class="btn sm secondary" href="{{ url_for('quiz.join') }}">🎯 {{ t('quiz.title') }}</a></p>{% endif %}
   <div class="two-col" style="align-items:start">
     <div>
       <div class="card accent">
