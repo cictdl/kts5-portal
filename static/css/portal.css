@@ -301,6 +301,22 @@ bdi, [dir="ltr"], [dir="auto"] { unicode-bidi: isolate; }
 .btn.secondary { background: var(--surface); color: var(--indigo); }
 .btn.secondary:hover { background: var(--indigo-soft); }
 .btn.saffron { background: var(--saffron); border-color: var(--saffron); color: #fff; }
+/* the classroom quiz under the heading of the institution-level assessment (1.2.57): bright, it pulses
+   three times as the page opens (under five seconds, so nothing blinks on: WCAG 2.2.2) and then rests;
+   no movement at all for those who ask their device for reduced motion */
+.exam-quiz-link { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: -4px 0 20px; }
+.btn.quiz-cta { background: linear-gradient(135deg, var(--saffron), var(--kumkum)); border-color: transparent; color: #fff;
+  padding: 11px 22px; font-size: 1.02rem; box-shadow: 0 0 0 3px rgba(224,123,26,.28), 0 6px 16px rgba(179,38,30,.22); }
+.btn.quiz-cta:hover, .btn.quiz-cta:focus-visible { background: linear-gradient(135deg, var(--kumkum), var(--saffron)); border-color: transparent; color: #fff; }
+@media (prefers-reduced-motion: no-preference) {
+  .btn.quiz-cta { animation: quiz-pulse 1.5s ease-out .5s 3; }
+}
+@keyframes quiz-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(224,123,26,.6), 0 6px 16px rgba(179,38,30,.22); transform: scale(1); }
+  40% { transform: scale(1.05); }
+  70% { box-shadow: 0 0 0 16px rgba(224,123,26,0), 0 6px 16px rgba(179,38,30,.22); transform: scale(1); }
+  100% { box-shadow: 0 0 0 3px rgba(224,123,26,.28), 0 6px 16px rgba(179,38,30,.22); transform: scale(1); }
+}
 .btn.saffron:hover { filter: brightness(.94); }
 .btn.danger { background: var(--kumkum); border-color: var(--kumkum); color: #fff; }
 .btn.ghost { background: transparent; border-color: var(--border-strong); color: var(--ink); }

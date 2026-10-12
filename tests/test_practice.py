@@ -7,7 +7,7 @@ those of the question bank; the screen of the online test; nothing written in th
 import json
 from datetime import timedelta
 
-from conftest import make_app
+from conftest import ROOT, make_app
 from test_public_fixes import _text
 
 
@@ -182,10 +182,15 @@ def test_the_classroom_quiz_under_the_heading_of_the_assessment():
     client = app.test_client()
     page = client.get("/examination?lang=en").get_data(as_text=True)
     head = page.index("<h1>Institution-level assessment</h1>")
-    link = page.index('<a class="btn sm secondary" href="/quiz/">🎯 Classroom quiz</a>')
+    link = page.index('<a class="btn quiz-cta" href="/quiz/">🎯 Classroom quiz</a>')
+    assert "A live Thirukkural quiz: the questions on the screen, the answers on your phone." in page
     assert head < link < page.index('class="two-col"')
     from test_public_fixes import _text
     assert f'href="/quiz/">🎯 {_text("quiz.title", "ta")}</a>' in client.get("/examination?lang=ta").get_data(as_text=True)
+    css = (ROOT / "static" / "css" / "portal.css").read_text(encoding="utf-8")
+    # it pulses three times, never on and on, and not at all for those who ask for reduced motion
+    assert "animation: quiz-pulse 1.5s ease-out .5s 3;" in css and "infinite" not in css.split(".btn.quiz-cta")[1].split("@keyframes")[0]
+    assert ".btn.quiz-cta { animation: quiz-pulse" in css.split("@media (prefers-reduced-motion: no-preference) {")[1][:60]
     with app.app_context():
         set_setting("quiz.on", "0")
     assert 'href="/quiz/"' not in client.get("/examination?lang=en").get_data(as_text=True).split("<main")[1].split("</main>")[0]
