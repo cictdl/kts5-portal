@@ -683,7 +683,7 @@ def test_style_sheet_selects_the_tags():
 def _single(client, n, query=""):
     page = _page(client, f"/thirukkural/{n}{query}")
     return re.findall(r'<div class="stream">\s*<div class="lang"><bdi>(.*?)</bdi><small dir="ltr">(.*?)</small></div>\s*'
-                      r'<div dir="(ltr|rtl)" lang="([^"]+)">(.*?)</div>', page, re.S)
+                      r'<div (?:class="couplet" )?dir="(ltr|rtl)" lang="([^"]+)">(.*?)</div>', page, re.S)
 
 
 def test_single_couplet_shows_the_variants(app):
@@ -703,6 +703,8 @@ def test_single_couplet_shows_the_variants(app):
         assert direction == info.get("dir", "ltr")
         assert text == "<br>".join(str(escape(line)) for line in K.lines(K.kural(1), stream))
     assert by_tag["ks-Arab"][2] == "rtl" and by_tag["ur"][2] == "rtl" and by_tag["ks-Deva"][2] == "ltr"
+    # the Tamil couplet keeps its two lines whole, four words then three (1.2.58)
+    assert by_tag["ta"][3] == "".join(f"<span>{escape(line)}</span>" for line in K.lines(K.kural(1), "ta"))
 
 
 @pytest.mark.parametrize("query", ["", "?lang=ks", "?lang=kok"])
@@ -985,17 +987,17 @@ def test_version_of_style_sheet_and_script():
     for path in TEMPLATES:
         for name, version in re.findall(r"filename='((?:css|js)/portal\.(?:css|js))'\) \}\}\?v=(\d+)", path.read_text(encoding="utf-8")):
             linked.setdefault(path.relative_to(ROOT / "templates").as_posix(), []).append((name, version))
-    expected = {name: [("css/portal.css", "15"), ("js/portal.js", "15")]
+    expected = {name: [("css/portal.css", "16"), ("js/portal.js", "16")]
                 for name in ("base.html", "candidate/exam_paper.html", "console/base.html")}
     # the certificate has a style sheet of its own and the script for its print button
-    expected["public/certificate.html"] = [("js/portal.js", "15")]
-    expected["public/letter.html"] = [("js/portal.js", "15")]
+    expected["public/certificate.html"] = [("js/portal.js", "16")]
+    expected["public/letter.html"] = [("js/portal.js", "16")]
     # the pages of the classroom quiz have a frame of their own, with the style sheet and the script of the portal
-    expected["quiz/layout.html"] = [("css/portal.css", "15"), ("js/portal.js", "15")]
+    expected["quiz/layout.html"] = [("css/portal.css", "16"), ("js/portal.js", "16")]
     assert linked == expected
     for path in TEMPLATES:
-        assert not re.search(r"portal\.css'\) \}\}(?!\?v=15\")", path.read_text(encoding="utf-8")), path
-        assert not re.search(r"portal\.js'\) \}\}(?!\?v=15\")", path.read_text(encoding="utf-8")), path
+        assert not re.search(r"portal\.css'\) \}\}(?!\?v=16\")", path.read_text(encoding="utf-8")), path
+        assert not re.search(r"portal\.js'\) \}\}(?!\?v=16\")", path.read_text(encoding="utf-8")), path
 
 
 # ---- B9 · alt texts of the logos ----------------------------------------------------------------
@@ -1067,7 +1069,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.57" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.58" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

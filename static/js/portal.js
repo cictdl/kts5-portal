@@ -37,6 +37,27 @@
     tick(); setInterval(tick, 1000);
   });
 
+  // ---- a couplet keeps its two lines whole: four words, then three (1.2.58) --------------
+  // When a line is wider than its box, the couplet's type is made smaller, both lines alike, down to 11px.
+  var couplets = document.querySelectorAll(".couplet");
+  function fitCouplets() {
+    couplets.forEach(function (p) {
+      p.style.fontSize = "";
+      var avail = p.clientWidth, widest = 0;
+      if (!avail) return;
+      Array.prototype.forEach.call(p.children, function (line) { widest = Math.max(widest, line.scrollWidth); });
+      if (widest > avail) p.style.fontSize = Math.max(11, parseFloat(getComputedStyle(p).fontSize) * avail / widest * 0.97) + "px";
+    });
+  }
+  if (couplets.length) {
+    fitCouplets();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitCouplets);
+    var coupletWidth = window.innerWidth;
+    window.addEventListener("resize", function () {
+      if (window.innerWidth !== coupletWidth) { coupletWidth = window.innerWidth; fitCouplets(); }
+    });
+  }
+
   // ---- confirm dialogs ----------------------------------------------------
   document.querySelectorAll("form[data-confirm]").forEach(function (f) {
     f.addEventListener("submit", function (e) { if (!window.confirm(f.getAttribute("data-confirm"))) e.preventDefault(); });
