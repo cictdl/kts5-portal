@@ -971,7 +971,7 @@
   "prog.disp.all": "Download all the banners (PDF)",
   "prog.disp.pdf": "Download PDF",
   "disp.title": "Live banners for screens",
-  "disp.intro": "Open one of these links on a screen at an airport, a railway station or a campus. The banner keeps itself up to date: the time of India from the portal's clock, a Thirukkural couplet that changes on a schedule and is the same on every screen at the same moment, and the countdown to Kashi Tamil Sangamam 5.0. It needs only a web browser and an internet connection.",
+  "disp.intro": "Open one of these links on a screen at an airport, a railway station, a metro station or train, a bus stand or bus, or a campus. The banner keeps itself up to date: the time of India from the portal's clock, a Thirukkural couplet that changes on a schedule and is the same on every screen at the same moment, and the countdown to Kashi Tamil Sangamam 5.0. It needs only a web browser and an internet connection.",
   "disp.how_t": "On the screen",
   "disp.how": "Show the page full screen (the F11 key, or the kiosk mode of the screen's player). It fits wide strips and landscape and portrait screens. If the connection drops, the banner keeps showing the time and the last couplet, and catches up when the connection is back.",
   "disp.local": "Third language (optional)",
@@ -991,5 +991,14 @@
   "disp.k.countdown.t": "KTS 5.0 countdown",
   "disp.k.countdown.d": "Days, hours, minutes and seconds to Kashi Tamil Sangamam 5.0, and then the day of the programme.",
   "disp.k.thanks.t": "Thank you for travelling",
-  "disp.k.thanks.d": "For exits: the couplets on gratitude."
+  "disp.k.thanks.d": "For exits: the couplets on gratitude.",
+  "disp.g.air": "Airports and railway stations",
+  "disp.g.metro": "Metro trains",
+  "disp.g.bus": "Bus transport",
+  "disp.k.metro.t": "Kural Metro",
+  "disp.k.metro.d": "For metro stations and coaches: each chapter is a metro line and its ten couplets are the stations; the couplet of the moment is the station where the train stands. On effort, energy, action and hope.",
+  "disp.k.bus.t": "A couplet for the journey",
+  "disp.k.bus.d": "For screens inside buses: a destination board in the style of an amber LED display with the days to Kashi, and large, high-contrast couplets on patience, courtesy, pleasant words and duty to others.",
+  "disp.k.busstand.t": "Kural departures",
+  "disp.k.busstand.d": "For bus stands and depots: a departures board with the times of the coming couplets, and the couplet of the moment, on remembering what matters and acting after due thought."
 }

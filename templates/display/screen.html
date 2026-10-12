@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{# A live banner for a screen (1.2.61): full screen, no menu; display.js keeps the clock and the couplet up to date #}
+{# A live banner for a screen (1.2.61; metro and bus 1.2.63): full screen, no menu; display.js keeps the clock and the couplet up to date #}
 {% set titles = {
   'welcome': ('காசி உங்களை வரவேற்கிறது', 'काशी में आपका स्वागत है', 'Welcome to Kashi'),
   'kural': ('ஒரு மணிக் குறள்', 'इस घड़ी का कुरल', 'Kural of the hour'),
@@ -7,6 +7,9 @@
   'platform': ('காலம் அறிந்து செயல்', 'समय पहचान कर कर्म', 'The right time, the right place'),
   'countdown': ('காசி தமிழ்ச் சங்கமம் 5.0', 'काशी तमिल संगमम 5.0', 'Kashi Tamil Sangamam 5.0'),
   'thanks': ('பயணத்திற்கு நன்றி', 'यात्रा के लिए धन्यवाद', 'Thank you for travelling'),
+  'metro': ('குறள் மெட்ரோ', 'कुरल मेट्रो', 'Kural Metro'),
+  'bus': ('பயணத்தில் ஒரு குறள்', 'यात्रा में एक कुरल', 'A couplet for the journey'),
+  'busstand': ('குறள் புறப்பாடு', 'कुरल प्रस्थान', 'Kural departures'),
 } %}
 {% set t3 = titles[kind] %}
 <html lang="ta" data-kind="{{ kind }}">
@@ -16,12 +19,12 @@
 <meta name="robots" content="noindex">
 <title>{{ t3[2] }} · KTS 5.0</title>
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/display.css') }}?v=2">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/display.css') }}?v=3">
 </head>
 <body class="screen k-{{ kind }}" id="screen"
       data-now="{{ url_for('display.now_json', kind=kind, every=opts.every, local=opts.local or None, n=opts.n or None) }}"
       data-left="{{ left }}" data-slot="{{ slot }}" data-kts-start="{{ kts_start }}" data-kts-end="{{ kts_end }}"
-      data-lang-seconds="{{ lang_seconds }}" data-every="{{ opts.every }}">
+      data-lang-seconds="{{ lang_seconds }}" data-every="{{ opts.every }}" data-line="{{ k.chapter }}">
   <div class="safe">
     <header class="top">
       <div class="titles">
@@ -44,6 +47,32 @@
         <div class="date" id="date"><span lang="ta" id="day-ta">{{ weekday_ta }}</span> · <span lang="hi" id="day-hi">{{ weekday_hi }}</span> · <span lang="en" id="day-en" dir="ltr">{{ now.strftime('%a %d %b %Y') }}</span></div>
       </div>
     </header>
+
+    {% if kind == 'metro' %}
+    <section class="line-box" aria-hidden="true">
+      <div class="line-head"><span class="badge" id="line-badge">{{ k.chapter }}</span>
+        <span class="line-name"><span lang="ta" id="line-ta">{{ k.chapter_ta }}</span><span lang="en" id="line-en">{{ k.chapter_en }}</span></span>
+        <span class="line-label"><span lang="ta">வழித்தடம்</span> · <span lang="hi">लाइन</span> · LINE</span></div>
+      <ol class="route" id="route">{% for s in route %}<li class="{{ 'past' if s < k.n else 'here' if s == k.n else 'ahead' }}"><i></i><b>{{ s }}</b></li>{% endfor %}</ol>
+      <div class="route-note"><span><span lang="ta">இப்போது</span> · <span lang="hi">अभी</span> · Now <b id="here-n">{{ k.n }}</b></span>
+        <span><span lang="ta">அடுத்து</span> · <span lang="hi">अगला</span> · Next <b id="next-n">{{ board[1].n }}</b></span></div>
+    </section>
+    {% elif kind == 'bus' %}
+    <section class="led" aria-hidden="true">
+      <div class="led-route">1330</div>
+      <div class="led-dest"><span lang="ta">காசி</span> · <span lang="hi">काशी</span> · KASHI</div>
+      <div class="led-days"><b id="bus-days" dir="ltr">–</b><span><span lang="ta">நாள்</span> · <span lang="hi">दिन</span> · DAYS</span></div>
+    </section>
+    {% elif kind == 'busstand' %}
+    <section class="board" id="board">
+      <div class="board-row board-head"><span><span lang="ta">நேரம்</span> · TIME</span><span><span lang="ta">குறள்</span> · KURAL</span>
+        <span><span lang="ta">அதிகாரம்</span> · <span lang="hi">अध्याय</span> · CHAPTER</span><span><span lang="ta">நிலை</span> · STATUS</span></div>
+      {% for b in board %}<div class="board-row{{ ' now' if loop.first else ' soon' if loop.index == 2 }}"><span class="t" dir="ltr">{{ b.at }}</span><span class="n" dir="ltr">{{ b.n }}</span>
+        <span class="ch"><span lang="ta">{{ b.chapter_ta }}</span> <span lang="en">{{ b.chapter_en }}</span></span>
+        <span class="st">{% if loop.first %}<span lang="ta">இப்போது</span> · Now{% elif loop.index == 2 %}<span lang="ta">அடுத்து</span> · Next{% else %}<span lang="ta">வரும்</span> · Due{% endif %}</span></div>
+      {% endfor %}
+    </section>
+    {% endif %}
 
     {% if kind == 'countdown' %}
     <section class="count" aria-live="off">
@@ -89,6 +118,6 @@
     </footer>
   </div>
   <div class="kolam" aria-hidden="true"></div>
-<script src="{{ url_for('static', filename='js/display.js') }}?v=2" defer></script>
+<script src="{{ url_for('static', filename='js/display.js') }}?v=3" defer></script>
 </body>
 </html>

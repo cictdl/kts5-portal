@@ -1,6 +1,6 @@
 """
-Live banners for screens (version 1.2.61): pages that a screen at an airport, a railway station or a campus
-opens and keeps open. Each shows the time in IST from the portal's own clock (so a screen with a wrong
+Live banners for screens (version 1.2.61; for metro trains and buses 1.2.63): pages that a screen at an
+airport, a railway station, a metro, a bus stand, in a bus or on a campus opens and keeps open. Each shows the time in IST from the portal's own clock (so a screen with a wrong
 clock still shows the right time), a Thirukkural couplet that changes on a schedule, the same on every
 screen at the same moment, and the countdown to Kashi Tamil Sangamam 5.0.
 
@@ -13,6 +13,10 @@ screen at the same moment, and the countdown to Kashi Tamil Sangamam 5.0.
 The couplet of the moment: the time is cut into slots of `every` minutes (15 unless the link says
 otherwise, 1 to 60); each slot takes the next couplet of the banner's set, in an order that is the same
 everywhere. ?n= fixes one couplet; ?local= adds a third language to Tamil, Hindi and English.
+
+For metro trains, a chapter is a line and its ten couplets are its stations (metro); for buses, a destination
+board in the style of an LED display (bus) and, for bus stands, a departures board with the times of the coming
+couplets (busstand). now.json gives these the couplets of the next slots ("board").
 """
 import random
 import time
@@ -28,14 +32,32 @@ from .utils import IST, qr_data_uri
 bp = Blueprint("display", __name__)
 
 # the banners, in the order of the list; the set of couplets of each
-KINDS = ("welcome", "kural", "languages", "platform", "countdown", "thanks")
+KINDS = ("welcome", "kural", "languages", "platform", "countdown", "thanks", "metro", "bus", "busstand")
+# the banners on the page of links, by where they are shown
+GROUPS = (("air", ("welcome", "kural", "languages", "platform", "countdown", "thanks")), ("metro", ("metro",)),
+          ("bus", ("bus", "busstand")))
+BOARD = 5                                   # the couplet of the moment and the next four (busstand, metro)
+
+
+def _chapters(*numbers):
+    """The couplets of these chapters, in order: chapter 62 is couplets 611 to 620."""
+    return tuple(n for c in numbers for n in range(c * 10 - 9, c * 10 + 1))
+
+
 SETS = {
     "welcome": tuple(range(81, 91)),       # Hospitality (விருந்தோம்பல்)
     "platform": tuple(range(481, 491)),    # Knowing the fitting time (காலமறிதல்)
     "countdown": tuple(range(391, 401)),   # Learning (கல்வி): Thirukkural Payilvom
     "thanks": tuple(range(101, 111)),      # Gratitude (செய்ந்நன்றியறிதல்)
+    # metro: a line each, its ten couplets its stations, in order: Manly effort, Energy, Power in action, Hopefulness in trouble
+    "metro": _chapters(62, 60, 67, 63),
+    # in the bus: Forbearance, Courtesy, Pleasant words, Duty to society
+    "bus": _chapters(16, 100, 10, 22),
+    # at the bus stand: Unforgetfulness (your belongings!), Acting after due consideration
+    "busstand": _chapters(54, 47),
 }
-DEFAULT_EVERY = {"welcome": 10, "kural": 15, "languages": 15, "platform": 10, "countdown": 15, "thanks": 10}
+DEFAULT_EVERY = {"welcome": 10, "kural": 15, "languages": 15, "platform": 10, "countdown": 15, "thanks": 10,
+                 "metro": 5, "bus": 5, "busstand": 10}
 LANG_SECONDS = 8                            # each translation on the "languages" banner
 WEEKDAYS = {
     "ta": ("திங்கள்", "செவ்வாய்", "புதன்", "வியாழன்", "வெள்ளி", "சனி", "ஞாயிறு"),
@@ -82,6 +104,20 @@ def moment(kind, opts, now=None):
         return opts["n"], slot, left
     couplets = pool(kind)
     return couplets[slot % len(couplets)], slot, left
+
+
+def board(kind, opts, now=None, count=BOARD):
+    """The couplet of the moment and those of the next slots: [(couplet, start of its slot in epoch seconds)]."""
+    now = now if now is not None else time.time()
+    span = opts["every"] * 60
+    slot = int(now // span)
+    couplets = pool(kind)
+    return [(opts["n"] or couplets[(slot + i) % len(couplets)], (slot + i) * span) for i in range(count)]
+
+
+def brief(n):
+    k = K.kural(n)
+    return {"n": n, "chapter": k["adhigaram"], "chapter_ta": k["chapter_name"], "chapter_en": k["chapter_name_en"]}
 
 
 @lru_cache(maxsize=2048)
@@ -134,7 +170,7 @@ def _kts_dates(settings):
 def index():
     settings = all_settings()
     base = current_app.config["BASE_URL"]
-    return render_template("display/index.html", kinds=KINDS, base=base, every=DEFAULT_EVERY, settings=settings,
+    return render_template("display/index.html", kinds=KINDS, groups=GROUPS, base=base, every=DEFAULT_EVERY, settings=settings,
                            langs=[(c, (K.lang_info(c) or {}).get("native", c)) for c in K.ORIENTATION_LANGS if c not in ("ta", "hi", "en")])
 
 
@@ -147,7 +183,10 @@ def screen(kind):
     n, slot, left = moment(kind, opts)
     start, end, words = _kts_dates(settings)
     now = datetime.now(IST)
-    return render_template("display/screen.html", kind=kind, opts=opts, k=couplet(n, opts["local"], kind == "languages"),
+    rows = [brief(c) | {"at": datetime.fromtimestamp(at, IST).strftime("%H:%M")} for c, at in board(kind, opts)]
+    k = couplet(n, opts["local"], kind == "languages")
+    route = range(k["chapter"] * 10 - 9, k["chapter"] * 10 + 1)
+    return render_template("display/screen.html", kind=kind, opts=opts, k=k, board=rows, route=route,
                            slot=slot, left=int(left), kts_start=start, kts_end=end, kts_words=words, now=now,
                            weekday_ta=WEEKDAYS["ta"][now.weekday()], weekday_hi=WEEKDAYS["hi"][now.weekday()],
                            lang_seconds=LANG_SECONDS)
@@ -161,7 +200,8 @@ def now_json():
     opts = options(kind, request.args)
     n, slot, left = moment(kind, opts)
     return jsonify({"epoch_ms": int(time.time() * 1000), "slot": slot, "next_ms": int(left * 1000),
-                    "kural": couplet(n, opts["local"], kind == "languages")})
+                    "kural": couplet(n, opts["local"], kind == "languages"),
+                    "board": [brief(c) | {"at_ms": at * 1000} for c, at in board(kind, opts)]})
 
 
 @bp.after_app_request

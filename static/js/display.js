@@ -1,4 +1,4 @@
-/* Live banners for screens (1.2.61). The time comes from the portal (now.json), so a screen with a wrong clock
+/* Live banners for screens (1.2.61; metro and bus 1.2.63). The time comes from the portal (now.json), so a screen with a wrong clock
    still shows the time of India; the couplet changes when its slot ends, the same on every screen; when the
    network is down the banner keeps the time and the last couplet and asks again a minute later.
    Written for the older browsers of screen players: no modules, no arrow functions. */
@@ -63,9 +63,12 @@
   var endDay = body.getAttribute("data-kts-end") || "";
   var end = endDay ? Date.parse(endDay + "T23:59:59+05:30") : NaN;
   function countdown() {
-    var units = $("count-units"), live = $("count-live");
-    if (!units || isNaN(start)) return;
+    var units = $("count-units"), live = $("count-live"), days = $("bus-days");
+    if (isNaN(start)) return;
     var now = Date.now() + offset, left = Math.max(0, Math.floor((start - now) / 1000));
+    // the destination board of the bus: the days to Kashi, then the day of the programme
+    if (days) days.textContent = Math.floor(left / 86400);   // whole days, as the countdown shows them
+    if (!units) return;
     if (left > 0) {
       var parts = { d: Math.floor(left / 86400), h: Math.floor(left % 86400 / 3600), m: Math.floor(left % 3600 / 60), s: left % 60 };
       units.querySelectorAll("[data-u]").forEach(function (b) { var u = b.getAttribute("data-u"); b.textContent = u === "d" ? parts.d : pad(parts[u]); });
@@ -114,9 +117,40 @@
   // ---- the couplet of the moment, from the portal ---------------------------------------------------------
   var url = body.getAttribute("data-now");
   function text(id, lines) { var el = $(id); if (el && lines) el.textContent = lines.join(" / "); }
-  function show(k) {
+  // ---- the metro line and the departures board: from the couplets of the next slots ---------------------------
+  function hhmm(ms) { var d = new Date(ms + 19800000); return pad(d.getUTCHours()) + ":" + pad(d.getUTCMinutes()); }
+  function line(k, board) {
+    var route = $("route");
+    if (!route) return;
+    body.setAttribute("data-line", k.chapter);
+    var first = k.chapter * 10 - 9, items = route.children;
+    for (var i = 0; i < items.length; i++) {
+      var n = first + i;
+      items[i].className = n < k.n ? "past" : n === k.n ? "here" : "ahead";
+      items[i].querySelector("b").textContent = n;
+    }
+    if ($("line-badge")) $("line-badge").textContent = k.chapter;
+    if ($("line-ta")) $("line-ta").textContent = k.chapter_ta;
+    if ($("line-en")) $("line-en").textContent = k.chapter_en;
+    if ($("here-n")) $("here-n").textContent = k.n;
+    if ($("next-n") && board && board[1]) $("next-n").textContent = board[1].n;
+  }
+  function departures(board) {
+    var el = $("board");
+    if (!el || !board) return;
+    var rows = el.querySelectorAll(".board-row:not(.board-head)");
+    for (var i = 0; i < rows.length && i < board.length; i++) {
+      var b = board[i];
+      rows[i].querySelector(".t").textContent = hhmm(b.at_ms);
+      rows[i].querySelector(".n").textContent = b.n;
+      var ch = rows[i].querySelector(".ch").children;
+      ch[0].textContent = b.chapter_ta; ch[1].textContent = b.chapter_en;
+    }
+  }
+  function show(k, board) {
     var main = $("kural");
-    if (!main || String(k.n) === main.getAttribute("data-n")) return;
+    if (main && String(k.n) === main.getAttribute("data-n")) { departures(board); return; }
+    if (!main) return;
     main.classList.add("fade");
     setTimeout(function () {
       main.setAttribute("data-n", k.n);
@@ -131,6 +165,8 @@
       var qr = $("k-qr");
       if (qr && k.qr) { qr.src = k.qr; qr.alt = "QR code: couplet " + k.n + " on kts.cict.in"; }
       if (k.streams) streams(k.streams);
+      line(k, board);
+      departures(board);
       fit();
       main.classList.remove("fade");
     }, 900);
@@ -161,7 +197,7 @@
         var data = JSON.parse(req.responseText), back = Date.now();
         offset = data.epoch_ms - Math.round((sent + back) / 2);
         nextAt = back + data.next_ms;
-        show(data.kural);
+        show(data.kural, data.board);
         // the next couplet: when its slot begins, plus up to 15 s, so that the screens do not all ask at once
         later(data.next_ms + 1000 + Math.floor(Math.random() * 15000));
       } catch (e) { later(60000); }

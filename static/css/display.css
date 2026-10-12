@@ -1,4 +1,4 @@
-/* Live banners for screens (1.2.61). A screen has one look, the banner's own, whatever the device's theme:
+/* Live banners for screens (1.2.61; metro and bus 1.2.63). A screen has one look, the banner's own, whatever the device's theme:
    every colour is set here. Sizes follow the screen (vmin), so the banner fits any shape; a couplet keeps its
    two lines whole and display.js makes its type smaller when a line would not fit. */
 :root {
@@ -175,4 +175,110 @@ body.k-thanks { background: linear-gradient(110deg, #0a5656 0%, var(--teal) 100%
 }
 @media (prefers-reduced-motion: reduce) {
   .kural, .stream { transition: none; }
+}
+
+/* ---- metro trains and buses (1.2.63) ---- */
+.line-box, .led, .board { grid-row: 2; min-width: 0; }
+
+/* Kural Metro: a chapter is a line, its ten couplets the stations; the couplet of the moment is the station of the train */
+body.k-metro { --line: #6c3fb5; background: radial-gradient(110% 90% at 15% 0%, #1d2b44 0%, #0d1522 60%); }
+body.k-metro[data-line="62"] { --line: #7b3fc4; }
+body.k-metro[data-line="60"] { --line: #0f9d58; }
+body.k-metro[data-line="67"] { --line: #1f6fd1; }
+body.k-metro[data-line="63"] { --line: #d93a3a; }
+.k-metro .safe::before { border-color: var(--line); opacity: 1; }
+.k-metro .t-ta { color: var(--white); }
+.k-metro .eyebrow, .k-metro .ist, .k-metro .cite, .k-metro .qr-box span { color: #b9c6dc; }
+.k-metro .digital b { color: var(--white); }
+.k-metro .next i { background: var(--line); }
+.line-box { display: grid; gap: 1.8vmin; }
+.line-head { display: flex; align-items: center; gap: 2.4vmin; background: var(--line); border-radius: 1.2vmin; padding: 1.2vmin 2.6vmin 1.2vmin 1.4vmin; min-width: 0; }
+.badge { flex: none; width: 8vmin; height: 8vmin; border-radius: 50%; background: var(--white); color: var(--line); display: flex; align-items: center; justify-content: center;
+  font-family: var(--f-clock); font-weight: 700; font-size: 4.2vmin; }
+.line-name { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4vmin 2.4vmin; min-width: 0; font-size: 4.6vmin; font-weight: 700; color: var(--white); }
+.line-name [lang="en"] { font-size: 3vmin; font-weight: 400; font-style: italic; opacity: .92; }
+.line-label { margin-inline-start: auto; flex: none; font-family: var(--f-label); font-size: 2.2vmin; letter-spacing: .14em; color: var(--white); }
+.line-label [lang="ta"] { font-family: var(--f-ta); letter-spacing: 0; }
+.route { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); }
+.route li { position: relative; display: flex; flex-direction: column; align-items: center; gap: 1vmin; }
+/* the track from a station to the next: in the colour of the line where the train has passed */
+.route li::after { content: ""; position: absolute; top: 2.6vmin; left: 50%; width: 100%; height: 1.2vmin; background: rgba(255,255,255,.2); }
+.route li:last-child::after { display: none; }
+.route li.past::after { background: var(--line); }
+.route i { position: relative; z-index: 1; width: 4vmin; height: 4vmin; margin: 1.2vmin 0; border-radius: 50%; background: #0d1522; border: .8vmin solid rgba(255,255,255,.5); }
+.route li.past i { background: var(--line); border-color: var(--line); }
+.route li.here i { width: 6.4vmin; height: 6.4vmin; margin: 0; background: var(--white); border: 1.4vmin solid var(--line); animation: station 2s ease-out infinite; }
+.route b { font-family: var(--f-clock); font-size: 2.6vmin; font-weight: 600; color: rgba(255,255,255,.7); font-variant-numeric: tabular-nums; }
+.route li.here b { font-size: 3.4vmin; font-weight: 700; color: var(--white); }
+@keyframes station { 0% { box-shadow: 0 0 0 0 rgba(255,255,255,.55); } 100% { box-shadow: 0 0 0 2.6vmin rgba(255,255,255,0); } }
+.route-note { display: flex; justify-content: space-between; gap: 3vmin; font-family: var(--f-label); font-size: 2.4vmin; letter-spacing: .06em; color: #c8d3e6; }
+.route-note [lang="ta"] { font-family: var(--f-ta); letter-spacing: 0; }
+.route-note b { font-family: var(--f-clock); color: var(--white); margin-inline-start: .6vmin; }
+.k-metro .leaf, .k-bus .leaf, .k-busstand .leaf { background: none; box-shadow: none; padding: 0; color: var(--white); }
+.k-metro .leaf::before, .k-bus .leaf::before, .k-busstand .leaf::before, .k-metro .holes, .k-bus .holes, .k-busstand .holes { display: none; }
+.k-metro .couplet { border-inline-start: .11em solid var(--line); padding-inline-start: .5em; text-align: left; font-size: 5.6em; }
+.k-metro .kural { gap: 1.4em; justify-items: start; text-align: left; }
+
+/* in the bus: a destination board in the style of an amber LED display, the couplet large and plain for daylight */
+body.k-bus { background: linear-gradient(180deg, #1c1c1c 0%, #0e0e0e 100%); }
+.k-bus .safe::before { border-color: #ffb000; opacity: .55; }
+.k-bus .t-ta, .k-bus .digital b { color: #ffc23d; }
+.k-bus .eyebrow, .k-bus .ist, .k-bus .cite, .k-bus .qr-box span { color: #ffb000; }
+.k-bus .next i { background: #ffb000; }
+.led { position: relative; overflow: hidden; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 3vmin;
+  background: #050505; border: .5vmin solid #2d2d2d; border-radius: 1.2vmin; padding: 1.4vmin 3vmin; box-shadow: inset 0 0 3vmin #000; }
+.led > * { color: #ffb000; text-shadow: 0 0 1.1vmin rgba(255,176,0,.75); }
+/* the dots of the display, drawn over the letters */
+.led::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: radial-gradient(circle, transparent 0 45%, rgba(5,5,5,.55) 52%); background-size: .7vmin .7vmin; }
+.led-route { font-family: var(--f-clock); font-weight: 700; font-size: 9vmin; line-height: 1; padding-inline-end: 3vmin; border-inline-end: .4vmin solid #333; }
+.led-dest { font-size: 6.2vmin; font-weight: 700; letter-spacing: .05em; white-space: nowrap; overflow: hidden; }
+.led-days { display: grid; justify-items: end; gap: .4vmin; }
+.led-days b { font-family: var(--f-clock); font-size: 8vmin; line-height: 1; font-variant-numeric: tabular-nums; }
+.led-days span { font-family: var(--f-label); font-size: 2.6vmin; letter-spacing: .12em; }
+.led-days [lang="ta"] { font-family: var(--f-ta); letter-spacing: 0; }
+.k-bus .couplet { font-size: 6.6em; color: #fff; }
+.k-bus .tr-en { color: #d9d9d9; }
+.k-bus .tr-local { color: #ffc23d; }
+
+/* at the bus stand: a departures board, the couplet of the moment boarding now */
+body.k-busstand { background: linear-gradient(180deg, #0f2240 0%, #0a1830 100%); }
+.k-busstand .t-ta { color: #ffd23f; }
+.k-busstand .digital b { color: #ffd23f; }
+.k-busstand .next i { background: #ffd23f; }
+.board { background: #050b16; border: .4vmin solid #1f3150; border-radius: 1.2vmin; overflow: hidden; }
+.board-row { display: grid; grid-template-columns: 14vmin 12vmin minmax(0, 1fr) 24vmin; align-items: center; gap: 2.4vmin; padding: 1vmin 2.6vmin;
+  border-top: .25vmin solid #172741; font-size: 3vmin; color: #ffd23f; }
+.board-row > * { min-width: 0; }
+.board-head { border-top: 0; background: #0d1a2e; font-family: var(--f-label); font-size: 1.8vmin; letter-spacing: .1em; color: #93a7c7; }
+.board-head [lang="ta"] { font-family: var(--f-ta); letter-spacing: 0; }
+.board-row .t, .board-row .n { font-family: var(--f-clock); font-weight: 700; font-variant-numeric: tabular-nums; }
+.board-row .ch { color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.board-row .ch [lang="en"] { font-family: var(--f-en); font-style: italic; color: #b9c6dc; font-size: .8em; margin-inline-start: 1.2vmin; }
+.board-row .st { justify-self: start; font-family: var(--f-label); font-size: 2vmin; letter-spacing: .08em; padding: .5vmin 1.6vmin; border-radius: 999px; background: #1c2d49; color: #cfe0ff; white-space: nowrap; }
+.board-row .st [lang="ta"] { font-family: var(--f-ta); letter-spacing: 0; }
+.board-row.now { background: rgba(255,210,63,.09); }
+.board-row.now .st { background: #18a04a; color: #fff; }
+.board-row.soon .st { background: #f29f05; color: #14213d; }
+.k-busstand .couplet { font-size: 5em; }
+.k-busstand .kural { gap: 1.2em; }
+
+@media (min-aspect-ratio: 5/2) {
+  .k-metro .safe, .k-bus .safe, .k-busstand .safe { grid-template-rows: auto minmax(0, 1fr); }
+  .k-metro .clock-box, .k-bus .clock-box, .k-busstand .clock-box,
+  .k-metro .kural, .k-bus .kural, .k-busstand .kural, .k-metro .foot, .k-bus .foot, .k-busstand .foot { grid-row: 2; }
+  .line-box, .led, .board { grid-column: 1 / -1; grid-row: 1; }
+  .line-head, .route-note { display: none; }
+  .route i { width: 5vmin; height: 5vmin; } .route li.here i { width: 8vmin; height: 8vmin; } .route li::after { top: 3.2vmin; height: 1.6vmin; }
+  .route b { font-size: 4vmin; } .route li.here b { font-size: 5vmin; }
+  .led-route, .led-days b { font-size: 16vmin; } .led-dest { font-size: 11vmin; } .led-days span { font-size: 3.4vmin; }
+  .board-row:nth-child(n+4) { display: none; }
+  .board-row { font-size: 5vmin; grid-template-columns: 20vmin 16vmin minmax(0, 1fr) 40vmin; } .board-head { font-size: 3vmin; } .board-row .st { font-size: 3.4vmin; }
+}
+@media (max-aspect-ratio: 4/5) {
+  .route b { font-size: 2.2vmin; } .route li.here b { font-size: 2.8vmin; }
+  .board-row { grid-template-columns: 12vmin 10vmin minmax(0, 1fr); } .board-row .st { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .route li.here i { animation: none; }
 }

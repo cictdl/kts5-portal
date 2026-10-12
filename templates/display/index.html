@@ -1,14 +1,16 @@
 {% extends "base.html" %}
 {% block title %}{{ t('disp.title') }}{% endblock %}
 {% block content %}
-{# The live banners for screens and their links (1.2.61) #}
+{# The live banners for screens and their links (1.2.61), by where they are shown: metro and bus 1.2.63 #}
 <div class="wrap section">
   <span class="eyebrow">{{ t('prog.a8.t') }}</span>
   <h1>{{ t('disp.title') }}</h1>
   <p class="lead dim" style="max-width:78ch">{{ t('disp.intro') }}</p>
   <div class="card accent" style="margin:14px 0 22px;max-width:78ch"><h3 style="margin-top:0">{{ t('disp.how_t') }}</h3><p class="dim" style="margin:0">{{ t('disp.how') }}</p></div>
+  {% for group, group_kinds in groups %}
+  <h2 id="for-{{ group }}" style="margin:26px 0 12px">{{ t('disp.g.' ~ group) }}</h2>
   <div class="grid grid-2">
-    {% for kind in kinds %}
+    {% for kind in group_kinds %}
     <div class="card" data-display-link id="{{ kind }}" style="display:grid;gap:10px;align-content:start;min-width:0">
       <h3 style="margin:0">{{ t('disp.k.%s.t' % kind) }}</h3>
       <p class="small dim" style="margin:0">{{ t('disp.k.%s.d' % kind) }}</p>
@@ -26,6 +28,7 @@
     </div>
     {% endfor %}
   </div>
+  {% endfor %}
 </div>
-<script src="{{ url_for('static', filename='js/display.js') }}?v=2" defer></script>
+<script src="{{ url_for('static', filename='js/display.js') }}?v=3" defer></script>
 {% endblock %}
