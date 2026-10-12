@@ -40,7 +40,7 @@
     {% for n in range(1, 11) %}
     <div class="card"><h3>{{ t('prog.a%d.t' % n) }}</h3><p class="small dim">{{ t('prog.a%d.d' % n) }}</p>{% if n == 6 %}
       <a class="btn sm secondary" href="#reels">▶ {{ t('prog.reels.count')|replace('{reels}', reels.count|string)|replace('{langs}', reels.langs|length|string) }}</a>{% elif n == 8 %}
-      <a class="btn sm secondary" href="#banners">⬇ {{ t('prog.disp.cta') }}</a>{% endif %}</div>
+      <a class="btn sm secondary" href="#banners">⬇ {{ t('prog.disp.cta') }}</a> <a class="btn sm secondary" href="{{ url_for('display.index') }}">📺 {{ t('disp.title') }}</a>{% endif %}</div>
     {% endfor %}
   </div>
 
@@ -63,7 +63,8 @@
   {# Public displays: the Kural Journey Banners for airports and railway stations, to download (1.2.60) #}
   <h3 id="banners" style="margin-top:36px;scroll-margin-top:96px">{{ t('prog.disp.title') }}</h3>
   <p class="dim" style="max-width:72ch">{{ t('prog.disp.d') }}</p>
-  <p><a class="btn sm saffron" href="{{ url_for('static', filename='banners/' ~ banners.all) }}" download>⬇ {{ t('prog.disp.all') }}</a></p>
+  <p class="btn-row"><a class="btn sm saffron" href="{{ url_for('static', filename='banners/' ~ banners.all) }}" download>⬇ {{ t('prog.disp.all') }}</a>
+    <a class="btn sm" href="{{ url_for('display.index') }}">📺 {{ t('disp.title') }}</a></p>
   <div class="grid grid-3 banner-grid" style="margin-top:14px">
     {% for b in banners.banners %}
     <figure class="card banner-card" style="margin:0;display:grid;gap:10px;align-content:start">

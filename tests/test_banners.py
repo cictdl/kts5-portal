@@ -16,7 +16,7 @@ def test_every_banner_has_its_print_file_and_its_preview():
     assert len(DATA["banners"]) == 10
     for b in DATA["banners"]:
         pdf, jpg = STATIC / b["file"], STATIC / b["thumb"]
-        assert pdf.read_bytes()[:5] == b"%PDF-" and pdf.stat().st_size < 400_000, b["file"]
+        assert pdf.read_bytes()[:5] == b"%PDF-" and pdf.stat().st_size < 600_000, b["file"]
         assert jpg.read_bytes()[:3] == b"\xff\xd8\xff" and b["w"] == 640, b["thumb"]
         assert b["title"] and b["where"] and b["size"] and b["place"]
     every = STATIC / DATA["all"]

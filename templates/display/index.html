@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{ t('disp.title') }}{% endblock %}
+{% block content %}
+{# The live banners for screens and their links (1.2.61) #}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('prog.a8.t') }}</span>
+  <h1>{{ t('disp.title') }}</h1>
+  <p class="lead dim" style="max-width:78ch">{{ t('disp.intro') }}</p>
+  <div class="card accent" style="margin:14px 0 22px;max-width:78ch"><h3 style="margin-top:0">{{ t('disp.how_t') }}</h3><p class="dim" style="margin:0">{{ t('disp.how') }}</p></div>
+  <div class="grid grid-2">
+    {% for kind in kinds %}
+    <div class="card" data-display-link id="{{ kind }}" style="display:grid;gap:10px;align-content:start;min-width:0">
+      <h3 style="margin:0">{{ t('disp.k.%s.t' % kind) }}</h3>
+      <p class="small dim" style="margin:0">{{ t('disp.k.%s.d' % kind) }}</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        <div class="field"><label for="local-{{ kind }}">{{ t('disp.local') }}</label>
+          <select id="local-{{ kind }}" data-opt="local"><option value="">{{ t('disp.none') }}</option>{% for c, name in langs %}<option value="{{ c }}">{{ name }}</option>{% endfor %}</select></div>
+        {% if kind != 'languages' %}<div class="field"><label for="every-{{ kind }}">{{ t('disp.every') }}</label>
+          <select id="every-{{ kind }}" data-opt="every" data-default="{{ every[kind] }}">{% for m in (5, 10, 15, 30, 60) %}<option {{ 'selected' if m == every[kind] }}>{{ m }}</option>{% endfor %}</select></div>{% endif %}
+      </div>
+      <code data-link data-base="{{ base }}/display/{{ kind }}" dir="ltr" style="overflow-wrap:anywhere;font-size:.9rem">{{ base }}/display/{{ kind }}</code>
+      <div class="btn-row" style="margin:0">
+        <a class="btn sm" data-open href="{{ url_for('display.screen', kind=kind) }}" target="_blank" rel="noopener">{{ t('disp.open') }} ↗</a>
+        <button class="btn sm secondary" type="button" data-copy data-label="{{ t('disp.copy') }}" data-done="{{ t('disp.copied') }}">{{ t('disp.copy') }}</button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<script src="{{ url_for('static', filename='js/display.js') }}?v=2" defer></script>
+{% endblock %}

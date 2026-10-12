@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+{# A live banner for a screen (1.2.61): full screen, no menu; display.js keeps the clock and the couplet up to date #}
+{% set titles = {
+  'welcome': ('காசி உங்களை வரவேற்கிறது', 'काशी में आपका स्वागत है', 'Welcome to Kashi'),
+  'kural': ('ஒரு மணிக் குறள்', 'इस घड़ी का कुरल', 'Kural of the hour'),
+  'languages': ('ஒரு குறள், பல மொழிகள்', 'एक कुरल, अनेक भाषाएँ', 'One couplet, many languages'),
+  'platform': ('காலம் அறிந்து செயல்', 'समय पहचान कर कर्म', 'The right time, the right place'),
+  'countdown': ('காசி தமிழ்ச் சங்கமம் 5.0', 'काशी तमिल संगमम 5.0', 'Kashi Tamil Sangamam 5.0'),
+  'thanks': ('பயணத்திற்கு நன்றி', 'यात्रा के लिए धन्यवाद', 'Thank you for travelling'),
+} %}
+{% set t3 = titles[kind] %}
+<html lang="ta" data-kind="{{ kind }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>{{ t3[2] }} · KTS 5.0</title>
+<link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/display.css') }}?v=2">
+</head>
+<body class="screen k-{{ kind }}" id="screen"
+      data-now="{{ url_for('display.now_json', kind=kind, every=opts.every, local=opts.local or None, n=opts.n or None) }}"
+      data-left="{{ left }}" data-slot="{{ slot }}" data-kts-start="{{ kts_start }}" data-kts-end="{{ kts_end }}"
+      data-lang-seconds="{{ lang_seconds }}" data-every="{{ opts.every }}">
+  <div class="safe">
+    <header class="top">
+      <div class="titles">
+        <span class="eyebrow">KASHI TAMIL SANGAMAM 5.0 · <span lang="ta">திருக்குறள் பயில்வோம்</span></span>
+        <h1><span class="t-ta" lang="ta">{{ t3[0] }}</span> <span class="t-hi" lang="hi">{{ t3[1] }}</span> <span class="t-en" lang="en">{{ t3[2] }}</span></h1>
+      </div>
+      <div class="clock-box" aria-label="Time in India">
+        {% if kind == 'platform' %}
+        <svg class="analog" viewBox="0 0 100 100" aria-hidden="true">
+          <circle class="face" cx="50" cy="50" r="46"/>
+          {% for a in range(0, 360, 30) %}<line class="tick" x1="50" y1="8" x2="50" y2="15" transform="rotate({{ a }} 50 50)"/>{% endfor %}
+          <line class="hand h" id="hand-h" x1="50" y1="52" x2="50" y2="27" transform="rotate({{ (now.hour % 12) * 30 + now.minute * 0.5 }} 50 50)"/>
+          <line class="hand m" id="hand-m" x1="50" y1="54" x2="50" y2="15" transform="rotate({{ now.minute * 6 }} 50 50)"/>
+          <line class="hand s" id="hand-s" x1="50" y1="58" x2="50" y2="12" transform="rotate({{ now.second * 6 }} 50 50)"/>
+          <circle class="pin" cx="50" cy="50" r="3"/>
+        </svg>
+        {% endif %}
+        <div class="digital"><b id="clock" dir="ltr">{{ now.strftime('%H:%M') }}<small id="clock-s">:{{ now.strftime('%S') }}</small></b>
+          <span class="ist" dir="ltr">IST</span></div>
+        <div class="date" id="date"><span lang="ta" id="day-ta">{{ weekday_ta }}</span> · <span lang="hi" id="day-hi">{{ weekday_hi }}</span> · <span lang="en" id="day-en" dir="ltr">{{ now.strftime('%a %d %b %Y') }}</span></div>
+      </div>
+    </header>
+
+    {% if kind == 'countdown' %}
+    <section class="count" aria-live="off">
+      <div class="count-dates"><b dir="ltr">{{ kts_words }}</b> · <span lang="ta">வாரணாசி</span> · <span lang="hi">वाराणसी</span> · Varanasi</div>
+      <div class="count-units" id="count-units" dir="ltr">
+        <div class="u"><b data-u="d">–</b><span>days · <i lang="ta">நாள்</i></span></div>
+        <div class="u"><b data-u="h">–</b><span>hours · <i lang="ta">மணி</i></span></div>
+        <div class="u"><b data-u="m">–</b><span>minutes · <i lang="ta">நிமிடம்</i></span></div>
+        <div class="u"><b data-u="s">–</b><span>seconds · <i lang="ta">நொடி</i></span></div>
+      </div>
+      <div class="count-live" id="count-live" hidden></div>
+    </section>
+    {% endif %}
+
+    <main class="kural" id="kural" data-n="{{ k.n }}">
+      <div class="leaf">
+        <span class="holes" aria-hidden="true"></span>
+        <p class="couplet" lang="ta" id="k-ta"><span>{{ k.ta[0] }}</span><span>{{ k.ta[1] }}</span></p>
+      </div>
+      {% if kind == 'languages' %}
+      <div class="cycle" id="cycle">
+        {% for s in k.streams %}{% set stream = s.code %}<div class="stream{{ ' on' if loop.first }}" lang="{{ stream|langtag }}" dir="{{ s.dir }}" data-code="{{ s.code }}">
+          <p class="tr fitw">{{ s.lines|join(' / ') }}</p><span class="lname"><bdi>{{ s.name }}</bdi>{% if s.name != s.en_name %} · {{ s.en_name }}{% endif %}</span></div>{% endfor %}
+      </div>
+      <div class="dots" id="dots" aria-hidden="true">{% for s in k.streams %}<i class="{{ 'on' if loop.first }}"></i>{% endfor %}</div>
+      {% else %}
+      <p class="tr tr-hi fitw" lang="hi" id="k-hi">{{ k.hi|join(' / ') }}</p>
+      <p class="tr tr-en fitw" lang="en" id="k-en">{{ k.en|join(' / ') }}</p>
+      {% if k.local %}{% set stream = k.local.code %}<p class="tr tr-local fitw" lang="{{ stream|langtag }}" dir="{{ k.local.dir }}" id="k-local">{{ k.local.lines|join(' / ') }}</p>{% endif %}
+      {% endif %}
+      <p class="cite" id="k-cite"><span lang="ta">குறள் {{ k.n }} · {{ k.chapter_ta }}</span> · <span lang="en">{{ k.chapter_en }}</span></p>
+    </main>
+
+    <footer class="foot">
+      <div class="logos-strip" role="img" aria-label="Government of India · Ministry of Education · Central Institute of Classical Tamil · Kashi Tamil Sangamam">
+        <img src="{{ url_for('static', filename='img/logos/goi.png') }}" alt="" width="494" height="220">
+        <img src="{{ url_for('static', filename='img/logos/moe.png') }}" alt="" width="474" height="220">
+        <img src="{{ url_for('static', filename='img/cict-logo.png') }}" alt="" width="160" height="160">
+        <img src="{{ url_for('static', filename='img/kts-logo.png') }}" alt="" width="433" height="520">
+      </div>
+      <div class="next" id="next" aria-hidden="true"><i id="next-bar"></i></div>
+      {% set qr = k.qr %}<div class="qr-box">{% if qr %}<img id="k-qr" src="{{ qr }}" alt="QR code: couplet {{ k.n }} on kts.cict.in">{% endif %}<span dir="ltr">kts.cict.in</span></div>
+    </footer>
+  </div>
+  <div class="kolam" aria-hidden="true"></div>
+<script src="{{ url_for('static', filename='js/display.js') }}?v=2" defer></script>
+</body>
+</html>

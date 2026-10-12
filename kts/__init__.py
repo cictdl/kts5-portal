@@ -74,6 +74,8 @@ def create_app(config_object=Config):
     app.register_blueprint(campus.bp)
     from . import practice  # the practice test for students (1.2.54)
     app.register_blueprint(practice.bp)
+    from . import display  # the live banners for screens (1.2.61)
+    app.register_blueprint(display.bp)
 
     # ---- request guards -------------------------------------------------
     @app.before_request

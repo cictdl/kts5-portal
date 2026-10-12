@@ -1,0 +1,178 @@
+/* Live banners for screens (1.2.61). A screen has one look, the banner's own, whatever the device's theme:
+   every colour is set here. Sizes follow the screen (vmin), so the banner fits any shape; a couplet keeps its
+   two lines whole and display.js makes its type smaller when a line would not fit. */
+:root {
+  --night: #142347; --night-2: #23407a; --marigold: #f29f05; --maroon: #6d1f2b; --teal: #0b6466; --green: #17694a;
+  --vermilion: #c7361f; --leaf: #e8d39b; --leaf-2: #f4e7bf; --ink-brown: #3b2711; --gold: #e3b04b; --white: #ffffff;
+  --ink: #13233a; --mist: #d9e2ef;
+  --f-couplet: "Noto Serif Tamil", "Latha", "Nirmala UI", "Tamil Sangam MN", serif;
+  --f-ta: "Nirmala UI", "Noto Sans Tamil", "Tamil Sangam MN", sans-serif;
+  --f-hi: "Noto Serif Devanagari", "Kokila", "Mangal", "Nirmala UI", serif;
+  --f-en: Georgia, Cambria, "Times New Roman", serif;
+  --f-label: "Bahnschrift Condensed", "Bahnschrift", "Roboto Condensed", "Arial Narrow", "Segoe UI", sans-serif;
+  --f-clock: "Bahnschrift", "Roboto", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body.screen { background: var(--night); color: var(--white); font-family: var(--f-ta); cursor: none; }
+[lang="hi"] { font-family: var(--f-hi); }
+[lang="en"] { font-family: var(--f-en); }
+.safe { position: relative; z-index: 1; height: 100%; display: grid; grid-template-rows: auto auto 1fr auto; gap: 2.2vmin;
+  padding: 6vmin 7vmin 7.5vmin; }
+/* the gold frame of the safe area: all text stays inside it */
+.safe::before { content: ""; position: absolute; inset: 2.6vmin; border: .35vmin solid var(--gold); border-radius: 1.4vmin; pointer-events: none; opacity: .85; }
+.safe > * { min-width: 0; }
+.top { grid-row: 1; } .count { grid-row: 2; } .kural { grid-row: 3; } .foot { grid-row: 4; }
+
+/* top: the title in three languages, the clock */
+.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 3vmin; }
+.titles { display: grid; gap: .8vmin; min-width: 0; }
+.eyebrow { font-family: var(--f-label); font-size: 2vmin; letter-spacing: .2em; color: var(--gold); }
+.eyebrow [lang="ta"] { font-family: var(--f-ta); letter-spacing: 0; }
+.top h1 { margin: 0; font-weight: 700; line-height: 1.15; display: flex; flex-wrap: wrap; align-items: baseline; gap: .4vmin 2.4vmin; }
+.t-ta { font-size: 5.4vmin; color: var(--marigold); }
+.t-hi { font-size: 3.2vmin; font-weight: 600; }
+.t-en { font-size: 3.2vmin; font-style: italic; font-weight: 400; color: var(--mist); }
+.clock-box { display: grid; justify-items: end; gap: .6vmin; text-align: right; flex: none; }
+.digital { display: flex; align-items: baseline; gap: 1vmin; }
+.digital b { font-family: var(--f-clock); font-size: 9vmin; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; color: var(--marigold); letter-spacing: .02em; }
+.digital small { font-size: .45em; opacity: .85; }
+.ist { font-family: var(--f-label); font-size: 2vmin; letter-spacing: .14em; color: var(--gold); }
+.date { font-size: 2.3vmin; color: var(--mist); }
+
+/* the couplet: on a palm leaf, with its two string holes; the translations under it */
+/* the sizes of the couplet and its translations are in em of one scale (--s), which display.js lowers when they would not fit */
+.kural { font-size: calc(1vmin * var(--s, 1)); display: grid; grid-template-columns: minmax(0, 1fr); align-content: center; justify-items: center; gap: 2em; text-align: center; min-height: 0; overflow: hidden; transition: opacity .9s ease; }
+.kural > *, .leaf > *, .cycle > *, .stream > * { min-width: 0; max-width: 100%; }
+.kural.fade { opacity: 0; }
+.leaf { position: relative; width: 100%; max-width: 100%; background: linear-gradient(180deg, var(--leaf-2) 0%, var(--leaf) 55%, #dcc58a 100%);
+  color: var(--ink-brown); border-radius: 999px / 42%; padding: 3.4em 11em; box-shadow: inset 0 0 0 .3vmin rgba(110,80,30,.35), 0 1vmin 3vmin rgba(0,0,0,.3); }
+.leaf::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: repeating-linear-gradient(180deg, transparent 0 1.6em, rgba(120,90,40,.12) 1.6em 1.75em); }
+.holes::before, .holes::after { content: ""; position: absolute; top: 50%; width: 2.2em; height: 2.2em; margin-top: -1.1em; border-radius: 50%;
+  background: rgba(70,45,15,.55); box-shadow: inset 0 .25em .35em rgba(0,0,0,.4); }
+.holes::before { left: 5em; } .holes::after { right: 5em; }
+.couplet { position: relative; margin: 0; font-family: var(--f-couplet); font-weight: 700; font-size: 6.4em; line-height: 1.45; }
+.couplet span { display: block; white-space: nowrap; }
+.tr { margin: 0; max-width: 100%; font-size: 3.1em; line-height: 1.4; }
+.tr-en { font-style: italic; color: var(--mist); }
+.tr-local { color: var(--gold); }
+.cite { margin: .4em 0 0; font-family: var(--f-label); font-size: 2.2em; letter-spacing: .08em; color: var(--gold); }
+.cite [lang="ta"] { font-family: var(--f-ta); letter-spacing: 0; }
+
+/* foot: credits, the time to the next couplet, the QR code */
+.foot { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) auto; align-items: end; gap: 4vmin; }
+/* the logos of the Government of India, the Ministry of Education, CICT and Kashi Tamil Sangamam, on a white strip */
+.logos-strip { justify-self: start; display: inline-flex; align-items: center; gap: 2.4vmin; max-width: 100%; background: var(--white);
+  border-radius: 1.4vmin; padding: 1.1vmin 2.2vmin; box-shadow: 0 .5vmin 1.6vmin rgba(0,0,0,.25); }
+.logos-strip img { display: block; height: 7.5vmin; width: auto; min-width: 0; }
+.next { height: .8vmin; border-radius: 1vmin; background: rgba(255,255,255,.16); overflow: hidden; align-self: center; }
+.next i { display: block; height: 100%; width: 0; background: var(--marigold); border-radius: inherit; transition: width 1s linear; }
+.qr-box { display: grid; justify-items: center; gap: .6vmin; }
+.qr-box img { width: 11vmin; height: 11vmin; background: #fff; padding: .6vmin; border-radius: .8vmin; image-rendering: pixelated; }
+.qr-box span { font-family: var(--f-label); font-size: 1.6vmin; letter-spacing: .1em; color: var(--gold); }
+
+/* the kolam: a band of the threshold drawing along the foot, in gold */
+.kolam { position: absolute; left: 0; right: 0; bottom: 3.6vmin; height: 2.4vmin; z-index: 0; opacity: .9;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='16' viewBox='0 0 48 16'%3E%3Cg fill='none' stroke='%23e3b04b' stroke-width='1.3'%3E%3Cpath d='M2 8 L12 1.5 L22 8 L12 14.5 Z'/%3E%3Cpath d='M26 8 L36 1.5 L46 8 L36 14.5 Z'/%3E%3C/g%3E%3Cg fill='%23e3b04b'%3E%3Ccircle cx='12' cy='8' r='2'/%3E%3Ccircle cx='36' cy='8' r='2'/%3E%3Ccircle cx='24' cy='8' r='1.1'/%3E%3Ccircle cx='0' cy='8' r='1.1'/%3E%3Ccircle cx='48' cy='8' r='1.1'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: auto 100%; background-repeat: repeat-x; margin: 0 6vmin; }
+
+/* ---- the six banners: their colours ---- */
+body.k-welcome { background: radial-gradient(90% 120% at 50% 115%, var(--night-2) 0%, var(--night) 62%); }
+body.k-kural { background: radial-gradient(120% 90% at 85% 0%, #213a6a 0%, var(--night) 62%); }
+.k-kural .leaf, .k-thanks .leaf, .k-countdown .leaf { background: none; box-shadow: none; padding: 0; color: var(--white); }
+.k-kural .leaf::before, .k-thanks .leaf::before, .k-countdown .leaf::before, .k-kural .holes, .k-thanks .holes, .k-countdown .holes { display: none; }
+.k-kural .couplet { border-inline-start: .11em solid var(--marigold); padding-inline-start: .5em; text-align: left; }
+body.k-languages { background: linear-gradient(180deg, #fbf6e6 0%, #f1e4bd 100%); color: var(--ink); }
+.k-languages .t-ta { color: var(--maroon); } .k-languages .t-en, .k-languages .date { color: #4a5b70; }
+.k-languages .logos-strip, .k-platform .logos-strip { box-shadow: 0 0 0 .25vmin rgba(20,35,71,.18); }
+.k-languages .digital b { color: var(--maroon); } .k-languages .eyebrow, .k-languages .ist, .k-languages .cite, .k-languages .qr-box span { color: #9a6a12; }
+.k-languages .safe::before { border-color: var(--maroon); opacity: .45; }
+.k-languages .next { background: rgba(0,0,0,.08); } .k-languages .next i { background: var(--maroon); }
+body.k-platform { background: linear-gradient(180deg, #f7b52c 0%, var(--marigold) 100%); color: var(--night); }
+.k-platform .t-ta, .k-platform .digital b { color: var(--night); } .k-platform .t-en, .k-platform .date, .k-platform .tr-en { color: #2e3a52; }
+.k-platform .eyebrow, .k-platform .ist, .k-platform .cite, .k-platform .qr-box span { color: var(--maroon); }
+.k-platform .safe::before { border-color: var(--night); opacity: .5; }
+.k-platform .next { background: rgba(20,35,71,.18); } .k-platform .next i { background: var(--night); }
+body.k-countdown { background: linear-gradient(115deg, var(--maroon) 0%, #8e2a2a 60%, #a3372c 100%); }
+.k-countdown .t-ta { color: var(--white); font-size: 6.4vmin; }
+.k-countdown .couplet { font-size: 4.4em; }
+body.k-thanks { background: linear-gradient(110deg, #0a5656 0%, var(--teal) 100%); }
+.k-thanks .t-ta { color: var(--gold); }
+
+/* the analog clock of the platform banner */
+.analog { width: 20vmin; height: 20vmin; }
+.analog .face { fill: var(--white); stroke: var(--night); stroke-width: 4; }
+.analog .tick { stroke: var(--night); stroke-width: 3.2; stroke-linecap: round; }
+.analog .hand { stroke: var(--night); stroke-linecap: round; }
+.analog .h { stroke-width: 5; } .analog .m { stroke-width: 3.4; } .analog .s { stroke: var(--vermilion); stroke-width: 1.6; }
+.analog .pin { fill: var(--vermilion); }
+.k-platform .clock-box { grid-template-columns: auto auto; align-items: center; column-gap: 3vmin; }
+.k-platform .clock-box .analog { grid-row: 1 / span 2; }
+
+/* the countdown */
+.count { display: grid; justify-items: center; gap: 1.6vmin; }
+.count-dates { font-size: 3vmin; color: var(--gold); }
+.count-dates b { font-family: var(--f-clock); color: var(--marigold); }
+.count-units { display: flex; gap: 2.4vmin; }
+.count-units .u { background: var(--white); color: var(--maroon); border-radius: 1.4vmin; padding: 1.6vmin 2.6vmin; min-width: 17vmin; display: grid; justify-items: center;
+  border-bottom: .8vmin solid var(--gold); }
+.count-units b { font-family: var(--f-clock); font-size: 11vmin; line-height: 1; font-variant-numeric: tabular-nums; }
+.count-units span { font-family: var(--f-label); font-size: 1.8vmin; letter-spacing: .1em; text-transform: uppercase; }
+.count-units i { font-style: normal; font-family: var(--f-ta); text-transform: none; letter-spacing: 0; }
+.count-live { font-size: 5vmin; font-weight: 700; color: var(--marigold); text-align: center; }
+
+/* one couplet, many languages */
+.cycle { position: relative; width: 100%; min-height: 15em; display: grid; grid-template-columns: minmax(0, 1fr); }
+.stream { grid-area: 1 / 1; display: grid; justify-items: center; align-content: center; gap: 1em; opacity: 0; transition: opacity 1s ease; }
+.stream.on { opacity: 1; }
+.stream .tr { font-size: 3.6em; color: var(--ink); }
+.lname { font-family: var(--f-label); font-size: 2.4em; letter-spacing: .06em; color: var(--maroon); }
+.dots { display: flex; gap: .8em; flex-wrap: wrap; justify-content: center; }
+.dots i { width: 1.1em; height: 1.1em; border-radius: 50%; background: rgba(109,31,43,.22); }
+.dots i.on { background: var(--maroon); }
+
+/* ---- the shape of the screen ---- */
+/* a wide strip (an LED band above the platform, a ticker): one row, the couplet in the middle */
+@media (min-aspect-ratio: 5/2) {
+  .safe { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-rows: 1fr; align-items: center; gap: 4vmin; padding: 7vmin 6vmin; }
+  .top { display: contents; }
+  .titles { display: none; }
+  .clock-box { grid-column: 1; grid-row: 1; justify-items: start; text-align: left; }
+  .count { grid-column: 1; grid-row: 1; }
+  .k-countdown .clock-box { display: none; }
+  .kural { grid-column: 2; grid-row: 1; gap: 1.2em; }
+  .foot { grid-column: 3; grid-row: 1; display: grid; grid-template-columns: auto; justify-items: center; gap: 3vmin; }
+  .foot .next { display: none; }
+  .logos-strip { justify-self: center; gap: 3vmin; padding: 2vmin 3vmin; border-radius: 2.4vmin; }
+  .logos-strip img { height: 14vmin; }
+  .tr-hi, .tr-local, .dots { display: none; }
+  .couplet { font-size: 11em; }
+  .tr { font-size: 5.4em; }
+  .cite { font-size: 4em; }
+  .digital b { font-size: 20vmin; }
+  .date, .ist { font-size: 4.4vmin; }
+  .qr-box img { width: 26vmin; height: 26vmin; }
+  .qr-box span { font-size: 3.4vmin; }
+  .count-units b { font-size: 20vmin; } .count-units .u { min-width: 26vmin; } .count-units span { font-size: 3.4vmin; } .count-dates { font-size: 5vmin; }
+  .kolam { display: none; }
+  .analog { width: 50vmin; height: 50vmin; }
+}
+/* a portrait screen (a standee, a pillar): everything stacked, the couplet larger */
+@media (max-aspect-ratio: 4/5) {
+  .top { flex-direction: column; align-items: stretch; }
+  .clock-box { justify-items: start; text-align: left; }
+  .t-ta { font-size: 6.4vmin; }
+  .couplet { font-size: 7em; }
+  .tr { font-size: 3.8em; }
+  .leaf { padding: 4em 9em; }
+  .foot { grid-template-columns: minmax(0, 1fr) auto; }
+  .foot .next { grid-column: 1 / -1; grid-row: 1; }
+  .logos-strip img { height: 6vmin; }
+  .qr-box img { width: 16vmin; height: 16vmin; }
+  .count-units { flex-wrap: wrap; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kural, .stream { transition: none; }
+}
