@@ -743,6 +743,32 @@ def kural_browser():
                            variants=K.VARIANTS)
 
 
+# the posters and charts (1.2.67): four A3 PDFs in each language of the portal, static/posters/KTS5-poster-<n>-<lang>.pdf,
+# made by the build script from the portal's own interface strings and corpus; their titles are these keys
+POSTERS = ((1, "site.tagline"), (2, "post.p2"), (3, "post.p3"), (4, "post.p4"))
+
+
+@bp.route("/posters")
+def posters():
+    """Posters and charts for schools, colleges and libraries, in the language asked for (?l=) or that of the interface."""
+    stream, _direction = _stream(request.args.get("l"))
+    lang = next((base for base, var in K.VARIANTS.items() if var == stream), stream)
+    if lang not in K.ORIENTATION_LANGS:
+        lang = "en"
+    folder = Path(current_app.static_folder) / "posters"
+    items = []
+    for n, key in POSTERS:
+        name = f"KTS5-poster-{n}-{lang}"
+        pdf = folder / f"{name}.pdf"
+        if pdf.exists():
+            items.append({"n": n, "title": t(key), "file": f"posters/{name}.pdf", "thumb": f"posters/thumbs/{name}.jpg",
+                          "kb": max(1, pdf.stat().st_size // 1024)})
+    # named as the interface names them (Kashmiri in Nastaliq, Konkani in Devanagari, as the posters are), with the tag of that stream
+    langs = [(c, i18n.LANG_INFO.get(c, {}).get("corpus", c), i18n.LANG_INFO.get(c, {}).get("native", c), i18n.LANG_INFO.get(c, {}).get("name", c))
+             for c in K.ORIENTATION_LANGS]
+    return render_template("public/posters.html", items=items, poster_lang=lang, langs=langs, settings=all_settings())
+
+
 @bp.route("/thirukkural-108")
 def kural108():
     """The 108 Thirukkural (1.2.64): one couplet from each of the first 108 chapters, with CICT's Tamil commentary,
@@ -968,6 +994,7 @@ SITEMAP = [
                           ("public.notices", {}, "nav.notices"), ("public.partners", {}, "nav.partners"),
                           ("public.gallery", {}, "nav.gallery"), ("public.contact", {}, "nav.contact")]),
     ("pol.sm_students", [("public.guide", {}, "guide.title"), ("practice.home", {}, "prac.title"), ("public.kural108", {}, "k108.title"),
+                         ("public.posters", {}, "res.cat_poster"),
                          ("public.register", {}, "nav.register"), ("public.status", {}, "nav.status"),
                          ("public.examination", {}, "nav.exam"), ("public.merit", {}, "nav.merit"),
                          ("public.stipend_guide", {}, "stip.title"), ("candidate.login", {}, "nav.candidate"),

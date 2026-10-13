@@ -486,7 +486,7 @@ def questions_check():
     lang = (request.args.get("lang") or "").strip()
     rep = QBANK.report(n)
     shown = [p for p in rep["problems"] if not lang or p["row"]["lang"] == lang]
-    return render_template("console/questions_check.html", rep=rep, shown=shown[:300], hidden=max(len(shown) - 300, 0), lang=lang)
+    return render_template("console/questions_check.html", rep=rep, shown=shown[:300], hidden=max(len(shown) - 300, 0))
 
 
 @bp.route("/questions/check.csv")

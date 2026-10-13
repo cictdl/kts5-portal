@@ -412,5 +412,8 @@
    "url": "https://www.youtube.com/watch?v=jKKjlduIHbA", "featured": 0, "sort_order": 581},
   {"key": "yt-ThSVNfVTjxg", "title": "பகுதி 02 : வள்ளுவரும் வடநூலாரும் | பேராசிரியர் ப.மருதநாயகம்", "category": "video_valluvar", "lang": "ta",
    "description": "A lecture by Prof. P. Marudhanayagam on the YouTube channel of the Central Institute of Classical Tamil (செம்மொழி வலையொளி).",
-   "url": "https://www.youtube.com/watch?v=ThSVNfVTjxg", "featured": 0, "sort_order": 582}
+   "url": "https://www.youtube.com/watch?v=ThSVNfVTjxg", "featured": 0, "sort_order": 582},
+  {"key": "posters-charts", "title": "Posters and charts in 23 languages", "category": "poster", "lang": "",
+   "description": "Four print-ready A3 posters on the Thirukkural for schools, colleges and libraries, in each of the 22 scheduled languages and English: the programme poster, ten couplets on learning, twelve couplets for every day, and the Thirukkural at a glance. Vector PDFs, from the portal's own translations.",
+   "url": "/posters", "featured": 1, "sort_order": 14}
 ]

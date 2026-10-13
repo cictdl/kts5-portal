@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ t('res.cat_poster') }}{% endblock %}
+{% block content %}
+{# Posters and charts (1.2.67): four A3 PDFs in each of the 23 languages, from static/posters #}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('prog.a10.t') }}</span>
+  <h1>{{ t('res.cat_poster') }}</h1>
+  <p class="dim" style="max-width:78ch">{{ t('post.intro') }}</p>
+  <form method="get" class="chapter-nav no-print">
+    <label for="l" class="small"><b>{{ t('post.lang') }}</b></label>
+    <select id="l" name="l" data-autosubmit style="max-width:300px">
+      {% for code, stream, native, name in langs %}<option value="{{ code }}" lang="{{ stream|langtag }}" {{ 'selected' if code == poster_lang }}>{{ native }}{% if native != name %} · {{ name }}{% endif %}</option>{% endfor %}
+    </select>
+  </form>
+  <div class="grid grid-2" style="margin-top:16px" id="posters">
+    {% for p in items %}
+    <div class="card" style="display:grid;gap:10px;align-content:start">
+      <a href="{{ url_for('static', filename=p.file) }}" download><img src="{{ url_for('static', filename=p.thumb) }}" alt="{{ p.title }}" width="360" height="509" loading="lazy" style="display:block;width:100%;max-width:360px;height:auto;margin:0 auto;border-radius:8px;border:1px solid var(--border)"></a>
+      <h3 style="margin:0">{{ p.n }} · {{ p.title }}</h3>
+      <p class="small dim" style="margin:0">{{ t('post.print') }} · PDF · {{ p.kb }} KB</p>
+      <a class="btn sm saffron" style="justify-self:start" href="{{ url_for('static', filename=p.file) }}" download>⬇ {{ t('common.download') }} (PDF)</a>
+    </div>
+    {% else %}
+    <p class="muted">—</p>
+    {% endfor %}
+  </div>
+  <p class="small muted" style="margin-top:18px">{{ t('kural.credit') }} · <a href="{{ url_for('public.programme') }}">{{ t('nav.programme') }}</a> · <a href="{{ url_for('public.kural_browser') }}">{{ t('res.kural_browser') }}</a></p>
+</div>
+{% endblock %}
