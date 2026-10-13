@@ -766,6 +766,12 @@ RETIRED_EVENT_DAYS = {
 
 
 # Roles of agencies as earlier versions seeded them (data/agencies.json of that time).
+# Slips of the corpus corrected since questions were generated from it (data/kurals): the generated questions
+# (source 'auto') that carry the old words get the corrected ones at each start; questions written by hand are left alone.
+CORPUS_SLIPS = [
+    ("The sage fulfils the vitue's call.", "The sage fulfils the virtue's call."),   # couplet 30, English (1.2.68)
+]
+
 RETIRED_AGENCY_ROLES = {
     "CICT": ["Implementing institute for KTS 5.0: runs this portal, the student registration and selection, the 21-language orientation, the digital repository and all Thirukkural content."],
 }
@@ -1258,6 +1264,13 @@ def init_db(app):
             for old in old_roles:
                 if roles.get(code):
                     conn.execute("UPDATE agencies SET role_desc = ? WHERE code = ? AND role_desc = ?", (roles[code], code, old))
+
+    for old, new in CORPUS_SLIPS:
+        like = f"%{old}%"
+        conn.execute("UPDATE questions SET text = replace(text, ?, ?), opt_a = replace(opt_a, ?, ?), opt_b = replace(opt_b, ?, ?), "
+                     "opt_c = replace(opt_c, ?, ?), opt_d = replace(opt_d, ?, ?) WHERE source = 'auto' AND "
+                     "(text LIKE ? OR opt_a LIKE ? OR opt_b LIKE ? OR opt_c LIKE ? OR opt_d LIKE ?)",
+                     (old, new) * 5 + (like,) * 5)
 
     try:
         _first_passwords(app, conn, now)

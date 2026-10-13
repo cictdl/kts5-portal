@@ -256,3 +256,35 @@ def test_the_page_of_the_108_in_the_languages_and_the_links():
     assert 'href="/thirukkural-108"' in client.get("/examination?lang=en").get_data(as_text=True)
     assert "/thirukkural-108" in client.get("/sitemap.xml").get_data(as_text=True)
     assert 'href="/thirukkural-108">The 108 Thirukkural' in client.get("/sitemap?lang=en").get_data(as_text=True)
+
+
+def test_the_english_of_couplet_30_is_spelt_right():
+    # 1.2.68: 'vitue's' in CICT's English of couplet 30, one of the 108 (chapter 3), read on /thirukkural-108
+    from kts import kural as K
+    assert K.lines(K.kural(30), "en") == ["With gentle mercy towards all,", "The sage fulfils the virtue's call."]
+    page = make_app(ADMIN_PASSWORD=None).test_client().get("/thirukkural-108?lang=en").get_data(as_text=True)
+    assert "virtue&#39;s call" in page or "virtue's call" in page
+    assert "vitue" not in page
+
+
+def test_questions_generated_before_the_correction_are_corrected_at_the_start():
+    # a question bank seeded before 1.2.68 has the slip in the options of couplet 30; a question written by hand keeps its words
+    import sqlite3
+    app = make_app(ADMIN_PASSWORD=None)
+    conn = sqlite3.connect(str(app.config["DATABASE"]))
+    old = "The sage fulfils the vitue's call."
+    conn.execute("INSERT INTO questions(lang, qtype, text, opt_a, opt_b, opt_c, opt_d, correct, kural_no, difficulty, active, source, created_at) "
+                 "VALUES('en','complete','Choose the correct second line of this couplet.', ?, 'b', 'c', 'd', 'A', 30, 2, 1, 'auto', '2026-10-13')", (old,))
+    conn.execute("INSERT INTO questions(lang, qtype, text, opt_a, opt_b, opt_c, opt_d, correct, kural_no, difficulty, active, source, created_at) "
+                 "VALUES('en','gk', ?, 'a', 'b', 'c', 'd', 'A', NULL, 1, 1, 'manual', '2026-10-13')", ("Who wrote " + old,))
+    conn.commit()
+    conn.close()
+    from kts.db import init_db
+    init_db(app)
+    init_db(app)   # twice: nothing more changes
+    conn = sqlite3.connect(str(app.config["DATABASE"]))
+    rows = conn.execute("SELECT source, text, opt_a FROM questions WHERE kural_no = 30 OR source = 'manual' ORDER BY id").fetchall()
+    conn.close()
+    auto = [r for r in rows if r[0] == "auto"]
+    assert auto and all("vitue" not in r[1] + r[2] for r in auto) and any(r[2] == "The sage fulfils the virtue's call." for r in auto)
+    assert [r[1] for r in rows if r[0] == "manual"] == ["Who wrote " + old]
