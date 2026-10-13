@@ -39,6 +39,7 @@
           <dt>Link for the students</dt><dd><code dir="ltr">{{ test_url }}</code></dd>
           <dt>Access code</dt><dd><b style="font-size:1.3rem;letter-spacing:.1em">{{ inst.test_code }}</b></dd>
           <dt>Days</dt><dd>{{ inst.test_from|date }} – {{ inst.test_to|date }} (IST, whole days)</dd>
+          <dt>Syllabus</dt><dd>{% if inst.test_syllabus == '108' %}<b>The 108 Thirukkural</b>: one couplet from each of the first 108 chapters (<a href="{{ url_for('public.kural108') }}">the list</a>); the students see this on the sign-up page{% else %}All 1,330 couplets{% endif %}</dd>
         </dl></div>
         <div class="btn-row" style="margin-top:10px">
           <form method="post" action="{{ url_for('campus.assessment') }}" style="margin:0"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
@@ -50,8 +51,12 @@
           <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
           <div class="field"><label for="test_from">First day</label><input type="date" id="test_from" name="test_from" value="{{ inst.test_from or (period[0].isoformat() if period[0] else '') }}" {% if period[0] %}min="{{ period[0].isoformat() }}"{% endif %} {% if period[1] %}max="{{ period[1].isoformat() }}"{% endif %} required></div>
           <div class="field"><label for="test_to">Last day</label><input type="date" id="test_to" name="test_to" value="{{ inst.test_to or (period[1].isoformat() if period[1] else '') }}" {% if period[0] %}min="{{ period[0].isoformat() }}"{% endif %} {% if period[1] %}max="{{ period[1].isoformat() }}"{% endif %} required></div>
-          <div class="field"><label>&nbsp;</label><button class="btn sm saffron" name="action" value="on">{{ 'Change the days' if inst.test_on else 'Switch on' }}</button></div>
+          <div class="field"><label for="syllabus">Syllabus</label><select id="syllabus" name="syllabus">
+            <option value="all" {{ 'selected' if inst.test_syllabus != '108' }}>All 1,330 couplets</option>
+            <option value="108" {{ 'selected' if inst.test_syllabus == '108' }}>The 108 Thirukkural only</option></select></div>
+          <div class="field"><label>&nbsp;</label><button class="btn sm saffron" name="action" value="on">{{ 'Change the days or the syllabus' if inst.test_on else 'Switch on' }}</button></div>
         </form>
+        <p class="small muted" style="margin:8px 0 0">The 108 Thirukkural: one couplet from each of the first 108 chapters, chosen by CICT, with a Tamil commentary (<a href="{{ url_for('public.kural108') }}">read them</a>). With this syllabus every question of the paper is on one of these couplets, and the students are told so on the sign-up page.</p>
         {% elif inst.status == 'accepted' %}
         <p class="alert info">CICT has not opened the online assessment of the portal; assess your students in your own way and enter the selected student below.</p>
         {% endif %}
@@ -120,7 +125,7 @@
       </div>
       <div class="card" style="margin-top:14px">
         <h3>For your students</h3>
-        <div class="btn-row"><a class="btn sm secondary" href="{{ url_for('public.resources', cat='study') }}">Study material</a><a class="btn sm secondary" href="{{ url_for('public.kural_browser') }}">Thirukkural in 23 languages</a><a class="btn sm secondary" href="{{ url_for('quiz.join') }}">Classroom quiz</a></div>
+        <div class="btn-row"><a class="btn sm secondary" href="{{ url_for('public.resources', cat='study') }}">Study material</a><a class="btn sm secondary" href="{{ url_for('public.kural_browser') }}">Thirukkural in 23 languages</a><a class="btn sm secondary" href="{{ url_for('public.kural108') }}">The 108 Thirukkural</a><a class="btn sm secondary" href="{{ url_for('quiz.join') }}">Classroom quiz</a></div>
       </div>
       <div class="card" style="margin-top:14px">
         <h3>{{ t('common.help') }}</h3>

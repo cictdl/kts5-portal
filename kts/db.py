@@ -575,6 +575,8 @@ LATER_COLUMNS = [
     ("institutions", "guide_mobile", "TEXT NOT NULL DEFAULT ''"),
     # the designation of a Nodal Officer, as the Ministry's format asks (1.2.43)
     ("users", "designation", "TEXT NOT NULL DEFAULT ''"),
+    # the syllabus of the institution's online assessment (1.2.64): 'all' (the 1,330 couplets) or '108' (the 108 Thirukkural)
+    ("institutions", "test_syllabus", "TEXT NOT NULL DEFAULT 'all'"),
 ]
 
 # CICT on social media: (setting, name of the service, address). The links stand in the footer of

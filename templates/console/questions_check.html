@@ -22,16 +22,18 @@
 
 <div class="table-wrap"><table class="table">
   <thead><tr><th>Language</th><th class="num">Signed up</th><th class="num">Active</th><th class="num">Faulty</th><th class="num">Usable</th>
-    <th class="num">Other script</th><th class="num">Inactive</th><th style="min-width:320px">A paper of {{ rep.n }}</th></tr></thead>
+    <th class="num">On the 108</th><th class="num">Other script</th><th class="num">Inactive</th><th style="min-width:320px">A paper of {{ rep.n }}</th></tr></thead>
   <tbody>{% for s in rep.languages %}
   <tr><td><a href="{{ url_for('admin.questions_check', lang=s.lang) }}">{{ s.lang|langname }}</a> <span class="small muted">{{ s.lang }}</span></td>
     <td class="num">{{ s.students }}</td><td class="num">{{ s.active }}</td>
     <td class="num">{% if s.faulty %}<b>{{ s.faulty }}</b>{% else %}0{% endif %}</td><td class="num"><b>{{ s.usable }}</b></td>
+    <td class="num">{{ s.usable108 }}{% if s.usable108 < rep.n %} <span class="pill kumkum" title="fewer than a paper of {{ rep.n }}: a paper on the 108 Thirukkural is topped up from English, or short">short</span>{% endif %}</td>
     <td class="num">{{ s.other_script }}</td><td class="num">{{ s.inactive }}</td>
     <td><span class="pill {{ label[s.status][0] }}">{{ label[s.status][1] }}</span> <span class="small">{{ s.say }}</span></td></tr>
   {% endfor %}</tbody>
 </table></div>
-<p class="small muted">Signed up: students who have signed up for an institution's assessment in the language. Usable: active questions without a fault. Faulty: a blank question or option, an answer other than A to D, two options alike,
+<p class="small muted">Signed up: students who have signed up for an institution's assessment in the language. Usable: active questions without a fault.
+  On the 108: usable questions on the 108 Thirukkural, from which an institution that chose that syllabus draws its whole paper ({{ rep.short108 }} language(s) have fewer than {{ rep.n }}; generate with “Only on the 108 Thirukkural” under Question bank). Faulty: a blank question or option, an answer other than A to D, two options alike,
   or the same question as an earlier one in the same language (the earlier one is kept). Other script: the question can be drawn,
   but the student reads it in letters other than those of the language, as with the general-knowledge questions that the generator gives in English
   to the languages other than English, Tamil and Hindi.</p>

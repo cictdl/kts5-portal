@@ -140,11 +140,12 @@ def report(n_questions):
     n = max(int(n_questions or 50), 1)
     langs = list(K.ORIENTATION_LANGS)
     signed = {r["lang"]: r["n"] for r in query("SELECT lang, COUNT(*) AS n FROM campus_students GROUP BY lang")}
-    stats = {l: {"lang": l, "active": 0, "inactive": 0, "usable": 0, "faulty": 0, "other_script": 0,
+    stats = {l: {"lang": l, "active": 0, "inactive": 0, "usable": 0, "usable108": 0, "faulty": 0, "other_script": 0,
                  "students": signed.get(l, 0)} for l in langs}
+    k108 = set(K.kural108_numbers())
     first = {}
     problems = []
-    rows = query("SELECT id, lang, qtype, text, opt_a, opt_b, opt_c, opt_d, correct, active, source FROM questions ORDER BY id")
+    rows = query("SELECT id, lang, qtype, text, opt_a, opt_b, opt_c, opt_d, correct, active, source, kural_no FROM questions ORDER BY id")
     for r in rows:
         st = stats.get(r["lang"])
         if not r["active"]:
@@ -169,6 +170,8 @@ def report(n_questions):
                 problems.append({"row": r, "kind": kind, "why": why})
             continue
         st["usable"] += 1
+        if r["kural_no"] in k108:
+            st["usable108"] += 1              # a paper on the 108 Thirukkural draws from these alone (1.2.64)
         # a stem in English around a couplet in the language is as the generator makes it; a question
         # without one letter of the language is pointed out
         counts = scripts_in(" ".join(r[f] or "" for f in FIELDS))
@@ -185,8 +188,9 @@ def report(n_questions):
     problems.sort(key=lambda p: (order[p["kind"]], p["row"]["lang"], p["row"]["id"]))
     languages = [stats[l] for l in langs]
     count = {s: sum(1 for x in languages if x["status"] == s) for s in ("ready", "thin", "short", "empty")}
+    short108 = sum(1 for x in languages if x["usable108"] < n)
     faulty_ids = sorted({p["row"]["id"] for p in problems if p["kind"] in FAULTS})
-    return {"n": n, "languages": languages, "problems": problems, "count": count, "faulty_ids": faulty_ids,
+    return {"n": n, "languages": languages, "problems": problems, "count": count, "faulty_ids": faulty_ids, "k108": len(k108), "short108": short108,
             "notes": sum(1 for p in problems if p["kind"] in NOTES), "ok": count["short"] + count["empty"] == 0 and not faulty_ids}
 
 

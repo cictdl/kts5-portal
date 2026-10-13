@@ -1000,5 +1000,13 @@
   "disp.k.bus.t": "A couplet for the journey",
   "disp.k.bus.d": "For screens inside buses: a destination board in the style of an amber LED display with the days to Kashi, and large, high-contrast couplets on patience, courtesy, pleasant words and duty to others.",
   "disp.k.busstand.t": "Kural departures",
-  "disp.k.busstand.d": "For bus stands and depots: a departures board with the times of the coming couplets, and the couplet of the moment, on remembering what matters and acting after due thought."
+  "disp.k.busstand.d": "For bus stands and depots: a departures board with the times of the coming couplets, and the couplet of the moment, on remembering what matters and acting after due thought.",
+  "k108.title": "The 108 Thirukkural",
+  "k108.intro": "One couplet from each of the first 108 chapters of the Thirukkural, chosen by CICT: the whole of Virtue (அறத்துப்பால்) and Wealth (பொருட்பால்), with a Tamil commentary. A participating institution may draw its online assessment from these 108 couplets alone; read them in your language, and the Tamil commentary in Tamil.",
+  "k108.note": "The questions of this assessment are drawn from the 108 Thirukkural alone: one couplet from each of the first 108 chapters.",
+  "k108.read": "Read the 108 Thirukkural",
+  "k108.all": "All 1,330 couplets",
+  "k108.only": "The 108 Thirukkural only",
+  "k108.urai": "Commentary",
+  "prac.set": "Questions from"
 }

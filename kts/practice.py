@@ -7,7 +7,9 @@ page, timer and saving), so that a student meets it before the institution's ass
   complete the couplet, name the chapter, name the section), never taken from the question bank:
   the general-knowledge questions, of which there are few, are left out, and so is any couplet that
   the bank asks in the same way in that language. A practice question is therefore never a question
-  of the assessments.
+  of the assessments. On the 108 Thirukkural (1.2.64) there are only 324 such questions in a language;
+  when the bank asks nearly all of them, the practice paper is filled with couplets the bank asks
+  too rather than left short.
 * Nothing is written in the database and nobody signs in: the attempt (the language, the seed of its
   questions, the questions picked, the deadline and the answers) is kept in the visitor's session,
   and the questions are made again from the seed at each page. At the end the student sees the
@@ -29,6 +31,7 @@ bp = Blueprint("practice", __name__)
 KEY = "practice"
 KINDS = ("complete", "chapter", "section")
 GRACE_SECONDS = 45       # as the test: a paper that comes in within this after the time is up counts
+ROUNDS = 12              # rounds of 40 generated questions searched for ones the bank does not ask (1.2.64: 4 before)
 
 
 def _numbers(settings):
@@ -40,17 +43,17 @@ def _numbers(settings):
     return num("practice.questions", 10, 3, 30), num("practice.minutes", 6, 1, 60)
 
 
-def make(lang, n, seed):
+def make(lang, n, seed, kurals=None):
     """
     The questions of a practice paper: n questions of the kinds of KINDS, none asked in the same way of
-    the same couplet by the question bank in this language. Gives the generated rows (kural_no, qtype,
-    text, opt_a..opt_d, correct).
+    the same couplet by the question bank in this language; with `kurals`, on those couplets alone (the
+    108 Thirukkural, 1.2.64). Gives the generated rows (kural_no, qtype, text, opt_a..opt_d, correct).
     """
     taken = {(r["qtype"], r["kural_no"]) for r in query(
         "SELECT DISTINCT qtype, kural_no FROM questions WHERE lang = ? AND kural_no IS NOT NULL", (lang,))}
     out, seen = [], set()
-    for round_ in range(4):
-        for r in K.generate_questions(lang, 40, f"{seed}-{round_}"):
+    for round_ in range(ROUNDS):
+        for r in K.generate_questions(lang, 40, f"{seed}-{round_}", kurals=kurals):
             key = (r["qtype"], r["kural_no"])
             if r["qtype"] not in KINDS or key in taken or key in seen:
                 continue
@@ -58,14 +61,25 @@ def make(lang, n, seed):
             out.append(r)
             if len(out) == n:
                 return out
+    if kurals and len(out) < n:
+        # the 108: the bank asks nearly every possible question; fill the paper with those rather than leave it short
+        for round_ in range(ROUNDS):
+            for r in K.generate_questions(lang, 40, f"{seed}-{round_}", kurals=kurals):
+                key = (r["qtype"], r["kural_no"])
+                if r["qtype"] not in KINDS or key in seen:
+                    continue
+                seen.add(key)
+                out.append(r)
+                if len(out) == n:
+                    return out
     return out
 
 
-def rows_for(lang, seed, picks):
+def rows_for(lang, seed, picks, kurals=None):
     """The rows of the questions picked at the start of an attempt, made again from its seed, in their order."""
     found = {}
-    for round_ in range(4):
-        for r in K.generate_questions(lang, 40, f"{seed}-{round_}"):
+    for round_ in range(ROUNDS):
+        for r in K.generate_questions(lang, 40, f"{seed}-{round_}", kurals=kurals):
             found.setdefault((r["qtype"], r["kural_no"]), r)
         if all(tuple(p) in found for p in picks):
             break
@@ -77,8 +91,12 @@ def _attempt():
     return a if isinstance(a, dict) and a.get("lang") in K.ORIENTATION_LANGS and a.get("seed") else None
 
 
+def _kurals(a):
+    return K.kural108_numbers() if a.get("set") == "108" else None
+
+
 def _questions(a):
-    rows = rows_for(a["lang"], a["seed"], a.get("picks") or [])
+    rows = rows_for(a["lang"], a["seed"], a.get("picks") or [], _kurals(a))
     return [{"no": i, "id": i, "text": r["text"], "options": [(L, r[f"opt_{L.lower()}"]) for L in "ABCD"],
              "correct": r["correct"], "kural_no": r["kural_no"]} for i, r in enumerate(rows, 1)]
 
@@ -127,8 +145,9 @@ def start():
         return redirect(url_for("practice.home"))
     n, minutes = _numbers(settings)
     seed = secrets.token_hex(6)
-    picks = [[r["qtype"], r["kural_no"]] for r in make(lang, n, seed)]
-    a = {"lang": lang, "seed": seed, "picks": picks, "n": len(picks), "answers": {},
+    set_ = "108" if request.form.get("set") == "108" else "all"
+    picks = [[r["qtype"], r["kural_no"]] for r in make(lang, n, seed, K.kural108_numbers() if set_ == "108" else None)]
+    a = {"lang": lang, "seed": seed, "set": set_, "picks": picks, "n": len(picks), "answers": {},
          "deadline": (now_ist() + timedelta(minutes=minutes)).isoformat()}
     if not picks:
         flash(t("prac.closed"), "error")
@@ -150,7 +169,7 @@ def paper():
     info = K.lang_info(a["lang"]) or {}
     return render_template("candidate/exam_paper.html", questions=_questions(a), answers=a.get("answers") or {},
                            remaining=max(0, _remaining(a)), qlang=a["lang"], qdir=info.get("dir", "ltr"),
-                           who=t("prac.who"), heading=t("prac.title"),
+                           who=t("prac.who") + (" · " + t("k108.title") if a.get("set") == "108" else ""), heading=t("prac.title"),
                            save_url=url_for("practice.save"), submit_url=url_for("practice.submit"))
 
 

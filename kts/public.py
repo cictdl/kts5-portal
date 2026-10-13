@@ -743,6 +743,19 @@ def kural_browser():
                            variants=K.VARIANTS)
 
 
+@bp.route("/thirukkural-108")
+def kural108():
+    """The 108 Thirukkural (1.2.64): one couplet from each of the first 108 chapters, with CICT's Tamil commentary,
+    in the stream chosen; the syllabus an institution may choose for its assessment."""
+    stream, stream_dir = _stream(request.args.get("l"))
+    rows = []
+    for item in K.kural108():
+        k = K.kural(item["n"])
+        rows.append((k, K.lines(k, stream), item["urai"]))
+    return render_template("public/kural108.html", rows=rows, stream=stream, stream_dir=stream_dir, langs=K.languages(),
+                           variants=K.VARIANTS, pals=K.corpus()["meta"]["pals"], settings=all_settings())
+
+
 @bp.route("/thirukkural/<int:n>")
 def kural_single(n):
     k = K.kural(n)
@@ -954,7 +967,8 @@ SITEMAP = [
                           ("public.programme", {}, "nav.programme"), ("public.schedule", {}, "nav.schedule"),
                           ("public.notices", {}, "nav.notices"), ("public.partners", {}, "nav.partners"),
                           ("public.gallery", {}, "nav.gallery"), ("public.contact", {}, "nav.contact")]),
-    ("pol.sm_students", [("public.guide", {}, "guide.title"), ("practice.home", {}, "prac.title"), ("public.register", {}, "nav.register"), ("public.status", {}, "nav.status"),
+    ("pol.sm_students", [("public.guide", {}, "guide.title"), ("practice.home", {}, "prac.title"), ("public.kural108", {}, "k108.title"),
+                         ("public.register", {}, "nav.register"), ("public.status", {}, "nav.status"),
                          ("public.examination", {}, "nav.exam"), ("public.merit", {}, "nav.merit"),
                          ("public.stipend_guide", {}, "stip.title"), ("candidate.login", {}, "nav.candidate"),
                          ("public.nodal_institutions", {}, "nav.nodal"),

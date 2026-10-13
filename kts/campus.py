@@ -265,10 +265,12 @@ def assessment():
             return redirect(url_for("campus.home"))
         slug = inst["test_slug"] or _new_slug()
         code_ = inst["test_code"] or _new_code()
-        execute("UPDATE institutions SET test_on = 1, test_from = ?, test_to = ?, test_slug = ?, test_code = ?, updated_at = ? WHERE id = ?",
-                (a.isoformat(), b.isoformat(), slug, code_, now, inst["id"]))
-        audit("assessment_on", "institution", inst["id"], detail={"from": a.isoformat(), "to": b.isoformat()}, ip=client_ip())
-        flash("The online assessment is on. Give your students the link and the access code shown below.", "success")
+        syllabus = "108" if request.form.get("syllabus") == "108" else "all"
+        execute("UPDATE institutions SET test_on = 1, test_from = ?, test_to = ?, test_slug = ?, test_code = ?, test_syllabus = ?, updated_at = ? "
+                "WHERE id = ?", (a.isoformat(), b.isoformat(), slug, code_, syllabus, now, inst["id"]))
+        audit("assessment_on", "institution", inst["id"], detail={"from": a.isoformat(), "to": b.isoformat(), "syllabus": syllabus}, ip=client_ip())
+        flash("The online assessment is on" + (", on the 108 Thirukkural" if syllabus == "108" else "")
+              + ". Give your students the link and the access code shown below.", "success")
     elif action == "off":
         execute("UPDATE institutions SET test_on = 0, updated_at = ? WHERE id = ?", (now, inst["id"]))
         audit("assessment_off", "institution", inst["id"], ip=client_ip())
@@ -536,7 +538,8 @@ def start(slug):
             return render_template("campus/closed.html", **ctx)
         n_q = int(settings.get("exam.questions", "50"))
         duration = int(settings.get("exam.duration_min", "30"))
-        paper = _build_paper(student["lang"], n_q, random.Random(f"campus-{student['id']}-{utcnow()}"))
+        paper = _build_paper(student["lang"], n_q, random.Random(f"campus-{student['id']}-{utcnow()}"),
+                             kurals=K.kural108_numbers() if inst["test_syllabus"] == "108" else None)
         if not paper:
             flash(t("exam.no_questions"), "error")
             return redirect(url_for("campus.start", slug=slug))

@@ -129,16 +129,28 @@ def photo():
 
 # ---- the test ---------------------------------------------------------------
 
-def _build_paper(lang, n_questions, rng):
-    """Pick n active questions in `lang`, topping up from English if short."""
-    rows = query("SELECT id FROM questions WHERE active = 1 AND lang = ?", (lang,))
-    ids = [r["id"] for r in rows]
-    rng.shuffle(ids)
-    ids = ids[:n_questions]
+def _pick(lang, n, rng, kurals=None):
+    """n active questions in `lang`, shuffled; with `kurals`, only those on the couplets, each couplet once where the bank allows."""
+    if not kurals:
+        rows = query("SELECT id FROM questions WHERE active = 1 AND lang = ?", (lang,))
+        ids = [r["id"] for r in rows]
+        rng.shuffle(ids)
+        return ids[:n]
+    marks = ",".join("?" * len(kurals))
+    rows = list(query(f"SELECT id, kural_no FROM questions WHERE active = 1 AND lang = ? AND kural_no IN ({marks})", (lang, *kurals)))
+    rng.shuffle(rows)
+    seen, first, rest = set(), [], []
+    for r in rows:
+        (rest if r["kural_no"] in seen else first).append(r["id"])
+        seen.add(r["kural_no"])
+    return (first + rest)[:n]
+
+
+def _build_paper(lang, n_questions, rng, kurals=None):
+    """Pick n active questions in `lang`, topping up from English if short; with `kurals`, within those couplets (1.2.64)."""
+    ids = _pick(lang, n_questions, rng, kurals)
     if len(ids) < n_questions and lang != "en":
-        extra = [r["id"] for r in query("SELECT id FROM questions WHERE active = 1 AND lang = 'en'")]
-        rng.shuffle(extra)
-        ids += extra[: n_questions - len(ids)]
+        ids += _pick("en", n_questions - len(ids), rng, kurals)
     paper = []
     for qid in ids:
         order = ["A", "B", "C", "D"]

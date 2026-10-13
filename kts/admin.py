@@ -409,19 +409,21 @@ def questions_generate():
     count = min(max(safe_int(request.form.get("count"), 40), 5), 300)
     if "all" in langs:
         langs = list(K.ORIENTATION_LANGS)
+    only108 = request.form.get("set") == "108"           # the 108 Thirukkural alone (1.2.64)
     made = 0
     for lang in langs:
         if not K.lang_info(lang):
             continue
         seed = f"{lang}-{secrets.token_hex(4)}"
-        rows = K.generate_questions(lang, count, seed)
+        rows = K.generate_questions(lang, count, seed, kurals=K.kural108_numbers() if only108 else None)
         executemany("INSERT INTO questions(lang, qtype, text, opt_a, opt_b, opt_c, opt_d, correct, kural_no, difficulty, active, source, created_at) "
                     "VALUES(?,?,?,?,?,?,?,?,?,?,1,'auto',?)",
                     [(r["lang"], r["qtype"], r["text"], r["opt_a"], r["opt_b"], r["opt_c"], r["opt_d"], r["correct"],
                       r["kural_no"], r["difficulty"], utcnow()) for r in rows])
         made += len(rows)
-    audit("questions_generated", "question", None, detail={"langs": langs, "count": count, "made": made}, user=_user(), ip=client_ip())
-    flash(f"Generated {made} questions from the Thirukkural corpus.", "success")
+    audit("questions_generated", "question", None, detail={"langs": langs, "count": count, "made": made, "set": "108" if only108 else "all"},
+          user=_user(), ip=client_ip())
+    flash(f"Generated {made} questions from the Thirukkural corpus" + (", on the 108 Thirukkural" if only108 else "") + ".", "success")
     return redirect(url_for("admin.questions"))
 
 

@@ -11,6 +11,7 @@
     </div>
     <h3>{{ t('exam.guidelines') }}</h3>
     <ol class="prose"><li>{{ t('exam.g1') }}</li><li>{{ t('exam.g2') }}</li><li>{{ t('exam.g3') }}</li><li>{{ t('exam.g4') }}</li></ol>
+    {% if inst.test_syllabus == '108' %}<p class="alert info" id="syllabus-108"><b>{{ t('k108.title') }}</b> · {{ t('k108.note') }} <a href="{{ url_for('public.kural108') }}" target="_blank" rel="noopener">{{ t('k108.read') }} {{ fwd }}</a></p>{% endif %}
     <p class="alert info"><b>{{ t('camp.start_text')|replace('{minutes}', settings['exam.duration_min']|string) }}</b></p>
     {% if state == 'open' %}
     <form method="post" data-confirm="{{ t('exam.g2') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn saffron" type="submit">▶ {{ t('exam.start') }}</button></form>

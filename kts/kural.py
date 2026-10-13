@@ -48,6 +48,9 @@ PAL_NAMES = {
 }
 
 DAILY_EPOCH = date(2026, 1, 1)
+# the 108 Thirukkural (1.2.64): one couplet from each of the first 108 chapters, chosen by CICT, with a Tamil
+# commentary; an institution may draw its assessment from these alone
+K108_FILE = DATA_DIR.parent / "kural108.json"
 
 
 @lru_cache(maxsize=1)
@@ -119,6 +122,17 @@ def chapter(n):
 
 def kural(n):
     return corpus()["kurals"].get(int(n))
+
+
+@lru_cache(maxsize=1)
+def kural108():
+    """The 108 Thirukkural, in the order of the chapters: dicts n, chapter, urai (the Tamil commentary)."""
+    return tuple(json.loads(K108_FILE.read_text(encoding="utf-8")))
+
+
+@lru_cache(maxsize=1)
+def kural108_numbers():
+    return tuple(x["n"] for x in kural108())
 
 
 def lines(k, lang):
@@ -263,13 +277,15 @@ def _shuffle_options(rng, options, correct_idx):
     return shuffled, letter
 
 
-def generate_questions(lang, count=40, seed=None):
+def generate_questions(lang, count=40, seed=None, kurals=None):
     """
     Build `count` MCQs in `lang` from the corpus.
 
     Mix: ~40% complete-the-couplet, ~30% identify-the-chapter, ~15% identify-
-    the-section, ~15% general knowledge. Returns dicts ready for the
-    questions table. The stems come from the interface translations: a
+    the-section, ~15% general knowledge. With `kurals` (numbers of couplets, as
+    the 108 Thirukkural), every question is on one of those couplets and there
+    is no general knowledge: ~50% complete, ~30% chapter, ~20% section. Returns
+    dicts ready for the questions table. The stems come from the interface translations: a
     reviewed language gives its own wording, a draft language its wording
     followed by the English, and a stream in a script without an interface
     translation gives English. The general-knowledge questions exist in
@@ -281,10 +297,18 @@ def generate_questions(lang, count=40, seed=None):
     chs = data["chapters"]
     out = []
 
-    n_complete = round(count * 0.40)
-    n_chapter = round(count * 0.30)
-    n_section = round(count * 0.15)
-    n_gk = count - n_complete - n_chapter - n_section
+    if kurals:
+        wanted = set(int(n) for n in kurals)
+        all_k = [k for k in all_k if k["n"] in wanted]
+        n_complete = round(count * 0.50)
+        n_chapter = round(count * 0.30)
+        n_section = count - n_complete - n_chapter
+        n_gk = 0
+    else:
+        n_complete = round(count * 0.40)
+        n_chapter = round(count * 0.30)
+        n_section = round(count * 0.15)
+        n_gk = count - n_complete - n_chapter - n_section
 
     # complete the couplet
     pool = [k for k in all_k if has_two_lines(k, lang)]
