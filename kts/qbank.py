@@ -15,7 +15,7 @@ wrong code) is only pointed out: it can be drawn, but the student reads it in th
 import unicodedata
 
 from . import kural as K
-from .db import query
+from .db import audit, executemany, get_setting, query, set_setting, utcnow
 
 # Letters of each script: the script is that of most of the letters of a question.
 SCRIPTS = {
@@ -107,6 +107,63 @@ def faults_of(row):
         else:
             seen[key] = L
     return out
+
+
+K108_SEED_COUNT = 150            # questions on the 108 Thirukkural made for each language, once for each database (1.2.65)
+K108_SEED_MARK = "seed.questions.k108"
+K108_ROUNDS = 12                 # rounds of 60 generated questions searched for pairs the bank does not ask
+
+
+def taken_pairs(lang):
+    """The (kind, couplet) pairs the bank asks in this language: a question made on one would read the same."""
+    return {(r["qtype"], r["kural_no"]) for r in query(
+        "SELECT DISTINCT qtype, kural_no FROM questions WHERE lang = ? AND kural_no IS NOT NULL", (lang,))}
+
+
+def generate_k108(lang, count, seed):
+    """
+    `count` questions on the 108 Thirukkural in `lang`, none on a (kind, couplet) the bank already asks: its
+    text would be the same and the check would set it aside as a duplicate. Fewer than `count` when the 324
+    possible are nearly all asked.
+    """
+    taken, seen, out = taken_pairs(lang), set(), []
+    for round_ in range(K108_ROUNDS):
+        for r in K.generate_questions(lang, 60, f"{seed}-{round_}", kurals=K.kural108_numbers()):
+            key = (r["qtype"], r["kural_no"])
+            if key in taken or key in seen:
+                continue
+            seen.add(key)
+            out.append(r)
+            if len(out) == count:
+                return out
+    return out
+
+
+def insert_rows(rows, source="auto"):
+    """Rows of the generator into the bank, active."""
+    executemany("INSERT INTO questions(lang, qtype, text, opt_a, opt_b, opt_c, opt_d, correct, kural_no, difficulty, active, source, created_at) "
+                "VALUES(?,?,?,?,?,?,?,?,?,?,1,?,?)",
+                [(r["lang"], r["qtype"], r["text"], r["opt_a"], r["opt_b"], r["opt_c"], r["opt_d"], r["correct"],
+                  r["kural_no"], r["difficulty"], source, utcnow()) for r in rows])
+
+
+def seed_k108(app, count=K108_SEED_COUNT):
+    """
+    Once for each database: `count` questions on the 108 Thirukkural in every language of the test, as the
+    console makes them with the box ticked, so that an institution that chooses the 108 draws a full paper
+    in any language. Gives the number made; 0 when done before. Run at start-up (KTS_K108_SEED=1).
+    """
+    with app.app_context():
+        if get_setting(K108_SEED_MARK):
+            return 0
+        made = 0
+        for lang in K.ORIENTATION_LANGS:
+            rows = generate_k108(lang, count, f"k108-{lang}")
+            insert_rows(rows)
+            made += len(rows)
+        set_setting(K108_SEED_MARK, utcnow())
+        audit("questions_generated", "question", None, detail={"langs": "all", "count": count, "made": made, "set": "108", "by": "start-up"})
+        return made
 
 
 def _status(n, usable, en_usable, lang):

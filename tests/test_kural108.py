@@ -125,7 +125,7 @@ def test_the_console_generates_on_the_108_and_the_check_counts_them():
     assert 'name="set" value="108"' in page
     r = admin.post("/console/questions/generate", data={"_csrf": _token(admin), "langs": ["ta"], "count": "20", "set": "108"},
                    follow_redirects=True)
-    assert "Generated 20 questions from the Thirukkural corpus, on the 108 Thirukkural." in r.get_data(as_text=True)
+    assert "Generated 20 questions from the Thirukkural corpus, on the 108 Thirukkural (none that the bank asked already)." in r.get_data(as_text=True)
     with app.app_context():
         rows = query("SELECT lang, qtype, kural_no FROM questions")
         rep = qbank.report(50)
@@ -140,6 +140,48 @@ def test_the_console_generates_on_the_108_and_the_check_counts_them():
     with app.app_context():
         kinds = {r["qtype"] for r in query("SELECT qtype FROM questions WHERE lang = 'en'")}
     assert "gk" in kinds
+
+
+def test_the_questions_on_the_108_are_made_once_for_each_database():
+    """At the first start (KTS_K108_SEED=1; 0 in the tests) 150 questions on the 108 are made in every language (1.2.65)."""
+    from kts import kural as K, qbank
+    from kts.db import get_setting, query
+    app = make_app(ADMIN_PASSWORD=None)
+    assert app.config["K108_SEED"] is False
+    with app.app_context():
+        assert query("SELECT COUNT(*) AS n FROM questions", one=True)["n"] == 0
+    made = qbank.seed_k108(app, count=20)
+    assert made == 23 * 20
+    nums = set(K.kural108_numbers())
+    with app.app_context():
+        rows = query("SELECT lang, qtype, kural_no, source FROM questions")
+        assert len(rows) == 460 and all(r["kural_no"] in nums and r["qtype"] != "gk" and r["source"] == "auto" for r in rows)
+        assert len({(r["lang"], r["qtype"], r["kural_no"]) for r in rows}) == 460 and {r["lang"] for r in rows} == set(K.ORIENTATION_LANGS)
+        assert get_setting("seed.questions.k108")
+        log = query("SELECT * FROM audit_log WHERE action = 'questions_generated'", one=True)
+        assert log["actor"] == "public" and '"by": "start-up"' in log["detail"]
+    # a second start makes nothing more
+    assert qbank.seed_k108(app, count=20) == 0
+    with app.app_context():
+        assert query("SELECT COUNT(*) AS n FROM questions", one=True)["n"] == 460
+        # what the bank asks is left out, and the check counts the usable questions on the 108
+        asked = qbank.taken_pairs("ta")
+        more = qbank.generate_k108("ta", 50, "again")
+        assert len(more) == 50 and not any((r["qtype"], r["kural_no"]) in asked for r in more)
+        assert next(s for s in qbank.report(50)["languages"] if s["lang"] == "ta")["usable108"] == 20
+    # with the 324 possible nearly all asked, fewer come, never a duplicate
+    _bank108(app, "ta", 300)
+    with app.app_context():
+        asked = qbank.taken_pairs("ta")
+        few = qbank.generate_k108("ta", 100, "last")
+        assert 0 < len(few) < 100 and not any((r["qtype"], r["kural_no"]) in asked for r in few)
+    # the console's box does the same, twice without a duplicate
+    admin = _staff(app, "k108-seed@tests.example", "superadmin")
+    for _ in range(2):
+        admin.post("/console/questions/generate", data={"_csrf": _token(admin), "langs": ["hi"], "count": "30", "set": "108"})
+    with app.app_context():
+        hi = query("SELECT qtype, kural_no FROM questions WHERE lang = 'hi'")
+        assert len(hi) == 80 and len({(r["qtype"], r["kural_no"]) for r in hi}) == 80
 
 
 def test_the_practice_test_on_the_108():

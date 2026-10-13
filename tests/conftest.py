@@ -20,6 +20,7 @@ os.environ["KTS_INSTANCE_DIR"] = str(TMP / "instance")
 os.environ["KTS_DATABASE"] = str(TMP / "instance" / "test.sqlite3")
 os.environ["KTS_UPLOAD_DIR"] = str(TMP / "uploads")
 os.environ["KTS_SECRET_KEY"] = "tests-only-" + TMP.name
+os.environ["KTS_K108_SEED"] = "0"      # the questions on the 108 are made only where a test asks (1.2.65)
 # a password of the tests' own; the tests read it from here
 os.environ["KTS_ADMIN_PASSWORD"] = "Tests-Only-" + TMP.name[-8:] + "-7Q"
 for name in ("KTS_URL_PREFIX", "KTS_BEHIND_PROXY", "KTS_TRUSTED_PROXY", "KTS_HTTPS", "KTS_HSTS", "KTS_SMTP_HOST",

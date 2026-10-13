@@ -483,6 +483,8 @@ function Write-SettingsFile($file) {
     '# KTS_RATE_CONTACT_PER_HOUR=10',
     '# KTS_RATE_HEI_PER_HOUR=20',
     '# KTS_RATE_PRACTICE_PER_HOUR=300',
+    '# At the first start on a database, questions on the 108 Thirukkural for every language (0 leaves the bank alone):',
+    '# KTS_K108_SEED=1',
     '# Failed attempts in 15 minutes, per address: status check, staff sign-in, candidate sign-in.',
     '# KTS_RATE_STATUS_FAILS=300',
     '# KTS_RATE_LOGIN_FAILS=12',

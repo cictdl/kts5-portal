@@ -193,6 +193,8 @@ class Config:
     # practice tests begun from one address: a whole campus may practise through one address
     RATE_PRACTICE_PER_HOUR = _int_env("KTS_RATE_PRACTICE_PER_HOUR", 300)
     RATE_STATUS_FAILS_PER_15MIN = _int_env("KTS_RATE_STATUS_FAILS", 300)
+    # at the first start on a database, questions on the 108 Thirukkural are made for every language (1.2.65)
+    K108_SEED = _flag_env("KTS_K108_SEED", "1")
     RATE_LOGIN_FAILS_PER_15MIN = _int_env("KTS_RATE_LOGIN_FAILS", 12)
     RATE_CAND_FAILS_IP_PER_15MIN = _int_env("KTS_RATE_CANDIDATE_FAILS_IP", 600)
     # Per application number and address together, for the sign-in and for the status look-up

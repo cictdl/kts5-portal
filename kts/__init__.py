@@ -245,6 +245,12 @@ def create_app(config_object=Config):
 
     if os.environ.get("KTS_LAZY_CORPUS") != "1":
         K.corpus()  # warm the corpus cache at start-up (skipped for per-request CGI hosting)
+        if app.config.get("K108_SEED"):
+            # the questions on the 108 Thirukkural in the 23 languages, once for each database (1.2.65)
+            from . import qbank
+            made = qbank.seed_k108(app)
+            if made:
+                app.logger.info("Question bank: %d questions on the 108 Thirukkural made in the languages of the test.", made)
     return app
 
 
