@@ -1,7 +1,7 @@
 """
 The launch of the KTS 5.0 web portal and registration by the Hon'ble Minister of Education, Shri Pralhad Joshi, on 14 October 2026 at
 5:00 PM (version 1.2.69): the banner announces it before the hour, registration opens at it, the home page counts down
-to it and then says it was launched; the stage screen /launch; the pinned notice and the schedule; the programme's
+to it and then says it was launched; the stage screen /launch, with the photograph of the Hon'ble Prime Minister; the pinned notice and the schedule; the programme's
 purpose on the home and About pages; the cards for social media; and the leftovers of the central test of earlier
 versions (mails, candidate sign-in, programme, admit card) and the Daily Kural kits that are not there yet.
 
@@ -122,6 +122,21 @@ def test_the_stage_screen(monkeypatch):
     assert '"Enter", " ", "PageDown"' in script and "prefers-reduced-motion" in script and 'classList.add("open")' in script
     # not a page for search engines or the sitemap
     assert "/launch" not in client.get("/sitemap.xml").get_data(as_text=True)
+
+
+def test_the_photograph_on_the_stage_screen():
+    page = _app().test_client().get("/launch").get_data(as_text=True)
+    # the caption the organisers gave, under the photograph and as its alternative text
+    assert '<figure class="pm">' in page and "/static/img/launch-pm.jpg" in page
+    assert """alt="Hon'ble Prime Minister of Bharat, Shri Narendra Modi\"""" in page
+    assert "<span>Hon'ble Prime Minister of Bharat,</span> <strong>Shri Narendra Modi</strong>" in page
+    # above the curtain and outside the front, so it stays while the curtain opens and on the address screen after it
+    assert page.index('class="curtain right"') < page.index('id="front"') < page.index('<figure class="pm">') < page.index('id="full"')
+    photo = ROOT / "static" / "img" / "launch-pm.jpg"
+    assert photo.read_bytes()[:3] == b"\xff\xd8\xff" and photo.stat().st_size < 80_000
+    css = (ROOT / "static" / "css" / "launch.css").read_text(encoding="utf-8")
+    assert ".pm {" in css and "z-index: 5" in css.split(".pm {", 1)[1].split("}", 1)[0]
+    assert "@media (max-aspect-ratio: 1/1)" in css and "css/launch.css') }}?v=4" in (ROOT / "templates" / "public" / "launch.html").read_text(encoding="utf-8")
 
 
 def test_the_notice_and_the_schedule(monkeypatch):

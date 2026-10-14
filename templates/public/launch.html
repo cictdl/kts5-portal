@@ -1,7 +1,8 @@
 <!doctype html>
 {# The stage screen of the launch of the KTS 5.0 web portal and registration by the Hon'ble Minister of Education (1.2.69): shown on the
    screen of the hall. The button (or Enter, Space, or a presenter's clicker) opens the curtain; the address and its QR code
-   appear, and the home page opens as launched, unless ?stay=1. Nothing on the portal changes with the button. #}
+   appear, and the home page opens as launched, unless ?stay=1. Nothing on the portal changes with the button.
+   The photograph of the Hon'ble Prime Minister stands above the curtain: it stays in place while the curtain opens. #}
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -9,7 +10,7 @@
 <meta name="robots" content="noindex">
 <title>{{ t('launch.title') }} · {{ t('site.name') }}</title>
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/launch.css') }}?v=3">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/launch.css') }}?v=4">
 </head>
 <body>
 <div class="tri" aria-hidden="true"></div>
@@ -22,7 +23,7 @@
       <img src="{{ url_for('static', filename='img/cict-logo.png') }}" alt="Central Institute of Classical Tamil">
       <img src="{{ url_for('static', filename='img/kts-logo.png') }}" alt="Kashi Tamil Sangamam 5.0">
     </div>
-    <p class="r-kicker"><span lang="hi">{{ hi('launch.launched') }}</span> · <span lang="ta">{{ ta('launch.launched') }}</span></p>
+    <p class="r-kicker"><span lang="hi">{{ hi('launch.launched') }}</span><span lang="ta">{{ ta('launch.launched') }}</span></p>
     <h2 class="r-title">{{ t('launch.launched') }}</h2>
     <div class="r-site">
       <img class="qr" src="{{ qr }}" alt="QR code: {{ base or 'https://kts.cict.in' }}" width="240" height="240">
@@ -49,6 +50,10 @@
     <p class="hint">{{ t('launch.hint') }}</p>
     <p class="org">{{ site.organiser }} · {{ site.ministry }}</p>
   </section>
+  <figure class="pm">
+    <img src="{{ url_for('static', filename='img/launch-pm.jpg') }}" alt="Hon'ble Prime Minister of Bharat, Shri Narendra Modi" width="394" height="480">
+    <figcaption><span>Hon'ble Prime Minister of Bharat,</span> <strong>Shri Narendra Modi</strong></figcaption>
+  </figure>
   <button type="button" class="full" id="full" title="Full screen">⛶</button>
 </main>
 <script src="{{ url_for('static', filename='js/launch.js') }}?v=1"></script>

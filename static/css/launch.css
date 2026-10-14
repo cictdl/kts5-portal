@@ -1,4 +1,4 @@
-/* The stage screen of the launch of the registration portal (1.2.69): one screen, any size, from a laptop to a hall's projector. */
+/* The stage screen of the launch of the KTS 5.0 web portal and registration (1.2.69): one screen, any size, from a laptop to a hall's projector. */
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; overflow: hidden; }
 body { background: #0F1E38; color: #fff; font-family: "Segoe UI", "Nirmala UI", system-ui, sans-serif; overflow: hidden; }
@@ -13,25 +13,25 @@ body { background: #0F1E38; color: #fff; font-family: "Segoe UI", "Nirmala UI", 
 /* the front: the curtain's face */
 .front { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; padding: 3vh 6vw; gap: 1.1vh; transition: opacity .6s ease; }
-.kicker { margin: .6vh 0 0; font-size: clamp(14px, min(1.8vw, 3.3vh), 30px); color: #F2C46B; font-weight: 600; letter-spacing: .02em; }
-.theme, .r-theme { display: flex; flex-wrap: wrap; justify-content: center; gap: .4vh 1.4vw; font-size: clamp(13px, min(1.4vw, 2.6vh), 24px); color: #FFE7B8; }
+.kicker { margin: .6vh 0 0; font-size: clamp(14px, min(calc(1.8 * var(--u)), 3.3vh), 30px); color: #F2C46B; font-weight: 600; letter-spacing: .02em; }
+.theme, .r-theme { display: flex; flex-wrap: wrap; justify-content: center; gap: .4vh 1.4vw; font-size: clamp(13px, min(calc(1.4 * var(--u)), 2.6vh), 24px); color: #FFE7B8; }
 .theme span + span::before, .r-theme span + span::before { content: "·"; margin-right: 1.4vw; color: #E07B1A; }
 h1 { margin: .8vh 0 0; display: flex; flex-direction: column; gap: .6vh; line-height: 1.15; }
-h1 .hi { font-size: clamp(20px, min(2.9vw, 5.2vh), 52px); color: #fff; }
-h1 .en { font-size: clamp(22px, min(3.3vw, 5.9vh), 60px); font-weight: 800; color: #fff; }
-h1 .ta { font-size: clamp(18px, min(2.3vw, 4.2vh), 42px); color: #FFE7B8; }
-.by { margin: .4vh 0 0; display: flex; flex-direction: column; gap: .3vh; font-size: clamp(15px, min(1.7vw, 3.1vh), 30px); color: #DCE3EF; }
-.when { margin: .4vh 0 .8vh; font-size: clamp(15px, min(1.8vw, 3.3vh), 30px); font-weight: 700; color: #F2C46B; }
-.go { width: clamp(110px, min(12vw, 20vh), 220px); height: clamp(110px, min(12vw, 20vh), 220px); border-radius: 50%; border: .6vh solid #F2C46B; cursor: pointer;
+h1 .hi { font-size: clamp(20px, min(calc(2.9 * var(--u)), 5.2vh), 52px); color: #fff; }
+h1 .en { font-size: clamp(22px, min(calc(3.3 * var(--u)), 5.9vh), 60px); font-weight: 800; color: #fff; }
+h1 .ta { font-size: clamp(18px, min(calc(2.3 * var(--u)), 4.2vh), 42px); color: #FFE7B8; }
+.by { margin: .4vh 0 0; display: flex; flex-direction: column; gap: .3vh; font-size: clamp(15px, min(calc(1.7 * var(--u)), 3.1vh), 30px); color: #DCE3EF; }
+.when { margin: .4vh 0 .8vh; font-size: clamp(15px, min(calc(1.8 * var(--u)), 3.3vh), 30px); font-weight: 700; color: #F2C46B; }
+.go { width: clamp(110px, min(calc(12 * var(--u)), 20vh), 220px); height: clamp(110px, min(calc(12 * var(--u)), 20vh), 220px); border-radius: 50%; border: .6vh solid #F2C46B; cursor: pointer;
   background: radial-gradient(circle at 35% 30%, #F4A24A, #E07B1A 55%, #A3501A); color: #fff; box-shadow: 0 0 0 1.4vh rgba(242,196,107,.18), 0 1.6vh 4vh rgba(0,0,0,.45);
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .4vh; font-family: inherit; }
-.go span { font-size: clamp(22px, 2.6vw, 44px); font-weight: 800; letter-spacing: .04em; }
-.go small { font-size: clamp(14px, 1.5vw, 26px); font-family: "Nirmala UI", sans-serif; }
+.go span { font-size: clamp(22px, calc(2.6 * var(--u)), 44px); font-weight: 800; letter-spacing: .04em; }
+.go small { font-size: clamp(14px, calc(1.5 * var(--u)), 26px); font-family: "Nirmala UI", sans-serif; }
 .go:focus-visible { outline: .5vh solid #fff; outline-offset: .8vh; }
 @media (prefers-reduced-motion: no-preference) { .go { animation: glow 2.4s ease-in-out infinite; } }
 @keyframes glow { 50% { box-shadow: 0 0 0 2.6vh rgba(242,196,107,.10), 0 1.6vh 4vh rgba(0,0,0,.45); } }
-.hint { margin: .6vh 0 0; font-size: clamp(11px, 1vw, 16px); color: #9FB0CC; }
-.org { margin: 1.4vh 0 0; font-size: clamp(11px, 1.05vw, 18px); color: #9FB0CC; }
+.hint { margin: .6vh 0 0; font-size: clamp(11px, calc(1 * var(--u)), 16px); color: #9FB0CC; }
+.org { margin: 1.4vh 0 0; font-size: clamp(11px, calc(1.05 * var(--u)), 18px); color: #9FB0CC; }
 
 /* the curtain */
 .curtain { position: absolute; top: 0; bottom: 0; width: 50.5%; z-index: 3; transition: transform 2.2s cubic-bezier(.7, 0, .2, 1);
@@ -45,12 +45,15 @@ h1 .ta { font-size: clamp(18px, min(2.3vw, 4.2vh), 42px); color: #FFE7B8; }
 /* what the curtain reveals */
 .reveal { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2.4vh;
   padding: 4vh 6vw; text-align: center; background: radial-gradient(ellipse at 50% 40%, #1F3A6A, #0F1E38 70%); }
-.r-kicker { margin: 1vh 0 0; font-size: clamp(16px, 2.2vw, 36px); color: #FFE7B8; }
-.r-title { margin: 0; font-size: clamp(24px, min(3.6vw, 6.4vh), 66px); font-weight: 800; }
+.r-kicker { margin: 1vh 0 0; display: flex; flex-direction: column; gap: .4vh; font-size: clamp(16px, calc(2.2 * var(--u)), 36px); color: #FFE7B8; }
+.r-title { margin: 0; font-size: clamp(24px, min(calc(3.6 * var(--u)), 6.4vh), 66px); font-weight: 800; }
 .r-site { display: flex; align-items: center; gap: 3vw; background: rgba(255,255,255,.06); border: .3vh solid rgba(242,196,107,.5); border-radius: 2vh; padding: 2.4vh 3vw; }
 .qr { width: clamp(140px, 22vh, 300px); height: clamp(140px, 22vh, 300px); background: #fff; padding: 1vh; border-radius: 1vh; image-rendering: pixelated; }
-.url { font-size: clamp(28px, 5vw, 86px); font-weight: 800; color: #F2C46B; letter-spacing: .01em; }
-.opening { margin: 1.6vh 0 0; font-size: clamp(13px, 1.4vw, 24px); color: #DCE3EF; }
+/* beside the QR code the theme is one language a line: no separator left at the start of a wrapped line */
+.r-site .r-theme { flex-direction: column; align-items: center; gap: .5vh; margin-top: .6vh; }
+.r-site .r-theme span + span::before { content: none; }
+.url { font-size: clamp(28px, calc(5 * var(--u)), 86px); font-weight: 800; color: #F2C46B; letter-spacing: .01em; }
+.opening { margin: 1.6vh 0 0; font-size: clamp(13px, calc(1.4 * var(--u)), 24px); color: #DCE3EF; }
 
 .full { position: absolute; top: 2.2vh; right: 1.4vw; z-index: 8; background: rgba(255,255,255,.08); color: #fff; border: 1px solid rgba(255,255,255,.25);
   border-radius: 8px; font-size: 18px; padding: 4px 10px; cursor: pointer; }
@@ -61,3 +64,25 @@ h1 .ta { font-size: clamp(18px, min(2.3vw, 4.2vh), 42px); color: #FFE7B8; }
   animation: fall linear forwards; pointer-events: none; }
 @keyframes fall { to { transform: translate3d(var(--dx), 112vh, 0) rotate(var(--rot)); } }
 @media (prefers-reduced-motion: reduce) { .curtain { transition: none; } .front { transition: none; } .petal { display: none; } }
+
+/* the photograph of the Hon'ble Prime Minister: at the left, above the curtain, so it stays while the curtain opens;
+   the front and what it reveals are centred in the rest of the screen */
+.stage { --ph: clamp(150px, min(40vh, 26vw), 470px); --pw: calc(var(--ph) * .821 + 2.8vh); --pl: calc(3.5vw + var(--pw) + 3vw);
+  --u: calc((100vw - var(--pl) - 4vw) / 88); }  /* one hundredth of the old 88vw column: type keeps its proportions beside the photograph */
+.front, .reveal { padding-left: var(--pl); padding-right: 4vw; }
+.pm { position: absolute; left: 3.5vw; top: 50%; transform: translateY(-50%); z-index: 5; margin: 0; width: var(--pw);
+  display: flex; flex-direction: column; align-items: center; gap: 1.4vh; text-align: center; }
+.pm img { display: block; box-sizing: content-box; height: var(--ph); width: auto; background: #fff; padding: 1vh;
+  border: .4vh solid #F2C46B; border-radius: 1.6vh; box-shadow: 0 1.6vh 4vh rgba(0,0,0,.45); }
+.pm figcaption { font-size: clamp(12px, min(1.25vw, 2.3vh), 22px); line-height: 1.35; color: #DCE3EF; text-wrap: balance; }
+.pm figcaption span, .pm figcaption strong { display: block; }
+h1 span, .r-kicker, .r-title { text-wrap: balance; }
+.pm figcaption strong { margin-top: .3vh; font-size: 1.18em; color: #F2C46B; }
+/* an upright screen (a phone): the photograph at the top, its caption beside it, and the rest below at full width */
+@media (max-aspect-ratio: 1/1) {
+  .stage { --ph: clamp(96px, 13vh, 260px); --pl: 4vw; --u: calc(92vw / 88); }
+  .pm { top: calc(1.1vh + 2.2vh); left: 50%; transform: translateX(-50%); width: max-content; max-width: 92vw; flex-direction: row; gap: 4vw; text-align: left; }
+  .pm figcaption { font-size: clamp(12px, 3.6vw, 22px); }
+  .front, .reveal { padding-top: calc(var(--ph) + 2.8vh + 5vh); padding-bottom: 2vh; gap: .8vh; }
+  .logos img { height: min(7.5vh, 9vw); min-height: 0; padding: .5vh 1.4vw; }
+}
