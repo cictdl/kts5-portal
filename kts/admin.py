@@ -1578,6 +1578,7 @@ SETTING_GROUPS = [
         ("hei.end", "Last date for institutions to apply (YYYY-MM-DD; empty: none)", "date"),
         ("hei.max_per_state", "Institutions accepted in one State/UT at most (0: no limit; the allocation of Annexure-I is tentative)", "number"),
         ("hei.public", "Show the participating institutions on the website, State/UT by State/UT", "bool"),
+        ("nodal.officers_public", "Show the Nodal Officer of each State/UT (name, designation, e-mail and phone of the active Nodal Officer accounts) on the Nodal HEIs and Partners pages", "bool"),
         ("hei.orientation", "Pre-assessment orientation session by CICT for the institutions: date, time and link, shown on the institutions' page (empty: nothing)", "text")]),
     ("The assessment by the institutions and the registration of their students (D.O. letter of 9 October 2026)", [
         ("reg.by_institution", "Students register only with the link that the portal sends when their institution selects them (off: anybody may register, as before 1.2.43)", "bool"),

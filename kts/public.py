@@ -921,8 +921,27 @@ def _nodal_table():
     """
     heis = nodal_heis()
     now = {r["state"]: r["n"] for r in query("SELECT state, COUNT(*) AS n FROM institutions WHERE status = 'accepted' GROUP BY state")}
-    rows = [dict(h, now=now.get(h["state"], 0), anchor=state_anchor(h["state"])) for h in heis]
+    officers = _nodal_officers_by_state()
+    rows = [dict(h, now=now.get(h["state"], 0), anchor=state_anchor(h["state"]), officers=officers.get(h["state"], []))
+            for h in heis]
     return rows, {"allocation": sum(int(h.get("allocation") or 0) for h in heis), "now": sum(r["now"] for r in rows)}
+
+
+def _nodal_officers_by_state():
+    """
+    The Nodal Officers of the States/UTs as the public pages show them (1.2.70): the active Nodal Officer accounts (Console >
+    Users, or the sheet of the Nodal Officers) with the name, designation, e-mail and phone given for them, State/UT by
+    State/UT; none while CICT has switched this off (Console > Settings > nodal.officers_public).
+    """
+    if get_setting("nodal.officers_public") != "1":
+        return {}
+    by_state = {}
+    for u in query("SELECT name, designation, email, phone, states FROM users WHERE role = 'nodal' AND active = 1 ORDER BY name"):
+        person = {"name": u["name"], "designation": u["designation"] or "", "email": u["email"], "phone": u["phone"] or ""}
+        for state in (u["states"] or "").split("|"):
+            if state:
+                by_state.setdefault(state, []).append(person)
+    return by_state
 
 
 def state_anchor(state):

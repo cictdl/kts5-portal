@@ -692,6 +692,8 @@ DEFAULT_SETTINGS = {
     "hei.end": "2026-10-21",
     "hei.max_per_state": "0",
     "hei.public": "1",
+    # the Nodal Officer of each Nodal HEI, with the contact details given for the account, on the public pages (1.2.70)
+    "nodal.officers_public": "1",
     # the D.O. letter of 9 October 2026 (1.2.43): registration by the institutions' links; their online assessment
     "reg.by_institution": "1",
     "camp.on": "1",
