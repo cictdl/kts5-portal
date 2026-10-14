@@ -1,11 +1,12 @@
 /* The stage screen of the launch of the registration portal (1.2.69): one screen, any size, from a laptop to a hall's projector. */
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
 body { background: #0F1E38; color: #fff; font-family: "Segoe UI", "Nirmala UI", system-ui, sans-serif; overflow: hidden; }
 [lang="ta"], [lang="hi"] { font-family: "Nirmala UI", "Noto Sans Tamil", "Noto Sans Devanagari", "Segoe UI", sans-serif; }
 .tri { position: fixed; top: 0; left: 0; right: 0; height: 1.1vh; min-height: 6px; z-index: 9;
   background: linear-gradient(90deg, #FF9933 0 33.3%, #fff 33.3% 66.6%, #138808 66.6%); }
-.stage { position: relative; height: 100vh; width: 100vw; }
+/* the opened curtain slides off both sides: nothing outside the screen may widen the page */
+.stage { position: relative; height: 100vh; width: 100%; overflow: hidden; }
 .logos { display: flex; justify-content: center; align-items: center; gap: 2.2vw; }
 .logos img { height: 7.5vh; min-height: 40px; background: #fff; border-radius: 1.4vh; padding: .8vh 1vw; }
 
