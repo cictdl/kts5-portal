@@ -18,7 +18,7 @@ from flask import (Blueprint, Response, abort, current_app, flash, g, make_respo
 from . import campus as CAMP
 from . import heis as HEI
 from . import kural as K
-from .db import all_settings, audit, execute, get_setting, query, utcnow
+from .db import LAUNCH_NOTICE, all_settings, audit, execute, get_setting, query, utcnow
 from . import i18n
 from .i18n import get_lang, t
 from .utils import (DOC_EXT, IMAGE_EXT, age_on, check_captcha, client_ip, college_key, csv_bytes,
@@ -98,9 +98,10 @@ def _timeline(settings):
     """
     rows = [dict(r) for r in query("SELECT e.*, a.short_name AS agency FROM events e LEFT JOIN agencies a "
                                    "ON a.id = e.agency_id WHERE e.published = 1 ORDER BY e.starts_at, e.id")]
+    reg_on = settings.get("reg.open") != "0"   # registration switched off (as while the launch is postponed): no dates for it
     fixed = [(key, kind, day + "T00:00", None)
-             for key, kind, day in (("timeline.reg_open", "registration", _iso_day(settings.get("reg.start"))),
-                                    ("timeline.reg_close", "registration", _iso_day(settings.get("reg.end"))),
+             for key, kind, day in (("timeline.reg_open", "registration", reg_on and _iso_day(settings.get("reg.start"))),
+                                    ("timeline.reg_close", "registration", reg_on and _iso_day(settings.get("reg.end"))),
                                     ("timeline.inauguration", "general", _iso_day(settings.get("kts.start"))),
                                     ("timeline.valedictory", "general", _iso_day(settings.get("kts.end")))) if day]
     for key, kind, starts_at, ends_at in fixed:
@@ -178,12 +179,23 @@ def set_lang(code=None):
     return resp
 
 
+def _notice_filter(settings):
+    """
+    SQL that leaves out the pinned notice of the launch of the KTS 5.0 web portal and registration while the launch is
+    switched off (Console > Settings > launch.on), as when it is postponed: hidden, not deleted, and back when it is on.
+    """
+    if settings.get("launch.on") == "1":
+        return "", ()
+    return " AND title != ?", (LAUNCH_NOTICE[0],)
+
+
 @bp.route("/")
 def home():
     settings = all_settings()
     lang = get_lang()
-    notices = query("SELECT * FROM notices WHERE published = 1 AND (publish_at IS NULL OR publish_at <= ?) "
-                    "ORDER BY pinned DESC, created_at DESC LIMIT 5", (utcnow(),))
+    hide, hide_args = _notice_filter(settings)
+    notices = query("SELECT * FROM notices WHERE published = 1 AND (publish_at IS NULL OR publish_at <= ?)" + hide +
+                    " ORDER BY pinned DESC, created_at DESC LIMIT 5", (utcnow(), *hide_args))
     events = _timeline(settings)[0][:4]
     agencies = query("SELECT * FROM agencies WHERE active = 1 ORDER BY sort_order, name")
     stats = None
@@ -371,6 +383,8 @@ def register():
     ctx = dict(settings=settings, state=state, ref=ref, langs=langs, mother=mother,
                dates=_key_dates(settings), data={}, errors={}, inst=None, token="")
     if state != "open":
+        end = _iso_day(settings.get("reg.end"))
+        ctx["ended"] = bool(end) and end < now_ist().strftime("%Y-%m-%d")
         return render_template("public/register_closed.html", **ctx)
     # since the D.O. letter of 9 October 2026: only the student selected by a participating institution registers,
     # with the personal link (the institution fixed by it), or here choosing the institution (1.2.47)
@@ -864,20 +878,23 @@ def orientation():
 @bp.route("/notices")
 def notices():
     cat = request.args.get("cat") or ""
-    sql = "SELECT * FROM notices WHERE published = 1 AND (publish_at IS NULL OR publish_at <= ?)"
-    args = [utcnow()]
+    hide, hide_args = _notice_filter(all_settings())
+    sql = "SELECT * FROM notices WHERE published = 1 AND (publish_at IS NULL OR publish_at <= ?)" + hide
+    args = [utcnow(), *hide_args]
     if cat:
         sql += " AND category = ?"
         args.append(cat)
     sql += " ORDER BY pinned DESC, created_at DESC"
     rows = query(sql, args)
-    cats = [r["category"] for r in query("SELECT DISTINCT category FROM notices WHERE published = 1 ORDER BY category")]
+    cats = [r["category"] for r in query("SELECT DISTINCT category FROM notices WHERE published = 1" + hide + " ORDER BY category",
+                                         hide_args)]
     return render_template("public/notices.html", rows=rows, cat=cat, cats=cats)
 
 
 @bp.route("/notices/<int:nid>")
 def notice(nid):
-    row = query("SELECT * FROM notices WHERE id = ? AND published = 1", (nid,), one=True)
+    hide, hide_args = _notice_filter(all_settings())
+    row = query("SELECT * FROM notices WHERE id = ? AND published = 1" + hide, (nid, *hide_args), one=True)
     if row is None:
         abort(404)
     return render_template("public/notice.html", n=row)

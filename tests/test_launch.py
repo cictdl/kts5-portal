@@ -1,7 +1,7 @@
 """
 The launch of the KTS 5.0 web portal and registration by the Hon'ble Minister of Education, Shri Pralhad Joshi, on 14 October 2026 at
 5:00 PM (version 1.2.69): the banner announces it before the hour, registration opens at it, the home page counts down
-to it and then says it was launched; the stage screen /launch, with the photograph of the Hon'ble Prime Minister and Thiruvalluvar; the pinned notice and the schedule; the programme's
+to it and then says it was launched; the stage screen /launch, with the photograph of the Hon'ble Prime Minister and Thiruvalluvar; the launch video on the home page; the pinned notice and the schedule; the programme's
 purpose on the home and About pages; the cards for social media; and the leftovers of the central test of earlier
 versions (mails, candidate sign-in, programme, admit card) and the Daily Kural kits that are not there yet.
 
@@ -101,6 +101,102 @@ def test_the_stage_shows_launched_after_the_button(monkeypatch):
     # every other browser waits for the hour, and registration too
     other = app.test_client().get("/?lang=en").get_data(as_text=True)
     assert '<div class="launch-card">' in other
+
+
+def test_the_launch_postponed(monkeypatch):
+    # the launch postponed: switched off in the Console with registration and the banner, hidden but not removed
+    app = _app(**{"launch.on": "0"})
+    with app.app_context():
+        from kts.db import LAUNCH_NOTICE, query, set_setting
+        set_setting("reg.open", "0")
+        set_setting("site.banner_on", "0")
+        nid = query("SELECT id FROM notices WHERE title = ?", (LAUNCH_NOTICE[0],), one=True)["id"]
+    _clock(monkeypatch, _at(14, 15))
+    client = app.test_client()
+    home = client.get("/?lang=en").get_data(as_text=True)
+    for gone in ("will be launched by", '<div class="banner', "launch-card", "kts5-launch.mp4", "14 October 2026, 5:00 PM"):
+        assert gone not in home, gone
+    assert "Kashi Tamil Sangamam 5.0 begins in" in home
+    assert "14 October 2026, 5:00 PM" not in client.get("/notices?lang=en").get_data(as_text=True)
+    assert client.get(f"/notices/{nid}").status_code == 404
+    assert "opening of registration" not in client.get("/schedule?lang=en").get_data(as_text=True)
+    register = client.get("/register?lang=en").get_data(as_text=True)
+    assert "Registration is closed." in register and "Registrations closed on" not in register
+    assert client.get("/launch").status_code == 200          # the stage screen stays, for the day
+    # switched on again with a new moment: everything is back, for that day
+    with app.app_context():
+        set_setting("launch.on", "1")
+        set_setting("launch.at", "2026-10-20T17:00")
+        set_setting("reg.open", "1")
+        set_setting("site.banner_on", "1")
+    home = app.test_client().get("/?lang=en").get_data(as_text=True)
+    assert "will be launched by" in home and "20 Oct 2026" in home and "launch-card" in home
+    assert "5:00 PM" in app.test_client().get(f"/notices/{nid}").get_data(as_text=True)
+    # after registration has really closed, its last day is named
+    with app.app_context():
+        set_setting("launch.on", "0")
+    _clock(monkeypatch, _at(23, 10))
+    assert "Registrations closed on" in app.test_client().get("/register?lang=en").get_data(as_text=True)
+
+
+def test_the_postponement_switches_the_launch_off_once():
+    from kts.db import get_setting, init_db, set_setting
+    # a new database: nothing is switched off
+    app = make_app(ADMIN_PASSWORD=None)
+    with app.app_context():
+        assert get_setting("reg.open") == "1" and get_setting("site.banner_on") == "1"
+        assert get_setting("seed.launch.postponed") == "1"
+    # the live database, which announced the launch with the release of the morning: switched off at the next start
+    with app.app_context():
+        from kts.db import execute
+        execute("DELETE FROM settings WHERE key = 'seed.launch.postponed'")
+        for key in ("launch.on", "reg.open", "site.banner_on"):
+            set_setting(key, "1")
+    init_db(app)
+    with app.app_context():
+        assert [get_setting(k) for k in ("launch.on", "reg.open", "site.banner_on")] == ["0", "0", "0"]
+        assert get_setting("launch.at") == "2026-10-14T17:00"          # the rest stays as it was
+        # CICT switches them on again with the new moment: later starts leave them on
+        for key in ("launch.on", "reg.open", "site.banner_on"):
+            set_setting(key, "1")
+    init_db(app)
+    with app.app_context():
+        assert [get_setting(k) for k in ("launch.on", "reg.open", "site.banner_on")] == ["1", "1", "1"]
+
+
+def test_the_launch_video_on_the_home_page(monkeypatch):
+    app = _app()
+    _clock(monkeypatch, _at(14, 16, 30))
+    assert "kts5-launch.mp4" not in app.test_client().get("/?lang=en").get_data(as_text=True)
+    # from the hour: two minutes on the programme and the portal; the poster opens it in the browser's own player
+    _clock(monkeypatch, _at(14, 17, 5))
+    page = app.test_client().get("/?lang=en").get_data(as_text=True)
+    for text in ('<section class="section launch-video"', 'id="launch-video-title"', "Launch of the KTS 5.0 web portal and registration",
+                 '<a href="/static/video/kts5-launch.mp4" target="_blank" rel="noopener"',
+                 '<img src="/static/video/kts5-launch-poster.jpg" alt="Launch of the KTS 5.0 web portal and registration"'):
+        assert text in page, text
+    assert page.index('class="hero"') < page.index("launch-video") < page.index("hei-intro")
+    # after the days of the launch too, and in every language
+    _clock(monkeypatch, _at(30, 10))
+    assert "kts5-launch.mp4" in app.test_client().get("/?lang=ta").get_data(as_text=True)
+    # the hall's computer, opened as launched by the stage screen a few minutes before the hour
+    _clock(monkeypatch, _at(14, 16, 58))
+    hall = app.test_client()
+    assert "kts5-launch.mp4" in hall.get("/?launched=1&lang=en").get_data(as_text=True)
+    # no launch, no video
+    _clock(monkeypatch, _at(14, 17, 5))
+    assert "kts5-launch.mp4" not in _app(**{"launch.on": "0"}).test_client().get("/?lang=en").get_data(as_text=True)
+    # the files: a web copy that streams, the poster, and the captions of all thirteen lines of the voice-over
+    folder = ROOT / "static" / "video"
+    mp4 = folder / "kts5-launch.mp4"
+    assert mp4.read_bytes()[4:8] == b"ftyp" and mp4.stat().st_size < 25_000_000
+    assert (folder / "kts5-launch-poster.jpg").read_bytes()[:3] == b"\xff\xd8\xff"
+    vtt = (folder / "kts5-launch.en.vtt").read_text(encoding="utf-8")
+    assert vtt.startswith("WEBVTT") and vtt.count(" --> ") == 13 and "Shri Pralhad Joshi" in vtt and "Visit kts.cict.in." in vtt
+    client = app.test_client()
+    assert client.get("/static/video/kts5-launch.en.vtt").mimetype == "text/vtt"
+    part = client.get("/static/video/kts5-launch.mp4", headers={"Range": "bytes=0-99"})
+    assert part.status_code == 206 and len(part.data) == 100 and part.mimetype == "video/mp4"
 
 
 def test_the_stage_screen(monkeypatch):

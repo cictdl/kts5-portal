@@ -1260,6 +1260,17 @@ def init_db(app):
                          "VALUES(?,?,'circular','en',1,1,'',?,?,?)", (title, body, NODAL_NOTICE_LINK, now, now))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
 
+    # The launch of 14 October 2026, 5:00 PM was postponed (1.2.69): on a database that has announced it already (its notice
+    # was put in by an earlier start), the launch, registration and the banner are switched off, once. Nothing else changes,
+    # and CICT switches them on again in the Console with the new moment; a new database is left as it is.
+    mark = "seed.launch.postponed"
+    if not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
+        if conn.execute("SELECT 1 FROM settings WHERE key = 'seed.notice.launch'").fetchone():
+            for key in ("launch.on", "reg.open", "site.banner_on"):
+                conn.execute("INSERT INTO settings(key, value, updated_at) VALUES(?, '0', ?) "
+                             "ON CONFLICT(key) DO UPDATE SET value = '0', updated_at = excluded.updated_at", (key, now))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
+
     # The launch of the KTS 5.0 web portal and registration (1.2.69), as a notice pinned at the top, put in once as the circular is.
     mark = "seed.notice.launch"
     if not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():

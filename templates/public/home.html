@@ -61,6 +61,22 @@
   </div>
 </section>
 
+{# The launch video (1.2.69): once the KTS 5.0 web portal and registration are launched, two minutes on the programme and
+   the portal. The poster opens the video in the browser's own player (the templates hold no media elements of their own). #}
+{% set lv = launch_view() %}
+{% if lv.at and lv.phase != 'before' %}
+<section class="section launch-video" style="padding:28px 0 4px" aria-labelledby="launch-video-title">
+  <div class="wrap">
+    <h2 id="launch-video-title" style="margin:0 0 12px">{{ t('launch.title') }}</h2>
+    <a href="{{ url_for('static', filename='video/kts5-launch.mp4') }}" target="_blank" rel="noopener" style="display:block;position:relative;max-width:960px">
+      <img src="{{ url_for('static', filename='video/kts5-launch-poster.jpg') }}" alt="{{ t('launch.title') }}" width="1280" height="720"
+           style="display:block;width:100%;height:auto;border-radius:12px">
+      <span aria-hidden="true" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:96px;height:96px;border-radius:50%;background:rgba(15,30,56,.78);color:#fff;font-size:42px;display:flex;align-items:center;justify-content:center;padding-left:8px">&#9654;</span>
+    </a>
+  </div>
+</section>
+{% endif %}
+
 {# For the Higher Educational Institutions (1.2.55): what they do on the portal, with the guidelines and the timelines #}
 <section class="section hei-intro" style="padding:28px 0 4px">
   <div class="wrap">
