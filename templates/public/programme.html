@@ -24,7 +24,7 @@
       <a class="btn sm saffron" href="{{ url_for('public.register') }}" style="margin-top:8px">{{ t('nav.register') }}</a>
   {% endcall %}
   {% call item(4) %}
-      <ul><li><bdi>{{ settings['exam.date']|date }}, {{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST</bdi> · {{ settings['exam.duration_min'] }} {{ t('exam.minutes') }}</li><li>{{ settings['exam.questions'] }} {{ t('exam.pattern_text') }} · {{ settings['exam.marks_per_q'] }} {{ t('exam.marks_each') }}</li></ul>
+      <ul><li>{{ t('guide.date_assess') }}: <bdi>{{ settings['camp.from']|date }} – {{ settings['camp.to']|date }}</bdi> · {{ settings['exam.duration_min'] }} {{ t('exam.minutes') }}</li><li>{{ settings['exam.questions'] }} {{ t('exam.pattern_text') }} · {{ settings['exam.marks_per_q'] }} {{ t('exam.marks_each') }}</li></ul>
       <a class="btn sm secondary" href="{{ url_for('public.examination') }}" style="margin-top:8px">{{ t('exam.title') }}</a>
   {% endcall %}
   {% call item(5) %}

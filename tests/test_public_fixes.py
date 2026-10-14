@@ -987,17 +987,17 @@ def test_version_of_style_sheet_and_script():
     for path in TEMPLATES:
         for name, version in re.findall(r"filename='((?:css|js)/portal\.(?:css|js))'\) \}\}\?v=(\d+)", path.read_text(encoding="utf-8")):
             linked.setdefault(path.relative_to(ROOT / "templates").as_posix(), []).append((name, version))
-    expected = {name: [("css/portal.css", "16"), ("js/portal.js", "16")]
+    expected = {name: [("css/portal.css", "17"), ("js/portal.js", "17")]
                 for name in ("base.html", "candidate/exam_paper.html", "console/base.html")}
     # the certificate has a style sheet of its own and the script for its print button
-    expected["public/certificate.html"] = [("js/portal.js", "16")]
-    expected["public/letter.html"] = [("js/portal.js", "16")]
+    expected["public/certificate.html"] = [("js/portal.js", "17")]
+    expected["public/letter.html"] = [("js/portal.js", "17")]
     # the pages of the classroom quiz have a frame of their own, with the style sheet and the script of the portal
-    expected["quiz/layout.html"] = [("css/portal.css", "16"), ("js/portal.js", "16")]
+    expected["quiz/layout.html"] = [("css/portal.css", "17"), ("js/portal.js", "17")]
     assert linked == expected
     for path in TEMPLATES:
-        assert not re.search(r"portal\.css'\) \}\}(?!\?v=16\")", path.read_text(encoding="utf-8")), path
-        assert not re.search(r"portal\.js'\) \}\}(?!\?v=16\")", path.read_text(encoding="utf-8")), path
+        assert not re.search(r"portal\.css'\) \}\}(?!\?v=17\")", path.read_text(encoding="utf-8")), path
+        assert not re.search(r"portal\.js'\) \}\}(?!\?v=17\")", path.read_text(encoding="utf-8")), path
 
 
 # ---- B9 · alt texts of the logos ----------------------------------------------------------------
@@ -1039,7 +1039,8 @@ def test_alt_texts_use_keys_that_exist():
     # the 14 of the website policies, help and sitemap (1.2.34), the message when the time of the test is up (1.2.36)
     # and the 9 of the live banners for metro trains and buses (1.2.63), the 8 of the 108 Thirukkural (1.2.64),
     # the 7 of the posters and charts (1.2.67)
-    assert len(CATALOG["en"]) == 1017
+    # and the 11 of the launch of the KTS 5.0 web portal and registration (1.2.69)
+    assert len(CATALOG["en"]) == 1028
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1071,7 +1072,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.68" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.69" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

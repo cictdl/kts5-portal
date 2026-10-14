@@ -61,6 +61,9 @@ def make_app(**settings):
         set_setting("reg.end", "2030-12-31")
         # the tests of the open registration of the versions before 1.2.43; those of the links of the institutions set it to 1
         set_setting("reg.by_institution", "0")
+        # the launch of the registration portal on 14 October 2026 (1.2.69) would close registration until its hour;
+        # tests/test_launch.py switches it on
+        set_setting("launch.on", "0")
     return app
 
 

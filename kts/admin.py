@@ -26,7 +26,7 @@ from .db import (DEFAULT_SETTINGS, INSTITUTE_HEAD, NODAL_FIELDS, NODAL_OFFICERS,
                  set_setting, utcnow)
 from .public import CATEGORIES
 from .utils import (RESOURCE_EXT, client_ip, csv_bytes, exam_window, now_ist, paginate, parse_iso,
-                    registration_state, safe_int, save_upload, send_again, send_mail, valid_email, xlsx_bytes,
+                    fmt_date, registration_state, safe_int, save_upload, send_again, send_mail, valid_email, xlsx_bytes,
                     mail_check, SHEET_MAX_BYTES, sheet_rows)
 
 bp = Blueprint("admin", __name__, url_prefix="/console")
@@ -198,10 +198,11 @@ def application(aid):
                 settings = all_settings()
                 send_mail(row["email"], f"KTS 5.0: application {row['app_no']} verified",
                           f"Dear {row['full_name']},\n\nYour application {row['app_no']} has been verified. "
-                          f"You are eligible for the online selection test on {settings['exam.date']} "
-                          f"({settings['exam.start_time']}–{settings['exam.end_time']} IST).\n\n"
-                          f"Sign in at {current_app.config['BASE_URL']}/candidate/login with your application number, "
-                          f"date of birth and the last four digits of your mobile number.\n\nCICT, Chennai")
+                          f"CICT will confirm the selection of the students on {fmt_date(settings.get('letter.date'))}, "
+                          f"by e-mail and on the portal.\n\n"
+                          f"Follow your application at {current_app.config['BASE_URL']}/status, and sign in to the "
+                          f"candidate portal at {current_app.config['BASE_URL']}/candidate/login, with your application "
+                          f"number, date of birth and the last four digits of your mobile number.\n\nCICT, Chennai")
             flash(f"Application {row['app_no']} marked {new_status}.", "success")
         elif action == "note":
             execute("UPDATE applications SET remarks = ?, updated_at = ? WHERE id = ?", (note, now, aid))
@@ -1564,6 +1565,10 @@ SETTING_GROUPS = [
                    ("home.pm_quote", "Quotation (without quotation marks)", "text"),
                    ("home.pm_quote_by", "Attribution", "text"), ("home.pm_caption", "Photograph caption", "text")]),
     ("Registration", [("reg.open", "Registration enabled", "bool"), ("reg.start", "Opens on (YYYY-MM-DD)", "date"), ("reg.end", "Closes on (YYYY-MM-DD)", "date")]),
+    ("Launch of the KTS 5.0 web portal and registration (by the Hon'ble Minister of Education; the stage screen: /launch)", [
+        ("launch.on", "Announce the launch: the banner and the home page before it; registration opens at the launch", "bool"),
+        ("launch.at", "Moment of the launch (YYYY-MM-DDTHH:MM, IST)", "text"),
+        ("launch.until", "The home page says 'launched' until (YYYY-MM-DD)", "date")]),
     ("Backups of the database (Console › Backups)", [
         ("backup.on", "Copy the database by itself at the hours below, into instance\\backups", "bool"),
         ("backup.times", "Hours of the copies (HH:MM IST, separated by commas)", "text"),

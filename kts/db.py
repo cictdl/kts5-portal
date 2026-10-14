@@ -612,7 +612,7 @@ DEFAULT_SETTINGS = {
     "site.banner_on": "1",
     "reg.open": "1",
     # the dates of the tentative timeline of KTS 5.0 (28.11.2026 – 12.12.2026)
-    "reg.start": "2026-10-15",
+    "reg.start": "2026-10-14",
     # the D.O. letter of the Ministry of 9 October 2026: the institutions register their selected students by 22 October
     "reg.end": "2026-10-22",
     "exam.date": "2026-10-22",
@@ -646,6 +646,11 @@ DEFAULT_SETTINGS = {
     "kts.start": "2026-11-28",
     # the hour of the inauguration, for the countdown on the home page (empty: 00:00 IST)
     "kts.start_time": "",
+    # the launch of the KTS 5.0 web portal and registration by the Hon'ble Minister of Education (1.2.69): registration opens then, the
+    # banner announces it before, the home page says it was launched until launch.until; /launch is the stage screen
+    "launch.on": "1",
+    "launch.at": "2026-10-14T17:00",
+    "launch.until": "2026-10-22",
     "kts.end": "2026-12-12",
     "schedule.tentative": "1",
     # every registered student receives a certificate of recognition (kts/certificate.py)
@@ -733,7 +738,7 @@ RETIRED_DEFAULTS = {
     # the dates up to version 1.1.4, before the timeline of the programme was fixed, and those of the
     # timeline up to 1.2.31 (registration 10-16 October, test 19 October), moved by the timeline of
     # 8 October 2026 (registration 15-21 October, test 22 October)
-    "reg.start": ["2026-09-25", "2026-10-10"],
+    "reg.start": ["2026-09-25", "2026-10-10", "2026-10-15"],
     "reg.end": ["2026-11-15", "2026-10-16", "2026-10-21"],
     "exam.date": ["2026-11-29", "2026-10-19"],
     "letter.date": ["2026-10-22"],
@@ -1255,6 +1260,14 @@ def init_db(app):
                          "VALUES(?,?,'circular','en',1,1,'',?,?,?)", (title, body, NODAL_NOTICE_LINK, now, now))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
 
+    # The launch of the KTS 5.0 web portal and registration (1.2.69), as a notice pinned at the top, put in once as the circular is.
+    mark = "seed.notice.launch"
+    if not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
+        if not conn.execute("SELECT 1 FROM notices WHERE title = ?", (LAUNCH_NOTICE[0],)).fetchone():
+            conn.execute("INSERT INTO notices(title, body, category, lang, pinned, published, attachment, link, created_at, updated_at) "
+                         "VALUES(?,?,'general','en',1,1,'','/',?,?)", (LAUNCH_NOTICE[0], LAUNCH_NOTICE[1], now, now))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
+
     # The role of an agency as seeded by an earlier version becomes the present wording, so that
     # the partner page keeps finding its translation; wording changed in the console is left alone.
     seed_path = app.config["DATA_DIR"] / "agencies.json"
@@ -1277,6 +1290,19 @@ def init_db(app):
         conn.commit()
     finally:
         conn.close()
+
+
+LAUNCH_NOTICE = (
+    "Launch of the KTS 5.0 web portal and registration by the Hon'ble Minister of Education, 14 October 2026, 5:00 PM",
+    "The Hon'ble Minister of Education, Shri Pralhad Joshi, will launch the web portal of the fifth edition of Kashi Tamil "
+    "Sangamam (KTS 5.0), kts.cict.in, and its registration on 14 October 2026 (Wednesday) at 5:00 PM. KTS 5.0 is "
+    "scheduled to be held from "
+    "28 November to 12 December 2026 under the theme “Thirukkural Payilvom – Thirukkural Abhyas Karen”. The programme "
+    "seeks to celebrate the cultural and civilisational bonds between Kashi and Tamil Nadu and to promote the timeless "
+    "ethical and moral values of the Thirukkural.\n\nThe registration of the selected students opens with the launch, on "
+    "kts.cict.in. Each participating institution assesses its students from 15 to 21 October 2026 and selects one student "
+    "on merit; the selected student registers by 22 October 2026.",
+)
 
 
 def init_app(app):

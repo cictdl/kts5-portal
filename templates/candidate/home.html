@@ -23,7 +23,7 @@
           {% if inaug and inaug.certificate %}<a class="btn sm saffron" href="{{ inaug.certificate }}">🎥 {{ t('cert.inaug_get') }}</a>{% endif %}
           {% set merit_cert = merit_link(cand) %}{% if merit_cert %}<a class="btn sm saffron" href="{{ merit_cert }}">🏆 {{ t('cert.merit_get') }}</a>{% endif %}
           {% set cert = certificate_link(cand) %}{% if cert %}<a class="btn sm {{ 'secondary' if merit_cert else 'saffron' }}" href="{{ cert }}">🏅 {{ t('cert.get') }}</a>{% endif %}
-          {% if cand.status in ('verified', 'selected', 'waitlisted', 'not_selected') %}<a class="btn sm secondary" href="{{ url_for('candidate.admit_card') }}">{{ t('cand.admit') }}</a>{% endif %}</div>
+          {% if cand.status in ('verified', 'selected', 'waitlisted', 'not_selected') and settings['exam.open'] != '0' %}<a class="btn sm secondary" href="{{ url_for('candidate.admit_card') }}">{{ t('cand.admit') }}</a>{% endif %}</div>
       </div>
 
       {% if bank %}

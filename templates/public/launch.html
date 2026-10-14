@@ -1,0 +1,56 @@
+<!doctype html>
+{# The stage screen of the launch of the KTS 5.0 web portal and registration by the Hon'ble Minister of Education (1.2.69): shown on the
+   screen of the hall. The button (or Enter, Space, or a presenter's clicker) opens the curtain; the address and its QR code
+   appear, and the home page opens as launched, unless ?stay=1. Nothing on the portal changes with the button. #}
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>{{ t('launch.title') }} · {{ t('site.name') }}</title>
+<link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/launch.css') }}?v=2">
+</head>
+<body>
+<div class="tri" aria-hidden="true"></div>
+<main class="stage" id="stage" data-home="{{ url_for('public.home') }}?launched=1" data-stay="{{ '1' if stay else '' }}">
+  {# what the curtain reveals #}
+  <section class="reveal" aria-live="polite">
+    <div class="logos">
+      <img src="{{ url_for('static', filename='img/logos/goi.png') }}" alt="Government of India">
+      <img src="{{ url_for('static', filename='img/logos/moe.png') }}" alt="Ministry of Education">
+      <img src="{{ url_for('static', filename='img/cict-logo.png') }}" alt="Central Institute of Classical Tamil">
+      <img src="{{ url_for('static', filename='img/kts-logo.png') }}" alt="Kashi Tamil Sangamam 5.0">
+    </div>
+    <p class="r-kicker"><span lang="hi">{{ hi('launch.launched') }}</span> · <span lang="ta">{{ ta('launch.launched') }}</span></p>
+    <h2 class="r-title">{{ t('launch.launched') }}</h2>
+    <div class="r-site">
+      <img class="qr" src="{{ qr }}" alt="QR code: {{ base or 'https://kts.cict.in' }}" width="240" height="240">
+      <div><div class="url">kts.cict.in</div><div class="r-theme"><span lang="ta">{{ site.theme_ta }}</span><span>{{ site.theme_en }}</span><span lang="hi">{{ site.theme_hi }}</span></div>
+        {% if not stay %}<p class="opening" id="opening">{{ t('launch.opening') }}</p>{% endif %}</div>
+    </div>
+  </section>
+
+  {# the curtain, with the title, the Minister, the day and the button #}
+  <div class="curtain left" aria-hidden="true"></div><div class="curtain right" aria-hidden="true"></div>
+  <section class="front" id="front">
+    <div class="logos">
+      <img src="{{ url_for('static', filename='img/logos/goi.png') }}" alt="Government of India">
+      <img src="{{ url_for('static', filename='img/logos/moe.png') }}" alt="Ministry of Education">
+      <img src="{{ url_for('static', filename='img/cict-logo.png') }}" alt="Central Institute of Classical Tamil">
+      <img src="{{ url_for('static', filename='img/kts-logo.png') }}" alt="Kashi Tamil Sangamam 5.0">
+    </div>
+    <p class="kicker"><span lang="ta">{{ ta('site.name') }}</span> · <span lang="hi">{{ hi('site.name') }}</span> · <span>{{ t('site.name') }}</span></p>
+    <div class="theme"><span lang="ta">{{ site.theme_ta }}</span><span>{{ site.theme_en }}</span><span lang="hi">{{ site.theme_hi }}</span></div>
+    <h1><span class="hi" lang="hi">{{ hi('launch.title') }}</span><span class="en">{{ t('launch.title') }}</span><span class="ta" lang="ta">{{ ta('launch.title') }}</span></h1>
+    <p class="by"><span lang="hi">{{ hi('launch.by') }}</span><span>{{ t('launch.by') }}</span></p>
+    {% if at %}<p class="when">{{ at.strftime('%d %B %Y').lstrip('0') }} · {{ at.strftime('%I:%M %p').lstrip('0') }}</p>{% endif %}
+    <button type="button" class="go" id="go"><span>{{ t('launch.button') }}</span><small lang="hi">{{ hi('launch.button') }}</small></button>
+    <p class="hint">{{ t('launch.hint') }}</p>
+    <p class="org">{{ site.organiser }} · {{ site.ministry }}</p>
+  </section>
+  <button type="button" class="full" id="full" title="Full screen">⛶</button>
+</main>
+<script src="{{ url_for('static', filename='js/launch.js') }}?v=1"></script>
+</body>
+</html>

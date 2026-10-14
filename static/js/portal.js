@@ -33,6 +33,8 @@
       // the countdown to Kashi Tamil Sangamam 5.0 (1.2.50): the label says that it is under way
       if (label) { label.textContent = el.dataset.done; el.classList.add("live"); el.querySelector(".units").remove(); }
       else { var b = document.createElement("b"); b.textContent = el.dataset.done; el.querySelector(".units").replaceChildren(b); }
+      // the launch of the registration portal (1.2.69): at the hour the page loads again, a few seconds apart for each visitor
+      if (el.dataset.reload) setTimeout(function () { window.location.reload(); }, 3000 + Math.floor(Math.random() * 17000));
     }
     tick(); setInterval(tick, 1000);
   });

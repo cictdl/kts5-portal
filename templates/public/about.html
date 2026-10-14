@@ -8,6 +8,8 @@
     <div class="prose">
       <p class="lead dim">{{ t('about.lead') }}</p>
       <h2>{{ t('about.h_fifth') }}</h2>
+      <p>{{ t('home.purpose')|replace('{start}', get_setting('kts.start')|date)|replace('{end}', get_setting('kts.end')|date) }}</p>
+      {% set lv = launch_view() %}{% if lv.at and lv.phase != 'before' %}<p>{{ t('launch.done')|replace('{date}', lv.at|date) }}</p>{% endif %}
       <p>{{ t('about.p1') }}</p>
       <p>{{ t('about.p2') }}</p>
       <p dir="ltr"><b class="ta" lang="ta">{{ site.theme_ta }}</b> · <b lang="en">{{ site.theme_en }}</b> · <b class="hi" lang="hi">{{ site.theme_hi }}</b> · <b lang="en">{{ site.theme_meaning }}</b></p>

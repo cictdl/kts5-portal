@@ -98,10 +98,37 @@ def fmt_time(value, numeric=False):
     return dt.strftime("%H:%M" if numeric else "%I:%M %p")
 
 
+def launch_at(settings):
+    """
+    The moment the KTS 5.0 web portal and its registration are launched (1.2.69): launch.at, 'YYYY-MM-DDTHH:MM' in IST, while launch.on is 1;
+    None otherwise. The Hon'ble Minister of Education, Shri Pralhad Joshi, launches them on 14 October 2026 at 5:00 PM.
+    """
+    if settings.get("launch.on") != "1":
+        return None
+    try:
+        return datetime.fromisoformat((settings.get("launch.at") or "").strip()).replace(tzinfo=IST)
+    except ValueError:
+        return None
+
+
+def launch_phase(settings, now=None):
+    """'before' the launch, 'after' it (to the end of the day of launch.until, or of the launch itself), or None."""
+    at = launch_at(settings)
+    if at is None:
+        return None
+    now = now or now_ist()
+    if now < at:
+        return "before"
+    until = (settings.get("launch.until") or "").strip()[:10] or at.strftime("%Y-%m-%d")
+    return "after" if now.strftime("%Y-%m-%d") <= until else None
+
+
 def registration_state(settings):
-    """'open' | 'not_yet' | 'closed' based on the reg.* settings."""
+    """'open' | 'not_yet' | 'closed' based on the reg.* settings; never open before the launch of the portal (1.2.69)."""
     if settings.get("reg.open") == "0":
         return "closed"
+    if launch_phase(settings) == "before":
+        return "not_yet"
     today = now_ist().date()
     start = settings.get("reg.start")
     end = settings.get("reg.end")

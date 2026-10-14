@@ -28,7 +28,7 @@
           {% for base, var in variants.items() %}<option value="{{ var }}" {{ 'selected' if var == stream }}>{{ var|langnative }} · {{ var|langname }}</option>{% endfor %}</select></div>
         <div class="field"><button class="btn sm" type="submit">{{ t('common.download') }} CSV</button></div>
       </form>
-      <p class="small muted" style="margin-top:12px">{{ t('daily.kits') }} <a href="{{ url_for('public.resources', cat='daily') }}">{{ t('res.cat_daily') }}</a></p>
+      {% if kits %}<p class="small muted" style="margin-top:12px">{{ t('daily.kits') }} <a href="{{ url_for('public.resources', cat='daily') }}">{{ t('res.cat_daily') }}</a></p>{% endif %}
     </div>
   </div>
 </div>

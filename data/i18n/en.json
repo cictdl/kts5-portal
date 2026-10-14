@@ -1015,5 +1015,16 @@
   "post.p3": "Twelve couplets for every day",
   "post.p4": "The Thirukkural at a glance",
   "post.print": "A3 · print at 100% · also fine at A4 and A2",
-  "post.cta": "Download the posters (PDF)"
+  "post.cta": "Download the posters (PDF)",
+  "launch.title": "Launch of the KTS 5.0 web portal and registration",
+  "launch.by": "by the Hon'ble Minister of Education, Shri Pralhad Joshi",
+  "launch.banner": "The Kashi Tamil Sangamam 5.0 web portal and its registration will be launched by the Hon'ble Minister of Education, Shri Pralhad Joshi, on {date} at {time}.",
+  "launch.in": "The portal will be launched in",
+  "launch.now": "The KTS 5.0 web portal and its registration are being launched",
+  "launch.done": "The Kashi Tamil Sangamam 5.0 web portal and its registration were launched by the Hon'ble Minister of Education, Shri Pralhad Joshi, on {date}.",
+  "launch.button": "Launch",
+  "launch.hint": "Press the button, or the Enter key",
+  "launch.launched": "The KTS 5.0 web portal and its registration are launched",
+  "launch.opening": "Opening the portal…",
+  "home.purpose": "Kashi Tamil Sangamam 5.0 will be held from {start} to {end} under the theme “Thirukkural Payilvom – Thirukkural Abhyas Karen”. The programme seeks to celebrate the cultural and civilisational bonds between Kashi and Tamil Nadu and to promote the timeless ethical and moral values of the Thirukkural."
 }

@@ -1,0 +1,62 @@
+/* The stage screen of the launch of the registration portal (1.2.69): one screen, any size, from a laptop to a hall's projector. */
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: #0F1E38; color: #fff; font-family: "Segoe UI", "Nirmala UI", system-ui, sans-serif; overflow: hidden; }
+[lang="ta"], [lang="hi"] { font-family: "Nirmala UI", "Noto Sans Tamil", "Noto Sans Devanagari", "Segoe UI", sans-serif; }
+.tri { position: fixed; top: 0; left: 0; right: 0; height: 1.1vh; min-height: 6px; z-index: 9;
+  background: linear-gradient(90deg, #FF9933 0 33.3%, #fff 33.3% 66.6%, #138808 66.6%); }
+.stage { position: relative; height: 100vh; width: 100vw; }
+.logos { display: flex; justify-content: center; align-items: center; gap: 2.2vw; }
+.logos img { height: 7.5vh; min-height: 40px; background: #fff; border-radius: 1.4vh; padding: .8vh 1vw; }
+
+/* the front: the curtain's face */
+.front { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 3vh 6vw; gap: 1.1vh; transition: opacity .6s ease; }
+.kicker { margin: .6vh 0 0; font-size: clamp(14px, min(1.8vw, 3.3vh), 30px); color: #F2C46B; font-weight: 600; letter-spacing: .02em; }
+.theme, .r-theme { display: flex; flex-wrap: wrap; justify-content: center; gap: .4vh 1.4vw; font-size: clamp(13px, min(1.4vw, 2.6vh), 24px); color: #FFE7B8; }
+.theme span + span::before, .r-theme span + span::before { content: "·"; margin-right: 1.4vw; color: #E07B1A; }
+h1 { margin: .8vh 0 0; display: flex; flex-direction: column; gap: .6vh; line-height: 1.15; }
+h1 .hi { font-size: clamp(20px, min(2.9vw, 5.2vh), 52px); color: #fff; }
+h1 .en { font-size: clamp(22px, min(3.3vw, 5.9vh), 60px); font-weight: 800; color: #fff; }
+h1 .ta { font-size: clamp(18px, min(2.3vw, 4.2vh), 42px); color: #FFE7B8; }
+.by { margin: .4vh 0 0; display: flex; flex-direction: column; gap: .3vh; font-size: clamp(15px, min(1.7vw, 3.1vh), 30px); color: #DCE3EF; }
+.when { margin: .4vh 0 .8vh; font-size: clamp(15px, min(1.8vw, 3.3vh), 30px); font-weight: 700; color: #F2C46B; }
+.go { width: clamp(110px, min(12vw, 20vh), 220px); height: clamp(110px, min(12vw, 20vh), 220px); border-radius: 50%; border: .6vh solid #F2C46B; cursor: pointer;
+  background: radial-gradient(circle at 35% 30%, #F4A24A, #E07B1A 55%, #A3501A); color: #fff; box-shadow: 0 0 0 1.4vh rgba(242,196,107,.18), 0 1.6vh 4vh rgba(0,0,0,.45);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .4vh; font-family: inherit; }
+.go span { font-size: clamp(22px, 2.6vw, 44px); font-weight: 800; letter-spacing: .04em; }
+.go small { font-size: clamp(14px, 1.5vw, 26px); font-family: "Nirmala UI", sans-serif; }
+.go:focus-visible { outline: .5vh solid #fff; outline-offset: .8vh; }
+@media (prefers-reduced-motion: no-preference) { .go { animation: glow 2.4s ease-in-out infinite; } }
+@keyframes glow { 50% { box-shadow: 0 0 0 2.6vh rgba(242,196,107,.10), 0 1.6vh 4vh rgba(0,0,0,.45); } }
+.hint { margin: .6vh 0 0; font-size: clamp(11px, 1vw, 16px); color: #9FB0CC; }
+.org { margin: 1.4vh 0 0; font-size: clamp(11px, 1.05vw, 18px); color: #9FB0CC; }
+
+/* the curtain */
+.curtain { position: absolute; top: 0; bottom: 0; width: 50.5%; z-index: 3; transition: transform 2.2s cubic-bezier(.7, 0, .2, 1);
+  background: repeating-linear-gradient(90deg, #6E1414 0 2.2vw, #8A1C1C 2.2vw 3.4vw, #5C1010 3.4vw 4.4vw); box-shadow: inset 0 -10vh 12vh rgba(0,0,0,.35); }
+.curtain.left { left: 0; } .curtain.right { right: 0; }
+.curtain::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0, rgba(15,30,56,.55), rgba(15,30,56,.82) 70%); }
+.open .curtain.left { transform: translateX(-101%); }
+.open .curtain.right { transform: translateX(101%); }
+.open .front { opacity: 0; pointer-events: none; }
+
+/* what the curtain reveals */
+.reveal { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2.4vh;
+  padding: 4vh 6vw; text-align: center; background: radial-gradient(ellipse at 50% 40%, #1F3A6A, #0F1E38 70%); }
+.r-kicker { margin: 1vh 0 0; font-size: clamp(16px, 2.2vw, 36px); color: #FFE7B8; }
+.r-title { margin: 0; font-size: clamp(24px, min(3.6vw, 6.4vh), 66px); font-weight: 800; }
+.r-site { display: flex; align-items: center; gap: 3vw; background: rgba(255,255,255,.06); border: .3vh solid rgba(242,196,107,.5); border-radius: 2vh; padding: 2.4vh 3vw; }
+.qr { width: clamp(140px, 22vh, 300px); height: clamp(140px, 22vh, 300px); background: #fff; padding: 1vh; border-radius: 1vh; image-rendering: pixelated; }
+.url { font-size: clamp(28px, 5vw, 86px); font-weight: 800; color: #F2C46B; letter-spacing: .01em; }
+.opening { margin: 1.6vh 0 0; font-size: clamp(13px, 1.4vw, 24px); color: #DCE3EF; }
+
+.full { position: absolute; top: 2.2vh; right: 1.4vw; z-index: 8; background: rgba(255,255,255,.08); color: #fff; border: 1px solid rgba(255,255,255,.25);
+  border-radius: 8px; font-size: 18px; padding: 4px 10px; cursor: pointer; }
+.open .full, :fullscreen .full { display: none; }
+
+/* petals in the colours of the flag */
+.petal { position: fixed; top: -4vh; z-index: 6; width: 1.1vw; height: 1.6vw; min-width: 8px; min-height: 12px; border-radius: 60% 0 60% 0; opacity: .95;
+  animation: fall linear forwards; pointer-events: none; }
+@keyframes fall { to { transform: translate3d(var(--dx), 112vh, 0) rotate(var(--rot)); } }
+@media (prefers-reduced-motion: reduce) { .curtain { transition: none; } .front { transition: none; } .petal { display: none; } }

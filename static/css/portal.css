@@ -557,3 +557,17 @@ footer.site .bottom .wrap { display: flex; justify-content: space-between; gap: 
   .doc { border: 0; padding: 0; max-width: none; }
   .main { padding: 0; }
 }
+
+/* the launch of the registration portal by the Hon'ble Minister for Education (1.2.69) */
+.banner.launch { background: var(--indigo); color: #fff; font-weight: 600; }
+.banner.launch .dot { background: var(--saffron); }
+.launch-card { margin: 12px 0 10px; padding: 12px 16px; border-radius: 14px; background: linear-gradient(135deg, #fff4e3, #ffe6c4);
+  border: 1px solid #f2c46b; box-shadow: 0 2px 8px rgba(224,123,26,.12); }
+.launch-card .lc-title { font-weight: 800; color: var(--kumkum); font-size: 1.12rem; }
+.launch-card .lc-by { color: var(--indigo); font-weight: 600; margin-top: 2px; }
+.launch-card .kts-countdown { margin: 8px 0 0; }
+.launch-done { display: flex; gap: 8px; align-items: baseline; background: #eaf6ee; border: 1px solid #9bd3ae; color: #14532d;
+  border-radius: 12px; padding: 10px 14px; font-weight: 600; margin: 12px 0 8px; max-width: 64ch; }
+.launch-done .tick { color: #138808; font-weight: 800; }
+.hero .purpose { font-size: 1rem; color: var(--ink); max-width: 62ch; margin: 10px 0 6px; }
+@media (prefers-reduced-motion: reduce) { .banner .dot { animation: none; opacity: 1; } }

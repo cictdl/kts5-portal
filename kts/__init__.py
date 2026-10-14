@@ -5,7 +5,7 @@ import logging
 import os
 from pathlib import Path
 
-from flask import Flask, make_response, render_template, request
+from flask import Flask, make_response, render_template, request, session
 from jinja2 import pass_context
 from werkzeug.routing import IntegerConverter
 
@@ -150,6 +150,15 @@ def create_app(config_object=Config):
     app.jinja_env.filters["datetime"] = _datetime
     app.jinja_env.filters["when"] = _when
     app.jinja_env.filters["time"] = _time
+
+    @pass_context
+    def _clock(_ctx, value):
+        """The hour as people read it (1.2.69): 5:00 PM in English, 17:00 in the other languages."""
+        numeric = _numeric()
+        text = utils.fmt_time(value, numeric)
+        return _ltr(text[1:] if not numeric and text.startswith("0") else text)
+
+    app.jinja_env.filters["clock"] = _clock
     app.jinja_env.filters["size"] = utils.human_size
     app.jinja_env.filters["langname"] = lambda code: (K.lang_info(code) or {}).get("name", code)
     app.jinja_env.filters["langnative"] = lambda code: (K.lang_info(code) or {}).get("native", code)
@@ -169,9 +178,30 @@ def create_app(config_object=Config):
         "open", "not_yet" (it names the first day) or "closed".
         """
         settings = db.all_settings()
+        # before the launch of the KTS 5.0 web portal and registration (1.2.69) the banner announces it, whatever its wording
+        if launch_view()["phase"] == "before":
+            return "launch"
         if settings.get("site.banner") != db.DEFAULT_SETTINGS["site.banner"]:
             return "own"
         return utils.registration_state(settings)
+
+    def launch_view():
+        """
+        The launch of the KTS 5.0 web portal and registration as the pages show it (1.2.69): its moment and 'before', 'after' or None.
+        The stage screen /launch opens the home page with ?launched=1 when the portal is launched, and that browser shows
+        it as launched from then on, even if the button was pressed a few minutes before the hour; registration itself
+        opens at launch.at for everyone.
+        """
+        settings = db.all_settings()
+        at, phase = utils.launch_at(settings), utils.launch_phase(settings)
+        if phase == "before" and session.get("launched_view"):
+            phase = "after"
+        return {"at": at, "phase": phase}
+
+    @app.before_request
+    def _launched_view():
+        if request.args.get("launched") == "1" and request.method == "GET":
+            session["launched_view"] = 1
 
     @app.context_processor
     def _globals():
@@ -193,6 +223,7 @@ def create_app(config_object=Config):
             "letter_link": certificate.letter_link,
             "inaug_link": certificate.inaug_link,
             "banner_state": banner_state,
+            "launch_view": launch_view,
             "social_links": db.social_links,
             "nodal_officers": db.nodal_officers,
             "institute_head": db.institute_head,

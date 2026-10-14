@@ -17,7 +17,8 @@ SEEDS = json.loads((ROOT / "data" / "timeline.json").read_text(encoding="utf-8")
 S = {s["key"]: s for s in SEEDS}
 NAMES = ("INSTANCE_DIR", "DATABASE", "UPLOAD_DIR")
 # the rows in the order of the timeline; those marked are dates kept as settings
-ORDER = ["circular", "hei_list", "hei_final", "engage", "reg_open*", "assess", "reg_close*", "selection", "letters", "internship", "live",
+# registration opens with the launch of the registration portal on 14 October 2026 (1.2.69)
+ORDER = ["circular", "hei_list", "reg_open*", "hei_final", "engage", "assess", "reg_close*", "selection", "letters", "internship", "live",
          "papers", "forward", "eval_start", "eval_end", "booklet", "present", "printed", "inauguration*", "valedictory*"]
 KEYS = ["timeline." + name.rstrip("*") for name in ORDER]
 
@@ -93,7 +94,7 @@ def _banner(page):
 def test_the_dates_of_the_timeline_are_the_defaults():
     from kts.db import DEFAULT_SETTINGS
     # the timeline of 8 October 2026, and the D.O. letter of 9 October: the institutions register their students by 22 October
-    assert DEFAULT_SETTINGS["reg.start"] == "2026-10-15" and DEFAULT_SETTINGS["reg.end"] == "2026-10-22"
+    assert DEFAULT_SETTINGS["reg.start"] == "2026-10-14" and DEFAULT_SETTINGS["reg.end"] == "2026-10-22"
     assert DEFAULT_SETTINGS["exam.date"] == "2026-10-22"
     assert (DEFAULT_SETTINGS["exam.start_time"], DEFAULT_SETTINGS["exam.end_time"]) == ("11:30", "12:00")
     assert DEFAULT_SETTINGS["letter.date"] == "2026-10-25" and DEFAULT_SETTINGS["internship.start"] == "2026-10-26"
@@ -101,7 +102,7 @@ def test_the_dates_of_the_timeline_are_the_defaults():
     assert DEFAULT_SETTINGS["kts.start"] == "2026-11-28" and DEFAULT_SETTINGS["kts.end"] == "2026-12-12"
     # the days of the week as the calendar has them
     days = [datetime.fromisoformat(DEFAULT_SETTINGS[key]).strftime("%a") for key in ("reg.start", "reg.end", "exam.date", "kts.start", "kts.end")]
-    assert days == ["Thu", "Thu", "Thu", "Sat", "Sat"]
+    assert days == ["Wed", "Thu", "Thu", "Sat", "Sat"]
 
 
 def test_a_database_of_an_earlier_version_receives_the_dates():
@@ -110,7 +111,7 @@ def test_a_database_of_an_earlier_version_receives_the_dates():
         _sql(app, "UPDATE settings SET value = ? WHERE key = ?", (old, key))
     _sql(app, "DELETE FROM settings WHERE key IN ('kts.start', 'kts.end', 'schedule.tentative')")
     settings = _settings(_start(app))
-    assert (settings["reg.start"], settings["reg.end"], settings["exam.date"]) == ("2026-10-15", "2026-10-22", "2026-10-22")
+    assert (settings["reg.start"], settings["reg.end"], settings["exam.date"]) == ("2026-10-14", "2026-10-22", "2026-10-22")
     assert (settings["kts.start"], settings["kts.end"], settings["schedule.tentative"]) == ("2026-11-28", "2026-12-12", "1")
 
 def test_the_live_database_moves_to_the_timeline_of_8_october():
@@ -128,7 +129,7 @@ def test_the_live_database_moves_to_the_timeline_of_8_october():
     again = _start(app)
     settings = _settings(again)
     moved = [settings[k] for k in ("reg.start", "reg.end", "exam.date", "letter.date", "internship.start", "exam.start_time")]
-    assert moved == ["2026-10-15", "2026-10-22", "2026-10-22", "2026-10-25", "2026-10-26", "11:30"]
+    assert moved == ["2026-10-14", "2026-10-22", "2026-10-22", "2026-10-25", "2026-10-26", "11:30"]
     rows = {t: (s, e) for t, s, e in _sql(again, "SELECT title, starts_at, ends_at FROM events")}
     assert rows[S["selection"]["title"]] == ("2026-10-23T00:00", "2026-10-24T00:00")
     assert rows[S["letters"]["title"]] == ("2026-10-25T00:00", None) and rows[S["internship"]["title"]] == ("2026-10-26T00:00", None)
@@ -148,14 +149,14 @@ def test_dates_set_by_the_administrator_are_left_alone():
     assert settings["kts.end"] == "2026-12-14"
 
 
-@pytest.mark.parametrize("day, state", [("2026-10-14", "not_yet"), ("2026-10-15", "open"), ("2026-10-22", "open"), ("2026-10-23", "closed")])
+@pytest.mark.parametrize("day, state", [("2026-10-13", "not_yet"), ("2026-10-14", "open"), ("2026-10-22", "open"), ("2026-10-23", "closed")])
 def test_registration_follows_the_dates(monkeypatch, day, state):
     app = _portal()
     _on(monkeypatch, day)
     page = _page(app, "/register?lang=en")
     assert ('name="full_name"' in page) == (state == "open")
     if state == "not_yet":
-        assert _text("reg.not_yet") + " 15 Oct 2026" in page
+        assert _text("reg.not_yet") + " 14 Oct 2026" in page
     # the button of the hero is there while registration is open
     home = _page(app, "/?lang=en")
     assert ('<a class="btn saffron" href="/register">' in home) == (state == "open")
@@ -183,7 +184,7 @@ def test_the_schedule_shows_the_timeline_in_order(monkeypatch):
     assert past == ""
     places = [upcoming.index("<bdi>" + _text(key) + "</bdi>") for key in KEYS]
     assert places == sorted(places)
-    for day in ("07 Oct 2026", "13 Oct 2026", "15 Oct 2026", "– 15 Nov 2026", "21 Oct 2026", "22 Oct 2026", "23 Oct 2026", "– 24 Oct 2026", "25 Oct 2026", "26 Oct 2026",
+    for day in ("07 Oct 2026", "13 Oct 2026", "14 Oct 2026", "15 Oct 2026", "– 15 Nov 2026", "21 Oct 2026", "22 Oct 2026", "23 Oct 2026", "– 24 Oct 2026", "25 Oct 2026", "26 Oct 2026",
                 "05 Nov 2026", "06 Nov 2026", "07 Nov 2026", "12 Nov 2026", "13 Nov 2026", "– 16 Nov 2026", "15 Nov 2026", "20 Nov 2026",
                 "28 Nov 2026", "12 Dec 2026"):
         assert day in upcoming, day
@@ -354,9 +355,9 @@ def test_the_banner_does_not_announce_open_applications_before_the_first_day(mon
     app = _portal()
     _on(monkeypatch, "2026-10-01")
     banner = _banner(_page(app, "/?lang=en"))
-    assert _text("reg.not_yet") + " 15 Oct 2026" in banner and "are open" not in banner
+    assert _text("reg.not_yet") + " 14 Oct 2026" in banner and "are open" not in banner
     banner = _banner(_page(app, "/programme?lang=ta"))
-    assert _text("reg.not_yet", "ta") in banner and "15-10-2026" in banner
+    assert _text("reg.not_yet", "ta") in banner and "14-10-2026" in banner
     assert _text("set.banner", "ta") not in banner
 
 

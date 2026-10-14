@@ -12,7 +12,7 @@ from urllib.parse import unquote_plus, urlsplit
 
 from markupsafe import escape
 
-from flask import (Blueprint, Response, abort, current_app, flash, g, redirect, render_template,
+from flask import (Blueprint, Response, abort, current_app, flash, g, make_response, redirect, render_template,
                    request, send_from_directory, session, url_for)
 
 from . import campus as CAMP
@@ -23,7 +23,7 @@ from . import i18n
 from .i18n import get_lang, t
 from .utils import (DOC_EXT, IMAGE_EXT, age_on, check_captcha, client_ip, college_key, csv_bytes,
                     IST, exam_window, fmt_date, limiter, make_app_no, new_captcha, now_ist, plain_english,
-                    qr_data_uri, registration_state, safe_int, save_upload, send_mail, valid_email, valid_mobile,
+                    launch_at, qr_data_uri, registration_state, safe_int, save_upload, send_mail, valid_email, valid_mobile,
                     valid_pincode)
 from .version import RELEASED, VERSION
 
@@ -450,8 +450,9 @@ def register():
             f"Dear {data['full_name']},\n\nYour application for Kashi Tamil Sangamam 5.0 (Thirukkural Payilvom) "
             f"has been received.\n\nApplication number: {app_no}\nInstitution: {data['college_name']}\n"
             f"Language chosen: {K.lang_info(data['pref_lang'])['name']}\n\n"
-            f"Keep this number safe. Use it with your date of birth and mobile number to check your status "
-            f"and to sign in for the online test at {current_app.config['BASE_URL']}/status\n\n"
+            f"Keep this number safe. Use it with your date of birth and the last four digits of your mobile number "
+            f"to follow your application at {current_app.config['BASE_URL']}/status and to sign in to the candidate "
+            f"portal at {current_app.config['BASE_URL']}/candidate/login\n\n"
             + (f"Your certificate of recognition, signed by the Director of CICT, can be printed or saved as PDF "
                f"from {cert}\n\n" if cert else "")
             + "Central Institute of Classical Tamil, Chennai",
@@ -769,6 +770,24 @@ def posters():
     return render_template("public/posters.html", items=items, poster_lang=lang, langs=langs, settings=all_settings())
 
 
+@bp.route("/launch")
+def launch():
+    """
+    The stage screen of the launch of the KTS 5.0 web portal and registration by the Hon'ble Minister of Education (1.2.69): the
+    logos, the theme, the Minister and the day, and a button that opens the curtain, shows the address and its QR code,
+    and then opens the home page as launched (?launched=1; ?stay=1 keeps the screen). It changes nothing on the portal:
+    registration opens at launch.at for everyone. Shown on the screen of the hall; not listed in the sitemap.
+    """
+    settings = all_settings()
+    base = current_app.config["BASE_URL"].rstrip("/")
+    resp = make_response(render_template("public/launch.html", at=launch_at(settings), settings=settings,
+                                         qr=qr_data_uri(base or "https://kts.cict.in"), base=base,
+                                         hi=lambda key: i18n.text(key, "hi"), ta=lambda key: i18n.text(key, "ta"),
+                                         stay=request.args.get("stay") == "1"))
+    resp.headers["X-Robots-Tag"] = "noindex"
+    return resp
+
+
 @bp.route("/thirukkural-108")
 def kural108():
     """The 108 Thirukkural (1.2.64): one couplet from each of the first 108 chapters, with CICT's Tamil commentary,
@@ -806,7 +825,9 @@ def daily_kural():
     shown, shown_dir = stream, stream_dir
     if not K.lines(k, shown):
         shown, shown_dir = "en", "ltr"
-    return render_template("public/daily.html", k=k, day=day, stream=stream, stream_dir=stream_dir,
+    # the Daily Kural kits of the repository are named only when there are some (1.2.69)
+    kits = query("SELECT COUNT(*) AS n FROM resources WHERE published = 1 AND category = 'daily'", one=True)["n"]
+    return render_template("public/daily.html", k=k, day=day, stream=stream, stream_dir=stream_dir, kits=kits,
                            shown=shown, shown_dir=shown_dir, lines=K.lines(k, shown),
                            langs=K.languages(), variants=K.VARIANTS, n=K.daily_number(day))
 
