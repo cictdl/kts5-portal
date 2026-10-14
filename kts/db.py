@@ -635,7 +635,7 @@ DEFAULT_SETTINGS = {
     "stipend.last_date": "",
     "stipend.amount": "10000",
     "stipend.aadhaar": "1",
-    "orientation.note": "Language-wise online orientation sessions (10 lectures + 20-minute live Q&A) will be scheduled after the merit list is published.",
+    "orientation.note": "Language-wise online orientation sessions (2 lectures + 20-minute live Q&A) will be scheduled after the merit list is published.",
     "contact.email": "office@cict.in",
     "contact.phone": "044-22540125",
     # the address that receives a copy of every message of the contact form (empty: none)
@@ -752,6 +752,8 @@ RETIRED_DEFAULTS = {
     "exam.open": ["auto"],
     "verify.end": ["2026-10-21"],
     "hei.max_per_state": ["50"],
+    # the online orientation has two lectures, not ten (14 October 2026)
+    "orientation.note": ["Language-wise online orientation sessions (10 lectures + 20-minute live Q&A) will be scheduled after the merit list is published."],
 }
 
 # Titles of the events of data/timeline.json as earlier versions put them in, by the key of the event: an event

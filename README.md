@@ -122,7 +122,7 @@ python -m pytest tests -q
 6. **Selection** → run once results are in; review the top of the list and the
    state-wise spread; publish. Candidates see rank and outcome on the portal.
 7. **Orientation** → create `orientation` events per language with the meeting
-   link; upload/link the ten lectures as `video` resources tagged by language.
+   link; upload/link the two lectures as `video` resources tagged by language.
    Each candidate's portal shows only their language.
 8. **Stipend** → open the form for the bank details (*Settings → Stipend*),
    check every entry against its proof, approve it, export a payment list

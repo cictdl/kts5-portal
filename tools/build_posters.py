@@ -15,6 +15,7 @@ The texts come from the portal's own interface strings (data/i18n) and corpus (d
 import base64
 import html
 import json
+import time
 import re
 import shutil
 import subprocess
@@ -435,14 +436,76 @@ def poster4(lang, cat):
 POSTERS = {1: ("site.tagline", poster1), 2: ("post.p2", poster2), 3: ("post.p3", poster3), 4: ("post.p4", poster4)}
 
 
-def to_pdf(html_path, pdf_path):
-    prof = tempfile.mkdtemp(prefix="edgepdf-", dir=OUT)
-    try:
-        subprocess.run([EDGE, "--headless=new", "--disable-gpu", "--no-first-run", "--no-pdf-header-footer", f"--user-data-dir={prof}",
-                        "--virtual-time-budget=20000", f"--print-to-pdf={pdf_path}", html_path.resolve().as_uri()],
-                       check=True, capture_output=True, timeout=240)
-    finally:
+# One headless Edge for the whole run, driven over its DevTools protocol (1.2.71): on 14 October 2026 Edge on CICT's PC
+# stopped writing files for --print-to-pdf and --screenshot, and it kept a cache of pages even across fresh profiles,
+# so the cache is switched off before each page is opened.
+_EDGE = {}
+
+
+def _call(method, **params):
+    e = _EDGE
+    e["n"] += 1
+    e["ws"].send(json.dumps({"id": e["n"], "method": method, "params": params}))
+    while True:
+        msg = json.loads(e["ws"].recv())
+        if msg.get("id") == e["n"]:
+            if "error" in msg:
+                raise RuntimeError(f"{method}: {msg['error']}")
+            return msg.get("result", {})
+
+
+def _close():
+    proc, prof = _EDGE.get("proc"), _EDGE.get("prof")
+    if proc:
+        proc.terminate()
+        try:
+            proc.wait(10)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+        time.sleep(.5)
+    if prof:
         shutil.rmtree(prof, ignore_errors=True)
+
+
+def _edge():
+    if "ws" in _EDGE:
+        return
+    import atexit
+    import urllib.request
+
+    import websocket
+    port = 9361
+    OUT.mkdir(parents=True, exist_ok=True)
+    prof = tempfile.mkdtemp(prefix="edgepdf-", dir=OUT)
+    proc = subprocess.Popen([EDGE, "--headless=new", "--disable-gpu", "--no-first-run", "--mute-audio", f"--remote-debugging-port={port}",
+                             f"--user-data-dir={prof}", "about:blank"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    _EDGE.update(proc=proc, prof=prof, n=0)
+    atexit.register(_close)
+    tabs = None
+    for _ in range(150):
+        try:
+            tabs = json.load(urllib.request.urlopen(f"http://127.0.0.1:{port}/json"))
+            break
+        except OSError:
+            time.sleep(.2)
+    page = next(t for t in tabs if t["type"] == "page")
+    _EDGE["ws"] = websocket.create_connection(page["webSocketDebuggerUrl"], timeout=180, suppress_origin=True)
+    _call("Network.enable")
+    _call("Network.setCacheDisabled", cacheDisabled=True)
+
+
+def to_pdf(html_path, pdf_path):
+    _edge()
+    _call("Page.navigate", url=html_path.resolve().as_uri())
+    # the page loads its fonts and fits its text at 0, 1.5 and 3.5 seconds
+    for _ in range(100):
+        if _call("Runtime.evaluate", expression="document.readyState", returnByValue=True)["result"].get("value") == "complete":
+            break
+        time.sleep(.1)
+    time.sleep(4.5)
+    data = _call("Page.printToPDF", printBackground=True, preferCSSPageSize=True, marginTop=0, marginBottom=0, marginLeft=0,
+                 marginRight=0, displayHeaderFooter=False)["data"]
+    Path(pdf_path).write_bytes(base64.b64decode(data))
     doc = fitz.open(pdf_path)
     page = doc[0]
     # one page, A3, every word inside the frame (6 mm = 17 pt from the edges)

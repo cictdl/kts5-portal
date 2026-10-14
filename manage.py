@@ -85,7 +85,7 @@ def cmd_seed_demo(args):
         if not query("SELECT 1 FROM notices LIMIT 1", one=True):
             for title, body, cat, pinned in [
                 ("Call for applications: Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom",
-                 "The Central Institute of Classical Tamil invites applications from students enrolled in colleges and universities across India for KTS 5.0. One thousand student delegates, one per institution, will be selected through an online test and will take part in a ten-lecture orientation on the Thirukkural in their own language.\n\nRegister on this portal before the closing date. Keep your application number safe.", "registration", 1),
+                 "The Central Institute of Classical Tamil invites applications from students enrolled in colleges and universities across India for KTS 5.0. One thousand student delegates, one per institution, will be selected through an online test and will take part in a two-lecture orientation on the Thirukkural in their own language.\n\nRegister on this portal before the closing date. Keep your application number safe.", "registration", 1),
                 ("Online selection test: date and pattern", "The online test will be held on the date announced on the Examination page. It has 25 objective questions drawn from the Thirukkural study material, four marks each, no negative marking, thirty minutes.", "examination", 0),
                 ("Orientation lecture series in 22 languages", "The ten-part academic lecture series is being dubbed and subtitled with the Central Institute of Indian Languages. Language-wise session dates will be published after the merit list.", "orientation", 0),
             ]:
