@@ -3,9 +3,9 @@
 {% block content %}
 <div class="wrap login-box">
   <div class="card indigo">
-    <span class="eyebrow">CICT · partner agencies</span>
+    <span class="eyebrow">CICT · partner / Nodal agencies</span>
     <h1 style="font-size:1.5rem">Console sign-in</h1>
-    <p class="dim small">For the KTS 5.0 secretariat at CICT and the coordinators of participating agencies.</p>
+    <p class="dim small">For the KTS 5.0 secretariat at CICT and the Nodal Officers and coordinators of participating agencies.</p>
     {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
     <form method="post">
       <input type="hidden" name="_csrf" value="{{ csrf_token() }}">

@@ -129,6 +129,9 @@ def test_the_morning_mail():
                            ("nodal.digest", "1"), ("nodal.digest_time", "08:00")):
             set_setting(key, value)
         execute("UPDATE users SET active = 0 WHERE email = 'away@tests.example'")
+        # the applications came in two days before the mail of 16 October, whatever the day the tests run on
+        # (run on 15 October 2026 they were 'new in the last 24 hours' and the longest wait was not given)
+        execute("UPDATE applications SET created_at = '2026-10-14T03:00:00+00:00'")
 
     def mails():
         with app.app_context():
