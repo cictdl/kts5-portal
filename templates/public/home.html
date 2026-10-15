@@ -126,7 +126,7 @@
     </div>
     <div class="dates">
       <div class="date-tile"><div class="lbl">{{ t('home.reg_window') }}</div><div class="val"><bdi>{{ dates.reg_start|date }} – {{ dates.reg_end|date }}</bdi></div>
-        <div class="sub">{% if dates.reg_state == 'open' %}<span class="pill green">{{ t('home.open') }}</span>{% elif dates.reg_state == 'not_yet' %}<span class="pill saffron">{{ t('reg.not_yet') }} {{ dates.reg_start|date }}</span>{% else %}<span class="pill kumkum">{{ t('reg.closed') }}</span>{% endif %}</div></div>
+        <div class="sub">{% if dates.reg_state == 'open' %}<span class="pill green">{{ t('home.open') }}</span>{% elif dates.reg_state == 'not_yet' %}<span class="pill saffron">{{ t('reg.not_yet') }} {{ dates.reg_start|date }}</span>{% elif dates.reg_ended %}<span class="pill kumkum">{{ t('reg.closed') }}</span>{% endif %}</div></div>
       <div class="date-tile"><div class="lbl">{{ t('home.exam_date') }}</div><div class="val">{{ dates.assess_to|date }}</div><div class="sub">{{ settings['exam.questions'] }} {{ t('exam.pattern_text') }} · {{ settings['exam.duration_min'] }} {{ t('exam.minutes') }} · {{ t('exam.online') }}</div></div>
       <div class="date-tile"><div class="lbl">{{ t('home.merit') }}</div><div class="val">{% if settings['merit.published'] == '1' %}<a href="{{ url_for('public.merit') }}">{{ t('home.published') }}</a>{% else %}{{ t('home.tba') }}{% endif %}</div><div class="sub">{{ t('home.merit_sub') }}</div></div>
       <div class="date-tile"><div class="lbl">{{ t('home.orientation') }}</div><div class="val">{{ t('home.orient_val') }}</div><div class="sub">{{ t('home.orient_sub') }}</div></div>

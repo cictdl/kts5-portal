@@ -50,6 +50,9 @@ def _key_dates(settings):
         # the institution-level assessments end (1.2.43)
         "assess_to": settings.get("camp.to"),
         "reg_state": registration_state(settings),
+        # registration is called closed on the home page only once its last day has passed (1.2.75): switched off
+        # before it, as while the launch is postponed, the tile shows the window alone
+        "reg_ended": bool(settings.get("reg.end")) and settings.get("reg.end") < now_ist().strftime("%Y-%m-%d"),
         "kts_start": _iso_day(settings.get("kts.start")),
         "kts_end": _iso_day(settings.get("kts.end")),
         # the countdown on the home page (1.2.50)
