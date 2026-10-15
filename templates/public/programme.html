@@ -20,7 +20,7 @@
       <a class="btn sm secondary" href="{{ url_for('public.resources') }}">{{ t('res.title') }}</a> <a class="btn sm secondary" href="{{ url_for('public.kural_browser') }}">{{ t('res.kural_browser') }}</a>
   {% endcall %}
   {% call item(3) %}
-      <ul><li>{{ t('home.reg_window') }}: <bdi>{{ settings['reg.start']|date }} – {{ settings['reg.end']|date }}</bdi></li><li>{{ t('prog.i3.l2') }}</li><li>{{ t('prog.i3.l3') }}</li></ul>
+      <ul><li>{{ t('home.reg_window') }}: {% if dates.reg_after_launch %}{{ t('reg.after_launch') }}{% else %}<bdi>{{ dates.reg_start|date }} – {{ dates.reg_end|date }}</bdi>{% endif %}</li><li>{{ t('prog.i3.l2') }}</li><li>{{ t('prog.i3.l3') }}</li></ul>
       <a class="btn sm saffron" href="{{ url_for('public.register') }}" style="margin-top:8px">{{ t('nav.register') }}</a>
   {% endcall %}
   {% call item(4) %}

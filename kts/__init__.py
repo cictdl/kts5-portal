@@ -183,7 +183,13 @@ def create_app(config_object=Config):
             return "launch"
         if settings.get("site.banner") != db.DEFAULT_SETTINGS["site.banner"]:
             return "own"
-        return utils.registration_state(settings)
+        state = utils.registration_state(settings)
+        # switched off with the postponed launch, before its last day: registration opens after the launch (1.2.76)
+        end = settings.get("reg.end") or ""
+        if (state == "closed" and settings.get("reg.open") == "0" and settings.get("launch.on") == "0"
+                and not (end and end < utils.now_ist().strftime("%Y-%m-%d"))):
+            return "after_launch"
+        return state
 
     def launch_view():
         """

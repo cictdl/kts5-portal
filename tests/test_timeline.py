@@ -373,10 +373,14 @@ def test_the_banner_says_so_when_registration_is_closed(monkeypatch):
     _on(monkeypatch, "2026-10-23")
     banner = _banner(_page(app, "/?lang=en"))
     assert _text("reg.closed") in banner and "are open" not in banner
-    # also when the administrator has switched the registration off inside the dates
-    app = _portal(**{"reg.open": "0"})
+    # also when the administrator has switched the registration off inside the dates, once the portal has been launched
+    app = _portal(**{"reg.open": "0", "launch.on": "1"})
     _on(monkeypatch, "2026-10-17")
     assert _text("reg.closed") in _banner(_page(app, "/?lang=en"))
+    # switched off with the launch, which is postponed and has no date yet: it opens after the launch (1.2.76)
+    app = _portal(**{"reg.open": "0", "launch.on": "0"})
+    banner = _banner(_page(app, "/?lang=en"))
+    assert _text("reg.after_launch_note") in banner and _text("reg.closed") not in banner
 
 
 def test_wording_of_the_administrator_stands_in_the_banner_whatever_the_day(monkeypatch):

@@ -41,6 +41,8 @@ def _states():
 
 def _key_dates(settings):
     start, end, _ = exam_window(settings)
+    reg_end = settings.get("reg.end") or ""
+    ended = bool(reg_end) and reg_end < now_ist().strftime("%Y-%m-%d")
     return {
         "reg_start": settings.get("reg.start"),
         "reg_end": settings.get("reg.end"),
@@ -52,7 +54,10 @@ def _key_dates(settings):
         "reg_state": registration_state(settings),
         # registration is called closed on the home page only once its last day has passed (1.2.75): switched off
         # before it, as while the launch is postponed, the tile shows the window alone
-        "reg_ended": bool(settings.get("reg.end")) and settings.get("reg.end") < now_ist().strftime("%Y-%m-%d"),
+        "reg_ended": ended,
+        # registration switched off with the launch, which is postponed and has no date yet (1.2.69): the pages say that
+        # registration opens after the launch of the portal, in place of its dates (1.2.76)
+        "reg_after_launch": settings.get("reg.open") == "0" and settings.get("launch.on") == "0" and not ended,
         "kts_start": _iso_day(settings.get("kts.start")),
         "kts_end": _iso_day(settings.get("kts.end")),
         # the countdown on the home page (1.2.50)
@@ -247,7 +252,8 @@ def banners():
 
 @bp.route("/programme")
 def programme():
-    return render_template("public/programme.html", settings=all_settings(), reels=reels(), banners=banners())
+    settings = all_settings()
+    return render_template("public/programme.html", settings=settings, dates=_key_dates(settings), reels=reels(), banners=banners())
 
 
 @bp.route("/how-to-take-part")
