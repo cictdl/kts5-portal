@@ -58,3 +58,11 @@ def test_the_gaming_app_card_leads_to_the_four_games():
         assert f'href="{seeds[key]}" target="_blank" rel="noopener"' in card, key
     assert seeds["classroom-quiz"] == "/quiz" and 'href="/quiz/">Classroom quiz</a>' in card
     assert card.index("Kural Bridge") < card.index("Kural Run") < card.index("Kural Crossword") < card.index("Classroom quiz")
+
+
+def test_the_russian_short_of_naira_mkrtchyan():
+    # added on 15 October 2026 (1.2.73), beside her Armenian short
+    russian = [r for r in REELS if r["id"] == "FxmtSzR1IyQ"]
+    assert russian == [{"id": "FxmtSzR1IyQ", "lang": "Russian", "native": "Русский", "presenter": "Naira Mkrtchyan"}]
+    ids = [r["id"] for r in REELS]
+    assert ids.index("FxmtSzR1IyQ") == ids.index("gTEOgoSTwfI") + 1
