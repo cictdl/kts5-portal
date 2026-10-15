@@ -326,7 +326,12 @@ bdi, [dir="ltr"], [dir="auto"] { unicode-bidi: isolate; }
    in both themes (white on #b3261e, 6:1); its label pulses three times as the page opens (under five seconds: WCAG 2.2.2),
    not at all for those who ask their device for reduced motion */
 .nodal-attention { background: linear-gradient(90deg, #b3261e, #8f1d17); border-bottom: 1px solid #7a1913; }
-.nodal-attention .wrap { padding: 11px 0; }
+.nodal-attention .wrap { padding: 11px 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; }
+/* the participating institutions beside it (1.2.77): a white button on the red band */
+.nodal-attention .na-btn { background: #fff; color: #b3261e; font-weight: 700; border-radius: 999px; padding: 7px 18px; text-decoration: none;
+  white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+.nodal-attention .na-btn:hover { background: #ffe9e6; text-decoration: none; }
+.nodal-attention .na-btn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .nodal-attention .na-link { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; color: #fff; font-weight: 700; text-decoration: none; }
 .nodal-attention .na-tag { background: #fff; color: #b3261e; border-radius: 999px; padding: 3px 12px; font-size: .78rem;
   letter-spacing: .06em; text-transform: uppercase; box-shadow: 0 0 0 3px rgba(255,255,255,.28); }
@@ -339,6 +344,13 @@ bdi, [dir="ltr"], [dir="auto"] { unicode-bidi: isolate; }
   .nodal-attention .na-tag { animation: quiz-pulse 1.5s ease-out .5s 3; }
 }
 .btn.saffron:hover { filter: brightness(.94); }
+/* the Back button on every page but the home page (1.2.77): the previous page of the portal, else the home page */
+.back-row { padding-top: 14px; }
+.back-link { display: inline-flex; align-items: center; gap: 6px; padding: 5px 15px 5px 12px; border: 1px solid var(--border-strong);
+  border-radius: 999px; background: var(--surface); color: var(--indigo); font-weight: 600; font-size: .9rem; text-decoration: none; }
+.back-link:hover, .back-link:focus-visible { background: var(--indigo-soft); text-decoration: none; }
+.topbar .back-link { margin-inline-end: 14px; flex: none; }
+@media print { .back-row, .back-link { display: none !important; } }
 .btn.danger { background: var(--kumkum); border-color: var(--kumkum); color: #fff; }
 .btn.ghost { background: transparent; border-color: var(--border-strong); color: var(--ink); }
 .btn.sm { padding: 6px 12px; font-size: .85rem; border-radius: 8px; }

@@ -9,6 +9,8 @@
       <span class="na-tag"><span aria-hidden="true">📢 </span>{{ t('tag.circular') }}</span>
       <span class="na-text"><span class="na-title">{{ t('nodal.title') }}</span> <span class="na-go" aria-hidden="true">{{ fwd }}</span></span>
     </a>
+    {# the participating institutions, State/UT by State/UT, as prominently (1.2.77) #}
+    <a class="na-btn" href="{{ url_for('public.institutions') }}"><span aria-hidden="true">🏛️ </span>{{ t('nav.institutions') }} <span aria-hidden="true">{{ fwd }}</span></a>
   </div>
 </div>
 <section class="hero">

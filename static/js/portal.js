@@ -208,3 +208,17 @@
   if (state) state.addEventListener("change", update);
   update();
 })();
+
+// The Back button (1.2.77): back to the previous page when it was a page of the portal; otherwise its own link (the
+// home page, or the dashboard of the Console) is followed.
+(function () {
+  document.querySelectorAll("[data-back]").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      var ref = document.referrer;
+      if (ref && ref.indexOf(location.origin + "/") === 0 && ref !== location.href && history.length > 1) {
+        e.preventDefault();
+        history.back();
+      }
+    });
+  });
+})();

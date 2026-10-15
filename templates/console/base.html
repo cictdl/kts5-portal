@@ -6,7 +6,7 @@
 <title>{% block title %}Console{% endblock %} · KTS 5.0</title>
 <meta name="robots" content="noindex">
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=18">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=19">
 </head>
 <body>
 <div class="console">
@@ -78,6 +78,8 @@
   </aside>
   <div class="main">
     <div class="topbar">
+      {# the Back button (1.2.77): the previous page, else the dashboard #}
+      {% if request.endpoint != 'admin.dashboard' %}<a class="back-link" href="{{ url_for('admin.dashboard') }}" data-back><span aria-hidden="true">←</span> Back</a>{% endif %}
       <h1>{% block heading %}{{ self.title() }}{% endblock %}</h1>
       <div class="who"><span><b>{{ u.name }}</b> · {{ u.role }}</span><span class="muted">{{ now_ist().strftime('%d %b %Y, %I:%M %p') }} IST</span></div>
     </div>
@@ -87,6 +89,6 @@
     {% block content %}{% endblock %}
   </div>
 </div>
-<script src="{{ url_for('static', filename='js/portal.js') }}?v=17" defer></script>
+<script src="{{ url_for('static', filename='js/portal.js') }}?v=18" defer></script>
 </body>
 </html>
