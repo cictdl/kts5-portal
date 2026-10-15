@@ -322,6 +322,22 @@ bdi, [dir="ltr"], [dir="auto"] { unicode-bidi: isolate; }
   70% { box-shadow: 0 0 0 16px rgba(224,123,26,0), 0 6px 16px rgba(179,38,30,.22); transform: scale(1); }
   100% { box-shadow: 0 0 0 3px rgba(224,123,26,.28), 0 6px 16px rgba(179,38,30,.22); transform: scale(1); }
 }
+/* the State/UT-wise list of Nodal HEIs on the home page, for the attention of all (1.2.74): a deep red band above the hero
+   in both themes (white on #b3261e, 6:1); its label pulses three times as the page opens (under five seconds: WCAG 2.2.2),
+   not at all for those who ask their device for reduced motion */
+.nodal-attention { background: linear-gradient(90deg, #b3261e, #8f1d17); border-bottom: 1px solid #7a1913; }
+.nodal-attention .wrap { padding: 11px 0; }
+.nodal-attention .na-link { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; color: #fff; font-weight: 700; text-decoration: none; }
+.nodal-attention .na-tag { background: #fff; color: #b3261e; border-radius: 999px; padding: 3px 12px; font-size: .78rem;
+  letter-spacing: .06em; text-transform: uppercase; box-shadow: 0 0 0 3px rgba(255,255,255,.28); }
+.nodal-attention .na-title { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.nodal-attention .na-text { font-size: 1.08rem; }
+.nodal-attention .na-go { font-size: 1.2rem; line-height: 1; white-space: nowrap; }
+.nodal-attention .na-link:hover .na-title { text-decoration-thickness: 3px; }
+.nodal-attention .na-link:focus-visible { outline: 3px solid #fff; outline-offset: 3px; border-radius: 6px; }
+@media (prefers-reduced-motion: no-preference) {
+  .nodal-attention .na-tag { animation: quiz-pulse 1.5s ease-out .5s 3; }
+}
 .btn.saffron:hover { filter: brightness(.94); }
 .btn.danger { background: var(--kumkum); border-color: var(--kumkum); color: #fff; }
 .btn.ghost { background: transparent; border-color: var(--border-strong); color: var(--ink); }
