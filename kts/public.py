@@ -276,6 +276,43 @@ def home_reel():
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
 
+# the kinds of event and of link of the seminars and workshops of CICT (data/cict_events.json, 1.2.83), in this order
+EV_TYPES = ("workshop", "seminar", "conference", "lecture", "training", "internship", "hackathon", "day", "launch",
+            "exhibition", "meeting", "other")
+EV_LINKS = ("announcement", "inaugural", "valedictory", "invitation", "video", "report", "news", "post", "newsletter",
+            "photos")
+EV_MODES = ("inperson", "online", "hybrid")
+
+
+@lru_cache(maxsize=1)
+def cict_events():
+    """
+    The seminars, workshops, conferences, lectures and training programmes that CICT has conducted (data/cict_events.json,
+    1.2.83), newest first: compiled from CICT's notices, newsletters and annual reports, its social media and news reports.
+    """
+    data = json.loads((current_app.config["DATA_DIR"] / "cict_events.json").read_text(encoding="utf-8"))
+    return tuple(sorted(data["events"], key=lambda e: (e["start"], e.get("end") or "", e["id"]), reverse=True))
+
+
+def _ev_day(value, numeric):
+    """A day (2026-10-07), a month (2026-10) or a year (2026) of an event, as the portal writes dates."""
+    if len(value) == 10:
+        return fmt_date(value, numeric)
+    if len(value) == 7:
+        return f"{value[5:]}-{value[:4]}" if numeric else date(int(value[:4]), int(value[5:]), 1).strftime("%b %Y")
+    return value
+
+
+def _ev_when(e, numeric):
+    """The days of an event: 07–13 Oct 2026 in English, 07-10-2026 – 13-10-2026 in the other languages."""
+    start, end = e["start"], e.get("end") or ""
+    if not end or end == start:
+        return _ev_day(start, numeric)
+    if not numeric and len(start) == len(end) == 10 and start[:7] == end[:7]:
+        return f"{start[8:]}–{_ev_day(end, numeric)}"
+    return f"{_ev_day(start, numeric)} – {_ev_day(end, numeric)}"
+
+
 @lru_cache(maxsize=1)
 def orientation_lectures():
     """
@@ -771,6 +808,43 @@ def resources():
                            categories=CATEGORIES, counts=counts, langs=K.languages())
 
 
+@bp.route("/seminars-workshops")
+def cict_events_page():
+    """
+    The seminars and workshops of CICT (1.2.84): year by year, newest first; by year, by kind and by words. The page opens
+    on the latest year (all of them make a page of 1.4 MB); "all" (y=all), a kind or words look in every year.
+    """
+    events = cict_events()
+    year = request.args.get("y") or ""
+    kind = request.args.get("k") or ""
+    q = (request.args.get("q") or "").strip()
+    years, kinds = {}, {}
+    for e in events:
+        years[e["start"][:4]] = years.get(e["start"][:4], 0) + 1
+        kinds[e["type"]] = kinds.get(e["type"], 0) + 1
+    if year == "all":
+        year = ""
+    elif year not in years:
+        year = "" if (kind or q) else max(years)
+    words = q.casefold().split()
+    numeric = get_lang() != "en"
+    groups = []
+    for e in events:
+        if (year and e["start"][:4] != year) or (kind and e["type"] != kind):
+            continue
+        if words:
+            text = " ".join([e.get("title") or "", e.get("title_ta") or "", e.get("venue") or "", e.get("with") or "",
+                             e.get("dept") or "", " ".join(e.get("people") or [])]).casefold()
+            if not all(w in text for w in words):
+                continue
+        if not groups or groups[-1][0] != e["start"][:4]:
+            groups.append((e["start"][:4], []))
+        groups[-1][1].append((e, _ev_when(e, numeric)))
+    return render_template("public/cict_events.html", groups=groups, total=sum(len(g[1]) for g in groups),
+                           years=sorted(years.items(), reverse=True), kinds=[k for k in EV_TYPES if kinds.get(k)],
+                           kind_counts=kinds, year=year, kind=kind, q=q, all_count=len(events))
+
+
 @bp.route("/resources/<int:rid>")
 def resource_open(rid):
     row = query("SELECT * FROM resources WHERE id = ? AND published = 1", (rid,), one=True)
@@ -1117,6 +1191,7 @@ SITEMAP = [
                          ("public.institutions", {}, "nav.institutions"), ("public.hei_register", {}, "hei.cta"),
                          ("campus.login", {}, "camp.login_title")]),
     ("pol.sm_learning", [("public.orientation", {}, "nav.orientation"), ("public.resources", {}, "nav.resources"),
+                         ("public.cict_events_page", {}, "ev.title"),
                          ("public.kural_browser", {}, "nav.kural"), ("public.daily_kural", {}, "nav.daily"),
                          ("quiz.join", {}, "quiz.title")]),
     ("pol.sm_help", [("public.policy", {"page": p}, "pol." + p) for p in POLICY_PAGES if p != "sitemap"]),

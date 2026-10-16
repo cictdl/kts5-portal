@@ -468,6 +468,24 @@ table.table td.num, table.table th.num { text-align: end; font-variant-numeric: 
 .big-kural { font-size: clamp(1.3rem, 3vw, 2rem); font-weight: 800; line-height: 1.5; }
 
 /* ---- resources ---- */
+/* the seminars and workshops of CICT (1.2.83) */
+.ev-year { margin-top: 26px; }
+.ev-year h2 { border-bottom: 2px solid var(--saffron); padding-bottom: 4px; }
+.ev-year .ev-n { font-size: .85rem; font-weight: 500; }
+.ev-list { list-style: none; margin: 0; padding: 0; }
+.ev { padding: 14px 0; border-bottom: 1px solid var(--border); }
+.ev-meta { font-size: .82rem; color: var(--mute); }
+.ev-meta .ev-kind { color: var(--kumkum); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; font-size: .75rem; }
+.ev-title { font-size: 1.05rem; margin: 4px 0 2px; line-height: 1.4; }
+.ev-title .ev-ta { display: block; font-weight: 600; color: var(--dim); font-size: .98rem; }
+.ev-facts { display: flex; flex-wrap: wrap; gap: 2px 16px; color: var(--dim); margin-top: 4px; }
+.ev-people { color: var(--dim); margin-top: 2px; }
+/* a long list of speakers (a newsletter of 2010 names 40): the first eight, the others on a click */
+.ev-more { display: inline; }
+.ev-more summary { display: inline; cursor: pointer; color: var(--indigo); font-weight: 700; list-style: none; }
+.ev-more summary::-webkit-details-marker { display: none; }
+.ev-more[open] summary { display: none; }
+.ev-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .res-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
 .res-tabs a { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); font-size: .85rem; font-weight: 600; color: var(--ink); }
 .res-tabs a.on { background: var(--indigo); border-color: var(--indigo); color: #fff; }

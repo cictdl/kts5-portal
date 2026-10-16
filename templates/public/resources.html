@@ -6,10 +6,11 @@
   <h1>{{ t('res.title') }}</h1>
   <p class="lead dim" style="max-width:74ch">{{ t('res.intro') }}</p>
 
-  <div class="grid grid-3" style="margin:18px 0 26px">
+  <div class="grid grid-4" style="margin:18px 0 26px">
     <a class="card accent res-card" href="{{ url_for('public.kural_browser') }}"><span class="cat">{{ t('res.cat_translation') }}</span><h3>{{ t('res.kural_browser') }}</h3><div class="desc">{{ t('res.kural_intro') }}</div></a>
     <a class="card accent res-card" href="{{ url_for('public.daily_kural') }}"><span class="cat">{{ t('res.cat_daily') }}</span><h3>{{ t('res.daily_title') }}</h3><div class="desc">{{ t('res.daily_intro') }}</div></a>
     <a class="card accent res-card" href="{{ url_for('public.orientation') }}"><span class="cat">{{ t('res.cat_video') }}</span><h3>{{ t('res.orient_title') }}</h3><div class="desc">{{ t('res.orient_intro') }}</div></a>
+    <a class="card accent res-card" href="{{ url_for('public.cict_events_page') }}"><span class="cat">{{ t('ev.type_workshop') }} · {{ t('ev.type_seminar') }}</span><h3>{{ t('ev.title') }}</h3><div class="desc">{{ t('ev.card') }}</div></a>
   </div>
 
   <form method="get" class="filters">
