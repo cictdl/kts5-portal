@@ -1033,5 +1033,9 @@
   "home.reel_title": "तमिलभाषायाः संस्कृतेः च विषये माननीयः प्रधानमन्त्री",
   "home.reel_watch": "Instagram इत्यत्र पश्यतु",
   "home.reel_watch_fb": "Facebook इत्यत्र पश्यतु",
-  "schedule.onwards": "{date} दिनाङ्कात् आरभ्य"
+  "schedule.onwards": "{date} दिनाङ्कात् आरभ्य",
+  "kural.listen": "शृणोतु",
+  "kural.pause": "स्थगयतु",
+  "kural.slower": "मन्दगतिः",
+  "kural.voice_note": "तमिल-पाठः सङ्गणक-स्वरेण पठ्यते।"
 }

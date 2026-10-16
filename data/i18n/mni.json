@@ -1033,5 +1033,9 @@
   "home.reel_title": "তামিল লোল অমসুং কলচরগী মরমদা ইকায় খুম্নজরিবা প্রধান মন্ত্রী",
   "home.reel_watch": "Instagram দা য়েংবিয়ু",
   "home.reel_watch_fb": "Facebook দা য়েংবিয়ু",
-  "schedule.onwards": "{date} দগী"
+  "schedule.onwards": "{date} দগী",
+  "kural.listen": "তাবিয়ু",
+  "kural.pause": "লেপহনবিয়ু",
+  "kural.slower": "হেন্না তপ্না",
+  "kural.voice_note": "তামিল অসি কম্প্যুটরগী খোনজেলনা পাবনি।"
 }

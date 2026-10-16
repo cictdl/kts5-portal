@@ -1033,5 +1033,9 @@
   "home.reel_title": "तमिल भाशा ते संस्कृति बारै माननीय प्रधानमंत्री",
   "home.reel_watch": "Instagram पर दिक्खो",
   "home.reel_watch_fb": "Facebook पर दिक्खो",
-  "schedule.onwards": "{date} थमां"
+  "schedule.onwards": "{date} थमां",
+  "kural.listen": "सुनो",
+  "kural.pause": "रोको",
+  "kural.slower": "धीमी रफ्तार",
+  "kural.voice_note": "तमिल पाठ कंप्यूटर दी आवाज च पढ़ेआ जंदा ऐ।"
 }

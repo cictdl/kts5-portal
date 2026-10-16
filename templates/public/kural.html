@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ t('res.kural_browser') }} · {{ chapter.adhigaram }}. {{ chapter.name }}{% endblock %}
 {% block content %}
+{% from "public/_listen.html" import listen, slower, voice_note with context %}
 <div class="wrap section">
   <span class="eyebrow">{{ t('res.cat_translation') }}</span>
   <h1>{{ t('res.kural_browser') }}</h1>
@@ -25,9 +26,10 @@
     <div class="card">
       <span class="eyebrow" dir="ltr">{{ chapter.pal }} · {{ chapter.palEn }} › {{ chapter.iyal }} · {{ chapter.iyalEn }}</span>
       <h2 dir="ltr"><span class="ta" lang="ta">{{ chapter.adhigaram }}. {{ chapter.name }}</span> <span class="dim" style="font-weight:500">· {{ chapter.nameEn }}</span></h2>
+      <div class="listen-bar no-print">{{ voice_note() }}{{ slower() }}</div>
       {% for k, ln in rows %}
       <div class="kural-row" id="k{{ k.n }}">
-        <div class="n"><a href="{{ url_for('public.kural_single', n=k.n) }}">{{ k.n }}</a></div>
+        <div class="n"><a href="{{ url_for('public.kural_single', n=k.n) }}">{{ k.n }}</a>{{ listen(k.n, True) }}</div>
         <div>
           <div class="tamil ta couplet" dir="ltr" lang="ta"><span>{{ k.l1 }}</span><span>{{ k.l2 }}</span></div>
           {% if stream != 'ta' %}

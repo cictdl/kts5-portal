@@ -62,11 +62,13 @@
         <a class="btn secondary" href="{{ url_for('public.status') }}">{{ t('home.cta_status') }}</a>
       </div>
     </div>
+    {% from "public/_listen.html" import listen, slower, voice_note with context %}
     <aside class="kural-card">
       {# the portrait beside the label, so that the couplet has the whole width of the card (1.2.58) #}
       <div class="kc-head"><div class="label">{{ t('home.kotd') }} · {{ now_ist()|date }}</div>
         <img class="avatar" src="{{ url_for('static', filename='img/thiruvalluvar-bust.jpg') }}" alt="" width="76" height="76"></div>
       <div class="tamil ta couplet" dir="ltr" lang="ta"><span>{{ kotd.l1 }}</span><span>{{ kotd.l2 }}</span></div>
+      <div class="listen-bar no-print">{{ listen(kotd.n) }}{{ voice_note() }}</div>
       {% if kotd_lang != 'ta' and kotd_lines %}<div class="trans" dir="{{ kotd_dir }}" lang="{{ kotd_lang|langtag }}">{{ kotd_lines|join(' ') }}</div>{% endif %}
       <div class="meta"><span>{{ t('common.verse') }} {{ kotd.n }} · <span class="ta" lang="ta">{{ kotd.chapter_name }}</span>{% if lang == 'en' %} · {{ kotd.chapter_name_en }}{% endif %}</span><a href="{{ url_for('public.kural_single', n=kotd.n) }}">{{ t('home.kotd_more') }} {{ fwd }}</a></div>
     </aside>

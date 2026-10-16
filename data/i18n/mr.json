@@ -1033,5 +1033,9 @@
   "home.reel_title": "तमिळ भाषा आणि संस्कृतीविषयी माननीय पंतप्रधान",
   "home.reel_watch": "Instagram वर पाहा",
   "home.reel_watch_fb": "Facebook वर पाहा",
-  "schedule.onwards": "{date} पासून"
+  "schedule.onwards": "{date} पासून",
+  "kural.listen": "ऐका",
+  "kural.pause": "थांबवा",
+  "kural.slower": "संथ गती",
+  "kural.voice_note": "तमिळ मजकूर संगणकीय आवाजात वाचला जातो."
 }

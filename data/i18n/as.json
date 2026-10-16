@@ -1033,5 +1033,9 @@
   "home.reel_title": "তামিল ভাষা আৰু সংস্কৃতি সম্পৰ্কে মাননীয় প্ৰধানমন্ত্ৰী",
   "home.reel_watch": "Instagram-ত চাওক",
   "home.reel_watch_fb": "Facebook-ত চাওক",
-  "schedule.onwards": "{date}-ৰ পৰা"
+  "schedule.onwards": "{date}-ৰ পৰা",
+  "kural.listen": "শুনক",
+  "kural.pause": "ৰখাওক",
+  "kural.slower": "আৰু লাহে",
+  "kural.voice_note": "তামিল পাঠটো কম্পিউটাৰৰ কণ্ঠত পঢ়া হয়।"
 }

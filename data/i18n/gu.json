@@ -1033,5 +1033,9 @@
   "home.reel_title": "તમિલ ભાષા અને સંસ્કૃતિ વિશે માનનીય પ્રધાનમંત્રી",
   "home.reel_watch": "Instagram પર જુઓ",
   "home.reel_watch_fb": "Facebook પર જુઓ",
-  "schedule.onwards": "{date}થી"
+  "schedule.onwards": "{date}થી",
+  "kural.listen": "સાંભળો",
+  "kural.pause": "થોભાવો",
+  "kural.slower": "ધીમેથી",
+  "kural.voice_note": "તમિલ લખાણ કમ્પ્યુટરના અવાજમાં વાંચવામાં આવે છે."
 }

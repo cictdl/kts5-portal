@@ -209,6 +209,46 @@
   update();
 })();
 
+// Hear the couplet in Tamil (1.2.82): one player for the page. A second press pauses the couplet, a third goes on; another
+// couplet stops the first. "Slower" reads at three quarters of the speed, at the same pitch.
+(function () {
+  var buttons = document.querySelectorAll("[data-listen]");
+  if (!buttons.length) return;
+  var audio = null, current = null, slow = false;
+  function show(b, playing) {
+    if (!b) return;
+    b.classList.toggle("playing", playing);
+    b.querySelector(".ico").textContent = playing ? "\u23F8" : "\uD83D\uDD0A";
+    var lbl = b.querySelector(".lbl"), n = lbl.textContent.split(" · ")[1];
+    lbl.textContent = b.getAttribute(playing ? "data-pause" : "data-play") + (n ? " · " + n : "");
+  }
+  buttons.forEach(function (b) {
+    b.addEventListener("click", function () {
+      if (current === b && !audio.paused) { audio.pause(); return; }
+      if (current !== b) {
+        if (audio) audio.pause();
+        show(current, false);
+        var a = audio = new Audio(b.getAttribute("data-listen"));
+        current = b;
+        a.addEventListener("playing", function () { if (audio === a) show(b, true); });
+        a.addEventListener("pause", function () { if (audio === a) show(b, false); });
+        a.addEventListener("ended", function () { if (audio === a) show(b, false); });
+        a.addEventListener("error", function () { if (audio === a) { show(b, false); current = null; } });
+      }
+      audio.playbackRate = slow ? 0.75 : 1;
+      var p = audio.play();
+      if (p && p.catch) p.catch(function () { show(b, false); });
+    });
+  });
+  document.querySelectorAll("[data-slower]").forEach(function (s) {
+    s.addEventListener("click", function () {
+      slow = !slow;
+      document.querySelectorAll("[data-slower]").forEach(function (x) { x.setAttribute("aria-pressed", slow ? "true" : "false"); });
+      if (audio) audio.playbackRate = slow ? 0.75 : 1;
+    });
+  });
+})();
+
 // The Back button (1.2.77): back to the previous page when it was a page of the portal; otherwise its own link (the
 // home page, or the dashboard of the Console) is followed.
 (function () {

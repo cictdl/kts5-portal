@@ -1033,5 +1033,9 @@
   "home.reel_title": "തമിഴ് ഭാഷയെയും സംസ്കാരത്തെയും കുറിച്ച് ബഹുമാനപ്പെട്ട പ്രധാനമന്ത്രി",
   "home.reel_watch": "Instagram-ൽ കാണുക",
   "home.reel_watch_fb": "Facebook-ൽ കാണുക",
-  "schedule.onwards": "{date} മുതൽ"
+  "schedule.onwards": "{date} മുതൽ",
+  "kural.listen": "കേൾക്കുക",
+  "kural.pause": "നിർത്തുക",
+  "kural.slower": "പതുക്കെ",
+  "kural.voice_note": "തമിഴ് കുറൾ കമ്പ്യൂട്ടർ ശബ്ദത്തിലാണ് വായിക്കുന്നത്."
 }

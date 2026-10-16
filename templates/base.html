@@ -21,7 +21,7 @@
 {% endblock %}
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=21">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=22">
 {% block head %}{% endblock %}
 </head>
 <body>
@@ -181,7 +181,7 @@
   </div></div>
 </footer>
 <script type="application/json" id="i18n">{{ js_strings|tojson }}</script>
-<script src="{{ url_for('static', filename='js/portal.js') }}?v=18" defer></script>
+<script src="{{ url_for('static', filename='js/portal.js') }}?v=19" defer></script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

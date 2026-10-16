@@ -1033,5 +1033,9 @@
   "home.reel_title": "ତାମିଲ ଭାଷା ଓ ସଂସ୍କୃତି ସମ୍ପର୍କରେ ମାନ୍ୟବର ପ୍ରଧାନମନ୍ତ୍ରୀ",
   "home.reel_watch": "Instagramରେ ଦେଖନ୍ତୁ",
   "home.reel_watch_fb": "Facebookରେ ଦେଖନ୍ତୁ",
-  "schedule.onwards": "{date}ରୁ"
+  "schedule.onwards": "{date}ରୁ",
+  "kural.listen": "ଶୁଣନ୍ତୁ",
+  "kural.pause": "ଅଟକାନ୍ତୁ",
+  "kural.slower": "ଆହୁରି ଧୀରେ",
+  "kural.voice_note": "ତାମିଲ ପାଠଟି କମ୍ପ୍ୟୁଟର ସ୍ୱରରେ ପଢ଼ାଯାଏ।"
 }

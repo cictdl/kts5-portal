@@ -1033,5 +1033,9 @@
   "home.reel_title": "তামিল ভাষা ও সংস্কৃতি সম্পর্কে মাননীয় প্রধানমন্ত্রী",
   "home.reel_watch": "Instagram-এ দেখুন",
   "home.reel_watch_fb": "Facebook-এ দেখুন",
-  "schedule.onwards": "{date} থেকে"
+  "schedule.onwards": "{date} থেকে",
+  "kural.listen": "শুনুন",
+  "kural.pause": "থামান",
+  "kural.slower": "আরও ধীরে",
+  "kural.voice_note": "তামিল পাঠটি কম্পিউটারের কণ্ঠে পড়া হয়।"
 }

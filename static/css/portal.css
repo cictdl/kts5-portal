@@ -427,7 +427,17 @@ table.table td.num, table.table th.num { text-align: end; font-variant-numeric: 
 
 /* ---- kural browser ---- */
 .kural-row { display: grid; grid-template-columns: 52px 1fr; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+/* on a phone the couplet is made smaller to fit, rather than widening the page (1.2.82) */
+.kural-row > * { min-width: 0; }
 .kural-row .n { font-weight: 800; color: var(--saffron); font-size: 1.1rem; }
+/* Hear the couplet in Tamil (1.2.82) */
+.listen-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 10px 0 6px; }
+.listen-bar .listen-note { flex: 1 1 16em; }
+.listen-btn .ico { line-height: 1; }
+.btn.listen-icon { width: 36px; height: 36px; padding: 0; justify-content: center; border-radius: 50%; background: var(--surface); color: var(--indigo); margin-top: 6px; display: flex; }
+.btn.listen-btn.playing { background: var(--indigo); color: #fff; border-color: var(--indigo); }
+.btn.listen-slow[aria-pressed="true"] { background: var(--indigo); color: #fff; border-color: var(--indigo); }
+.hero .kural-card .listen-bar { margin: 4px 0 2px; }
 .kural-row .tamil { font-weight: 700; font-size: 1.08rem; line-height: 1.6; }
 .kural-row .trans { color: var(--dim); margin-top: 4px; }
 .kural-row .tl { color: var(--mute); font-size: .82rem; font-style: italic; }

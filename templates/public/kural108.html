@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ t('k108.title') }}{% endblock %}
 {% block content %}
+{% from "public/_listen.html" import listen, slower, voice_note with context %}
 {# The 108 Thirukkural (1.2.64): one couplet from each of the first 108 chapters, with CICT's Tamil commentary #}
 <div class="wrap section">
   <span class="eyebrow">{{ t('res.cat_translation') }}</span>
@@ -15,12 +16,13 @@
     <button class="btn sm secondary" type="button" data-print>🖨 {{ t('common.print') }}</button>
     {% if settings['practice.on'] == '1' %}<a class="btn sm" href="{{ url_for('practice.home') }}">{{ t('prac.cta') }}</a>{% endif %}
   </form>
+  <div class="listen-bar no-print">{{ voice_note() }}{{ slower() }}</div>
   {% for pal in pals if pal.num < 3 %}
   <div class="card" style="margin-top:14px">
     <h2 dir="ltr"><span class="ta" lang="ta">{{ pal.name }}</span> <span class="dim" style="font-weight:500">· {{ pal.nameEn }}</span></h2>
     {% for k, ln, urai in rows if k.pal_num == pal.num %}
     <div class="kural-row" id="k{{ k.n }}">
-      <div class="n"><a href="{{ url_for('public.kural_single', n=k.n) }}">{{ k.n }}</a></div>
+      <div class="n"><a href="{{ url_for('public.kural_single', n=k.n) }}">{{ k.n }}</a>{{ listen(k.n, True) }}</div>
       <div>
         <div class="small muted" dir="ltr"><span class="ta" lang="ta">{{ k.adhigaram }}. {{ k.chapter_name }}</span> · {{ k.chapter_name_en }}</div>
         <div class="tamil ta couplet" dir="ltr" lang="ta"><span>{{ k.l1 }}</span><span>{{ k.l2 }}</span></div>

@@ -1033,5 +1033,9 @@
   "home.reel_title": "ತಮಿಳು ಭಾಷೆ ಮತ್ತು ಸಂಸ್ಕೃತಿಯ ಕುರಿತು ಮಾನ್ಯ ಪ್ರಧಾನಮಂತ್ರಿ",
   "home.reel_watch": "Instagramನಲ್ಲಿ ವೀಕ್ಷಿಸಿ",
   "home.reel_watch_fb": "Facebookನಲ್ಲಿ ವೀಕ್ಷಿಸಿ",
-  "schedule.onwards": "{date} ರಿಂದ"
+  "schedule.onwards": "{date} ರಿಂದ",
+  "kural.listen": "ಆಲಿಸಿ",
+  "kural.pause": "ನಿಲ್ಲಿಸಿ",
+  "kural.slower": "ನಿಧಾನವಾಗಿ",
+  "kural.voice_note": "ತಮಿಳು ಪಠ್ಯವನ್ನು ಕಂಪ್ಯೂಟರ್ ಧ್ವನಿ ಓದುತ್ತದೆ."
 }

@@ -1,0 +1,11 @@
+{# Hear the couplet in Tamil (1.2.82): a clip for each of the 1,330 couplets, read by a computer voice
+   (static/audio/ta/0001.mp3 to 1330.mp3). portal.js plays one couplet at a time; the templates hold no media elements. #}
+{% macro listen(n, icon=False) -%}
+<button class="btn sm {{ 'listen-icon' if icon else 'secondary' }} listen-btn no-print" type="button" data-listen="{{ url_for('static', filename='audio/ta/%04d.mp3'|format(n)) }}" data-play="{{ t('kural.listen') }}" data-pause="{{ t('kural.pause') }}"{% if icon %} title="{{ t('kural.listen') }} · {{ n }}"{% endif %}><span class="ico" aria-hidden="true">🔊</span><span class="lbl{{ ' visually-hidden' if icon }}">{{ t('kural.listen') }}{% if icon %} · {{ n }}{% endif %}</span></button>
+{%- endmacro %}
+{% macro slower() -%}
+<button class="btn sm ghost listen-slow no-print" type="button" data-slower aria-pressed="false">{{ t('kural.slower') }}</button>
+{%- endmacro %}
+{% macro voice_note() -%}
+<span class="listen-note small muted">{{ t('kural.voice_note') }}</span>
+{%- endmacro %}

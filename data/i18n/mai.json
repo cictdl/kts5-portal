@@ -1033,5 +1033,9 @@
   "home.reel_title": "तमिल भाषा आ संस्कृतिक विषय मे माननीय प्रधानमंत्री",
   "home.reel_watch": "Instagram पर देखू",
   "home.reel_watch_fb": "Facebook पर देखू",
-  "schedule.onwards": "{date} सँ"
+  "schedule.onwards": "{date} सँ",
+  "kural.listen": "सुनू",
+  "kural.pause": "रोकू",
+  "kural.slower": "मंद गति",
+  "kural.voice_note": "तमिल पाठ कंप्यूटरक आवाज मे पढ़ल जाइत अछि।"
 }

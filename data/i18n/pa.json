@@ -1033,5 +1033,9 @@
   "home.reel_title": "ਤਮਿਲ ਭਾਸ਼ਾ ਅਤੇ ਸੱਭਿਆਚਾਰ ਬਾਰੇ ਮਾਣਯੋਗ ਪ੍ਰਧਾਨ ਮੰਤਰੀ",
   "home.reel_watch": "Instagram ’ਤੇ ਵੇਖੋ",
   "home.reel_watch_fb": "Facebook ’ਤੇ ਵੇਖੋ",
-  "schedule.onwards": "{date} ਤੋਂ"
+  "schedule.onwards": "{date} ਤੋਂ",
+  "kural.listen": "ਸੁਣੋ",
+  "kural.pause": "ਰੋਕੋ",
+  "kural.slower": "ਹੌਲੀ",
+  "kural.voice_note": "ਤਮਿਲ ਪਾਠ ਕੰਪਿਊਟਰ ਦੀ ਆਵਾਜ਼ ਵਿੱਚ ਪੜ੍ਹਿਆ ਜਾਂਦਾ ਹੈ।"
 }

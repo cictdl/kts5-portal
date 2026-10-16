@@ -1033,5 +1033,9 @@
   "home.reel_title": "The Hon’ble Prime Minister on the Tamil language and culture",
   "home.reel_watch": "Watch on Instagram",
   "home.reel_watch_fb": "Watch on Facebook",
-  "schedule.onwards": "{date} onwards"
+  "schedule.onwards": "{date} onwards",
+  "kural.listen": "Listen",
+  "kural.pause": "Pause",
+  "kural.slower": "Slower",
+  "kural.voice_note": "The Tamil is read by a computer voice."
 }
