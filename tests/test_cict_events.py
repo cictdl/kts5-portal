@@ -139,3 +139,24 @@ def test_links_are_named_by_their_site():
         for l in e.get("links", []):
             if l["kind"] == "post":
                 assert l.get("label") in ("X", "Facebook", "Instagram", "LinkedIn", "Threads", "Telegram"), (e["id"], l)
+
+
+def test_the_main_menu_and_the_home_page_lead_to_it():
+    from kts.i18n import CATALOG
+    client = _client()
+    years = sorted(e["start"][:4] for e in EVENTS)
+    for code, catalogue in CATALOG.items():
+        page = _page(client, f"/?lang={code}")
+        menu = page.split('id="primary-menu"')[1].split("</nav>")[0]
+        resources = menu[menu.index('<li class="has-sub"><a href="/resources"'):]
+        resources = resources[:resources.index("</ul></li>")]
+        assert f'<li><a href="/resources">{escape(catalogue["res.title"])}</a></li>' in resources, code
+        assert f'<li><a href="/seminars-workshops">{escape(catalogue["ev.title"])}</a></li>' in resources, code
+        card = page[page.index('<a class="card accent ev-home-card" href="/seminars-workshops">'):]
+        card = card[:card.index("</a>")]
+        assert f'<h2 id="ev-home-title">{escape(catalogue["ev.title"])}' in card, code
+        assert (f'<span class="ev-home-n"><bdi dir="ltr">{years[0]}–{years[-1]}</bdi> · '
+                f'{escape(catalogue["ev.count"].replace("{n}", str(len(EVENTS))))}</span>') in card, code
+    # the menu marks the page as the one open
+    page = _page(client, "/seminars-workshops?lang=en")
+    assert '<li class="has-sub"><a href="/resources" class="active" aria-haspopup="true">' in page

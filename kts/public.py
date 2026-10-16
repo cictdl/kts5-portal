@@ -229,7 +229,10 @@ def home():
     kotd_lang, kotd_dir = _stream()
     if not K.lines(k, kotd_lang):
         kotd_lang, kotd_dir = "en", "ltr"
+    seminars = cict_events()
+    ev_years = (min(e["start"][:4] for e in seminars), max(e["start"][:4] for e in seminars)) if seminars else None
     return render_template("public/home.html", settings=settings, dates=_key_dates(settings), reel=home_reel(),
+                           ev_total=len(seminars), ev_years=ev_years,
                            notices=notices, events=events, agencies=agencies, stats=stats,
                            kotd=k, kotd_lines=K.lines(k, kotd_lang), kotd_lang=kotd_lang, kotd_dir=kotd_dir,
                            featured=query("SELECT * FROM resources WHERE published = 1 AND featured = 1 "

@@ -468,7 +468,14 @@ table.table td.num, table.table th.num { text-align: end; font-variant-numeric: 
 .big-kural { font-size: clamp(1.3rem, 3vw, 2rem); font-weight: 800; line-height: 1.5; }
 
 /* ---- resources ---- */
-/* the seminars and workshops of CICT (1.2.83) */
+/* the seminars and workshops of CICT (1.2.83); the card on the home page (1.2.86) */
+.ev-home { padding-top: 8px; }
+.ev-home-card { display: flex; flex-direction: column; gap: 6px; text-decoration: none; color: inherit; }
+.ev-home-card:hover { text-decoration: none; border-color: var(--saffron); }
+.ev-home-card h2 { margin: 0; color: var(--indigo); }
+.ev-home-card .cat { font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--kumkum); font-weight: 700; }
+.ev-home-card .desc { color: var(--dim); }
+.ev-home-card .ev-home-n { font-weight: 700; color: var(--saffron); }
 .ev-year { margin-top: 26px; }
 .ev-year h2 { border-bottom: 2px solid var(--saffron); padding-bottom: 4px; }
 .ev-year .ev-n { font-size: .85rem; font-weight: 500; }

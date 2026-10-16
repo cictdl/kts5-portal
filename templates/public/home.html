@@ -225,6 +225,20 @@
 </section>
 {% endif %}
 
+{# the seminars and workshops of CICT (1.2.86): a card that leads to the page #}
+{% if ev_years %}
+<section class="section ev-home" aria-labelledby="ev-home-title">
+  <div class="wrap">
+    <a class="card accent ev-home-card" href="{{ url_for('public.cict_events_page') }}">
+      <span class="cat">{{ t('ev.type_workshop') }} · {{ t('ev.type_seminar') }} · {{ t('ev.type_conference') }} · {{ t('ev.type_lecture') }}</span>
+      <h2 id="ev-home-title">{{ t('ev.title') }} <span aria-hidden="true">{{ fwd }}</span></h2>
+      <span class="desc">{{ t('ev.card') }}</span>
+      <span class="ev-home-n"><bdi dir="ltr">{{ ev_years[0] }}–{{ ev_years[1] }}</bdi> · {{ t('ev.count')|replace('{n}', ev_total) }}</span>
+    </a>
+  </div>
+</section>
+{% endif %}
+
 <section class="section alt">
   <div class="wrap">
     <div class="section-head"><h2>{{ t('home.journey') }}</h2><a class="small" href="{{ url_for('public.about') }}">{{ t('nav.about') }} {{ fwd }}</a></div>
