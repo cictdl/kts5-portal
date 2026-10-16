@@ -89,6 +89,25 @@
 </section>
 {% endif %}
 
+{# A reel of the official Kashi Tamil Sangamam account on Instagram (1.2.79): a link that opens it there, not an
+   embedded player, so that no script or frame of another service enters the portal #}
+{% if reel %}
+<section class="section home-reel" aria-labelledby="home-reel-title">
+  <div class="wrap">
+    <a class="reel-card" href="{{ reel.url }}" target="_blank" rel="noopener">
+      <span class="reel-play" aria-hidden="true">▶</span>
+      <span class="reel-body">
+        <span class="reel-from"><span lang="en" dir="ltr">Instagram · @{{ reel.account }}</span> · <bdi>{{ reel.date|date }}</bdi></span>
+        <span class="reel-title" id="home-reel-title">{{ t('home.reel_title') }}</span>
+        <span class="reel-quote" lang="en" dir="ltr">“{{ reel.quote }}”</span>
+        <span class="reel-tags" lang="en" dir="ltr">{% for tag in reel.tags %}#{{ tag }}{% if not loop.last %} {% endif %}{% endfor %}</span>
+        <span class="btn saffron sm reel-watch">{{ t('home.reel_watch') }} <span aria-hidden="true">↗</span></span>
+      </span>
+    </a>
+  </div>
+</section>
+{% endif %}
+
 {# For the Higher Educational Institutions (1.2.55): what they do on the portal, with the guidelines and the timelines #}
 <section class="section hei-intro" style="padding:28px 0 4px">
   <div class="wrap">

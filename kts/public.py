@@ -215,7 +215,7 @@ def home():
     kotd_lang, kotd_dir = _stream()
     if not K.lines(k, kotd_lang):
         kotd_lang, kotd_dir = "en", "ltr"
-    return render_template("public/home.html", settings=settings, dates=_key_dates(settings),
+    return render_template("public/home.html", settings=settings, dates=_key_dates(settings), reel=home_reel(),
                            notices=notices, events=events, agencies=agencies, stats=stats,
                            kotd=k, kotd_lines=K.lines(k, kotd_lang), kotd_lang=kotd_lang, kotd_dir=kotd_dir,
                            featured=query("SELECT * FROM resources WHERE published = 1 AND featured = 1 "
@@ -239,6 +239,16 @@ def reels():
         group = groups.setdefault(row["lang"], {"name": row["lang"], "native": row["native"], "videos": []})
         group["videos"].append({"id": row["id"], "presenter": row["presenter"]})
     return {"count": len(rows), "langs": tuple(groups.values())}
+
+
+@lru_cache(maxsize=1)
+def home_reel():
+    """
+    The reel of the official Kashi Tamil Sangamam account shown on the home page (data/home_reel.json, 1.2.79): its
+    address, the account, the day, the opening line and the hashtags of its post; None without the file.
+    """
+    path = current_app.config["DATA_DIR"] / "home_reel.json"
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
 
 @lru_cache(maxsize=1)
