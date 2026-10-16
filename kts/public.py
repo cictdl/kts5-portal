@@ -242,6 +242,19 @@ def reels():
 
 
 @lru_cache(maxsize=1)
+def orientation_lectures():
+    """
+    The recorded lectures of the online orientation on CICT's YouTube channel (data/orientation_lectures.json, 1.2.78),
+    grouped by the language of the lecture, in the order of their sessions.
+    """
+    rows = json.loads((current_app.config["DATA_DIR"] / "orientation_lectures.json").read_text(encoding="utf-8"))
+    groups = {}
+    for row in sorted(rows, key=lambda r: (r["lang"], r["session"])):
+        groups.setdefault(row["lang"], []).append(row)
+    return groups
+
+
+@lru_cache(maxsize=1)
 def banners():
     """
     The Kural Journey Banners (1.2.60): sample layouts of Thirukkural banners for airports (AAI) and Indian
@@ -879,7 +892,8 @@ def orientation():
     for v in videos:
         vids.setdefault(v["lang"] or "", []).append(v)
     langs = [K.lang_info(c) | {"code": c} for c in K.ORIENTATION_LANGS]
-    return render_template("public/orientation.html", settings=settings, by_lang=by_lang, vids=vids, langs=langs)
+    return render_template("public/orientation.html", settings=settings, by_lang=by_lang, vids=vids, langs=langs,
+                           lectures=orientation_lectures())
 
 
 # ---- notices / schedule / partners / contact --------------------------------

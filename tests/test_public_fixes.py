@@ -663,7 +663,7 @@ def test_templates_print_streams_through_the_filter():
                               "quiz/layout.html"},
                      "L.code": {"base.html", "public/orientation.html", "quiz/layout.html"}}
     assert set(printed) - set(plain) == {"stream|langtag", "info.code|langtag", "shown|langtag", "kotd_lang|langtag",
-                                         "qlang|langtag", "body_lang|langtag"}
+                                         "qlang|langtag", "body_lang|langtag", "v.lang|langtag"}
 
 
 def test_style_sheet_selects_the_tags():
@@ -1072,7 +1072,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.77" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.78" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 
