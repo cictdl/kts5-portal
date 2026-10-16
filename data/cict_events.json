@@ -448,7 +448,8 @@
    "for": "Translators and scholars",
    "people": [
     "Nani Gopal Mahanta (Vice-Chancellor, Gauhati University)",
-    "R. Chandrasekaran (Director, CICT)"
+    "R. Chandrasekaran (Director, CICT)",
+    "Dayananda Pathak (Vaishnavite scholar; chief guest)"
    ],
    "links": [
     {
@@ -458,8 +459,8 @@
     },
     {
      "kind": "news",
-     "url": "https://news.google.com/rss/search?q=%22Assam%E2%80%99s+Vaishnava+literature+set+for+translation+into+Classical+Tamil%22",
-     "label": "news.google.com"
+     "url": "https://timesofindia.indiatimes.com/city/guwahati/assams-vaishnava-literature-set-for-translation-into-classical-tamil/articleshow/133744100.cms",
+     "label": "timesofindia.indiatimes.com"
     },
     {
      "kind": "post",
@@ -474,6 +475,7 @@
    ],
    "sources": [
     "https://www.hindutamil.in/news/india/cict-to-bridge-assam-tamil-literature-15-day-workshop-to-translate-assamese-vaishnava-literature-into-tamil",
+    "https://timesofindia.indiatimes.com/city/guwahati/assams-vaishnava-literature-set-for-translation-into-classical-tamil/articleshow/133744100.cms",
     "https://x.com/CICTOfficial/status/2096119082374631803",
     "https://x.com/CICTOfficial/status/2096417592957432020"
    ],
@@ -1632,14 +1634,30 @@
   },
   {
    "id": "2026-03-25-faculty-development-programme-on-ai-training",
-   "type": "training",
+   "type": "workshop",
    "title": "Faculty Development Programme on AI Training for CICT employees",
    "title_ta": "செம்மொழி நிறுவன அலுவலர்களுக்கான செயற்கை நுண்ணறிவு மேம்பாட்டுப் பயிற்சி",
    "start": "2026-03-25",
-   "venue": "CICT, Chennai",
+   "mode": "inperson",
+   "venue": "Thiruvalluvar Hall, CICT, Perumbakkam, Chennai 600100",
    "with": "(Classical Tamil Digital Library)",
-   "for": "CICT employees",
+   "for": "CICT officials (செம்மொழி நிறுவன அலுவலர்கள்)",
+   "dept": "Classical Tamil Digital Library (செம்மொழித் தமிழ் மின்நூலகம்)",
+   "people": [
+    "பேராசிரியர் இரா. சந்திரசேகரன் (தலைமைப் புரவலர்; இயக்குநர், செ.த.ம.நி, சென்னை)",
+    "முனைவர் ஆர். புவனேஸ்வரி (புரவலர்; பதிவாளர், செ.த.ம.நி, சென்னை)",
+    "த. செந்தில் குமார் (ஒருங்கிணைப்பாளர்; நிரலாளர், செ.த.ம.நி, சென்னை)",
+    "அ. முருக சுவாமிநாதன் (இணை ஒருங்கிணைப்பாளர்; நிரலாளர், செ.த.ம.நி, சென்னை)",
+    "முனைவர் ஏ. உமாமகேஸ்வரி (பயிற்றுநர், அமர்வு 1; துறைத்தலைவர், பிக் டேட்டா அனலட்டிக்ஸ், எஸ். ஆர்.எம் பல்கலைக்கழகம், ராமாபுரம், சென்னை)",
+    "முனைவர் எஸ். தீபா (பயிற்றுநர், அமர்வு 2; உதவிப் பேராசிரியர், பிக் டேட்டா அனலட்டிக்ஸ், எஸ். ஆர்.எம் பல்கலைக்கழகம், ராமாபுரம், சென்னை)",
+    "முனைவர் திவ்யா ஸ்ரீபாதா (பயிற்றுநர், அமர்வு 3; உதவிப் பேராசிரியர், விஐடி வணிகவியல் பள்ளி, வேலூர் தொழில்நுட்ப நிறுவனம், மேலக்கோட்டையூர், சென்னை)",
+    "கனிஷ்கா ராஜூ (பயிற்றுநர், அமர்வு 4; மென்பொருள்வல்லுனர், சென்சிபிள்சாப்ட், சிறுசேரி, சென்னை)"
+   ],
    "links": [
+    {
+     "kind": "invitation",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2026/03/24.03.2026.jpeg"
+    },
     {
      "kind": "post",
      "url": "https://x.com/CICTOfficial/status/2037419523805221028",
@@ -1652,10 +1670,12 @@
     }
    ],
    "sources": [
+    "https://cict.in/cict2023/wp-content/uploads/2026/03/24.03.2026.jpeg",
     "https://x.com/CICTOfficial/status/2037419523805221028",
     "https://x.com/CICTOfficial/status/2037419716625805387"
    ],
    "origins": [
+    "seeall",
     "x"
    ]
   },
@@ -2962,17 +2982,29 @@
    "start": "2025-07-29",
    "end": "2025-08-07",
    "mode": "inperson",
-   "venue": "CICT, Chennai (செம்மொழித் தமிழாய்வு மத்திய நிறுவனத்தில்)",
-   "for": "Malayalam language/literature researchers; 40 participants",
+   "venue": "Tholkappiya Hall (தொல்காப்பிய அரங்கம்), CICT, Perumbakkam, Chennai",
+   "for": "Malayalam-language researchers (மலையாள மொழி ஆய்வாளர்கள்)",
    "dept": "Translation Studies (மொழிபெயர்ப்பியல் புலம்)",
-   "serial": 95,
+   "serial": 96,
+   "people": [
+    "முனைவர் கு. ஜெயகுமாரி (வரவேற்புரை; ஆராய்ச்சி அலுவலர், பயிலரங்க ஒருங்கிணைப்பாளர்)",
+    "முனைவர் ரெ. புவனேஸ்வரி (அறிமுக உரை; பதிவாளர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "பேராசிரியர் இரா. சந்திரசேகரன் (தலைமையுரை; இயக்குநர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "முனைவர் சா. கோ. இராஜேந்திர பாபு (சிறப்புரை; மேனாள் பேராசிரியர் (மலையாளம்), சென்னைப் பல்கலைக்கழகம், சென்னை)",
+    "முனைவர் மா. சுசிலா (நன்றியுரை; இளநிலை ஆராய்ச்சி அலுவலர், பயிலரங்க இணை ஒருங்கிணைப்பாளர்)"
+   ],
    "links": [
     {
      "kind": "announcement",
      "url": "https://cict.in/cict2023/wp-content/uploads/2025/07/CICT_Workshop_14_Classical-Tamil_Literature_to-Malayalam_-Language_-Researchers.pdf"
+    },
+    {
+     "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2025/07/28.7.25.jpeg"
     }
    ],
    "sources": [
+    "https://cict.in/cict2023/wp-content/uploads/2025/07/28.7.25.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2025/07/CICT_Workshop_14_Classical-Tamil_Literature_to-Malayalam_-Language_-Researchers.pdf"
    ],
    "origins": [
@@ -3275,7 +3307,7 @@
    "id": "2025-06-21-11th-international-day-of-yoga-2025",
    "type": "day",
    "title": "11th International Day of Yoga 2025",
-   "title_ta": "11ஆவது பன்னாட்டு யோகா நாள் விழா",
+   "title_ta": "11ஆம் பன்னாட்டு யோகா நாள் விழா 2025",
    "start": "2025-06-21",
    "mode": "inperson",
    "venue": "CICT Campus, Perumbakkam, Chennai",
@@ -3290,6 +3322,10 @@
     {
      "kind": "invitation",
      "url": "https://cict.in/cict2023/wp-content/uploads/2025/06/english.jpg"
+    },
+    {
+     "kind": "invitation",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2025/06/tamil.jpg"
     },
     {
      "kind": "video",
@@ -3309,6 +3345,7 @@
    ],
    "sources": [
     "https://cict.in/cict2023/wp-content/uploads/2025/06/english.jpg",
+    "https://cict.in/cict2023/wp-content/uploads/2025/06/tamil.jpg",
     "https://www.youtube.com/watch?v=8fmh80hZEzg",
     "https://x.com/CICTOfficial/status/1935683625355530326",
     "https://x.com/CICTOfficial/status/1935685347159277631",
@@ -3382,7 +3419,7 @@
    "id": "2025-06-11-international-day-of-yoga-2025-seminar",
    "type": "seminar",
    "title": "International Day of Yoga 2025 – Seminar on Siddhar Yoga",
-   "title_ta": "சித்தர்களின் யோகக் கலை - கருத்தரங்கம்",
+   "title_ta": "சித்தர்களின் யோகக் கலை",
    "start": "2025-06-11",
    "end": "2025-06-12",
    "mode": "inperson",
@@ -3400,6 +3437,10 @@
      "url": "https://cict.in/cict2023/wp-content/uploads/2025/06/CICT-Yoga_Invitation_English-Seminar.pdf"
     },
     {
+     "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2025/06/CICT-Yoga_Invitation_Tamil-Seminar.pdf"
+    },
+    {
      "kind": "post",
      "url": "https://x.com/CICTOfficial/status/1932022275739648051",
      "label": "X"
@@ -3412,6 +3453,7 @@
    ],
    "sources": [
     "https://cict.in/cict2023/wp-content/uploads/2025/06/CICT-Yoga_Invitation_English-Seminar.pdf",
+    "https://cict.in/cict2023/wp-content/uploads/2025/06/CICT-Yoga_Invitation_Tamil-Seminar.pdf",
     "https://x.com/CICTOfficial/status/1932022275739648051",
     "https://x.com/CICTOfficial/status/1932733600119836775",
     "https://x.com/CICTOfficial/status/1932734244859855015",
@@ -3592,11 +3634,24 @@
    "start": "2025-05-16",
    "end": "2025-05-29",
    "mode": "inperson",
+   "venue": "Thiruvalluvar Hall, CICT, Perumbakkam, Chennai",
    "for": "College and university teachers (professors)",
+   "people": [
+    "முனைவர் இரா. வெங்கடேசன் (வரவேற்புரை; இளநிலை ஆராய்ச்சி அலுவலர் & பயிலரங்க ஒருங்கிணைப்பாளர்)",
+    "முனைவர் ரெ. புவனேஸ்வரி (அறிமுக உரை; பதிவாளர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "பேராசிரியர் இரா. சந்திரசேகரன் (தலைமையுரை; இயக்குநர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "பேராசிரியர் மருத்துவர் சுதா சேஷய்யன் (வாழ்த்துரை; துணைத் தலைவர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "திரு. எஸ். இராமச்சந்திரன் (சிறப்புரை; கல்வெட்டு ஆய்வாளர் (ஓய்வு), தொல்லியல் துறை, தமிழ்நாடு அரசு)",
+    "முனைவர் இரா. அருள்மணி (நன்றியுரை; ஆராய்ச்சி அலுவலர் & பயிலரங்க இணை ஒருங்கிணைப்பாளர்)"
+   ],
    "links": [
     {
      "kind": "announcement",
      "url": "https://cict.in/cict2023/wp-content/uploads/2025/04/CICT_Refresher-Course_2025_01.pdf"
+    },
+    {
+     "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2025/05/15.5.2025.jpeg"
     },
     {
      "kind": "post",
@@ -3610,6 +3665,7 @@
     }
    ],
    "sources": [
+    "https://cict.in/cict2023/wp-content/uploads/2025/05/15.5.2025.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2025/04/CICT_Refresher-Course_2025_01.pdf",
     "https://x.com/CICTOfficial/status/1923228827678916987",
     "https://x.com/CICTOfficial/status/1923319589439451639",
@@ -3628,12 +3684,29 @@
    "start": "2025-05-14",
    "end": "2025-05-23",
    "mode": "inperson",
+   "venue": "Thiruvalluvar Hall, CICT, Perumbakkam, Chennai",
    "for": "MPhil/PhD scholars in Tamil studies at universities/colleges; 40 participants",
    "serial": 85,
+   "people": [
+    "முனைவர் மு. செல்வதுரை (வரவேற்புரை; இளநிலை ஆராய்ச்சி அலுவலர் & பயிலரங்க ஒருங்கிணைப்பாளர்)",
+    "முனைவர் ரெ. புவனேஸ்வரி (அறிமுக உரை; பதிவாளர், செ.த.ம.நி.)",
+    "பேரா. இரா. சந்திரசேகரன் (தலைமையுரை; இயக்குநர், செ.த.ம.நி.)",
+    "பேராசிரியர் மருத்துவர் சுதா சேஷய்யன் (வாழ்த்துரை; துணைத் தலைவர், செ.த.ம.நி.)",
+    "திரு. த. ராமலிங்கம் (சிறப்புரை; வழக்குரைஞர், சென்னை)",
+    "முனைவர் வ. மாரியப்பன் (நன்றியுரை; இளநிலை ஆராய்ச்சி அலுவலர் & பயிலரங்க இணை ஒருங்கிணைப்பாளர்)"
+   ],
    "links": [
     {
      "kind": "announcement",
      "url": "https://cict.in/cict2023/wp-content/uploads/2025/04/CICT-Workshop-04..pdf"
+    },
+    {
+     "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2025/05/1-3.jpeg"
+    },
+    {
+     "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2025/05/2-3.jpeg"
     },
     {
      "kind": "post",
@@ -3647,6 +3720,8 @@
     }
    ],
    "sources": [
+    "https://cict.in/cict2023/wp-content/uploads/2025/05/1-3.jpeg",
+    "https://cict.in/cict2023/wp-content/uploads/2025/05/2-3.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2025/04/CICT-Workshop-04..pdf",
     "https://x.com/CICTOfficial/status/1909526415172677957",
     "https://x.com/CICTOfficial/status/1922193145967869963",
@@ -3720,7 +3795,7 @@
    "id": "2025-04-25-international-day-of-yoga-idy-2025",
    "type": "training",
    "title": "International Day of Yoga (IDY) 2025 (100 Days countdown) – Special Yoga practice for CICT Staff on Ashtanga Yoga for 9 weeks",
-   "title_ta": "பன்னாட்டு யோகா நாள் விழா 2025 – 100 நாள் முன்னோட்டம்: அட்டாங்க யோகப் பயிற்சி",
+   "title_ta": "செம்மொழி நிறுவனப் பணியாளர்களுக்கு யோகப் பயிற்சி – அட்டாங்க யோகம் - 9 வாரங்கள்",
    "start": "2025-04-25",
    "end": "2025-06-13",
    "mode": "inperson",
@@ -3738,6 +3813,10 @@
      "url": "https://cict.in/cict2023/wp-content/uploads/2025/04/english.jpeg"
     },
     {
+     "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2025/04/tamil.jpeg"
+    },
+    {
      "kind": "post",
      "url": "https://x.com/CICTOfficial/status/1915319020347417031",
      "label": "X"
@@ -3750,6 +3829,7 @@
    ],
    "sources": [
     "https://cict.in/cict2023/wp-content/uploads/2025/04/english.jpeg",
+    "https://cict.in/cict2023/wp-content/uploads/2025/04/tamil.jpeg",
     "https://x.com/CICTOfficial/status/1915319020347417031",
     "https://x.com/CICTOfficial/status/1915319411483013289",
     "https://x.com/CICTOfficial/status/1915319621907001630",
@@ -4370,20 +4450,27 @@
    "id": "2025-01-30-sage-agathiyar-and-tamil",
    "type": "seminar",
    "title": "Sage Agathiyar and Tamil",
-   "title_ta": "அகத்தியரும் அருந்தமிழும் – கருத்தரங்கம்",
+   "title_ta": "அகத்தியரும் அருந்தமிழும்",
    "start": "2025-01-30",
    "mode": "inperson",
-   "venue": "Thiruvalluvar Hall, Central Institute of Classical Tamil",
+   "venue": "Thiruvalluvar Hall, CICT, Perumbakkam, Chennai",
    "with": "with students of SASTRA University Chennai Campus and Sandipani Vidyalaya",
    "people": [
-    "Dr. T. Saravanan (welcome address; Junior Research Officer & Seminar Co-ordinator, Central Institute of Classical Tamil)",
-    "Dr. R. Bhuvaneshwari (introductory address; Registrar, Central Institute of Classical Tamil)",
-    "Prof. R. Chandrasekaran (presidential address; Director, Central Institute of Classical Tamil)",
-    "Prof. Dr. Sudha Seshayyan (felicitation; Vice Chairperson, Central Institute of Classical Tamil)",
-    "Kalaimamani Kizhambur S. Sankara Subramanian (keynote address; Editor, Kalaimagal Magazine)",
-    "Dr. R. Arulmani (vote of thanks; Research Officer & Seminar Co-ordinator, Central Institute of Classical Tamil)"
+    "முனைவர் த. சரவணன் (வரவேற்புரை; இளநிலை ஆராய்ச்சி அலுவலர் & கருத்தரங்க ஒருங்கிணைப்பாளர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "முனைவர் ரெ. புவனேஸ்வரி (அறிமுக உரை; பதிவாளர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "பேராசிரியர் இரா. சந்திரசேகரன் (தலைமையுரை; இயக்குநர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "பேராசிரியர் மருத்துவர் சுதா சேஷய்யன் (வாழ்த்துரை; துணைத் தலைவர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "கலைமாமணி கீழாம்பூர் சி. சங்கர சுப்பிரமணியன் (சிறப்புரை; ஆசிரியர், கலைமகள் இதழ்)",
+    "முனைவர் இரா. அருள்மணி (நன்றியுரை; ஆராய்ச்சி அலுவலர் & கருத்தரங்க ஒருங்கிணைப்பாளர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "பேரா. அருணை பாலறாவாயன் (உரையாளர், 'சைவசித்தாந்த மரபில் அகத்தியர்'; மேனாள் தமிழ்த் துறைத்தலைவர் (ஓய்வு), இலயோலா கல்லூரி, சென்னை)",
+    "பேரா. அரங்க. இராமலிங்கம் (உரையாளர், 'சித்தர் மரபில் அகத்தியர்'; மேனாள் தமிழ் மொழித்துறைத் தலைவர் (ஓய்வு), சென்னைப் பல்கலைக்கழகம், சென்னை)",
+    "பேரா. க. பலராமன் (உரையாளர், 'அறிவியல் மரபில் அகத்தியர்'; இணைப்பேராசிரியர், தமிழ்த்துறை, அரசினர் கலைக்கல்லூரி, நந்தனம், சென்னை)"
    ],
    "links": [
+    {
+     "kind": "invitation",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2025/01/t1.pdf"
+    },
     {
      "kind": "invitation",
      "url": "https://cict.in/cict2023/wp-content/uploads/2025/01/e1.jpeg"
@@ -4410,6 +4497,7 @@
     }
    ],
    "sources": [
+    "https://cict.in/cict2023/wp-content/uploads/2025/01/t1.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2025/01/e1.jpeg",
     "https://www.youtube.com/watch?v=D-hygwxjbjU",
     "https://www.youtube.com/watch?v=BENTnsLuU6s",
@@ -4606,14 +4694,20 @@
    "venue": "Thiruvalluvar Hall, CICT, Perumbakkam, Chennai",
    "for": "55 students of Velumailu Siddha Medical College (Sriperumbudur) and National Institute of Siddha (Tambaram Sanatorium)",
    "people": [
-    "Dr. T. Saravanan (Welcome address; Junior Research Officer & Seminar Co-ordinator, CICT)",
-    "Prof. R. Chandrasekaran (Presidential address; Director, CICT)",
-    "Dr. R. Bhuvaneshwari (Introductory address; Registrar, CICT)",
-    "Prof. Dr. Sudha Seshayyan (Felicitation; Vice Chairperson, CICT)",
-    "Prof. Dr. R. Manikkavasagam (Keynote address; Former Tamil Professor, Pachaiyappa's College, Chennai)",
-    "Dr. R. Arulmani (Vote of thanks; Research Officer & Seminar Co-ordinator, CICT)"
+    "முனைவர் த. சரவணன் (வரவேற்புரை; இளநிலை ஆராய்ச்சி அலுவலர் & கருத்தரங்க ஒருங்கிணைப்பாளர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "பேராசிரியர் இரா. சந்திரசேகரன் (தலைமையுரை; இயக்குநர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "முனைவர் ரெ. புவனேஸ்வரி (அறிமுக உரை; பதிவாளர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "பேராசிரியர் மருத்துவர் சுதா சேஷய்யன் (வாழ்த்துரை; உரையாளர், 'அகத்தியரின் அறிவியல் பார்வை'; துணைத் தலைவர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "பேராசிரியர் மருத்துவர் இரா. மாணிக்கவாசகம் (சிறப்புரை; மேனாள் தமிழ்ப் பேராசிரியர், பச்சையப்பன் கல்லூரி, சென்னை)",
+    "முனைவர் இரா. அருள்மணி (நன்றியுரை; ஆராய்ச்சி அலுவலர் & கருத்தரங்க ஒருங்கிணைப்பாளர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "மருத்துவர் மு. அருண் பி.எஸ்.எம்.எஸ் (உரையாளர், 'அகத்தியரின் மருத்துவப் பார்வை'; ஐந்திரம் சித்த மருத்துவமனை, திருவனந்தபுரம்)",
+    "முனைவர் சி. சதானந்தன் (உரையாளர், 'அகத்தியரின் இலக்கியப் பார்வை'; உதவிப் பேராசிரியர், தமிழ்த்துறை, துவாரகதாஸ் கோவர்தன்தாஸ் வைணவக் கல்லூரி, அரும்பாக்கம், சென்னை)"
    ],
    "links": [
+    {
+     "kind": "invitation",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2024/12/1.pdf"
+    },
     {
      "kind": "invitation",
      "url": "https://cict.in/cict2023/wp-content/uploads/2024/12/3-3.jpeg"
@@ -4635,6 +4729,7 @@
     }
    ],
    "sources": [
+    "https://cict.in/cict2023/wp-content/uploads/2024/12/1.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2024/12/3-3.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2026/06/Chemmozhi_18.pdf",
     "https://x.com/CICTOfficial/status/1869281583078969598",
@@ -5076,6 +5171,10 @@
      "url": "https://cict.in/cict2023/wp-content/uploads/2024/11/english.jpeg"
     },
     {
+     "kind": "valedictory",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2024/11/tamil.jpeg"
+    },
+    {
      "kind": "newsletter",
      "url": "https://cict.in/cict2023/wp-content/uploads/2026/06/Chemmozhi_18.pdf",
      "label": "No. 18, p. 30"
@@ -5101,6 +5200,7 @@
     "https://cict.in/cict2023/wp-content/uploads/2024/10/14.10.2024.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2024/11/cict.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2024/11/english.jpeg",
+    "https://cict.in/cict2023/wp-content/uploads/2024/11/tamil.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2026/06/Chemmozhi_18.pdf",
     "https://www.drngpasc.ac.in/pdf/profile/tamil/Dhasaradhan.pdf",
     "https://x.com/CICTOfficial/status/1839707424065765406",
@@ -5315,6 +5415,10 @@
      "url": "https://cict.in/cict2023/wp-content/uploads/2024/09/23.9.24E.jpeg"
     },
     {
+     "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2024/09/23.9.24T.jpeg"
+    },
+    {
      "kind": "newsletter",
      "url": "https://cict.in/cict2023/wp-content/uploads/2026/06/Chemmozhi_18.pdf",
      "label": "No. 18, p. 28"
@@ -5333,6 +5437,7 @@
    "sources": [
     "https://cict.in/cict2023/wp-content/uploads/2024/09/Workshop-10_Announcement.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2024/09/23.9.24E.jpeg",
+    "https://cict.in/cict2023/wp-content/uploads/2024/09/23.9.24T.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2026/06/Chemmozhi_18.pdf",
     "https://x.com/CICTOfficial/status/1833723909671174404",
     "https://x.com/CICTOfficial/status/1838133601554063556",
@@ -5413,7 +5518,7 @@
    "end": "2024-08-13",
    "mode": "inperson",
    "venue": "Thiruvalluvar Hall, CICT, Perumbakkam, Chennai",
-   "for": "25 researchers",
+   "for": "PhD scholars in Tamil studies (தமிழியல் முனைவர் பட்ட ஆய்வாளர்கள்); 30 participants",
    "people": [
     "Dr. R. Arulmani (Welcome address; Research Officer & Workshop Co-ordinator, CICT)",
     "Prof. R. Chandrasekaran (Presidential address; Director, CICT)",
@@ -5422,6 +5527,10 @@
     "Dr. M. Tamilvanan (Vote of thanks; Junior Research Officer & Workshop Associate Co-ordinator, CICT)"
    ],
    "links": [
+    {
+     "kind": "announcement",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2024/07/Workshop9.pdf"
+    },
     {
      "kind": "inaugural",
      "url": "https://cict.in/cict2023/wp-content/uploads/2024/08/6.8.2024.jpeg"
@@ -5444,6 +5553,7 @@
    ],
    "sources": [
     "https://cict.in/cict2023/wp-content/uploads/2024/08/6.8.2024.jpeg",
+    "https://cict.in/cict2023/wp-content/uploads/2024/07/Workshop9.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2026/06/Chemmozhi_18.pdf",
     "https://x.com/CICTOfficial/status/1820859325113348547",
     "https://x.com/CICTOfficial/status/1820859428788154416",
@@ -5758,6 +5868,10 @@
      "url": "https://cict.in/cict2023/wp-content/uploads/2024/06/Workshop-08-Eng.pdf"
     },
     {
+     "kind": "announcement",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2024/06/Workshop-08.-Ta.pdf"
+    },
+    {
      "kind": "inaugural",
      "url": "https://cict.in/cict2023/wp-content/uploads/2024/06/1.jpeg"
     },
@@ -5780,6 +5894,7 @@
    "sources": [
     "https://cict.in/cict2023/wp-content/uploads/2024/06/Workshop-08-Eng.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2024/06/1.jpeg",
+    "https://cict.in/cict2023/wp-content/uploads/2024/06/Workshop-08.-Ta.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2026/06/Chemmozhi_18.pdf",
     "https://x.com/CICTOfficial/status/1788833527276122560",
     "https://x.com/CICTOfficial/status/1799034721940414590",
@@ -5838,7 +5953,7 @@
    "id": "2024-06-05-art-traditions-of-india",
    "type": "workshop",
    "title": "Art Traditions of India",
-   "title_ta": "",
+   "title_ta": "இந்தியக் கலை மரபுகள்",
    "start": "2024-06-05",
    "end": "2024-06-14",
    "mode": "inperson",
@@ -5847,10 +5962,15 @@
     {
      "kind": "announcement",
      "url": "https://cict.in/cict2023/wp-content/uploads/2024/05/CICT_-Workshop-07-Art-Traditions-of-India.pdf"
+    },
+    {
+     "kind": "announcement",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2024/05/CICT-workshop-7_Announcement.pdf"
     }
    ],
    "sources": [
-    "https://cict.in/cict2023/wp-content/uploads/2024/05/CICT_-Workshop-07-Art-Traditions-of-India.pdf"
+    "https://cict.in/cict2023/wp-content/uploads/2024/05/CICT_-Workshop-07-Art-Traditions-of-India.pdf",
+    "https://cict.in/cict2023/wp-content/uploads/2024/05/CICT-workshop-7_Announcement.pdf"
    ],
    "origins": [
     "seeall"
@@ -5926,6 +6046,10 @@
      "url": "https://cict.in/cict2023/wp-content/uploads/2024/05/english13.5.24.jpeg"
     },
     {
+     "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2024/05/tamil13.5.24.jpeg"
+    },
+    {
      "kind": "valedictory",
      "url": "https://cict.in/cict2023/wp-content/uploads/2024/05/21.5.24new.jpeg"
     },
@@ -5956,6 +6080,7 @@
     "https://cict.in/cict2023/wp-content/uploads/2024/05/21.5.24new.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2024/04/CICT-Cēyōṉ-in-the-Heritage-of-Tamil-Classical-Literature-Workshop_05.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2024/05/english13.5.24.jpeg",
+    "https://cict.in/cict2023/wp-content/uploads/2024/05/tamil13.5.24.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2026/06/Chemmozhi_18.pdf",
     "https://www.dinamalar.com/news/tamil-nadu-news/-training-in-the-classical-institute-of-seyon-in-deaf-literature--/3598132",
     "https://x.com/CICTOfficial/status/1790239993409253409",
@@ -6107,22 +6232,30 @@
    "start": "2024-04-24",
    "end": "2024-04-30",
    "mode": "inperson",
-   "venue": "CICT, Chennai",
+   "venue": "Thiruvalluvar Hall, CICT, Perumbakkam, Chennai",
    "for": "Tamil studies students researching paintings and students of painting; 20 participants",
    "people": [
-    "பேராசிரியர் இரா. சந்திரசேகரன் (Director; presided)",
-    "முனைவர் ரெ. புவனேஸ்வரி (Registrar; felicitation)",
-    "திரு. டிராட்ஸ்கி மருது (artist; inaugural remarks)",
-    "திரு. எஸ். ராமகிருஷ்ணன் (writer; inaugural special address)",
-    "முனைவர் சா. பாலுசாமி (former Professor of Tamil, Madras Christian College; keynote)",
-    "முனைவர் தியாக. சத்தியமூர்த்தி (former Superintending Archaeologist, Archaeological Survey of India; valedictory address)",
-    "முனைவர் இரா. வெங்கடேசன் (Junior Research Officer; coordinator)",
-    "முனைவர் இரா. அருள்மணி (Research Officer; co-coordinator)"
+    "முனைவர் இரா. வெங்கடேசன் (வரவேற்புரை, தொடக்க விழா; நன்றியுரை, நிறைவு விழா; இளநிலை ஆராய்ச்சி அலுவலர் & பயிலரங்க ஒருங்கிணைப்பாளர்)",
+    "பேரா. இரா. சந்திரசேகரன் (தலைமையுரை; இயக்குநர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "முனைவர் ரெ. புவனேஸ்வரி (வாழ்த்துரை; பதிவாளர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "திரு. டிராட்ஸ்கி மருது (கருத்துரை, தொடக்க விழா; ஓவியர், சென்னை)",
+    "திரு. எஸ். ராமகிருஷ்ணன் (சிறப்புரை, தொடக்க விழா; எழுத்தாளர், சென்னை)",
+    "முனைவர் சா. பாலுசாமி (நோக்கவுரை, தொடக்க விழா; மேனாள் தமிழ்ப் பேராசிரியர், சென்னைக் கிறித்துவக் கல்லூரி)",
+    "முனைவர் இரா. அருள்மணி (நன்றியுரை, தொடக்க விழா; வரவேற்புரை, நிறைவு விழா; ஆராய்ச்சி அலுவலர் & பயிலரங்க இணை ஒருங்கிணைப்பாளர்)",
+    "முனைவர் தியாக. சத்தியமூர்த்தி (சிறப்புரை, நிறைவு விழா; மேனாள் கண்காணிப்பாளர், இந்தியத் தொல்லியல் துறை)"
    ],
    "links": [
     {
      "kind": "announcement",
      "url": "https://cict.in/cict2023/wp-content/uploads/2024/04/Workshop-02_Announcement.pdf"
+    },
+    {
+     "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2024/04/22.04.2024.jpeg"
+    },
+    {
+     "kind": "valedictory",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2024/04/29.04.2024.jpeg"
     },
     {
      "kind": "newsletter",
@@ -6131,6 +6264,8 @@
     }
    ],
    "sources": [
+    "https://cict.in/cict2023/wp-content/uploads/2024/04/22.04.2024.jpeg",
+    "https://cict.in/cict2023/wp-content/uploads/2024/04/29.04.2024.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2024/04/Workshop-02_Announcement.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2026/06/Chemmozhi_18.pdf"
    ],
@@ -6279,8 +6414,16 @@
      "url": "https://cict.in/cict2023/wp-content/uploads/2024/03/2-2.jpeg"
     },
     {
+     "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2024/03/1-2.jpeg"
+    },
+    {
      "kind": "valedictory",
      "url": "https://cict.in/cict2023/wp-content/uploads/2024/03/14.03.24eng.jpeg"
+    },
+    {
+     "kind": "valedictory",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2024/03/14.03.24tamil.jpeg"
     },
     {
      "kind": "newsletter",
@@ -6303,6 +6446,8 @@
     "https://cict.in/cict2023/wp-content/uploads/2024/02/23.2.2024.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2024/03/2-2.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2024/03/14.03.24eng.jpeg",
+    "https://cict.in/cict2023/wp-content/uploads/2024/03/1-2.jpeg",
+    "https://cict.in/cict2023/wp-content/uploads/2024/03/14.03.24tamil.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2026/06/Chemmozhi_18.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2025/07/ANNUAL_REPORT_AND_AUDITED_ACCOUNTS_2023-24.pdf",
     "https://www.drngpasc.ac.in/pdf/profile/tamil/Dhasaradhan.pdf"
@@ -6342,8 +6487,16 @@
      "url": "https://cict.in/cict2023/wp-content/uploads/2024/02/english.jpeg"
     },
     {
+     "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2024/02/tamil.jpeg"
+    },
+    {
      "kind": "valedictory",
      "url": "https://cict.in/cict2023/wp-content/uploads/2024/03/e6.jpeg"
+    },
+    {
+     "kind": "valedictory",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2024/03/t6.jpeg"
     },
     {
      "kind": "newsletter",
@@ -6360,6 +6513,8 @@
     "https://cict.in/cict2023/wp-content/uploads/2024/02/CICT-Workshop-19.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2024/02/english.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2024/03/e6.jpeg",
+    "https://cict.in/cict2023/wp-content/uploads/2024/02/tamil.jpeg",
+    "https://cict.in/cict2023/wp-content/uploads/2024/03/t6.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2026/06/Chemmozhi_18.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2025/07/ANNUAL_REPORT_AND_AUDITED_ACCOUNTS_2023-24.pdf"
    ],
@@ -6592,20 +6747,28 @@
    "id": "2024-02-07-the-twin-epics-cilappatikaram-manimekalai-commentaries",
    "type": "seminar",
    "title": "The Twin Epics – (Cilappatikaram, Manimekalai): Commentaries, Critiques, Translations",
-   "title_ta": "இரட்டைக் காப்பியங்கள்: உரைகள், திறனாய்வுக் கட்டுரைகள், மொழிபெயர்ப்புகள்",
+   "title_ta": "இரட்டைக்காப்பியங்கள்: உரைகள், திறனாய்வுக் கட்டுரைகள், மொழிபெயர்ப்புகள்",
    "start": "2024-02-07",
    "end": "2024-02-08",
    "mode": "inperson",
    "venue": "Thiruvalluvar Hall, CICT, Perumbakkam, Chennai",
    "for": "46 researchers",
    "people": [
-    "Dr. K. Jayakumari (Welcome address; Research Officer & Seminar Co-ordinator, CICT)",
-    "Prof. R. Chandrasekaran (Presidential address; Director, CICT)",
-    "Dr. R. Bhuvaneshwari (Felicitation; Registrar, CICT)",
-    "Dr. M.B. Amanulla (Keynote address; Chairman of Urdu, Dept. of Arabic, Persian & Urdu, Marina Campus, University of Madras, Chennai)",
-    "Dr. M. Susila (Vote of thanks; Junior Research Officer & Seminar Associate Co-ordinator, CICT)"
+    "முனைவர் கு. ஜெயகுமாரி (வரவேற்புரை; ஆராய்ச்சி அலுவலர் & கருத்தரங்க ஒருங்கிணைப்பாளர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "பேரா. இரா. சந்திரசேகரன் (தலைமையுரை; இயக்குநர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "முனைவர் ரெ. புவனேஸ்வரி (வாழ்த்துரை; பதிவாளர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "முனைவர் மு.பா. அமானுல்லா (சிறப்புரை; உருதுத் துறைத் தலைவர், அரபு, பாரசீகம் மற்றும் உருது துறை, மெரினா வளாகம், சென்னைப் பல்கலைக்கழகம், சென்னை)",
+    "முனைவர் மா. சுசிலா (நன்றியுரை; இளநிலை ஆராய்ச்சி அலுவலர் & கருத்தரங்க இணை ஒருங்கிணைப்பாளர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)"
    ],
    "links": [
+    {
+     "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2024/02/tam.jpeg"
+    },
+    {
+     "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2024/01/tam.jpeg"
+    },
     {
      "kind": "inaugural",
      "url": "https://cict.in/cict2023/wp-content/uploads/2024/02/eng.jpeg"
@@ -6622,6 +6785,8 @@
     }
    ],
    "sources": [
+    "https://cict.in/cict2023/wp-content/uploads/2024/02/tam.jpeg",
+    "https://cict.in/cict2023/wp-content/uploads/2024/01/tam.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2024/02/eng.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2026/06/Chemmozhi_18.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2025/07/ANNUAL_REPORT_AND_AUDITED_ACCOUNTS_2023-24.pdf"
@@ -6657,6 +6822,10 @@
      "url": "https://cict.in/cict2023/wp-content/uploads/2024/01/eng11.01.2023.jpeg"
     },
     {
+     "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2024/01/tam11.01.2023.jpeg"
+    },
+    {
      "kind": "newsletter",
      "url": "https://cict.in/cict2023/wp-content/uploads/2026/06/Chemmozhi_18.pdf",
      "label": "No. 18, p. 18"
@@ -6669,6 +6838,7 @@
    ],
    "sources": [
     "https://cict.in/cict2023/wp-content/uploads/2024/01/eng11.01.2023.jpeg",
+    "https://cict.in/cict2023/wp-content/uploads/2024/01/tam11.01.2023.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2026/06/Chemmozhi_18.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2025/07/ANNUAL_REPORT_AND_AUDITED_ACCOUNTS_2023-24.pdf"
    ],
@@ -6961,23 +7131,32 @@
    ]
   },
   {
-   "id": "2023-12-13-classical-tamil-contributions-of-eelam-sri",
+   "id": "2023-12-13-contributions-of-elam-tamil-scholars-to",
    "type": "workshop",
-   "title": "Classical Tamil Contributions of Eelam (Sri Lankan) Tamil Scholars",
+   "title": "Contributions of Elam Tamil Scholars to Classical Tamil works",
    "title_ta": "ஈழத்துத் தமிழறிஞர்களின் செவ்வியல் தமிழ்ப் பணிகள்",
    "start": "2023-12-13",
    "end": "2023-12-22",
    "mode": "inperson",
-   "venue": "CICT, Chennai",
-   "for": "36 research students",
+   "venue": "Thiruvalluvar Hall, CICT, Perumbakkam, Chennai",
+   "for": "PhD scholars in colleges, universities and research institutes; 30 participants",
+   "dept": "Faculty of Manuscriptology (சுவடியியல் புலம்)",
    "people": [
-    "பேராசிரியர் இரா. சந்திரசேகரன் (இயக்குநர், CICT; presided inaugural and valedictory functions)",
-    "முனைவர் ரெ. புவனேஸ்வரி (பதிவாளர், CICT; felicitation address at inaugural and valedictory functions)",
-    "புலவர் பொ. வேல்சாமி (chief guest, inaugural)",
-    "முனைவர் ம. தமிழ்வாணன் (coordinator; இளநிலை ஆராய்ச்சி அலுவலர்)",
-    "முனைவர் சே. கரும்பாயிரம் (co-coordinator; இளநிலை ஆராய்ச்சி அலுவலர்)"
+    "முனைவர் ம. தமிழ்வாணன் (வரவேற்புரை; இளநிலை ஆராய்ச்சி அலுவலர் & பயிலரங்க ஒருங்கிணைப்பாளர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "பேரா. இரா. சந்திரசேகரன் (தலைமையுரை; இயக்குநர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "முனைவர் ரெ. புவனேஸ்வரி (வாழ்த்துரை; பதிவாளர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "புலவர் பொ. வேல்சாமி (சிறப்புரை; ஆய்வறிஞர், நாமக்கல்)",
+    "முனைவர் சே. கரும்பாயிரம் (நன்றியுரை; இளநிலை ஆராய்ச்சி அலுவலர் & பயிலரங்க இணை ஒருங்கிணைப்பாளர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)"
    ],
    "links": [
+    {
+     "kind": "announcement",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2023/11/CICT_workshop14.pdf"
+    },
+    {
+     "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2023/12/1-1.jpeg"
+    },
     {
      "kind": "newsletter",
      "url": "https://cict.in/cict2023/wp-content/uploads/2025/03/Final_Press_Copy_18.03.2025_NS17-2023.pdf",
@@ -6990,10 +7169,13 @@
     }
    ],
    "sources": [
+    "https://cict.in/cict2023/wp-content/uploads/2023/11/CICT_workshop14.pdf",
+    "https://cict.in/cict2023/wp-content/uploads/2023/12/1-1.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/Final_Press_Copy_18.03.2025_NS17-2023.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2025/07/ANNUAL_REPORT_AND_AUDITED_ACCOUNTS_2023-24.pdf"
    ],
    "origins": [
+    "seeall",
     "news",
     "academic"
    ]
@@ -7020,6 +7202,81 @@
    ],
    "origins": [
     "youtube"
+   ]
+  },
+  {
+   "id": "2023-12-11-bharatiya-bhasha-utsav",
+   "type": "other",
+   "title": "Bharatiya Bhasha Utsav",
+   "title_ta": "பாரத மொழிகளின் திருவிழா - 2023: மாணவர்களுக்கான பேச்சுப் போட்டி",
+   "start": "2023-12-11",
+   "mode": "inperson",
+   "venue": "in the participating colleges (each college conducts its own competition)",
+   "for": "undergraduate (BA/BSc/BE) students of arts & science and engineering colleges; colleges apply to host",
+   "links": [
+    {
+     "kind": "announcement",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2023/11/CICT-1.pdf"
+    },
+    {
+     "kind": "newsletter",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2025/03/Final_Press_Copy_18.03.2025_NS17-2023.pdf",
+     "label": "No. 17, p. 7"
+    },
+    {
+     "kind": "video",
+     "url": "https://www.youtube.com/playlist?list=PLCITAMrJjwUCfMTNYJGs4pFy9NFd6yMAR",
+     "label": "YouTube"
+    },
+    {
+     "kind": "video",
+     "url": "https://www.youtube.com/playlist?list=PLCITAMrJjwUAtn_vvflXFlqKlm39eEC5E",
+     "label": "YouTube"
+    },
+    {
+     "kind": "video",
+     "url": "https://www.youtube.com/playlist?list=PLCITAMrJjwUCvhpIKJOwP8f3IR1FDSSls",
+     "label": "YouTube"
+    },
+    {
+     "kind": "video",
+     "url": "https://www.youtube.com/watch?v=_8cx-UUeG0Y",
+     "label": "YouTube"
+    },
+    {
+     "kind": "video",
+     "url": "https://www.youtube.com/watch?v=JXN1nVyHi5w",
+     "label": "YouTube"
+    },
+    {
+     "kind": "video",
+     "url": "https://www.youtube.com/watch?v=D4ve6u2rXWU",
+     "label": "YouTube"
+    },
+    {
+     "kind": "report",
+     "url": "https://cict.in/cict2023/newtamil/",
+     "label": "cict.in"
+    },
+    {
+     "kind": "report",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2025/07/ANNUAL_REPORT_AND_AUDITED_ACCOUNTS_2023-24.pdf",
+     "label": "cict.in"
+    }
+   ],
+   "sources": [
+    "https://cict.in/cict2023/wp-content/uploads/2023/11/CICT-1.pdf",
+    "https://cict.in/cict2023/wp-content/uploads/2025/03/Final_Press_Copy_18.03.2025_NS17-2023.pdf",
+    "https://www.youtube.com/@cicttamil",
+    "https://www.youtube.com/playlist?list=PLCITAMrJjwUCfMTNYJGs4pFy9NFd6yMAR",
+    "https://cict.in/cict2023/newtamil/",
+    "https://cict.in/cict2023/wp-content/uploads/2025/07/ANNUAL_REPORT_AND_AUDITED_ACCOUNTS_2023-24.pdf"
+   ],
+   "origins": [
+    "seeall",
+    "news",
+    "youtube",
+    "academic"
    ]
   },
   {
@@ -7051,22 +7308,30 @@
    "title": "Folk traditions of Tamil Nadu",
    "title_ta": "தமிழக நாட்டுப்புற மரபுகள்",
    "start": "2023-11-30",
-   "end": "2023-12-06",
+   "end": "2023-12-21",
    "mode": "inperson",
-   "venue": "CICT, Chennai",
+   "venue": "Tholkappiyar Hall, CICT, Perumbakkam, Chennai",
    "for": "PhD research scholars; 30 participants",
    "people": [
-    "பேராசிரியர் இரா. சந்திரசேகரன் (இயக்குநர், CICT; presided inaugural and valedictory functions)",
-    "முனைவர் ரெ. புவனேஸ்வரி (பதிவாளர், CICT; felicitation address at inaugural and valedictory functions)",
-    "பேராசிரியர் ஒ. முத்தையா (chief guest, inaugural; தமிழ், இந்திய மொழிகள் மற்றும் கிராமியக் கலைகள் புலம், காந்திகிராம கிராமிய நிகர்நிலைப் பல்கலைக்கழகம்)",
-    "ஆறு. இராமநாதன் (chief guest, valedictory; மேனாள் பேராசிரியர், நாட்டுப்புறவியல் துறை, தமிழ்ப் பல்கலைக்கழகம், தஞ்சாவூர்)",
-    "முனைவர் அ. ஆரோக்கியதாசு (coordinator; இளநிலை ஆராய்ச்சி அலுவலர்)",
-    "முனைவர் ப. கண்ணதாசன் (co-coordinator; இளநிலை ஆராய்ச்சி அலுவலர்)"
+    "முனைவர் அ. ஆரோக்கியதாசு (வரவேற்புரை, தொடக்க விழா; நன்றியுரை, நிறைவு விழா; இளநிலை ஆராய்ச்சி அலுவலர் & பயிலரங்க ஒருங்கிணைப்பாளர்)",
+    "பேராசிரியர் இரா. சந்திரசேகரன் (தலைமையுரை; இயக்குநர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "முனைவர் ரெ. புவனேஸ்வரி (வாழ்த்துரை; பதிவாளர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "முனைவர் ஒ. முத்தையா (சிறப்புரை, தொடக்க விழா; பேராசிரியர் & புலத்தலைவர், தமிழ் இந்திய மொழிகள் மற்றும் கிராமியக் கலைகள் புலம், காந்திகிராம கிராமிய நிகர்நிலைப் பல்கலைக்கழகம், காந்திகிராமம்)",
+    "முனைவர் ப. கண்ணதாசன் (நன்றியுரை, தொடக்க விழா; வரவேற்புரை, நிறைவு விழா; இளநிலை ஆராய்ச்சி அலுவலர் & பயிலரங்க இணை ஒருங்கிணைப்பாளர்)",
+    "முனைவர் ஆறு. இராமநாதன் (சிறப்புரை, நிறைவு விழா; பேராசிரியர் & தலைவர் (ப.நி.), நாட்டுப்புறவியல் துறை, தமிழ்ப் பல்கலைக்கழகம், தஞ்சாவூர்)"
    ],
    "links": [
     {
      "kind": "announcement",
      "url": "https://cict.in/cict2023/wp-content/uploads/2023/11/CICT-Woskshop-13.pdf"
+    },
+    {
+     "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2023/11/T1-2.jpeg"
+    },
+    {
+     "kind": "valedictory",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2023/12/18t.jpeg"
     },
     {
      "kind": "newsletter",
@@ -7080,6 +7345,8 @@
     }
    ],
    "sources": [
+    "https://cict.in/cict2023/wp-content/uploads/2023/11/T1-2.jpeg",
+    "https://cict.in/cict2023/wp-content/uploads/2023/12/18t.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2023/11/CICT-Woskshop-13.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/Final_Press_Copy_18.03.2025_NS17-2023.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2025/07/ANNUAL_REPORT_AND_AUDITED_ACCOUNTS_2023-24.pdf"
@@ -7098,20 +7365,28 @@
    "start": "2023-11-29",
    "end": "2023-12-12",
    "mode": "inperson",
-   "venue": "CICT, Chennai",
+   "venue": "Thiruvalluvar Hall, CICT, Perumbakkam, Chennai",
    "for": "college and university teachers (Tamil studies)",
    "people": [
-    "பேராசிரியர் இரா. சந்திரசேகரன் (இயக்குநர், CICT; presided inaugural and valedictory functions)",
-    "முனைவர் ரெ. புவனேஸ்வரி (பதிவாளர், CICT; felicitation address at inaugural and valedictory functions)",
-    "திரு. எஸ். இராமச்சந்திரன் (chief guest, inaugural; கல்வெட்டியல் அறிஞர்)",
-    "பேராசிரியர் ப. மருதநாயகம் (chief guest, valedictory; மேனாள் ஆய்வறிஞர், CICT)",
-    "முனைவர் இரா. வெங்கடேசன் (coordinator; இளநிலை ஆராய்ச்சி அலுவலர்)",
-    "முனைவர் சி. இராமச்சந்திரன் (co-coordinator; இளநிலை ஆராய்ச்சி அலுவலர்)"
+    "முனைவர் இரா. வெங்கடேசன் (வரவேற்புரை, தொடக்க விழா; நன்றியுரை, நிறைவு விழா; இளநிலை ஆராய்ச்சி அலுவலர் & புத்தொளிப் பயிற்சி வகுப்பு ஒருங்கிணைப்பாளர்)",
+    "பேராசிரியர் இரா. சந்திரசேகரன் (தலைமையுரை; இயக்குநர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "முனைவர் ரெ. புவனேஸ்வரி (வாழ்த்துரை; பதிவாளர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "திரு. எஸ். இராமச்சந்திரன் (சிறப்புரை, தொடக்க விழா; கல்வெட்டியல் அறிஞர், சென்னை)",
+    "முனைவர் சி. இராமச்சந்திரன் (நன்றியுரை, தொடக்க விழா; வரவேற்புரை, நிறைவு விழா; இளநிலை ஆராய்ச்சி அலுவலர் & புத்தொளிப் பயிற்சி வகுப்பு இணை ஒருங்கிணைப்பாளர்)",
+    "பேரா. ப. மருதநாயகம் (சிறப்புரை, நிறைவு விழா; மேனாள் ஆய்வறிஞர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)"
    ],
    "links": [
     {
      "kind": "announcement",
      "url": "https://cict.in/cict2023/wp-content/uploads/2023/10/Refresher_Course.pdf"
+    },
+    {
+     "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2023/11/tamil1.jpeg"
+    },
+    {
+     "kind": "valedictory",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2023/12/11.12.2023.jpeg"
     },
     {
      "kind": "newsletter",
@@ -7125,6 +7400,8 @@
     }
    ],
    "sources": [
+    "https://cict.in/cict2023/wp-content/uploads/2023/11/tamil1.jpeg",
+    "https://cict.in/cict2023/wp-content/uploads/2023/12/11.12.2023.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2023/10/Refresher_Course.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/Final_Press_Copy_18.03.2025_NS17-2023.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2025/07/ANNUAL_REPORT_AND_AUDITED_ACCOUNTS_2023-24.pdf"
@@ -7143,19 +7420,23 @@
    "start": "2023-11-22",
    "end": "2023-11-23",
    "mode": "inperson",
-   "venue": "CICT, Chennai",
+   "venue": "Thiruvalluvar Hall, CICT, Perumbakkam, Chennai",
    "for": "full-time PhD research scholars in Tamil studies",
    "people": [
-    "பேராசிரியர் இரா. சந்திரசேகரன் (இயக்குநர், CICT; presided)",
-    "முனைவர் ரெ. புவனேஸ்வரி (பதிவாளர், CICT; felicitation address)",
-    "பேராசிரியர் அப்பாசாமி முருகையன் (chief guest, inaugural; வரலாற்றியல் மற்றும் செவ்வியல் மொழித்துறை உயராய்வு மையம், பாரீஸ் பல்கலைக்கழகம்)",
-    "முனைவர் இரா. வெங்கடேசன் (coordinator; இளநிலை ஆராய்ச்சி அலுவலர்)",
-    "முனைவர் சுப. வேல்முருகன் (co-coordinator; இளநிலை ஆராய்ச்சி அலுவலர்)"
+    "முனைவர் இரா. வெங்கடேசன் (வரவேற்புரை; இளநிலை ஆராய்ச்சி அலுவலர் & கருத்தரங்க ஒருங்கிணைப்பாளர்)",
+    "பேரா. இரா. சந்திரசேகரன் (தலைமையுரை; இயக்குநர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "முனைவர் ரெ. புவனேஸ்வரி (வாழ்த்துரை; பதிவாளர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "முனைவர் அப்பாசாமி முருகையன் (சிறப்புரை; பேராசிரியர், பாரிசு பல்கலைக்கழகம், பாரிசு)",
+    "முனைவர் சுப. வேல்முருகன் (நன்றியுரை; இளநிலை ஆராய்ச்சி அலுவலர் & கருத்தரங்க இணை ஒருங்கிணைப்பாளர்)"
    ],
    "links": [
     {
      "kind": "announcement",
      "url": "https://cict.in/cict2023/wp-content/uploads/2023/10/National_Seminar.pdf"
+    },
+    {
+     "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2023/11/t1.jpeg"
     },
     {
      "kind": "newsletter",
@@ -7169,6 +7450,7 @@
     }
    ],
    "sources": [
+    "https://cict.in/cict2023/wp-content/uploads/2023/11/t1.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2023/10/National_Seminar.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/Final_Press_Copy_18.03.2025_NS17-2023.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2025/07/ANNUAL_REPORT_AND_AUDITED_ACCOUNTS_2023-24.pdf"
@@ -7180,29 +7462,33 @@
    ]
   },
   {
-   "id": "2023-11-20-ramayana-in-indian-languages-comparative-study",
+   "id": "2023-11-20-ramayana-in-indian-languages-comparitive-study",
    "type": "seminar",
-   "title": "Ramayana in Indian Languages - Comparative Study",
+   "title": "Ramayana in Indian Languages - Comparitive Study",
    "title_ta": "இந்திய மொழிகளில் இராமாயணம் – ஒப்பாய்வு",
    "start": "2023-11-20",
    "end": "2023-11-21",
    "mode": "inperson",
-   "venue": "CICT, Chennai",
+   "venue": "Tholkaapiyar Hall, CICT, Chennai",
    "for": "M.Phil./PhD/post-doctoral research scholars in Tamil studies; 30 participants",
    "dept": "School of Languages and Language Education & Language Technology (மொழிகள் பள்ளி, மொழிக்கல்வியியல் மற்றும் மொழித் தொழில்நுட்பப் புலம்)",
    "people": [
-    "பேராசிரியர் இரா. சந்திரசேகரன் (இயக்குநர், CICT; presided)",
-    "முனைவர் ரெ. புவனேஸ்வரி (பதிவாளர், CICT; felicitation address)",
-    "கலைமாமணி கீழாம்பூர் சங்கர சுப்பிரமணியன் (chief guest, inaugural; ஆசிரியர், கலைமகள் இதழ்)",
-    "முனைவர் ந. தேவி (coordinator; ஆராய்ச்சி அலுவலர்)",
-    "முனைவர் ந. பெரியசாமி (coordinator; இளநிலை ஆராய்ச்சி அலுவலர்)",
-    "திரு. சு. கார்த்திகேயன் (coordinator; நிரலாளர்)",
-    "முனைவர் இரா. அகிலன் (coordinator; நிரலாளர்)"
+    "முனைவர் ந. தேவி (வரவேற்புரை; ஆராய்ச்சி அலுவலர் & கருத்தரங்க ஒருங்கிணைப்பாளர்)",
+    "பேராசிரியர் இரா. சந்திரசேகரன் (தலைமையுரை; இயக்குநர், செ.த.ம.நி., சென்னை)",
+    "முனைவர் ரெ. புவனேஸ்வரி (வாழ்த்துரை; பதிவாளர், செ.த.ம.நி., சென்னை)",
+    "கலைமாமணி கீழாம்பூர் சங்கர சுப்பிரமணியன் (சிறப்புரை; ஆசிரியர், கலைமகள்)",
+    "முனைவர் ந. பெரியசாமி (நன்றியுரை; இளநிலை ஆராய்ச்சி அலுவலர் & கருத்தரங்க ஒருங்கிணைப்பாளர்)",
+    "திரு. சு. கார்த்திகேயன் (கருத்தரங்க ஒருங்கிணைப்பு; நிரலாளர்)",
+    "முனைவர் இரா. அகிலன் (கருத்தரங்க ஒருங்கிணைப்பு; நிரலாளர்)"
    ],
    "links": [
     {
      "kind": "announcement",
      "url": "https://cict.in/cict2023/wp-content/uploads/2023/11/CICT-National_seminar_1_Ramayana.pdf"
+    },
+    {
+     "kind": "invitation",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2023/11/r1.jpeg"
     },
     {
      "kind": "newsletter",
@@ -7216,6 +7502,7 @@
     }
    ],
    "sources": [
+    "https://cict.in/cict2023/wp-content/uploads/2023/11/r1.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2023/11/CICT-National_seminar_1_Ramayana.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/Final_Press_Copy_18.03.2025_NS17-2023.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2025/07/ANNUAL_REPORT_AND_AUDITED_ACCOUNTS_2023-24.pdf"
@@ -7234,14 +7521,16 @@
    "start": "2023-11-15",
    "end": "2023-11-24",
    "mode": "inperson",
-   "venue": "Thiruvalluvar Hall, Central Institute of Classical Tamil, Chennai",
+   "venue": "Thiruvalluvar Hall, CICT, Perumbakkam, Chennai",
    "for": "M.Phil./PhD research students in Tamil, Linguistics, History and Sociology; 30 participants",
    "people": [
-    "Dr. M. Selvadurai (welcome address; Junior Research Officer & Workshop Co-ordinator, CICT)",
-    "Prof. R. Chandrasekaran (presidential address; Director, CICT)",
-    "Dr. R. Bhuvaneshwari (felicitation; Registrar, CICT)",
-    "Dr. M. Rangaswamy (keynote; Assistant Professor, Department of Kannada, University of Madras, Chennai)",
-    "Dr. V. Mariyappan (vote of thanks; Junior Research Officer & Workshop Associate Co-ordinator, CICT)"
+    "முனைவர் மு. செல்வதுரை (வரவேற்புரை, தொடக்க விழா; நன்றியுரை, நிறைவு விழா; இளநிலை ஆராய்ச்சி அலுவலர் & பயிலரங்க ஒருங்கிணைப்பாளர்)",
+    "பேரா. இரா. சந்திரசேகரன் (தலைமையுரை; இயக்குநர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "முனைவர் ரெ. புவனேஸ்வரி (வாழ்த்துரை; பதிவாளர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "முனைவர் ம. ரங்கசாமி (சிறப்புரை, தொடக்க விழா; உதவிப் பேராசிரியர், கன்னடத் துறை, சென்னைப் பல்கலைக்கழகம், சென்னை)",
+    "முனைவர் வ. மாரியப்பன் (நன்றியுரை, தொடக்க விழா; இளநிலை ஆராய்ச்சி அலுவலர் & பயிலரங்க இணை ஒருங்கிணைப்பாளர்)",
+    "முனைவர் வே. அழகுமுத்து (வரவேற்புரை, நிறைவு விழா; இளநிலை ஆராய்ச்சி அலுவலர் & பயிலரங்க இணை ஒருங்கிணைப்பாளர்)",
+    "பேரா. கோ. சீனிவாசவர்மா (சிறப்புரை, நிறைவு விழா; இயக்குநர் (ஓய்வு), மொழியியல் உயராய்வு மையம், அண்ணாமலைப் பல்கலைக்கழகம், சிதம்பரம்)"
    ],
    "links": [
     {
@@ -7250,7 +7539,15 @@
     },
     {
      "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2023/11/tamil.jpeg"
+    },
+    {
+     "kind": "inaugural",
      "url": "https://cict.in/cict2023/wp-content/uploads/2023/11/english.jpeg"
+    },
+    {
+     "kind": "valedictory",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2023/11/t1-1.jpeg"
     },
     {
      "kind": "newsletter",
@@ -7269,6 +7566,8 @@
     }
    ],
    "sources": [
+    "https://cict.in/cict2023/wp-content/uploads/2023/11/tamil.jpeg",
+    "https://cict.in/cict2023/wp-content/uploads/2023/11/t1-1.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2023/10/CICT-workshop-12-Learning-about-Neighbouring-Languages.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2023/11/english.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/Final_Press_Copy_18.03.2025_NS17-2023.pdf",
@@ -7331,6 +7630,10 @@
      "url": "https://cict.in/cict2023/wp-content/uploads/2023/10/3-1.pdf"
     },
     {
+     "kind": "invitation",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2023/10/1-2.pdf"
+    },
+    {
      "kind": "newsletter",
      "url": "https://cict.in/cict2023/wp-content/uploads/2025/03/Final_Press_Copy_18.03.2025_NS17-2023.pdf",
      "label": "No. 17, p. 8"
@@ -7343,6 +7646,7 @@
    ],
    "sources": [
     "https://cict.in/cict2023/wp-content/uploads/2023/10/3-1.pdf",
+    "https://cict.in/cict2023/wp-content/uploads/2023/10/1-2.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/Final_Press_Copy_18.03.2025_NS17-2023.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2025/07/ANNUAL_REPORT_AND_AUDITED_ACCOUNTS_2023-24.pdf"
    ],
@@ -7377,6 +7681,10 @@
      "url": "https://cict.in/cict2023/wp-content/uploads/2023/10/3.pdf"
     },
     {
+     "kind": "invitation",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2023/10/1-1.pdf"
+    },
+    {
      "kind": "newsletter",
      "url": "https://cict.in/cict2023/wp-content/uploads/2025/03/Final_Press_Copy_18.03.2025_NS17-2023.pdf",
      "label": "No. 17, p. 8"
@@ -7389,6 +7697,7 @@
    ],
    "sources": [
     "https://cict.in/cict2023/wp-content/uploads/2023/10/3.pdf",
+    "https://cict.in/cict2023/wp-content/uploads/2023/10/1-1.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/Final_Press_Copy_18.03.2025_NS17-2023.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2025/07/ANNUAL_REPORT_AND_AUDITED_ACCOUNTS_2023-24.pdf"
    ],
@@ -7515,75 +7824,6 @@
     "news",
     "academic",
     "press"
-   ]
-  },
-  {
-   "id": "2023-09-28-bharatiya-bhasha-utsav",
-   "type": "other",
-   "title": "Bharatiya Bhasha Utsav",
-   "title_ta": "பாரத மொழிகளின் திருவிழா",
-   "start": "2023-09-28",
-   "end": "2023-12-11",
-   "mode": "inperson",
-   "venue": "CICT, Chennai (not stated in the videos)",
-   "links": [
-    {
-     "kind": "newsletter",
-     "url": "https://cict.in/cict2023/wp-content/uploads/2025/03/Final_Press_Copy_18.03.2025_NS17-2023.pdf",
-     "label": "No. 17, p. 7"
-    },
-    {
-     "kind": "video",
-     "url": "https://www.youtube.com/playlist?list=PLCITAMrJjwUCfMTNYJGs4pFy9NFd6yMAR",
-     "label": "YouTube"
-    },
-    {
-     "kind": "video",
-     "url": "https://www.youtube.com/playlist?list=PLCITAMrJjwUAtn_vvflXFlqKlm39eEC5E",
-     "label": "YouTube"
-    },
-    {
-     "kind": "video",
-     "url": "https://www.youtube.com/playlist?list=PLCITAMrJjwUCvhpIKJOwP8f3IR1FDSSls",
-     "label": "YouTube"
-    },
-    {
-     "kind": "video",
-     "url": "https://www.youtube.com/watch?v=_8cx-UUeG0Y",
-     "label": "YouTube"
-    },
-    {
-     "kind": "video",
-     "url": "https://www.youtube.com/watch?v=JXN1nVyHi5w",
-     "label": "YouTube"
-    },
-    {
-     "kind": "video",
-     "url": "https://www.youtube.com/watch?v=D4ve6u2rXWU",
-     "label": "YouTube"
-    },
-    {
-     "kind": "report",
-     "url": "https://cict.in/cict2023/newtamil/",
-     "label": "cict.in"
-    },
-    {
-     "kind": "report",
-     "url": "https://cict.in/cict2023/wp-content/uploads/2025/07/ANNUAL_REPORT_AND_AUDITED_ACCOUNTS_2023-24.pdf",
-     "label": "cict.in"
-    }
-   ],
-   "sources": [
-    "https://cict.in/cict2023/wp-content/uploads/2025/03/Final_Press_Copy_18.03.2025_NS17-2023.pdf",
-    "https://www.youtube.com/@cicttamil",
-    "https://www.youtube.com/playlist?list=PLCITAMrJjwUCfMTNYJGs4pFy9NFd6yMAR",
-    "https://cict.in/cict2023/newtamil/",
-    "https://cict.in/cict2023/wp-content/uploads/2025/07/ANNUAL_REPORT_AND_AUDITED_ACCOUNTS_2023-24.pdf"
-   ],
-   "origins": [
-    "news",
-    "youtube",
-    "academic"
    ]
   },
   {
@@ -8264,8 +8504,16 @@
      "url": "https://cict.in/cictinneww/wp-content/uploads/2023/06/5.6.20232.jpeg"
     },
     {
+     "kind": "inaugural",
+     "url": "https://cict.in/cictinneww/wp-content/uploads/2023/06/5.6.20231.jpeg"
+    },
+    {
      "kind": "valedictory",
      "url": "https://cict.in/cictinneww/wp-content/uploads/2023/06/english_14.6.23.jpeg"
+    },
+    {
+     "kind": "valedictory",
+     "url": "https://cict.in/cictinneww/wp-content/uploads/2023/06/tamil_14.6.23.jpeg"
     },
     {
      "kind": "newsletter",
@@ -8282,6 +8530,8 @@
     "https://cict.in/cictinneww/wp-content/uploads/2023/05/Workshop.pdf",
     "https://cict.in/cictinneww/wp-content/uploads/2023/06/5.6.20232.jpeg",
     "https://cict.in/cictinneww/wp-content/uploads/2023/06/english_14.6.23.jpeg",
+    "https://cict.in/cictinneww/wp-content/uploads/2023/06/5.6.20231.jpeg",
+    "https://cict.in/cictinneww/wp-content/uploads/2023/06/tamil_14.6.23.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/Final_Press_Copy_18.03.2025_NS17-2023.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2025/07/ANNUAL_REPORT_AND_AUDITED_ACCOUNTS_2023-24.pdf"
    ],
@@ -8648,16 +8898,22 @@
    "id": "2023-02-21-day",
    "type": "day",
    "title": "",
-   "title_ta": "தாய்மொழி நாள் விழா",
+   "title_ta": "உலகத் தாய்மொழி நாள் விழா - 2023",
    "start": "2023-02-21",
    "mode": "inperson",
-   "venue": "CICT, Chennai",
+   "venue": "Tholkappiyar Hall, CICT, Perumbakkam, Chennai",
    "for": "CICT staff",
    "people": [
-    "பேராசிரியர் இரா. சந்திரசேகரன் (இயக்குநர், CICT; presided)",
-    "பேராசிரியர் தெ. ஞானசுந்தரம் (special address)"
+    "முனைவர் ந. தேவி (வரவேற்புரை; ஆராய்ச்சி அலுவலர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "பேராசிரியர் இரா. சந்திரசேகரன் (தலைமையுரை; இயக்குநர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "பேராசிரியர் தெ. ஞானசுந்தரம் (சிறப்புரை; மேனாள் துணைத்தலைவர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "முனைவர் இரா. வெங்கடேசன் (நன்றியுரை; இளநிலை ஆராய்ச்சி அலுவலர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)"
    ],
    "links": [
+    {
+     "kind": "invitation",
+     "url": "https://cict.in/cictinneww/wp-content/uploads/2023/02/Tamil-Invitation-website.jpg"
+    },
     {
      "kind": "newsletter",
      "url": "https://cict.in/cict2023/wp-content/uploads/2025/03/Final_Press_Copy_18.03.2025_NS17-2023.pdf",
@@ -8665,9 +8921,11 @@
     }
    ],
    "sources": [
+    "https://cict.in/cictinneww/wp-content/uploads/2023/02/Tamil-Invitation-website.jpg",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/Final_Press_Copy_18.03.2025_NS17-2023.pdf"
    ],
    "origins": [
+    "seeall",
     "news"
    ]
   },
@@ -9163,8 +9421,16 @@
      "url": "https://cict.in/cictinneww/wp-content/uploads/2022/09/20.9.122.jpeg"
     },
     {
+     "kind": "inaugural",
+     "url": "https://cict.in/cictinneww/wp-content/uploads/2022/09/20.9.121.jpeg"
+    },
+    {
      "kind": "valedictory",
      "url": "https://cict.in/cictinneww/wp-content/uploads/2022/09/english-invitation-last-day.jpg"
+    },
+    {
+     "kind": "valedictory",
+     "url": "https://cict.in/cictinneww/wp-content/uploads/2022/09/Tamil-Invitation-last-day.jpg"
     },
     {
      "kind": "newsletter",
@@ -9186,6 +9452,8 @@
     "https://cict.in/cictinneww/wp-content/uploads/2022/09/english-invitation-last-day.jpg",
     "https://cict.in/cictinneww/wp-content/uploads/2022/09/20.9.122.jpeg",
     "https://cict.in/cictinneww/wp-content/uploads/2022/09/Workshop-09.pdf",
+    "https://cict.in/cictinneww/wp-content/uploads/2022/09/20.9.121.jpeg",
+    "https://cict.in/cictinneww/wp-content/uploads/2022/09/Tamil-Invitation-last-day.jpg",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/2022_NEWSLETTER-16.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2024/07/ARAA_ENGLISH_AND_HINDI.pdf",
     "https://x.com/CICTOfficial/status/1565308905432817667"
@@ -9928,7 +10196,7 @@
    "id": "2022-06-29-from-indus-valley-to-kizhadi-archaeological",
    "type": "workshop",
    "title": "From Indus Valley to Kizhadi – Archaeological findings and the dates of Tamil Classical texts",
-   "title_ta": "சிந்துவெளி முதல் கீழடி வரையிலான அகழ்வாய்வுகளும் செவ்விலக்கிய வரலாறும்",
+   "title_ta": "சிந்துவெளி முதல் கீழடி வரையிலான அகழாய்வுகளும் தமிழ்ச் செவ்விலக்கிய வரலாறும்",
    "start": "2022-06-29",
    "end": "2022-07-05",
    "mode": "inperson",
@@ -9950,8 +10218,16 @@
      "url": "https://cict.in/cictinneww/wp-content/uploads/2022/07/28.6.222.jpg"
     },
     {
+     "kind": "inaugural",
+     "url": "https://cict.in/cictinneww/wp-content/uploads/2022/07/28.6.221.jpg"
+    },
+    {
      "kind": "valedictory",
      "url": "https://cict.in/cictinneww/wp-content/uploads/2022/07/04.07.20222.jpg"
+    },
+    {
+     "kind": "valedictory",
+     "url": "https://cict.in/cictinneww/wp-content/uploads/2022/07/04.07.20221.jpg"
     },
     {
      "kind": "newsletter",
@@ -9977,6 +10253,8 @@
    "sources": [
     "https://cict.in/cictinneww/wp-content/uploads/2022/07/04.07.20222.jpg",
     "https://cict.in/cictinneww/wp-content/uploads/2022/07/28.6.222.jpg",
+    "https://cict.in/cictinneww/wp-content/uploads/2022/07/28.6.221.jpg",
+    "https://cict.in/cictinneww/wp-content/uploads/2022/07/04.07.20221.jpg",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/2022_NEWSLETTER-16.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2024/07/ARAA_ENGLISH_AND_HINDI.pdf",
     "https://x.com/CICTOfficial/status/1473155370864365568",
@@ -10232,11 +10510,6 @@
      "label": "cict.in"
     },
     {
-     "kind": "news",
-     "url": "https://news.google.com/rss/search?q=%22Books+from+Tamil+institute+big+draw%22",
-     "label": "news.google.com"
-    },
-    {
      "kind": "post",
      "url": "https://x.com/CICTOfficial/status/1493484901047627778",
      "label": "X"
@@ -10250,7 +10523,6 @@
    "sources": [
     "https://cict.in/cict2023/wp-content/uploads/2025/03/2022_NEWSLETTER-16.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2023/07/2021-22-Annual-Report-and-Audited-Accounts-ENG&HINDI.pdf",
-    "https://news.google.com/rss/search?q=%22Books+from+Tamil+institute+big+draw%22",
     "https://x.com/CICTOfficial/status/1493484901047627778",
     "https://x.com/CICTOfficial/status/1493486141882134528",
     "https://x.com/CICTOfficial/status/1494556532851494912",
@@ -10260,7 +10532,6 @@
    "origins": [
     "news",
     "academic",
-    "press",
     "x"
    ]
   },
@@ -10675,8 +10946,16 @@
      "url": "https://cict.in/pdf/work.18.%20Eng.pdf"
     },
     {
+     "kind": "announcement",
+     "url": "https://cict.in/pdf/work-18-%20tamil%20m.pdf"
+    },
+    {
      "kind": "inaugural",
      "url": "https://cict.in/images/banner/20.12.21(eng-3).jpeg"
+    },
+    {
+     "kind": "inaugural",
+     "url": "https://cict.in/images/banner/20.12.21(tam-2).jpeg"
     },
     {
      "kind": "newsletter",
@@ -10702,6 +10981,8 @@
    "sources": [
     "https://cict.in/images/banner/20.12.21(eng-3).jpeg",
     "https://cict.in/pdf/work.18.%20Eng.pdf",
+    "https://cict.in/pdf/work-18-%20tamil%20m.pdf",
+    "https://cict.in/images/banner/20.12.21(tam-2).jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/18.03.2025_PRESS_COPY_NS_15-2021.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2023/07/2021-22-Annual-Report-and-Audited-Accounts-ENG&HINDI.pdf",
     "https://x.com/CICTOfficial/status/1463732228337197059",
@@ -10798,6 +11079,10 @@
      "url": "https://cict.in/images/banner/20.12.21(eng-1).jpeg"
     },
     {
+     "kind": "valedictory",
+     "url": "https://cict.in/images/banner/20.12.21(tam-1).jpeg"
+    },
+    {
      "kind": "newsletter",
      "url": "https://cict.in/cict2023/wp-content/uploads/2025/03/18.03.2025_PRESS_COPY_NS_15-2021.pdf",
      "label": "No. 15, p. 39"
@@ -10820,6 +11105,7 @@
    ],
    "sources": [
     "https://cict.in/images/banner/20.12.21(eng-1).jpeg",
+    "https://cict.in/images/banner/20.12.21(tam-1).jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/18.03.2025_PRESS_COPY_NS_15-2021.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2023/07/2021-22-Annual-Report-and-Audited-Accounts-ENG&HINDI.pdf",
     "https://x.com/CICTOfficial/status/1462651188273238016",
@@ -10857,8 +11143,16 @@
      "url": "https://cict.in/images/banner/english-invitation(13.12.21).jpg"
     },
     {
+     "kind": "inaugural",
+     "url": "https://cict.in/images/banner/Tamil-Invitation(13.12.21).jpg"
+    },
+    {
      "kind": "valedictory",
      "url": "https://cict.in/images/banner/20.12.21(english).jpeg"
+    },
+    {
+     "kind": "valedictory",
+     "url": "https://cict.in/images/banner/20.12.21(tamil).jpeg"
     },
     {
      "kind": "newsletter",
@@ -10884,6 +11178,8 @@
    "sources": [
     "https://cict.in/images/banner/20.12.21(english).jpeg",
     "https://cict.in/images/banner/english-invitation(13.12.21).jpg",
+    "https://cict.in/images/banner/Tamil-Invitation(13.12.21).jpg",
+    "https://cict.in/images/banner/20.12.21(tamil).jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/18.03.2025_PRESS_COPY_NS_15-2021.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2023/07/2021-22-Annual-Report-and-Audited-Accounts-ENG&HINDI.pdf",
     "https://x.com/CICTOfficial/status/1465173419461210113",
@@ -10924,6 +11220,10 @@
      "url": "https://cict.in/images/banner/07.12.21(english).jpeg"
     },
     {
+     "kind": "inaugural",
+     "url": "https://cict.in/images/banner/07.12.21(tam).jpeg"
+    },
+    {
      "kind": "newsletter",
      "url": "https://cict.in/cict2023/wp-content/uploads/2025/03/18.03.2025_PRESS_COPY_NS_15-2021.pdf",
      "label": "No. 15, p. 37"
@@ -10947,6 +11247,7 @@
    "sources": [
     "https://cict.in/images/banner/07.12.21(english).jpeg",
     "https://cict.in/pdf/Workshop%20on%20Vattezhuthu.pdf",
+    "https://cict.in/images/banner/07.12.21(tam).jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/18.03.2025_PRESS_COPY_NS_15-2021.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2023/07/2021-22-Annual-Report-and-Audited-Accounts-ENG&HINDI.pdf",
     "https://x.com/CICTOfficial/status/1462740252821360641",
@@ -10989,11 +11290,23 @@
     },
     {
      "kind": "inaugural",
+     "url": "https://cict.in/images/banner/24.11.2021(tamil).jpeg"
+    },
+    {
+     "kind": "inaugural",
      "url": "https://cict.in/images/banner/7.12.21(english).jpeg"
+    },
+    {
+     "kind": "inaugural",
+     "url": "https://cict.in/images/banner/7.12.21(tamil).jpeg"
     },
     {
      "kind": "valedictory",
      "url": "https://cict.in/images/banner/7.12.21(eng).jpeg"
+    },
+    {
+     "kind": "valedictory",
+     "url": "https://cict.in/images/banner/7.12.21(tam).jpeg"
     },
     {
      "kind": "newsletter",
@@ -11020,7 +11333,10 @@
     "https://cict.in/images/banner/7.12.21(eng).jpeg",
     "https://cict.in/images/banner/24.11.2021(english).jpeg",
     "https://cict.in/pdf/%E0%AE%B5%E0%AE%B0%E0%AE%B2%E0%AE%BE%E0%AE%B1%E0%AF%8D%E0%AE%B1%E0%AF%81%20%E0%AE%A8%E0%AF%8B%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AE%BF%E0%AE%B2%E0%AF%8D%20%E0%AE%9A%E0%AF%86%E0%AE%AE%E0%AF%8D%E0%AE%AE%E0%AF%8A%E0%AE%B4%E0%AE%BF%E0%AE%A4%E0%AF%8D%20%E0%AE%A4%E0%AE%AE%E0%AE%BF%E0%AE%B4%E0%AE%BF%E0%AE%B2%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AE%BF%E0%AE%AF%E0%AE%99%E0%AF%8D%E0%AE%95%E0%AE%B3%E0%AF%8D%20-%20%E0%AE%AA%E0%AE%AF%E0%AE%BF%E0%AE%B2%E0%AE%B0%E0%AE%99%E0%AF%8D%E0%AE%95%E0%AF%81_16.11.21.pdf",
+    "https://cict.in/images/banner/24.11.2021(tamil).jpeg",
+    "https://cict.in/images/banner/7.12.21(tam).jpeg",
     "https://cict.in/images/banner/7.12.21(english).jpeg",
+    "https://cict.in/images/banner/7.12.21(tamil).jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/18.03.2025_PRESS_COPY_NS_15-2021.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2023/07/2021-22-Annual-Report-and-Audited-Accounts-ENG&HINDI.pdf",
     "https://x.com/CICTOfficial/status/1460884407288356866",
@@ -11071,8 +11387,16 @@
      "url": "https://cict.in/images/banner/24.11.21(english).jpeg"
     },
     {
+     "kind": "inaugural",
+     "url": "https://cict.in/images/banner/21.11.21(tam).jpeg"
+    },
+    {
      "kind": "valedictory",
      "url": "https://cict.in/images/banner/06.12.2021(english).jpeg"
+    },
+    {
+     "kind": "valedictory",
+     "url": "https://cict.in/images/banner/06.12.2021(tamil).jpeg"
     },
     {
      "kind": "newsletter",
@@ -11099,6 +11423,8 @@
     "https://cict.in/images/banner/06.12.2021(english).jpeg",
     "https://cict.in/images/banner/24.11.21(english).jpeg",
     "https://cict.in/pdf/%E0%AE%85%E0%AE%B1%E0%AE%BF%E0%AE%B5%E0%AE%BF%E0%AE%AA%E0%AF%8D%E0%AE%AA%E0%AF%81%E0%AE%AE%E0%AF%8D%20%E0%AE%85%E0%AE%B4%E0%AF%88%E0%AE%AA%E0%AF%8D%E0%AE%AA%E0%AF%81%E0%AE%AE%E0%AF%8D(16.11.2021).pdf",
+    "https://cict.in/images/banner/21.11.21(tam).jpeg",
+    "https://cict.in/images/banner/06.12.2021(tamil).jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/18.03.2025_PRESS_COPY_NS_15-2021.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2023/07/2021-22-Annual-Report-and-Audited-Accounts-ENG&HINDI.pdf",
     "https://x.com/CICTOfficial/status/1455052950364037125",
@@ -11194,12 +11520,24 @@
      "url": "https://cict.in/pdf/Workshop%20on%20Contributions%20of%20Commentaries%20Quotations%20to%20the%20creation%20of%20a%20Critical%20edition.pdf"
     },
     {
+     "kind": "announcement",
+     "url": "https://cict.in/pdf/%E0%AE%9A%E0%AF%86%E0%AE%AE%E0%AF%8D%E0%AE%AA%E0%AE%A4%E0%AE%BF%E0%AE%AA%E0%AF%8D%E0%AE%AA%E0%AF%81%20%E0%AE%89%E0%AE%B0%E0%AF%81%E0%AE%B5%E0%AE%BE%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AE%A4%E0%AF%8D%E0%AE%A4%E0%AE%BF%E0%AE%B1%E0%AF%8D%E0%AE%95%E0%AF%81%20%E0%AE%89%E0%AE%B0%E0%AF%88%E0%AE%AE%E0%AF%87%E0%AE%B1%E0%AF%8D%E0%AE%95%E0%AF%87%E0%AE%BE%E0%AE%B3%E0%AF%8D%E0%AE%95%E0%AE%B3%E0%AE%BF%E0%AE%A9%E0%AF%8D%20%E0%AE%AA%E0%AE%99%E0%AF%8D%E0%AE%95%E0%AE%B3%E0%AE%BF%E0%AE%AA%E0%AF%8D%E0%AE%AA%E0%AF%81%E0%AE%95%E0%AE%B3%E0%AF%8D.pdf"
+    },
+    {
      "kind": "inaugural",
      "url": "https://cict.in/images/banner/english_16.11.21.jpeg"
     },
     {
      "kind": "inaugural",
      "url": "https://cict.in/images/banner/today_2.11.21(2).jpeg"
+    },
+    {
+     "kind": "inaugural",
+     "url": "https://cict.in/images/banner/today_2.11.21(1).jpeg"
+    },
+    {
+     "kind": "inaugural",
+     "url": "https://cict.in/images/banner/tamil_16.11.21.jpeg"
     },
     {
      "kind": "newsletter",
@@ -11226,6 +11564,9 @@
     "https://cict.in/images/banner/english_16.11.21.jpeg",
     "https://cict.in/images/banner/today_2.11.21(2).jpeg",
     "https://cict.in/pdf/Workshop%20on%20Contributions%20of%20Commentaries%20Quotations%20to%20the%20creation%20of%20a%20Critical%20edition.pdf",
+    "https://cict.in/pdf/%E0%AE%9A%E0%AF%86%E0%AE%AE%E0%AF%8D%E0%AE%AA%E0%AE%A4%E0%AE%BF%E0%AE%AA%E0%AF%8D%E0%AE%AA%E0%AF%81%20%E0%AE%89%E0%AE%B0%E0%AF%81%E0%AE%B5%E0%AE%BE%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AE%A4%E0%AF%8D%E0%AE%A4%E0%AE%BF%E0%AE%B1%E0%AF%8D%E0%AE%95%E0%AF%81%20%E0%AE%89%E0%AE%B0%E0%AF%88%E0%AE%AE%E0%AF%87%E0%AE%B1%E0%AF%8D%E0%AE%95%E0%AF%87%E0%AE%BE%E0%AE%B3%E0%AF%8D%E0%AE%95%E0%AE%B3%E0%AE%BF%E0%AE%A9%E0%AF%8D%20%E0%AE%AA%E0%AE%99%E0%AF%8D%E0%AE%95%E0%AE%B3%E0%AE%BF%E0%AE%AA%E0%AF%8D%E0%AE%AA%E0%AF%81%E0%AE%95%E0%AE%B3%E0%AF%8D.pdf",
+    "https://cict.in/images/banner/today_2.11.21(1).jpeg",
+    "https://cict.in/images/banner/tamil_16.11.21.jpeg",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/18.03.2025_PRESS_COPY_NS_15-2021.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2023/07/2021-22-Annual-Report-and-Audited-Accounts-ENG&HINDI.pdf",
     "https://x.com/CICTOfficial/status/1451008489506029570",
@@ -11265,13 +11606,23 @@
      "url": "https://cict.in/pdf/Workshop%20on%20Research%20of%20Historical%20Tamil%20Grammar.pdf"
     },
     {
+     "kind": "announcement",
+     "url": "https://cict.in/pdf/%E0%AE%B5%E0%AE%B0%E0%AE%B2%E0%AE%BE%E0%AE%B1%E0%AF%8D%E0%AE%B1%E0%AF%81%E0%AE%AE%E0%AF%81%E0%AE%B1%E0%AF%88%E0%AE%A4%E0%AF%8D%20%E0%AE%A4%E0%AE%AE%E0%AE%BF%E0%AE%B4%E0%AF%8D%20%E0%AE%87%E0%AE%B2%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AE%A3%20%E0%AE%86%E0%AE%AF%E0%AF%8D%E0%AE%B5%E0%AF%81.pdf"
+    },
+    {
      "kind": "inaugural",
      "url": "https://cict.in/images/banner/today_1.11.21%20(2).jpeg"
+    },
+    {
+     "kind": "inaugural",
+     "url": "https://cict.in/images/banner/today_1.11.21%20(1).jpeg"
     }
    ],
    "sources": [
     "https://cict.in/images/banner/today_1.11.21%20(2).jpeg",
-    "https://cict.in/pdf/Workshop%20on%20Research%20of%20Historical%20Tamil%20Grammar.pdf"
+    "https://cict.in/pdf/Workshop%20on%20Research%20of%20Historical%20Tamil%20Grammar.pdf",
+    "https://cict.in/pdf/%E0%AE%B5%E0%AE%B0%E0%AE%B2%E0%AE%BE%E0%AE%B1%E0%AF%8D%E0%AE%B1%E0%AF%81%E0%AE%AE%E0%AF%81%E0%AE%B1%E0%AF%88%E0%AE%A4%E0%AF%8D%20%E0%AE%A4%E0%AE%AE%E0%AE%BF%E0%AE%B4%E0%AF%8D%20%E0%AE%87%E0%AE%B2%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AE%A3%20%E0%AE%86%E0%AE%AF%E0%AF%8D%E0%AE%B5%E0%AF%81.pdf",
+    "https://cict.in/images/banner/today_1.11.21%20(1).jpeg"
    ],
    "origins": [
     "seeall"
@@ -11545,6 +11896,10 @@
      "url": "https://cict.in/images/banner/english-Invitation9.20.jpg"
     },
     {
+     "kind": "inaugural",
+     "url": "https://cict.in/images/banner/Tamil-Invitation9.20.jpg"
+    },
+    {
      "kind": "newsletter",
      "url": "https://cict.in/cict2023/wp-content/uploads/2025/03/18.03.2025_PRESS_COPY_NS_15-2021.pdf",
      "label": "No. 15, p. 21"
@@ -11568,6 +11923,7 @@
    "sources": [
     "https://cict.in/images/banner/english-Invitation9.20.jpg",
     "https://cict.in/pdf/Workshop-6.pdf",
+    "https://cict.in/images/banner/Tamil-Invitation9.20.jpg",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/18.03.2025_PRESS_COPY_NS_15-2021.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2023/07/2021-22-Annual-Report-and-Audited-Accounts-ENG&HINDI.pdf",
     "https://x.com/CICTOfficial/status/1435514518008860676",
@@ -11609,6 +11965,10 @@
      "url": "https://cict.in/images/banner/english-Invitation09.2021.jpg"
     },
     {
+     "kind": "inaugural",
+     "url": "https://cict.in/images/banner/Tamil-Invitation09.2021.jpg"
+    },
+    {
      "kind": "newsletter",
      "url": "https://cict.in/cict2023/wp-content/uploads/2025/03/18.03.2025_PRESS_COPY_NS_15-2021.pdf",
      "label": "No. 15, p. 20"
@@ -11631,6 +11991,7 @@
    ],
    "sources": [
     "https://cict.in/images/banner/english-Invitation09.2021.jpg",
+    "https://cict.in/images/banner/Tamil-Invitation09.2021.jpg",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/18.03.2025_PRESS_COPY_NS_15-2021.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2023/07/2021-22-Annual-Report-and-Audited-Accounts-ENG&HINDI.pdf",
     "https://x.com/CICTOfficial/status/1440170716268093440",
@@ -11655,22 +12016,34 @@
    "start": "2021-09-16",
    "end": "2021-09-22",
    "mode": "inperson",
-   "venue": "Seminar Hall, CICT, 40, 100 Feet Road, Taramani, Chennai",
+   "venue": "Seminar Hall (கருத்தரங்க அறை), CICT, 40, 100 Feet Road, Taramani, Chennai",
    "with": "(Faculty of History, Sociology and Anthropology)",
-   "for": "MPhil and PhD scholars",
-   "dept": "Faculty of History, Sociology and Anthropology",
+   "for": "MPhil and PhD research students only (ஆய்வியல் நிறைஞர், முனைவர் பட்ட ஆய்வு மாணவர்கள்); 25 participants",
+   "dept": "Faculty of History, Sociology and Anthropology (வரலாறு, சமூகவியல் மற்றும் மானிடவியல் புலம்)",
    "people": [
-    "Dr. A. Arockiadoss (Junior Research Officer, CICT; inaugural welcome, valedictory vote of thanks)",
-    "Dr. P. Kannadhasan (Junior Research Officer, CICT; valedictory welcome)",
-    "Dr. S. Velmurugan (Junior Research Officer, CICT; inaugural vote of thanks)",
-    "Prof. R. Chandrasekaran (Director, CICT; presidential address)",
-    "Dr. A. Chellaperumal (Professor in Anthropology & Dean, School of Law, Pondicherry University, Puducherry; inaugural keynote)",
-    "Rev Dr. V. Britto S.J (Principal, Loyola College, Vettavalam, Tiruvannamalai; valedictory keynote)"
+    "முனைவர் அ. ஆரோக்கியதாசு (வரவேற்புரை, தொடக்க விழா; நன்றியுரை, நிறைவு விழா; இளநிலை ஆய்வு அலுவலர்)",
+    "பேராசிரியர் இரா. சந்திரசேகரன் (தலைமையுரை; இயக்குநர், செம்மொழித் தமிழாய்வு மத்திய நிறுவனம்)",
+    "முனைவர் ஆ. செல்லபெருமாள் (சிறப்புரை, தொடக்க விழா; பேராசிரியர், மானிடவியல் துறை, புலத் தலைவர், சட்டப் பள்ளி, புதுவைப் பல்கலைக்கழகம், புதுச்சேரி)",
+    "முனைவர் சுப. வேல்முருகன் (நன்றியுரை, தொடக்க விழா; இளநிலை ஆய்வு அலுவலர்)",
+    "முனைவர் ப. கண்ணதாசன் (வரவேற்புரை, நிறைவு விழா; இளநிலை ஆய்வு அலுவலர்)",
+    "அருட்தந்தை வி. பிரிட்டோ சே.ச (சிறப்புரை, நிறைவு விழா; முதல்வர், லொயோலா கல்லூரி, வேட்டவலம், திருவண்ணாமலை)"
    ],
    "links": [
     {
+     "kind": "announcement",
+     "url": "https://cict.in/pdf/Faculty%20of%20History,%20Sociology%20and%20Anthropology%20workshop%20%20proposal.pdf"
+    },
+    {
+     "kind": "inaugural",
+     "url": "https://cict.in/images/banner/Tamil-Invitation(9.9.21).jpg"
+    },
+    {
      "kind": "inaugural",
      "url": "https://cict.in/images/banner/english-invitation(9.9.21).jpg"
+    },
+    {
+     "kind": "valedictory",
+     "url": "https://cict.in/images/banner/Tamil-Invitation-LAST.jpg"
     },
     {
      "kind": "valedictory",
@@ -11698,6 +12071,9 @@
     }
    ],
    "sources": [
+    "https://cict.in/pdf/Faculty%20of%20History,%20Sociology%20and%20Anthropology%20workshop%20%20proposal.pdf",
+    "https://cict.in/images/banner/Tamil-Invitation(9.9.21).jpg",
+    "https://cict.in/images/banner/Tamil-Invitation-LAST.jpg",
     "https://cict.in/images/banner/english-invitation-LAST.jpg",
     "https://cict.in/images/banner/english-invitation(9.9.21).jpg",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/18.03.2025_PRESS_COPY_NS_15-2021.pdf",
@@ -11720,7 +12096,7 @@
    "id": "2021-09-14-tamil-lexicography",
    "type": "workshop",
    "title": "Tamil Lexicography",
-   "title_ta": "தமிழ் அகராதியியல்",
+   "title_ta": "தமிழ் அகராதியியல் பயிலரங்கம்",
    "start": "2021-09-14",
    "end": "2021-09-20",
    "mode": "inperson",
@@ -11743,8 +12119,16 @@
      "url": "https://cict.in/images/banner/eng.jpg"
     },
     {
+     "kind": "inaugural",
+     "url": "https://cict.in/images/banner/Tam.jpg"
+    },
+    {
      "kind": "valedictory",
      "url": "https://cict.in/images/banner/english-invitation-last%20day.jpg"
+    },
+    {
+     "kind": "valedictory",
+     "url": "https://cict.in/images/banner/Tamil-Invitation-last%20day.jpg"
     },
     {
      "kind": "newsletter",
@@ -11770,6 +12154,8 @@
    "sources": [
     "https://cict.in/images/banner/english-invitation-last%20day.jpg",
     "https://cict.in/images/banner/eng.jpg",
+    "https://cict.in/images/banner/Tam.jpg",
+    "https://cict.in/images/banner/Tamil-Invitation-last%20day.jpg",
     "https://cict.in/cict2023/wp-content/uploads/2025/03/18.03.2025_PRESS_COPY_NS_15-2021.pdf",
     "https://cict.in/cict2023/wp-content/uploads/2023/07/2021-22-Annual-Report-and-Audited-Accounts-ENG&HINDI.pdf",
     "https://x.com/CICTOfficial/status/1436137604882186271",

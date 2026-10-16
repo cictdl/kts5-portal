@@ -161,7 +161,7 @@ def test_register_leads_to_the_institutions():
     page = client.get("/?lang=en").get_data(as_text=True)
     sub = page.split('id="primary-menu"')[1].split('class="has-sub"')[1].split("</ul></li>")[0]
     assert '<ul class="sub">' in sub
-    for href, label in (("/register", "Participant registration"), ("/institutions/register", "Register your institution"),
+    for href, label in (("/register", "Student registration"), ("/institutions/register", "Register your institution"),
                         ("/institutions", "Participating institutions")):
         assert f'<a href="{href}">{label}</a>' in sub
     # Register is lit on the pages of the institutions
