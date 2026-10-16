@@ -260,6 +260,8 @@ bdi, [dir="ltr"], [dir="auto"] { unicode-bidi: isolate; }
 .date-tile .lbl { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--mute); font-weight: 700; }
 .date-tile .val { font-size: 1.1rem; font-weight: 700; margin-top: 4px; }
 .date-tile .sub { font-size: .82rem; color: var(--dim); }
+/* a long word (Tamil) breaks inside its tile on a phone rather than widen the page (1.2.83) */
+.date-tile { min-width: 0; overflow-wrap: anywhere; }
 .steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; counter-reset: step; }
 @media (max-width: 899px) { .steps { grid-template-columns: repeat(2, 1fr); } }
 .step { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; position: relative; }
@@ -332,6 +334,8 @@ bdi, [dir="ltr"], [dir="auto"] { unicode-bidi: isolate; }
   white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
 .nodal-attention .na-btn:hover { background: #ffe9e6; text-decoration: none; }
 .nodal-attention .na-btn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+/* a long name (Tamil) may take two lines on a phone rather than widen the page (1.2.83) */
+@media (max-width: 599px) { .nodal-attention .na-btn { white-space: normal; max-width: 100%; } }
 .nodal-attention .na-link { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; color: #fff; font-weight: 700; text-decoration: none; }
 .nodal-attention .na-tag { background: #fff; color: #b3261e; border-radius: 999px; padding: 3px 12px; font-size: .78rem;
   letter-spacing: .06em; text-transform: uppercase; box-shadow: 0 0 0 3px rgba(255,255,255,.28); }
@@ -489,10 +493,16 @@ footer.site .wrap { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 28
 footer.site h4 { color: #fff; margin-bottom: 10px; font-size: 1rem; }
 footer.site ul { list-style: none; padding: 0; margin: 0; }
 footer.site li { margin-bottom: 6px; font-size: .92rem; }
+footer.site .credits-h { margin-top: 18px; }
+footer.site .credits li { font-size: .85rem; line-height: 1.45; margin-bottom: 8px; }
+footer.site .credits .cr-role { color: #fff; font-style: italic; }
+footer.site .credits .cr-mail { white-space: nowrap; }
 footer.site .langs { border-top: 1px solid rgba(255,255,255,.18); font-size: .9rem; }
 footer.site .langs .wrap { display: flex; grid-template-columns: none; gap: 8px 18px; padding: 14px 0; flex-wrap: wrap; align-items: baseline; }
 footer.site .langs .lbl { font-weight: 700; color: #fff; }
 footer.site .langs ul { display: flex; flex-wrap: wrap; gap: 4px 6px; flex: 1; min-width: 0; }
+/* on a phone the links go under their label instead of widening the page (1.2.83) */
+footer.site .langs ul { flex: 1 1 16rem; }
 footer.site .langs li { margin: 0; }
 footer.site .langs a { display: inline-block; padding: 2px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.25); line-height: 1.6; }
 footer.site .langs a:hover { background: rgba(255,255,255,.14); text-decoration: none; }

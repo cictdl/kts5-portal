@@ -231,6 +231,7 @@ def create_app(config_object=Config):
             "banner_state": banner_state,
             "launch_view": launch_view,
             "social_links": db.social_links,
+            "portal_credits": public.portal_credits,
             "nodal_officers": db.nodal_officers,
             "institute_head": db.institute_head,
             "now_ist": utils.now_ist,

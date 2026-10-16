@@ -1037,5 +1037,6 @@
   "kural.listen": "Listen",
   "kural.pause": "Pause",
   "kural.slower": "Slower",
-  "kural.voice_note": "The Tamil is read by a computer voice."
+  "kural.voice_note": "The Tamil is read by a computer voice.",
+  "cr.title": "Credits"
 }

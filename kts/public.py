@@ -256,6 +256,17 @@ def reels():
 
 
 @lru_cache(maxsize=1)
+@lru_cache(maxsize=1)
+def portal_credits():
+    """
+    The people who developed the portal and its content (data/credits.json, 1.2.83), shown under "Implementing
+    institute" at the foot of every page; each e-mail as name[dot]x[at]cict[dot]in, which harvesters of addresses
+    do not read.
+    """
+    rows = json.loads((current_app.config["DATA_DIR"] / "credits.json").read_text(encoding="utf-8"))
+    return tuple(dict(r, mail=r["email"].replace(".", "[dot]").replace("@", "[at]")) for r in rows)
+
+
 def home_reel():
     """
     The reel of the official Kashi Tamil Sangamam account shown on the home page (data/home_reel.json, 1.2.79): its
