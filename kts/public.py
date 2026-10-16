@@ -287,14 +287,20 @@ EV_LINKS = ("announcement", "inaugural", "valedictory", "invitation", "video", "
 EV_MODES = ("inperson", "online", "hybrid")
 
 
+# the first year shown (1.2.87): the events of 2005-2019 stay in data/cict_events.json, and are not shown
+EV_SHOWN_FROM = "2020"
+
+
 @lru_cache(maxsize=1)
 def cict_events():
     """
     The seminars, workshops, conferences, lectures and training programmes that CICT has conducted (data/cict_events.json,
     1.2.83), newest first: compiled from CICT's notices, newsletters and annual reports, its social media and news reports.
+    Only those from EV_SHOWN_FROM on.
     """
     data = json.loads((current_app.config["DATA_DIR"] / "cict_events.json").read_text(encoding="utf-8"))
-    return tuple(sorted(data["events"], key=lambda e: (e["start"], e.get("end") or "", e["id"]), reverse=True))
+    shown = [e for e in data["events"] if e["start"][:4] >= EV_SHOWN_FROM]
+    return tuple(sorted(shown, key=lambda e: (e["start"], e.get("end") or "", e["id"]), reverse=True))
 
 
 def _ev_day(value, numeric):

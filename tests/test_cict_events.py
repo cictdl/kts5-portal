@@ -15,7 +15,8 @@ from conftest import make_app
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = json.loads((ROOT / "data" / "cict_events.json").read_text(encoding="utf-8"))
-EVENTS = DATA["events"]
+# the events shown: from 2020 on (1.2.87); those of 2005-2019 stay in the file
+EVENTS = [e for e in DATA["events"] if e["start"][:4] >= "2020"]
 DAY = re.compile(r"^\d{4}(-\d{2}(-\d{2})?)?$")
 
 
@@ -31,10 +32,10 @@ def _page(client, path):
 
 def test_the_data():
     from kts.public import EV_LINKS, EV_MODES, EV_TYPES
-    assert len(EVENTS) >= 150
+    assert len(EVENTS) >= 150 and len(DATA["events"]) > len(EVENTS)
     ids = [e["id"] for e in EVENTS]
     assert len(ids) == len(set(ids)) and all(re.fullmatch(r"[a-z0-9-]+", i) for i in ids)
-    for e in EVENTS:
+    for e in DATA["events"]:
         assert e["type"] in EV_TYPES, e["id"]
         assert DAY.match(e["start"]) and "2005" <= e["start"][:4] <= "2026", e["id"]
         if e.get("end"):
@@ -160,3 +161,22 @@ def test_the_main_menu_and_the_home_page_lead_to_it():
     # the menu marks the page as the one open
     page = _page(client, "/seminars-workshops?lang=en")
     assert '<li class="has-sub"><a href="/resources" class="active" aria-haspopup="true">' in page
+
+
+def test_the_years_before_2020_are_not_shown():
+    from kts.public import EV_SHOWN_FROM
+    assert EV_SHOWN_FROM == "2020"
+    hidden = [e for e in DATA["events"] if e["start"][:4] < "2020"]
+    assert hidden
+    client = _client()
+    page = _page(client, "/seminars-workshops?lang=en&y=all")
+    assert page.count('<li class="ev" id="') == len(EVENTS)
+    for e in hidden[:50]:
+        assert f'id="{e["id"]}"' not in page, e["id"]
+    for y in sorted({e["start"][:4] for e in hidden}):
+        assert f'?y={y}"' not in page and f'id="y{y}"' not in page, y
+        # a year that is not shown opens the latest year
+        assert _page(client, f"/seminars-workshops?lang=en&y={y}").count('<li class="ev"') == \
+            sum(e["start"][:4] == max(x["start"][:4] for x in EVENTS) for e in EVENTS)
+    home = _page(client, "/?lang=en")
+    assert '<span class="ev-home-n"><bdi dir="ltr">2020–' in home
