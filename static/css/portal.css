@@ -348,7 +348,7 @@ bdi, [dir="ltr"], [dir="auto"] { unicode-bidi: isolate; }
 .home-reel { padding: 28px 0 4px; }
 .reel-card { display: flex; gap: 20px; align-items: center; padding: 18px 20px; border: 1px solid var(--border); border-radius: 16px;
   background: var(--surface); color: var(--ink); text-decoration: none; box-shadow: 0 4px 14px rgba(27,42,74,.08); max-width: 980px; }
-.reel-card:hover, .reel-card:focus-visible { text-decoration: none; border-color: var(--saffron); box-shadow: 0 6px 18px rgba(224,123,26,.18); }
+.reel-card:hover { border-color: var(--saffron); box-shadow: 0 6px 18px rgba(224,123,26,.18); }
 .reel-play { flex: none; width: 92px; height: 92px; border-radius: 22px; display: flex; align-items: center; justify-content: center;
   background: linear-gradient(135deg, #f58529, #dd2a7b 55%, #8134af); color: #fff; font-size: 2.1rem; padding-inline-start: 6px; }
 .reel-body { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
@@ -356,7 +356,10 @@ bdi, [dir="ltr"], [dir="auto"] { unicode-bidi: isolate; }
 .reel-title { font-size: 1.18rem; font-weight: 700; color: var(--indigo); }
 .reel-quote { color: var(--ink); font-style: italic; }
 .reel-tags { font-size: .85rem; color: var(--indigo-2); font-weight: 600; word-spacing: 4px; }
-.reel-watch { align-self: flex-start; margin-top: 4px; }
+.reel-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.reel-play:hover { text-decoration: none; color: #fff; }
+.btn.reel-fb { background: #1465d1; border-color: #1465d1; color: #fff; }   /* white on it 5.5:1 */
+.btn.reel-fb:hover { background: #0f54b0; border-color: #0f54b0; }
 @media (max-width: 599px) { .reel-card { flex-direction: column; align-items: flex-start; } .reel-play { width: 64px; height: 64px; font-size: 1.5rem; border-radius: 16px; } }
 /* the Back button on every page but the home page (1.2.77): the previous page of the portal, else the home page */
 .back-row { padding-top: 14px; }
