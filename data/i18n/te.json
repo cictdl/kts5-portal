@@ -1032,5 +1032,6 @@
   "reg.after_launch_note": "పోర్టల్ ఆవిష్కరణ తర్వాత నమోదు ప్రారంభమవుతుంది. తేదీని ఇంకా ప్రకటించలేదు.",
   "home.reel_title": "తమిళ భాషా సంస్కృతులపై గౌరవనీయ ప్రధానమంత్రి",
   "home.reel_watch": "Instagramలో చూడండి",
-  "home.reel_watch_fb": "Facebookలో చూడండి"
+  "home.reel_watch_fb": "Facebookలో చూడండి",
+  "schedule.onwards": "{date} నుంచి"
 }

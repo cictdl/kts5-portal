@@ -1032,5 +1032,6 @@
   "reg.after_launch_note": "পোর্টালের উদ্বোধনের পর নিবন্ধন শুরু হবে। তারিখ এখনও ঘোষণা করা হয়নি।",
   "home.reel_title": "তামিল ভাষা ও সংস্কৃতি সম্পর্কে মাননীয় প্রধানমন্ত্রী",
   "home.reel_watch": "Instagram-এ দেখুন",
-  "home.reel_watch_fb": "Facebook-এ দেখুন"
+  "home.reel_watch_fb": "Facebook-এ দেখুন",
+  "schedule.onwards": "{date} থেকে"
 }

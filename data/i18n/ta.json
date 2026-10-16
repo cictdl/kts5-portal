@@ -1032,5 +1032,6 @@
   "reg.after_launch_note": "இணையதள வெளியீட்டுக்குப் பின் பதிவு தொடங்கும். அதற்கான நாள் இன்னும் அறிவிக்கப்படவில்லை.",
   "home.reel_title": "தமிழ் மொழி, பண்பாடு குறித்து மாண்புமிகு பிரதமர்",
   "home.reel_watch": "Instagram-இல் காண்க",
-  "home.reel_watch_fb": "Facebook-இல் காண்க"
+  "home.reel_watch_fb": "Facebook-இல் காண்க",
+  "schedule.onwards": "{date} முதல்"
 }

@@ -1032,5 +1032,6 @@
   "reg.after_launch_note": "पोर्टलच्या शुभारंभानंतर नोंदणी सुरू होईल. तारीख अद्याप जाहीर झालेली नाही.",
   "home.reel_title": "तमिळ भाषा आणि संस्कृतीविषयी माननीय पंतप्रधान",
   "home.reel_watch": "Instagram वर पाहा",
-  "home.reel_watch_fb": "Facebook वर पाहा"
+  "home.reel_watch_fb": "Facebook वर पाहा",
+  "schedule.onwards": "{date} पासून"
 }

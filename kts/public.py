@@ -117,9 +117,23 @@ def _timeline(settings):
                      "starts_at": starts_at, "ends_at": ends_at, "venue": "", "link": "", "agency": None})
     rows.sort(key=lambda r: r["starts_at"])
     today = now_ist().strftime("%Y-%m-%dT00:00")
-    upcoming = [r for r in rows if (r["ends_at"] or r["starts_at"]) >= today]
-    past = [r for r in rows if (r["ends_at"] or r["starts_at"]) < today]
+    # an event of the timeline that runs from its first day onwards, with no last day (1.2.81), is not over until the
+    # Sangamam itself is
+    onwards = _onwards_titles()
+    kts_end = _iso_day(settings.get("kts.end"))
+    running = not kts_end or today <= kts_end + "T00:00"
+    for r in rows:
+        r["onwards"] = r["title"] in onwards and not r["ends_at"] and running
+    upcoming = [r for r in rows if r["onwards"] or (r["ends_at"] or r["starts_at"]) >= today]
+    past = [r for r in rows if not r["onwards"] and (r["ends_at"] or r["starts_at"]) < today]
     return upcoming, past[::-1][:50]
+
+
+@lru_cache(maxsize=1)
+def _onwards_titles():
+    """The titles of the events of the timeline (data/timeline.json) that run from their first day onwards (1.2.81)."""
+    rows = json.loads((current_app.config["DATA_DIR"] / "timeline.json").read_text(encoding="utf-8"))
+    return frozenset(r["title"] for r in rows if r.get("onwards"))
 
 
 def _stream(requested=None):

@@ -1032,5 +1032,6 @@
   "reg.after_launch_note": "पंजीकरण पोर्टल के शुभारंभ के बाद खुलेगा। तिथि की घोषणा अभी की जानी है।",
   "home.reel_title": "तमिल भाषा और संस्कृति पर माननीय प्रधानमंत्री",
   "home.reel_watch": "Instagram पर देखें",
-  "home.reel_watch_fb": "Facebook पर देखें"
+  "home.reel_watch_fb": "Facebook पर देखें",
+  "schedule.onwards": "{date} से"
 }

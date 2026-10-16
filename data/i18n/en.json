@@ -1032,5 +1032,6 @@
   "reg.after_launch_note": "Registration will open after the launch of the portal. The date is yet to be announced.",
   "home.reel_title": "The Hon’ble Prime Minister on the Tamil language and culture",
   "home.reel_watch": "Watch on Instagram",
-  "home.reel_watch_fb": "Watch on Facebook"
+  "home.reel_watch_fb": "Watch on Facebook",
+  "schedule.onwards": "{date} onwards"
 }

@@ -184,7 +184,7 @@ def test_the_schedule_shows_the_timeline_in_order(monkeypatch):
     assert past == ""
     places = [upcoming.index("<bdi>" + _text(key) + "</bdi>") for key in KEYS]
     assert places == sorted(places)
-    for day in ("07 Oct 2026", "13 Oct 2026", "14 Oct 2026", "15 Oct 2026", "– 15 Nov 2026", "21 Oct 2026", "22 Oct 2026", "23 Oct 2026", "– 24 Oct 2026", "25 Oct 2026", "26 Oct 2026",
+    for day in ("07 Oct 2026", "13 Oct 2026", "14 Oct 2026", "15 Oct 2026", "15 Oct 2026 onwards", "21 Oct 2026", "22 Oct 2026", "23 Oct 2026", "– 24 Oct 2026", "25 Oct 2026", "26 Oct 2026",
                 "05 Nov 2026", "06 Nov 2026", "07 Nov 2026", "12 Nov 2026", "13 Nov 2026", "– 16 Nov 2026", "15 Nov 2026", "20 Nov 2026",
                 "28 Nov 2026", "12 Dec 2026"):
         assert day in upcoming, day
@@ -202,7 +202,7 @@ def test_what_is_over_moves_to_the_past(monkeypatch):
     upcoming, past = _halves(_page(app, "/schedule?lang=en"))
     for key in ("timeline.circular", "timeline.hei_list", "timeline.reg_open", "timeline.assess", "timeline.reg_close"):
         assert _text(key) in past and _text(key) not in upcoming, key
-    # the Students' Engagement Programme runs until 15 November
+    # the Students' Engagement Programme runs from 15 October onwards (1.2.81)
     assert _text("timeline.engage") in upcoming
     # the selection takes two days and is not over on its second
     assert _text("timeline.selection") in upcoming and _text("timeline.selection") not in past

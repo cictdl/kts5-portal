@@ -1032,5 +1032,6 @@
   "reg.after_launch_note": "ಪೋರ್ಟಲ್ ಲೋಕಾರ್ಪಣೆಯ ನಂತರ ನೋಂದಣಿ ಆರಂಭವಾಗುತ್ತದೆ. ದಿನಾಂಕವನ್ನು ಇನ್ನೂ ಪ್ರಕಟಿಸಲಾಗಿಲ್ಲ.",
   "home.reel_title": "ತಮಿಳು ಭಾಷೆ ಮತ್ತು ಸಂಸ್ಕೃತಿಯ ಕುರಿತು ಮಾನ್ಯ ಪ್ರಧಾನಮಂತ್ರಿ",
   "home.reel_watch": "Instagramನಲ್ಲಿ ವೀಕ್ಷಿಸಿ",
-  "home.reel_watch_fb": "Facebookನಲ್ಲಿ ವೀಕ್ಷಿಸಿ"
+  "home.reel_watch_fb": "Facebookನಲ್ಲಿ ವೀಕ್ಷಿಸಿ",
+  "schedule.onwards": "{date} ರಿಂದ"
 }

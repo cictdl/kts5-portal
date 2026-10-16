@@ -769,6 +769,8 @@ RETIRED_EVENT_TITLES = {
 # moved in the console is left alone. The timeline of 8 October 2026 moved these three.
 RETIRED_EVENT_DAYS = {
     "selection": [("2026-10-20T00:00", "2026-10-21T00:00")],
+    # the Nationwide Students' Engagement Programme: 15 October 2026 onwards, no longer until 15 November (1.2.81)
+    "engage": [("2026-10-15T00:00", "2026-11-15T00:00")],
     "letters": [("2026-10-22T00:00", None)],
     "internship": [("2026-10-23T00:00", None)],
 }
