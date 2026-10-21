@@ -10,7 +10,7 @@ from datetime import date, datetime
 from pathlib import Path
 from urllib.parse import unquote_plus, urlsplit
 
-from markupsafe import escape
+from markupsafe import Markup, escape
 
 from flask import (Blueprint, Response, abort, current_app, flash, g, make_response, redirect, render_template,
                    request, send_from_directory, session, url_for)
@@ -20,6 +20,7 @@ from . import heis as HEI
 from . import kural as K
 from .db import LAUNCH_NOTICE, all_settings, audit, execute, get_setting, query, utcnow
 from . import i18n
+from . import search as S
 from .i18n import get_lang, t
 from .utils import (DOC_EXT, IMAGE_EXT, age_on, check_captcha, client_ip, college_key, csv_bytes,
                     IST, exam_window, fmt_date, limiter, make_app_no, new_captcha, now_ist, plain_english,
@@ -855,6 +856,123 @@ def cict_events_page():
                            kind_counts=kinds, year=year, kind=kind, q=q, all_count=len(events))
 
 
+# ---- the search of the portal (1.2.90) ------------------------------------------------------------------------------
+
+# at most so many results of each kind are shown; the number of the others is said
+SEARCH_LIMITS = {"pages": 10, "notices": 10, "resources": 12, "kural": 20, "events": 12, "lectures": 10, "reels": 12}
+
+
+@lru_cache(maxsize=32)
+def _kural_index(stream):
+    """For each couplet the text that a search looks in: the Tamil, the transliteration, the chapter, the English and the
+    stream of the visitor's language."""
+    rows = []
+    for n, k in sorted(K.corpus()["kurals"].items()):
+        parts = [k["l1"], k["l2"], " ".join(k.get("tl") or []), k["chapter_name"], k["chapter_name_en"],
+                 " ".join(K.lines(k, "en"))]
+        if stream not in ("en", "ta"):
+            parts.append(" ".join(K.lines(k, stream)))
+        rows.append((n, S.norm(" ".join(parts))))
+    return tuple(rows)
+
+
+def _search_group(key, title, hits):
+    limit = SEARCH_LIMITS[key]
+    return {"key": key, "title": title, "items": hits[:limit], "count": len(hits), "more": max(0, len(hits) - limit)}
+
+
+def _kural_hit(k, stream, words):
+    tamil = Markup('<span class="ta" lang="ta">{}<br>{}</span>').format(S.highlight(k["l1"], words), S.highlight(k["l2"], words))
+    shown = stream if K.lines(k, stream) and stream != "ta" else "en"
+    lines = K.lines(k, shown)
+    info = K.lang_info(shown) or {}
+    trans = Markup('<span lang="{}" dir="{}">{}</span>').format(K.lang_tag(shown), info.get("dir", "ltr"),
+                                                                 S.highlight(" ".join(lines), words)) if lines else ""
+    return {"url": url_for("public.kural_single", n=k["n"]),
+            "title": Markup("{} {} · <span class=\"ta\" lang=\"ta\">{}</span>").format(t("common.verse"), k["n"],
+                                                                                           S.highlight(k["chapter_name"], words)),
+            "text": Markup("{}<br>{}").format(tamil, trans) if trans else tamil}
+
+
+@bp.route("/search")
+def search():
+    """Search across the whole portal (1.2.90): every word of the query must be found; the results by kind."""
+    q = " ".join((request.args.get("q") or "").split())[:S.MAX_QUERY]
+    words = S.query_words(q)
+    number = int(q) if q.isdigit() and 1 <= int(q) <= 1330 else None
+    lang = get_lang()
+    groups = []
+    if words or number:
+        # the pages of the portal: their names in the language of the page and in English
+        pages, seen = [], set()
+        for _heading, items in SITEMAP:
+            for endpoint, args, label in items:
+                url = url_for(endpoint, **args)
+                if url in seen:
+                    continue
+                seen.add(url)
+                if S.matches(S.norm(t(label) + " " + t(label, "en")), words):
+                    pages.append({"url": url, "title": S.highlight(t(label), words),
+                                  "meta": t(label, "en") if lang != "en" and t(label, "en") != t(label) else ""})
+        groups.append(_search_group("pages", t("search.pages"), pages))
+        # the notices that the notice board shows
+        hide, hide_args = _notice_filter(all_settings())
+        rows = query("SELECT * FROM notices WHERE published = 1 AND (publish_at IS NULL OR publish_at <= ?)" + hide +
+                     " ORDER BY pinned DESC, created_at DESC", (utcnow(), *hide_args))
+        hits = [{"url": url_for("public.notice", nid=r["id"]), "title": S.highlight(r["title"], words),
+                 "meta": r["created_at"][:10] and fmt_date(r["created_at"][:10], lang != "en"), "text": S.snippet(r["body"], words)}
+                for r in rows if S.matches(S.norm(r["title"] + " " + r["body"]), words)]
+        groups.append(_search_group("notices", t("nav.notices"), hits))
+        # the entries of the Digital repository
+        rows = query("SELECT * FROM resources WHERE published = 1 ORDER BY featured DESC, sort_order, created_at DESC")
+        hits = [{"url": url_for("public.resource_open", rid=r["id"]), "title": S.highlight(r["title"], words),
+                 "meta": t("res.cat_" + r["category"]) if r["category"] in CATEGORIES else "",
+                 "text": S.snippet(r["description"], words)}
+                for r in rows if S.matches(S.norm(r["title"] + " " + r["description"]), words)]
+        groups.append(_search_group("resources", t("res.title"), hits))
+        # the Thirukkural: the couplet of the number first, then those in which every word is found
+        stream = i18n.corpus_lang()
+        kurals = K.corpus()["kurals"]
+        hits = [_kural_hit(kurals[number], stream, words)] if number else []
+        hits += [_kural_hit(kurals[n], stream, words) for n, text in _kural_index(stream)
+                 if n != number and S.matches(text, words)]
+        groups.append(_search_group("kural", t("nav.kural"), hits))
+        # the seminars and workshops of CICT
+        numeric = lang != "en"
+        hits = []
+        for e in cict_events():
+            text = " ".join([e.get("title") or "", e.get("title_ta") or "", e.get("venue") or "", e.get("with") or "",
+                             e.get("dept") or "", " ".join(e.get("people") or [])])
+            if S.matches(S.norm(text), words):
+                title = e.get("title") or e.get("title_ta")
+                hits.append({"url": url_for("public.cict_events_page", y=e["start"][:4]) + "#" + e["id"],
+                             "title": S.highlight(title, words),
+                             "meta": Markup('<bdi dir="ltr">{}</bdi> · {}').format(_ev_when(e, numeric), t("ev.type_" + e["type"])),
+                             "text": S.highlight(e["title_ta"], words) if e.get("title") and e.get("title_ta") else ""})
+        groups.append(_search_group("events", t("ev.title"), hits))
+        # the recorded lectures of the orientation
+        hits = []
+        for code, rows in orientation_lectures().items():
+            info = K.lang_info(code) or {}
+            for r in rows:
+                if S.matches(S.norm(" ".join([r["title"], info.get("name", ""), info.get("native", ""), "orientation"])), words):
+                    hits.append({"url": f"https://www.youtube.com/watch?v={r['youtube']}", "external": True,
+                                 "title": S.highlight(r["title"], words),
+                                 "meta": S.highlight(f"{info.get('native', code)} · {info.get('name', code)}", words)})
+        groups.append(_search_group("lectures", t("res.orient_title"), hits))
+        # the reels and shorts
+        hits = []
+        for group in reels()["langs"]:
+            for v in group["videos"]:
+                if S.matches(S.norm(" ".join([group["name"], group["native"], v["presenter"], "thirukkural reels shorts"])), words):
+                    hits.append({"url": f"https://www.youtube.com/shorts/{v['id']}", "external": True,
+                                 "title": S.highlight(f"{group['native']} · {group['name']}", words),
+                                 "meta": S.highlight(v["presenter"], words)})
+        groups.append(_search_group("reels", t("prog.a6.t"), hits))
+    groups = [g for g in groups if g["count"]]
+    return render_template("public/search.html", q=q, groups=groups, total=sum(g["count"] for g in groups))
+
+
 @bp.route("/resources/<int:rid>")
 def resource_open(rid):
     row = query("SELECT * FROM resources WHERE id = ? AND published = 1", (rid,), one=True)
@@ -1204,7 +1322,8 @@ SITEMAP = [
                          ("public.cict_events_page", {}, "ev.title"),
                          ("public.kural_browser", {}, "nav.kural"), ("public.daily_kural", {}, "nav.daily"),
                          ("quiz.join", {}, "quiz.title")]),
-    ("pol.sm_help", [("public.policy", {"page": p}, "pol." + p) for p in POLICY_PAGES if p != "sitemap"]),
+    ("pol.sm_help", [("public.search", {}, "search.title")] +
+     [("public.policy", {"page": p}, "pol." + p) for p in POLICY_PAGES if p != "sitemap"]),
 ]
 
 

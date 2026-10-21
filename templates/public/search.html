@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ t('search.title') }}{% if q %} · {{ q }}{% endif %}{% endblock %}
+{% block content %}
+{# The search of the portal (1.2.90): the results by kind; the words found are marked #}
+<div class="wrap section">
+  <h1>{{ t('search.title') }}</h1>
+  <form method="get" action="{{ url_for('public.search') }}" class="filters search-form" role="search">
+    <div class="field grow"><label for="sq">{{ t('search.label') }}</label><input type="search" id="sq" name="q" value="{{ q }}" dir="auto" maxlength="80"></div>
+    <div class="field"><button class="btn" type="submit">{{ t('common.search') }}</button></div>
+  </form>
+  {% if not q %}
+  <p class="dim" style="max-width:78ch">{{ t('search.hint') }}</p>
+  {% elif not total %}
+  <div class="card"><p style="margin:0"><bdi>{{ t('search.none')|replace('{q}', q) }}</bdi></p><p class="small muted" style="margin:8px 0 0">{{ t('search.hint') }}</p></div>
+  {% else %}
+  <p class="search-summary"><bdi>{{ t('search.results')|replace('{n}', total)|replace('{q}', q) }}</bdi></p>
+  {% for g in groups %}
+  <section class="search-group" aria-labelledby="sg-{{ g.key }}">
+    <h2 id="sg-{{ g.key }}">{{ g.title }} <span class="muted ev-n">{{ g.count }}</span></h2>
+    <ol class="search-hits">
+      {% for it in g['items'] %}<li class="search-hit"><a href="{{ it.url }}"{% if it.external %} target="_blank" rel="noopener"{% endif %}><bdi>{{ it.title }}</bdi></a>{% if it.meta %}<div class="meta small muted"><bdi>{{ it.meta }}</bdi></div>{% endif %}{% if it.text %}<div class="text">{{ it.text }}</div>{% endif %}</li>
+      {% endfor %}
+    </ol>
+    {% if g.more %}<p class="small muted">{{ t('search.more')|replace('{n}', g.more) }}</p>{% endif %}
+  </section>
+  {% endfor %}
+  {% endif %}
+</div>
+{% endblock %}

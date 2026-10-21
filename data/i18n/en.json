@@ -1076,5 +1076,12 @@
   "ev.link_news": "News report",
   "ev.link_post": "Social media post",
   "ev.link_newsletter": "Newsletter",
-  "ev.link_photos": "Photographs"
+  "ev.link_photos": "Photographs",
+  "search.title": "Search",
+  "search.label": "Search the portal",
+  "search.hint": "Notices, the Digital repository, the Thirukkural, seminars and workshops, lectures, reels and the pages of the portal: in your language, in English or in Tamil. A number from 1 to 1330 opens that couplet.",
+  "search.results": "{n} results for “{q}”",
+  "search.none": "Nothing was found for “{q}”. Try other words, or fewer.",
+  "search.pages": "Pages",
+  "search.more": "and {n} more: add a word to narrow the search"
 }

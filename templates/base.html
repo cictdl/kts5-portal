@@ -21,7 +21,7 @@
 {% endblock %}
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=25">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=26">
 {% block head %}{% endblock %}
 </head>
 <body>
@@ -34,6 +34,12 @@
       <a href="{{ url_for('public.status') }}">{{ t('nav.status') }}</a>
       <a href="{{ url_for('candidate.login') }}">{{ t('nav.candidate') }}</a>
       <a href="{{ url_for('auth.login') }}">{{ t('nav.admin') }}</a>
+      {# search across the whole portal (1.2.90) #}
+      <form class="site-search" role="search" method="get" action="{{ url_for('public.search') }}">
+        <label for="site-q" class="visually-hidden">{{ t('search.label') }}</label>
+        <input type="search" id="site-q" name="q" placeholder="{{ t('search.label') }}" maxlength="80" dir="auto">
+        <button type="submit" title="{{ t('common.search') }}"><span aria-hidden="true">🔍</span><span class="visually-hidden">{{ t('common.search') }}</span></button>
+      </form>
       <form class="lang-menu" method="get" action="{{ url_for('public.set_lang') }}">
         <label for="ui-lang"><span aria-hidden="true">🌐</span><span class="visually-hidden">{{ t('site.lang_menu') }} · Choose language</span></label>
         <select id="ui-lang" name="code" data-autosubmit title="{{ t('site.lang_menu') }}">

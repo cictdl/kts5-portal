@@ -114,6 +114,20 @@ bdi, [dir="ltr"], [dir="auto"] { unicode-bidi: isolate; }
 .gov-strip a { color: #fff; }
 .gov-strip .links { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
 .tricolour { height: 4px; background: linear-gradient(90deg, #ff9933 0 33.3%, #ffffff 33.3% 66.6%, #138808 66.6%); }
+/* the search of the portal (1.2.90): a box beside the menu of languages, and the page of results */
+.site-search { display: inline-flex; align-items: center; margin: 0; border: 1px solid rgba(255,255,255,.45); border-radius: 999px; background: #fff; overflow: hidden; }
+.site-search input { width: 170px; max-width: 42vw; padding: 3px 4px 3px 10px; border: 0; background: transparent; color: #1f3a5f; font: inherit; line-height: 1.3; }
+.site-search input:focus { outline: none; }
+.site-search:focus-within { box-shadow: 0 0 0 2px var(--saffron); }
+.site-search button { border: 0; background: transparent; padding: 2px 8px; cursor: pointer; line-height: 1; }
+.search-summary { font-weight: 700; }
+.search-group { margin-top: 22px; }
+.search-group h2 { border-bottom: 2px solid var(--saffron); padding-bottom: 4px; font-size: 1.25rem; }
+.search-hits { list-style: none; margin: 0; padding: 0; }
+.search-hit { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.search-hit > a { font-weight: 700; }
+.search-hit .text { color: var(--dim); margin-top: 4px; }
+mark { background: rgba(255, 196, 0, .45); color: inherit; padding: 0 1px; border-radius: 2px; }
 .lang-menu { display: inline-flex; align-items: center; gap: 6px; margin: 0; }
 .lang-menu label { line-height: 1; font-size: 1rem; }
 .lang-menu select { width: auto; max-width: 210px; padding: 3px 8px; border-radius: 999px; border: 1px solid rgba(255,255,255,.45); background: #fff; color: #1f3a5f; font: inherit; font-weight: 700; line-height: 1.3; cursor: pointer; }
