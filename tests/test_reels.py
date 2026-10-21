@@ -36,9 +36,9 @@ def test_the_programme_page_links_every_short():
     # the presenters of one language stand under it: two in Kurukh
     kurukh = page.split("कुँड़ुख़")[1].split('<div class="card reel">')[0]
     assert "Bhubaneswar Oraon" in kurukh and "Mahesh S. Minj" in kurukh
-    # ten in Hindi under one card, in the order of CICT's list
+    # twelve in Hindi under one card, in the order of CICT's list (two added in 1.2.89)
     hindi = page.split("<bdi>हिन्दी</bdi>")[1].split('<div class="card reel">')[0]
-    assert hindi.count("youtube.com/shorts/") == 10 and hindi.index("Imtiyaz Dhafrani") < hindi.index("Mrs. Sabitri Tripathy")
+    assert hindi.count("youtube.com/shorts/") == 12 and hindi.index("Imtiyaz Dhafrani") < hindi.index("Mrs. Sabitri Tripathy")
     assert "facebook.com" not in page.split('id="reels"')[1].split("<footer")[0]
     assert 'href="https://www.youtube.com/@cicttamil/shorts"' in page
     # in Tamil the texts are Tamil, the names stay as they are written
@@ -66,3 +66,21 @@ def test_the_russian_short_of_naira_mkrtchyan():
     assert russian == [{"id": "FxmtSzR1IyQ", "lang": "Russian", "native": "Русский", "presenter": "Naira Mkrtchyan"}]
     ids = [r["id"] for r in REELS]
     assert ids.index("FxmtSzR1IyQ") == ids.index("gTEOgoSTwfI") + 1
+
+
+def test_the_shorts_added_on_21_october():
+    # five Thirukkural shorts of @cicttamil (1.2.89): two new languages, Rajasthani and Malto, and Kurukh and Hindi
+    assert REELS[-5:] == [
+        {"id": "Le13vG99i_c", "lang": "Rajasthani", "native": "राजस्थानी", "presenter": "Dr. Gajadan Charan"},
+        {"id": "45kzqtUXUk8", "lang": "Kurukh", "native": "कुँड़ुख़", "presenter": "Mahesh S. Minj"},
+        {"id": "iqB7VU5SSYE", "lang": "Hindi", "native": "हिन्दी", "presenter": "Shankar Lal Sahu"},
+        {"id": "Vg6A_LFynNk", "lang": "Hindi", "native": "हिन्दी", "presenter": "Dr. Gajadan Charan"},
+        {"id": "EAvMVUp50-s", "lang": "Malto", "native": "माल्तो", "presenter": "R. George Edward"}]
+    app = make_app(ADMIN_PASSWORD=None)
+    page = app.test_client().get("/programme?lang=en").get_data(as_text=True)
+    assert "41 short videos in 25 languages" in page
+    kurukh = page.split("कुँड़ुख़")[1].split('<div class="card reel">')[0]
+    assert kurukh.count("youtube.com/shorts/") == 3
+    for native in ("राजस्थानी", "माल्तो"):
+        card = page.split(f"<bdi>{native}</bdi>")[1].split('<div class="card reel">')[0]
+        assert card.count("youtube.com/shorts/") == 1, native
