@@ -326,12 +326,13 @@ def _ev_when(e, numeric):
 def orientation_lectures():
     """
     The recorded lectures of the online orientation on CICT's YouTube channel (data/orientation_lectures.json, 1.2.78),
-    grouped by the language of the lecture, in the order of their sessions.
+    grouped by the language of the lecture, in the order of their sessions. A title that CICT gave in English for a lecture
+    in another language (1.2.88) is marked as English (title_lang).
     """
     rows = json.loads((current_app.config["DATA_DIR"] / "orientation_lectures.json").read_text(encoding="utf-8"))
     groups = {}
     for row in sorted(rows, key=lambda r: (r["lang"], r["session"])):
-        groups.setdefault(row["lang"], []).append(row)
+        groups.setdefault(row["lang"], []).append(dict(row, title_lang=row.get("title_lang") or row["lang"]))
     return groups
 
 

@@ -14,7 +14,7 @@
       {% set ll = lectures.get(L.code, []) %}
       {% if ll %}
         <div class="small muted" style="font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">{{ t('res.cat_video') }}</div>
-        <ul style="list-style:none;margin:0 0 10px;padding:0">{% for v in ll %}<li style="padding:6px 0;border-top:1px solid var(--border)"><a href="https://www.youtube.com/watch?v={{ v.youtube }}" target="_blank" rel="noopener"><span aria-hidden="true">▶</span> <bdi lang="{{ v.lang|langtag }}">{{ v.title }}</bdi></a></li>{% endfor %}</ul>
+        <ul style="list-style:none;margin:0 0 10px;padding:0">{% for v in ll %}<li style="padding:6px 0;border-top:1px solid var(--border)"><a href="https://www.youtube.com/watch?v={{ v.youtube }}" target="_blank" rel="noopener"><span aria-hidden="true">▶</span> <bdi lang="{{ v.title_lang|langtag }}">{{ v.title }}</bdi></a></li>{% endfor %}</ul>
       {% endif %}
       {% set ss = by_lang.get(L.code, []) %}
       {% if ss %}
