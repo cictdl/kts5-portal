@@ -1083,5 +1083,7 @@
   "search.results": "{n} results for “{q}”",
   "search.none": "Nothing was found for “{q}”. Try other words, or fewer.",
   "search.pages": "Pages",
-  "search.more": "and {n} more: add a word to narrow the search"
+  "search.more": "and {n} more: add a word to narrow the search",
+  "search.result_one": "1 result for “{q}”",
+  "ev.count_one": "1 event"
 }

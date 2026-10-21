@@ -233,7 +233,7 @@
       <span class="cat">{{ t('ev.type_workshop') }} · {{ t('ev.type_seminar') }} · {{ t('ev.type_conference') }} · {{ t('ev.type_lecture') }}</span>
       <h2 id="ev-home-title">{{ t('ev.title') }} <span aria-hidden="true">{{ fwd }}</span></h2>
       <span class="desc">{{ t('ev.card') }}</span>
-      <span class="ev-home-n"><bdi dir="ltr">{{ ev_years[0] }}–{{ ev_years[1] }}</bdi> · {{ t('ev.count')|replace('{n}', ev_total) }}</span>
+      <span class="ev-home-n"><bdi dir="ltr">{{ ev_years[0] }}–{{ ev_years[1] }}</bdi> · {{ t('ev.count_one') if ev_total == 1 else t('ev.count')|replace('{n}', ev_total) }}</span>
     </a>
   </div>
 </section>

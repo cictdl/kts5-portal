@@ -13,7 +13,7 @@
   {% elif not total %}
   <div class="card"><p style="margin:0"><bdi>{{ t('search.none')|replace('{q}', q) }}</bdi></p><p class="small muted" style="margin:8px 0 0">{{ t('search.hint') }}</p></div>
   {% else %}
-  <p class="search-summary"><bdi>{{ t('search.results')|replace('{n}', total)|replace('{q}', q) }}</bdi></p>
+  <p class="search-summary"><bdi>{{ (t('search.result_one') if total == 1 else t('search.results'))|replace('{n}', total)|replace('{q}', q) }}</bdi></p>
   {% for g in groups %}
   <section class="search-group" aria-labelledby="sg-{{ g.key }}">
     <h2 id="sg-{{ g.key }}">{{ g.title }} <span class="muted ev-n">{{ g.count }}</span></h2>

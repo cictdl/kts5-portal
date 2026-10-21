@@ -16,10 +16,10 @@
     <a href="{{ url_for('public.cict_events_page', y='all', k=kind or None, q=q or None) }}" class="{{ 'on' if not year }}">{{ t('common.all') }} <span class="muted">{{ all_count }}</span></a>
     {% for y, n in years %}<a href="{{ url_for('public.cict_events_page', y=y, k=kind or None, q=q or None) }}" class="{{ 'on' if y == year }}">{{ y }} <span class="muted">{{ n }}</span></a>{% endfor %}
   </nav>
-  <p class="ev-summary small muted">{{ t('ev.count')|replace('{n}', total) }}</p>
+  <p class="ev-summary small muted">{{ t('ev.count_one') if total == 1 else t('ev.count')|replace('{n}', total) }}</p>
   {% for y, items in groups %}
   <section class="ev-year" id="y{{ y }}">
-    <h2>{{ y }} <span class="muted ev-n">{{ t('ev.count')|replace('{n}', items|length) }}</span></h2>
+    <h2>{{ y }} <span class="muted ev-n">{{ t('ev.count_one') if items|length == 1 else t('ev.count')|replace('{n}', items|length) }}</span></h2>
     <ol class="ev-list">
       {% for e, when in items %}
       <li class="ev" id="{{ e.id }}">

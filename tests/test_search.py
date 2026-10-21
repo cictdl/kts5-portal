@@ -115,3 +115,16 @@ def test_the_results_line_and_the_limits():
     assert kural.count('<li class="search-hit">') == 20
     assert CATALOG["en"]["search.more"].split("{n}")[0] in kural
     assert 'href="/search"' in _page(_client(), "/sitemap?lang=en")
+
+
+def test_one_result_and_one_event_are_singular():
+    from kts.i18n import CATALOG
+    client = _client()
+    for code, catalogue in CATALOG.items():
+        page = _page(client, f"/search?lang={code}&q=malto")
+        assert f'<p class="search-summary"><bdi>{escape(catalogue["search.result_one"].replace("{q}", "malto"))}</bdi></p>' in page, code
+        events = _page(client, f"/seminars-workshops?lang={code}&k=hackathon")
+        assert f'<p class="ev-summary small muted">{escape(catalogue["ev.count_one"])}</p>' in events, code
+        assert f'<span class="muted ev-n">{escape(catalogue["ev.count_one"])}</span>' in events, code
+    assert "1 results" not in _page(client, "/search?lang=en&q=malto")
+    assert "1 result for “malto”" in _page(client, "/search?lang=en&q=malto")
