@@ -151,28 +151,28 @@
    "links": [
     {
      "kind": "video",
-     "url": "https://www.youtube.com/playlist?list=PLSH8aVyBInko",
+     "url": "https://www.youtube.com/@CICT_Online/videos",
      "label": "YouTube"
     },
     {
      "kind": "video",
-     "url": "https://www.youtube.com/watch?v=2w6mgosRYAE",
+     "url": "https://www.youtube.com/watch?v=i_hSXzH5E9w",
      "label": "YouTube"
     },
     {
      "kind": "video",
-     "url": "https://www.youtube.com/watch?v=Z3fGrbHLFr8",
+     "url": "https://www.youtube.com/watch?v=Gw2g60MdH7I",
      "label": "YouTube"
     },
     {
      "kind": "video",
-     "url": "https://www.youtube.com/watch?v=tL9j8Dz7LLw",
+     "url": "https://www.youtube.com/watch?v=85IHyYchdPE",
      "label": "YouTube"
     }
    ],
    "sources": [
     "https://www.youtube.com/channel/UClcpBhlKWoOe_72f075sjpQ",
-    "https://www.youtube.com/watch?v=2w6mgosRYAE"
+    "https://www.youtube.com/watch?v=i_hSXzH5E9w"
    ],
    "origins": [
     "youtube"

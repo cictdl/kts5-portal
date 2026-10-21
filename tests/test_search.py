@@ -89,7 +89,7 @@ def test_pages_seminars_lectures_and_reels():
     page = _page(client, "/search?lang=en&q=brahmi")
     assert "/seminars-workshops?y=" in _group(page, "events") and "<mark>Brahmi</mark>" in page
     page = _page(client, "/search?lang=en&q=Insights from the Thirukkural")
-    assert "youtube.com/watch?v=Z3fGrbHLFr8" in _group(page, "lectures")
+    assert "youtube.com/watch?v=Gw2g60MdH7I" in _group(page, "lectures")
     page = _page(client, "/search?lang=en&q=malto")
     assert "youtube.com/shorts/EAvMVUp50-s" in _group(page, "reels")
     assert 'target="_blank" rel="noopener"' in _group(page, "reels")
