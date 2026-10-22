@@ -62,7 +62,7 @@ def test_a_new_installation_carries_the_app():
     # seven chosen for the home page, which shows six in the order of sort_order: Kural Bridge first,
     # the Digital Archives in the repository only; the two of the prosody app and the classroom quiz
     # are in the repository only, the quiz first of them
-    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1, 0] + [0] * 44 + [0] * 6 + [0] * 5 + [0] * 73 + [1]
+    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1, 0] + [0] * 44 + [0] * 6 + [0] * 5 + [0] * 87 + [1]
     client = app.test_client()
     page = client.get("/resources").get_data(as_text=True)
     for s in SEEDS:
@@ -195,12 +195,12 @@ def test_the_videos_in_sign_language_have_a_tab_of_their_own():
     assert all(re.fullmatch(r"https://www\.youtube\.com/watch\?v=[A-Za-z0-9_-]{11}", url) for url in SIGN)
     page = client.get("/resources?lang=en").get_data(as_text=True)
     assert 'href="/resources?cat=video_sign&amp;l=&amp;q=" class="">Thirukkural in sign language <span class="muted">44</span></a>' in page
-    # the Thirukkural lectures: five sent by Dr. Akilan (1.2.14) and sixteen more of the channel (1.2.15);
-    # the Thiruvalluvar lectures: 57 (1.2.15)
-    assert 'href="/resources?cat=video_kural&amp;l=&amp;q=" class="">Thirukkural videos <span class="muted">21</span></a>' in page
+    # the Thirukkural lectures: five sent by Dr. Akilan (1.2.14) and sixteen more of the channel (1.2.15), and fourteen
+    # Thirukkural stories of the channel PM eVidya CICT - Tamil (1.2.93); the Thiruvalluvar lectures: 57 (1.2.15)
+    assert 'href="/resources?cat=video_kural&amp;l=&amp;q=" class="">Thirukkural videos <span class="muted">35</span></a>' in page
     assert 'href="/resources?cat=video_valluvar&amp;l=&amp;q=" class="">Thiruvalluvar videos <span class="muted">57</span></a>' in page
     lectures = client.get("/resources?cat=video_kural&lang=en").get_data(as_text=True)
-    assert lectures.count('<div class="card res-card">') == 21
+    assert lectures.count('<div class="card res-card">') == 35
     valluvar = client.get("/resources?cat=video_valluvar&lang=en").get_data(as_text=True)
     assert valluvar.count('<div class="card res-card">') == 57
     # each series in the order of its parts
@@ -209,7 +209,7 @@ def test_the_videos_in_sign_language_have_a_tab_of_their_own():
     assert lectures.index("Thirukural in Telugu Part 1 |") < lectures.index("Thirukural Part 03") < lectures.index("Telugu Part 12")
     # the Telugu lectures stand under Telugu in the filter of languages (with those of no language), the Tamil one not
     telugu = client.get("/resources?cat=video_kural&l=te&lang=en").get_data(as_text=True)
-    assert telugu.count('<div class="card res-card">') == 20 and "Thirukural in Telugu Part 4 |" in telugu
+    assert telugu.count('<div class="card res-card">') == 34 and "Thirukural in Telugu Part 4 |" in telugu
     assert "உலகப் பொதுமறை திருக்குறள்" not in telugu and "உலகப் பொதுமறை திருக்குறள்" in lectures
     assert lectures.index("Leadership lessons from Thirukural") < lectures.index("Part 01 : Goal setting") \
         < lectures.index("Part 02 : Goal setting") < lectures.index("part 01 : Importance of the Right Communications")
@@ -256,3 +256,21 @@ def test_the_classroom_quiz_is_in_the_resources():
     own = make_app(ADMIN_PASSWORD=None, URL_PREFIX="/kts5")
     rid = {r["url"]: r["id"] for r in _rows(own)}[QUIZ]
     assert own.test_client().get(f"/kts5/resources/{rid}").headers["Location"] == "/kts5" + QUIZ
+
+
+def test_the_thirukkural_stories_of_pm_evidya():
+    # fourteen Thirukkural stories of CICT's channel PM eVidya CICT - Tamil (1.2.93), after the lectures, in the order of
+    # the couplets
+    stories = [s for s in SEEDS if "PM eVidya CICT – Tamil" in s["description"]]
+    assert len(stories) == 14 and all(s["category"] == "video_kural" and s["lang"] == "" for s in stories)
+    assert [s["sort_order"] for s in stories] == list(range(433, 447))
+    assert stories[0]["url"] == "https://www.youtube.com/watch?v=IK8J5aH9Szg"
+    assert stories[-1]["url"] == "https://www.youtube.com/watch?v=N_hVT03XSCw"
+    for s in stories:
+        assert re.fullmatch(r"https://www\.youtube\.com/watch\?v=[A-Za-z0-9_-]{11}", s["url"]) and s["key"] == "yt-" + s["url"][-11:]
+    app = make_app(ADMIN_PASSWORD=None)
+    page = app.test_client().get("/resources?cat=video_kural&lang=en").get_data(as_text=True)
+    assert page.index("Thirukural in Telugu Part 12") < page.index("Why Learn Thirukkural?") < page.index("Thirukkural 619")
+    # and the search of the portal finds them
+    found = app.test_client().get("/search?lang=en&q=Thirukkural 517").get_data(as_text=True)
+    assert "The Right Person for the Right Job" in found and "The Secret of Choosing the Right Person" in found

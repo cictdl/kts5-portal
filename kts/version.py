@@ -1,4 +1,4 @@
 """Version of the portal: /healthz reports it and the installer compares it after an update."""
-VERSION = "1.2.92"
+VERSION = "1.2.93"
 # the day of this version, for the line "Last updated" at the foot of the pages (GIGW)
-RELEASED = "2026-10-21"
+RELEASED = "2026-10-22"
