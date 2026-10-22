@@ -1085,5 +1085,6 @@
   "search.pages": "பக்கங்கள்",
   "search.more": "இன்னும் {n} உள்ளன: தேடலைச் சுருக்க மேலும் ஒரு சொல்லைச் சேர்க்கவும்",
   "search.result_one": "“{q}” என்பதற்கு 1 முடிவு",
-  "ev.count_one": "1 நிகழ்வு"
+  "ev.count_one": "1 நிகழ்வு",
+  "res.cat_video_pmevidya": "PM eVidya CICT - தமிழ்"
 }

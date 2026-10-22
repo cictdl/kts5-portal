@@ -1085,5 +1085,6 @@
   "search.pages": "ᱥᱟᱦᱴᱟ ᱠᱚ",
   "search.more": "ᱟᱨ ᱦᱚᱸ {n} ᱢᱮᱱᱟᱜᱼᱟ: ᱨᱤᱡᱟᱞᱴ ᱠᱚ ᱠᱚᱢ ᱞᱟᱹᱜᱤᱫ ᱢᱤᱫᱴᱟᱝ ᱟᱹᱲᱟᱹ ᱥᱮᱞᱮᱫ ᱢᱮ",
   "search.result_one": "“{q}” ᱞᱟᱹᱜᱤᱫ 1 ᱨᱤᱡᱟᱞᱴ",
-  "ev.count_one": "1 ᱠᱟᱹᱢᱤᱦᱚᱨᱟ"
+  "ev.count_one": "1 ᱠᱟᱹᱢᱤᱦᱚᱨᱟ",
+  "res.cat_video_pmevidya": "PM eVidya CICT - ᱛᱟᱢᱤᱞ"
 }

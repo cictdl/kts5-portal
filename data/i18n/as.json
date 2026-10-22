@@ -1085,5 +1085,6 @@
   "search.pages": "পৃষ্ঠাসমূহ",
   "search.more": "আৰু {n}টা: সন্ধান সীমিত কৰিবলৈ আৰু এটা শব্দ যোগ কৰক",
   "search.result_one": "“{q}”ৰ বাবে 1টা ফলাফল",
-  "ev.count_one": "1খন অনুষ্ঠান"
+  "ev.count_one": "1খন অনুষ্ঠান",
+  "res.cat_video_pmevidya": "PM eVidya CICT - তামিল"
 }

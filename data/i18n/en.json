@@ -1085,5 +1085,6 @@
   "search.pages": "Pages",
   "search.more": "and {n} more: add a word to narrow the search",
   "search.result_one": "1 result for “{q}”",
-  "ev.count_one": "1 event"
+  "ev.count_one": "1 event",
+  "res.cat_video_pmevidya": "PM eVidya CICT - Tamil"
 }

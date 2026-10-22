@@ -1085,5 +1085,6 @@
   "search.pages": "పేజీలు",
   "search.more": "ఇంకా {n} ఉన్నాయి: శోధనను కుదించడానికి మరో పదం చేర్చండి",
   "search.result_one": "“{q}” కోసం 1 ఫలితం",
-  "ev.count_one": "1 కార్యక్రమం"
+  "ev.count_one": "1 కార్యక్రమం",
+  "res.cat_video_pmevidya": "PM eVidya CICT - తమిళం"
 }

@@ -791,8 +791,9 @@ def merit_csv():
 
 # ---- repository -------------------------------------------------------------
 
-# the videos of CICT on the Thirukkural, on Thiruvalluvar and in Indian Sign Language have tabs of their own
-CATEGORIES = ["translation", "publication", "app", "corpus", "video", "video_kural", "video_valluvar", "video_sign",
+# the videos of CICT on the Thirukkural, on Thiruvalluvar and in Indian Sign Language have tabs of their own, and so have
+# the Thirukkural stories of its channel PM eVidya CICT - Tamil (1.2.94)
+CATEGORIES = ["translation", "publication", "app", "corpus", "video", "video_kural", "video_pmevidya", "video_valluvar", "video_sign",
               "audio", "music", "film", "comic", "poster", "daily", "story", "study", "link"]
 
 

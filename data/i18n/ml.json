@@ -1085,5 +1085,6 @@
   "search.pages": "പേജുകൾ",
   "search.more": "ഇനിയും {n} എണ്ണം: തിരച്ചിൽ ചുരുക്കാൻ ഒരു വാക്കുകൂടി ചേർക്കുക",
   "search.result_one": "“{q}” എന്നതിന് 1 ഫലം",
-  "ev.count_one": "1 പരിപാടി"
+  "ev.count_one": "1 പരിപാടി",
+  "res.cat_video_pmevidya": "PM eVidya CICT - തമിഴ്"
 }

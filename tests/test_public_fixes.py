@@ -1040,7 +1040,7 @@ def test_alt_texts_use_keys_that_exist():
     # and the 9 of the live banners for metro trains and buses (1.2.63), the 8 of the 108 Thirukkural (1.2.64),
     # the 7 of the posters and charts (1.2.67)
     # and the 11 of the launch of the KTS 5.0 web portal and registration (1.2.69), the heading of the Nodal Officer (1.2.70)
-    assert len(CATALOG["en"]) == 1087
+    assert len(CATALOG["en"]) == 1088
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1072,7 +1072,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.93" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.94" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

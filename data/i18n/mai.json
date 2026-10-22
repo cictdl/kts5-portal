@@ -1085,5 +1085,6 @@
   "search.pages": "पृष्ठ",
   "search.more": "आओर {n}: खोज सीमित करबाक लेल एकटा शब्द आओर जोड़ू",
   "search.result_one": "“{q}” लेल 1 परिणाम",
-  "ev.count_one": "1 आयोजन"
+  "ev.count_one": "1 आयोजन",
+  "res.cat_video_pmevidya": "PM eVidya CICT - तमिल"
 }

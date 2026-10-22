@@ -1085,5 +1085,6 @@
   "search.pages": "पृष्ठानि",
   "search.more": "अन्ये {n} अपि: अन्वेषणं सीमितं कर्तुम् एकं शब्दं योजयतु",
   "search.result_one": "“{q}” इत्यस्य 1 परिणामः",
-  "ev.count_one": "1 आयोजनम्"
+  "ev.count_one": "1 आयोजनम्",
+  "res.cat_video_pmevidya": "PM eVidya CICT - तमिल"
 }

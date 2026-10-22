@@ -1215,6 +1215,14 @@ def init_db(app):
                      r.get("featured", 0), r.get("sort_order", 100), now, now),
                 )
             conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
+        # the Thirukkural stories of PM eVidya CICT - Tamil, put in among the Thirukkural videos (1.2.93), have a tab of
+        # their own (1.2.94): they move to it once; an entry that the Console puts back or elsewhere later stays there
+        moved = [r["url"] for r in json.loads(seed_path.read_text(encoding="utf-8")) if r["category"] == "video_pmevidya"]
+        if moved and not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.video_pmevidya'").fetchone():
+            conn.execute("UPDATE resources SET category = 'video_pmevidya' WHERE category = 'video_kural' AND url IN (%s)"
+                         % ", ".join("?" * len(moved)), moved)
+            conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)",
+                         ("migrate.video_pmevidya", "1", now))
 
     # The timeline of the programme (data/timeline.json), as events of the schedule. Each is put
     # in once for each database, as the entries of the repository are, and not at all when an

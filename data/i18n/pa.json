@@ -1085,5 +1085,6 @@
   "search.pages": "ਪੰਨੇ",
   "search.more": "ਅਤੇ {n} ਹੋਰ: ਖੋਜ ਨੂੰ ਸੀਮਿਤ ਕਰਨ ਲਈ ਇੱਕ ਸ਼ਬਦ ਹੋਰ ਜੋੜੋ",
   "search.result_one": "“{q}” ਲਈ 1 ਨਤੀਜਾ",
-  "ev.count_one": "1 ਸਮਾਗਮ"
+  "ev.count_one": "1 ਸਮਾਗਮ",
+  "res.cat_video_pmevidya": "PM eVidya CICT - ਤਮਿਲ"
 }

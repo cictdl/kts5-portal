@@ -48,7 +48,7 @@ def test_the_seed_file_is_complete():
     assert [s["url"] for s in SEEDS] == ALL
     assert [s["category"] for s in SEEDS] == ["app", "app", "corpus", "corpus", "app", "app", "app", "study", "app", "app"] + ["video_sign"] * 44 + ["music"] * 6 + ["video_kural"] * 5 + \
         [s["category"] for s in SEEDS[65:]]
-    assert sorted(set(s["category"] for s in SEEDS[65:])) == ["poster", "video_kural", "video_valluvar"]
+    assert sorted(set(s["category"] for s in SEEDS[65:])) == ["poster", "video_kural", "video_pmevidya", "video_valluvar"]
     for s in SEEDS:
         assert s["key"] and s["title"] and s["description"]
     assert len({s["key"] for s in SEEDS}) == len(SEEDS)
@@ -195,12 +195,14 @@ def test_the_videos_in_sign_language_have_a_tab_of_their_own():
     assert all(re.fullmatch(r"https://www\.youtube\.com/watch\?v=[A-Za-z0-9_-]{11}", url) for url in SIGN)
     page = client.get("/resources?lang=en").get_data(as_text=True)
     assert 'href="/resources?cat=video_sign&amp;l=&amp;q=" class="">Thirukkural in sign language <span class="muted">44</span></a>' in page
-    # the Thirukkural lectures: five sent by Dr. Akilan (1.2.14) and sixteen more of the channel (1.2.15), and fourteen
-    # Thirukkural stories of the channel PM eVidya CICT - Tamil (1.2.93); the Thiruvalluvar lectures: 57 (1.2.15)
-    assert 'href="/resources?cat=video_kural&amp;l=&amp;q=" class="">Thirukkural videos <span class="muted">35</span></a>' in page
+    # the Thirukkural lectures: five sent by Dr. Akilan (1.2.14) and sixteen more of the channel (1.2.15); the fourteen
+    # Thirukkural stories of the channel PM eVidya CICT - Tamil have a tab of their own (1.2.94); the Thiruvalluvar
+    # lectures: 57 (1.2.15)
+    assert 'href="/resources?cat=video_kural&amp;l=&amp;q=" class="">Thirukkural videos <span class="muted">21</span></a>' in page
+    assert 'href="/resources?cat=video_pmevidya&amp;l=&amp;q=" class="">PM eVidya CICT - Tamil <span class="muted">14</span></a>' in page
     assert 'href="/resources?cat=video_valluvar&amp;l=&amp;q=" class="">Thiruvalluvar videos <span class="muted">57</span></a>' in page
     lectures = client.get("/resources?cat=video_kural&lang=en").get_data(as_text=True)
-    assert lectures.count('<div class="card res-card">') == 35
+    assert lectures.count('<div class="card res-card">') == 21
     valluvar = client.get("/resources?cat=video_valluvar&lang=en").get_data(as_text=True)
     assert valluvar.count('<div class="card res-card">') == 57
     # each series in the order of its parts
@@ -209,7 +211,7 @@ def test_the_videos_in_sign_language_have_a_tab_of_their_own():
     assert lectures.index("Thirukural in Telugu Part 1 |") < lectures.index("Thirukural Part 03") < lectures.index("Telugu Part 12")
     # the Telugu lectures stand under Telugu in the filter of languages (with those of no language), the Tamil one not
     telugu = client.get("/resources?cat=video_kural&l=te&lang=en").get_data(as_text=True)
-    assert telugu.count('<div class="card res-card">') == 34 and "Thirukural in Telugu Part 4 |" in telugu
+    assert telugu.count('<div class="card res-card">') == 20 and "Thirukural in Telugu Part 4 |" in telugu
     assert "உலகப் பொதுமறை திருக்குறள்" not in telugu and "உலகப் பொதுமறை திருக்குறள்" in lectures
     assert lectures.index("Leadership lessons from Thirukural") < lectures.index("Part 01 : Goal setting") \
         < lectures.index("Part 02 : Goal setting") < lectures.index("part 01 : Importance of the Right Communications")
@@ -262,15 +264,45 @@ def test_the_thirukkural_stories_of_pm_evidya():
     # fourteen Thirukkural stories of CICT's channel PM eVidya CICT - Tamil (1.2.93), after the lectures, in the order of
     # the couplets
     stories = [s for s in SEEDS if "PM eVidya CICT – Tamil" in s["description"]]
-    assert len(stories) == 14 and all(s["category"] == "video_kural" and s["lang"] == "" for s in stories)
+    assert len(stories) == 14 and all(s["category"] == "video_pmevidya" and s["lang"] == "" for s in stories)
     assert [s["sort_order"] for s in stories] == list(range(433, 447))
     assert stories[0]["url"] == "https://www.youtube.com/watch?v=IK8J5aH9Szg"
     assert stories[-1]["url"] == "https://www.youtube.com/watch?v=N_hVT03XSCw"
     for s in stories:
         assert re.fullmatch(r"https://www\.youtube\.com/watch\?v=[A-Za-z0-9_-]{11}", s["url"]) and s["key"] == "yt-" + s["url"][-11:]
     app = make_app(ADMIN_PASSWORD=None)
-    page = app.test_client().get("/resources?cat=video_kural&lang=en").get_data(as_text=True)
-    assert page.index("Thirukural in Telugu Part 12") < page.index("Why Learn Thirukkural?") < page.index("Thirukkural 619")
+    page = app.test_client().get("/resources?cat=video_pmevidya&lang=en").get_data(as_text=True)
+    assert page.count('<div class="card res-card">') == 14
+    assert page.index("Why Learn Thirukkural?") < page.index("Thirukkural 517") < page.index("Thirukkural 619")
+    assert "Thirukural in Telugu" not in page
+    # the tab has the name of the channel in every language, "Tamil" in the language's own script
+    from kts.i18n import CATALOG
+    assert CATALOG["en"]["res.cat_video_pmevidya"] == "PM eVidya CICT - Tamil"
+    for code, catalogue in CATALOG.items():
+        name = catalogue["res.cat_video_pmevidya"]
+        assert name.startswith("PM eVidya CICT - ") and (code == "en" or "Tamil" not in name), code
     # and the search of the portal finds them
     found = app.test_client().get("/search?lang=en&q=Thirukkural 517").get_data(as_text=True)
     assert "The Right Person for the Right Job" in found and "The Secret of Choosing the Right Person" in found
+
+
+def test_the_stories_move_to_their_tab_once():
+    # a database of 1.2.93 holds the stories among the Thirukkural videos: at the next start they move, once
+    from kts.db import get_db
+    stories = [s["url"] for s in SEEDS if s["category"] == "video_pmevidya"]
+    app = make_app(ADMIN_PASSWORD=None)
+    with app.app_context():
+        conn = get_db()
+        conn.execute("UPDATE resources SET category = 'video_kural' WHERE url IN (%s)" % ", ".join("?" * len(stories)), stories)
+        conn.execute("DELETE FROM settings WHERE key = 'migrate.video_pmevidya'")
+        conn.commit()
+    app = _restart(app)
+    rows = {r["url"]: r["category"] for r in _rows(app)}
+    assert all(rows[u] == "video_pmevidya" for u in stories)
+    # one that the Console puts back among the Thirukkural videos afterwards stays there
+    with app.app_context():
+        conn = get_db()
+        conn.execute("UPDATE resources SET category = 'video_kural' WHERE url = ?", (stories[0],))
+        conn.commit()
+    rows = {r["url"]: r["category"] for r in _rows(_restart(app))}
+    assert rows[stories[0]] == "video_kural" and rows[stories[1]] == "video_pmevidya"

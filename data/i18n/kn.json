@@ -1085,5 +1085,6 @@
   "search.pages": "ಪುಟಗಳು",
   "search.more": "ಇನ್ನೂ {n}: ಹುಡುಕಾಟವನ್ನು ಕಿರಿದಾಗಿಸಲು ಇನ್ನೊಂದು ಪದ ಸೇರಿಸಿ",
   "search.result_one": "“{q}” ಹುಡುಕಾಟಕ್ಕೆ 1 ಫಲಿತಾಂಶ",
-  "ev.count_one": "1 ಕಾರ್ಯಕ್ರಮ"
+  "ev.count_one": "1 ಕಾರ್ಯಕ್ರಮ",
+  "res.cat_video_pmevidya": "PM eVidya CICT - ತಮಿಳು"
 }

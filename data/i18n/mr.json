@@ -1085,5 +1085,6 @@
   "search.pages": "पृष्ठे",
   "search.more": "आणखी {n}: शोध मर्यादित करण्यासाठी एखादा शब्द जोडा",
   "search.result_one": "“{q}”साठी 1 निकाल",
-  "ev.count_one": "1 कार्यक्रम"
+  "ev.count_one": "1 कार्यक्रम",
+  "res.cat_video_pmevidya": "PM eVidya CICT - तमिळ"
 }

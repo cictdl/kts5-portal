@@ -1085,5 +1085,6 @@
   "search.pages": "पृष्ठ",
   "search.more": "{n} और: खोज को सीमित करने के लिए एक शब्द और जोड़ें",
   "search.result_one": "“{q}” के लिए 1 परिणाम",
-  "ev.count_one": "1 कार्यक्रम"
+  "ev.count_one": "1 कार्यक्रम",
+  "res.cat_video_pmevidya": "PM eVidya CICT - तमिल"
 }
