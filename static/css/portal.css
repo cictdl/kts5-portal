@@ -228,6 +228,7 @@ mark { background: rgba(255, 196, 0, .45); color: inherit; padding: 0 1px; borde
 .band-group img { height: 54px; width: auto; }
 .band-group img.tall { height: 68px; }
 .band-group img.wordmark { height: 30px; }
+.band-group a { display: flex; border-radius: 6px; }
 .logo-band + footer.site { margin-top: 0; }
 @media print { .logo-band, .pm-section { display: none !important; } }
 .stipend-note .amt { background: var(--green); color: #fff; border-radius: 8px; padding: 3px 10px; font-weight: 800; white-space: nowrap; flex: none; }

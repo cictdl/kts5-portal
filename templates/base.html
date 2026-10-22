@@ -21,7 +21,7 @@
 {% endblock %}
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=26">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=27">
 {% block head %}{% endblock %}
 </head>
 <body>
@@ -128,8 +128,9 @@
     <div class="band-group"><span class="band-label">{{ t('band.implemented') }}</span>
       <img src="{{ url_for('static', filename='img/logos/cict.png') }}" alt="{{ t('site.organiser') }}"></div>
     <div class="band-group"><span class="band-label">{{ t('band.association') }}</span>
-      <img src="{{ url_for('static', filename='img/logos/iitm.png') }}" alt="{{ t('agency.iitm.name') }}">
-      <img class="tall" src="{{ url_for('static', filename='img/logos/bhu.png') }}" alt="{{ t('agency.bhu.name') }}">
+      {# the KTS 5.0 portals of IIT Madras and BHU, on their logos (1.2.96) #}
+      <a href="https://kashitamil.iitm.ac.in/" target="_blank" rel="noopener noreferrer" title="kashitamil.iitm.ac.in"><img src="{{ url_for('static', filename='img/logos/iitm.png') }}" alt="{{ t('agency.iitm.name') }}"></a>
+      <a href="https://kashitamil.bhu.edu.in/" target="_blank" rel="noopener noreferrer" title="kashitamil.bhu.edu.in"><img class="tall" src="{{ url_for('static', filename='img/logos/bhu.png') }}" alt="{{ t('agency.bhu.name') }}"></a>
       <img class="wordmark" src="{{ url_for('static', filename='img/logos/bbs.png') }}" alt="{{ t('agency.bbs.name') }}"></div>
   </div>
 </section>
