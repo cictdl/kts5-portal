@@ -46,12 +46,15 @@ def _student(app, iid, name, tested=False):
 def _world():
     """
     Kerala: one institution at each stage, a pending and a declined one; Tamil Nadu: one that has
-    done nothing. Registration ends on 22 October 2026, as on the portal.
+    done nothing. The days of the timeline of 8 October 2026 (registration until 22 October), which the launch of 22
+    October moved a week on (1.2.95), are kept here.
     """
     from kts.db import execute, query, set_setting
     app = make_app(ADMIN_PASSWORD=None)
     with app.app_context():
-        set_setting("reg.end", "2026-10-22")
+        for key, value in (("reg.end", "2026-10-22"), ("camp.to", "2026-10-21"), ("remind.test_by", "2026-10-17"),
+                           ("remind.select_by", "2026-10-20"), ("remind.register_by", "2026-10-21")):
+            set_setting(key, value)
     ids = {"none": _inst(app, "Idle College"),
            "testing": _inst(app, "Testing College", test_on=1, test_from="2026-10-15", test_to="2026-10-21", test_slug="testing1", test_code="111111"),
            "selected": _inst(app, "Selected College", test_on=1, test_from="2026-10-15", test_to="2026-10-21", test_slug="select11", test_code="222222"),
@@ -212,3 +215,11 @@ def test_the_dashboard_and_the_settings():
     settings = admin.get("/console/settings").get_data(as_text=True)
     for key in ("remind.on", "remind.test_by", "remind.select_by", "remind.register_by"):
         assert f'name="{key}"' in settings
+
+
+def test_the_days_of_the_reminders_lie_within_registration():
+    # registration 22-29 October 2026 since the launch (1.2.95): the three reminders fall inside it, in their order, and the
+    # assessments at the institutions run from the first day to the last
+    from kts.db import DEFAULT_SETTINGS as D
+    assert D["reg.start"] < D["remind.test_by"] < D["remind.select_by"] < D["remind.register_by"] < D["reg.end"]
+    assert (D["camp.from"], D["camp.to"]) == (D["reg.start"], D["reg.end"]) == ("2026-10-22", "2026-10-29")

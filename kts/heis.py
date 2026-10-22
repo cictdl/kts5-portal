@@ -19,6 +19,7 @@ nominates one student and one Faculty Supervisor/Guide, endorsed by the Head of 
 """
 import json
 import re
+from datetime import date
 
 from flask import current_app
 
@@ -89,6 +90,11 @@ def mail_invited(row):
     """The invitation to an institution identified by the Nodal Institution: it completes its registration with the link."""
     base = current_app.config["BASE_URL"]
     link = f"{base}/institutions/register?invite={row['invite_token']}"
+    try:  # the last day of registration, from the settings (22 October 2026 until the launch moved it, 1.2.95)
+        ends = date.fromisoformat(get_setting("reg.end"))
+        by = f"{ends.day} {ends.strftime('%B %Y')}"
+    except ValueError:
+        by = "the date shown on the portal"
     for address in [a for a in dict.fromkeys([row["coord_email"], row["head_email"]]) if a]:
         send_mail(address, f"KTS 5.0: {row['name']} is identified as a participating institution",
                   f"Dear Sir/Madam,\n\nThe Nodal Institution of {row['state']} has identified {row['name']} as a participating "
@@ -97,7 +103,7 @@ def mail_invited(row):
                   f"Please complete the registration of the institution on the KTS 5.0 portal with this link:\n\n{link}\n\n"
                   f"It asks for the Head of the Institution and confirms the Institutional Coordinator. The institution then "
                   f"assesses its students on the Thirukkural (the portal offers a ready online test), selects one student on "
-                  f"merit and registers that student on the portal by 22 October 2026. The steps and the dates are on the "
+                  f"merit and registers that student on the portal by {by}. The steps and the dates are on the "
                   f"institution's page of the portal after the registration.\n\nReference: {row['ref']}\n\n"
                   f"Central Institute of Classical Tamil, Chennai")
 

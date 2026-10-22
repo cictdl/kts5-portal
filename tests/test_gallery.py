@@ -5,7 +5,7 @@ The gallery: photographs uploaded in albums by the content staff, shown on the p
 """
 import io
 
-from conftest import make_app
+from conftest import ROOT, make_app
 from test_public_fixes import PNG, _staff
 
 JPG = b"\xff\xd8\xff\xe0" + b"\0" * 400 + b"\xff\xd9"
@@ -18,6 +18,15 @@ def _post(client, **data):
     return client.post("/console/gallery", data=data, content_type="multipart/form-data", follow_redirects=True).get_data(as_text=True)
 
 
+def _empty():
+    """The portal with an empty gallery: without the photographs of the launch that every installation carries (1.2.95)."""
+    app = make_app(ADMIN_PASSWORD=None)
+    with app.app_context():
+        from kts.db import execute
+        execute("DELETE FROM gallery_photos")
+    return app
+
+
 def _rows(app):
     from kts.db import query
     with app.app_context():
@@ -25,7 +34,7 @@ def _rows(app):
 
 
 def test_photographs_are_uploaded_in_albums_and_shown():
-    app = make_app(ADMIN_PASSWORD=None)
+    app = _empty()
     client = app.test_client()
     page = client.get("/gallery?lang=en").get_data(as_text=True)
     assert "Photographs will appear here as the programme unfolds." in page and 'class="photo-grid"' not in page
@@ -55,7 +64,7 @@ def test_photographs_are_uploaded_in_albums_and_shown():
 
 
 def test_hidden_and_deleted_photographs_leave_the_page():
-    app = make_app(ADMIN_PASSWORD=None)
+    app = _empty()
     content = _staff(app, "content@tests.example", "content")
     _post(content, action="upload", album="Orientation", photos=[(io.BytesIO(JPG), "a.jpg"), (io.BytesIO(JPG), "b.jpg")])
     first, second = _rows(app)
@@ -83,7 +92,7 @@ def test_hidden_and_deleted_photographs_leave_the_page():
 
 
 def test_only_content_staff_manage_the_gallery():
-    app = make_app(ADMIN_PASSWORD=None)
+    app = _empty()
     viewer = _staff(app, "viewer@tests.example", "viewer")
     assert viewer.get("/console/gallery").status_code == 403
     assert app.test_client().get("/console/gallery").status_code == 302
@@ -94,3 +103,35 @@ def test_only_content_staff_manage_the_gallery():
     big = b"\xff\xd8\xff" + b"\0" * (8 * 1024 * 1024 + 1)
     assert "(too large)" in _post(content, action="upload", album="X", photos=[(io.BytesIO(big), "big.jpg")])
     assert _rows(app) == []
+
+
+def test_the_photographs_of_the_launch():
+    # the launch of the KTS 5.0 web portal and registration by the Hon'ble Minister of Education on 22 October 2026: four
+    # photographs, carried in data/gallery/ and put in the gallery of every installation once (1.2.95)
+    import json
+    seeds = json.loads((ROOT / "data" / "gallery.json").read_text(encoding="utf-8"))
+    assert len(seeds) == 4 and {s["taken_on"] for s in seeds} == {"2026-10-22"}
+    assert {s["album"] for s in seeds} == {"Launch of the KTS 5.0 web portal and registration"}
+    app = make_app(ADMIN_PASSWORD=None)
+    client = app.test_client()
+    page = client.get("/gallery?lang=en").get_data(as_text=True)
+    assert page.count('<figure class="photo">') == 4 and "4 photographs" in page and "22 Oct 2026" in page
+    assert "<bdi>Launch of the KTS 5.0 web portal and registration</bdi> <span" in page
+    assert "Shri Pralhad Joshi, Hon&#39;ble Union Minister of Education, launches the KTS 5.0 web portal" in page
+    rows = _rows(app)
+    assert [r["caption"] for r in rows] == [s["caption"] for s in seeds] and all(r["published"] == 1 for r in rows)
+    # in the order given, each served as it is in data/gallery/
+    assert [page.index(r["file_path"]) for r in rows] == sorted(page.index(r["file_path"]) for r in rows)
+    for s, r in zip(seeds, rows):
+        assert r["file_path"] == "gallery/" + s["file"]
+        got = client.get(f"/files/{r['file_path']}")
+        data = (ROOT / "data" / "gallery" / s["file"]).read_bytes()
+        assert got.status_code == 200 and got.data == data and data[:4] == b"RIFF" and data[8:12] == b"WEBP"
+        assert len(data) < 200_000
+        got.close()
+    # put in once: one deleted in the console does not come back when the portal starts again
+    with app.app_context():
+        from kts.db import execute
+        execute("DELETE FROM gallery_photos WHERE id = ?", (rows[0]["id"],))
+    again = make_app(**{name: app.config[name] for name in ("INSTANCE_DIR", "DATABASE", "UPLOAD_DIR")})
+    assert [r["id"] for r in _rows(again)] == [r["id"] for r in rows[1:]]

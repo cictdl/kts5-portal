@@ -1,6 +1,6 @@
 """
-The launch of the KTS 5.0 web portal and registration by the Hon'ble Minister of Education, Shri Pralhad Joshi, on 14 October 2026 at
-5:00 PM (version 1.2.69): the banner announces it before the hour, registration opens at it, the home page counts down
+The launch of the KTS 5.0 web portal and registration by the Hon'ble Minister of Education, Shri Pralhad Joshi, set for 14 October
+2026 at 5:00 PM (version 1.2.69), postponed, and held on 22 October 2026 (1.2.95): the banner announces it before the hour, registration opens at it, the home page counts down
 to it and then says it was launched; the stage screen /launch, with the photograph of the Hon'ble Prime Minister and Thiruvalluvar; the launch video on the home page; the pinned notice and the schedule; the programme's
 purpose on the home and About pages; the cards for social media; and the leftovers of the central test of earlier
 versions (mails, candidate sign-in, programme, admit card) and the Daily Kural kits that are not there yet.
@@ -37,56 +37,59 @@ def test_the_moment_and_the_phases():
     from kts.db import DEFAULT_SETTINGS
     from kts.utils import launch_at, launch_phase, registration_state
     s = dict(DEFAULT_SETTINGS)
-    assert s["launch.on"] == "1" and s["launch.at"] == "2026-10-14T17:00" and s["launch.until"] == "2026-10-22"
-    assert s["reg.start"] == "2026-10-14" and s["reg.end"] == "2026-10-22"
-    assert launch_at(s).isoformat() == "2026-10-14T17:00:00+05:30"
-    assert launch_phase(s, _at(14, 16, 59)) == "before" and launch_phase(s, _at(14, 17)) == "after"
-    assert launch_phase(s, _at(22, 23, 59)) == "after" and launch_phase(s, _at(23)) is None
+    # the launch of 22 October 2026 (1.2.95): registration 22-29 October
+    assert s["launch.on"] == "1" and s["launch.at"] == "2026-10-22T12:00" and s["launch.until"] == "2026-10-29"
+    assert s["reg.start"] == "2026-10-22" and s["reg.end"] == "2026-10-29"
+    assert launch_at(s).isoformat() == "2026-10-22T12:00:00+05:30"
+    assert launch_phase(s, _at(22, 11, 59)) == "before" and launch_phase(s, _at(22, 12)) == "after"
+    assert launch_phase(s, _at(29, 23, 59)) == "after" and launch_phase(s, _at(30)) is None
     for off in ({"launch.on": "0"}, {"launch.at": ""}, {"launch.at": "5 PM"}):
-        assert launch_at({**s, **off}) is None and launch_phase({**s, **off}, _at(14, 9)) is None
+        assert launch_at({**s, **off}) is None and launch_phase({**s, **off}, _at(22, 9)) is None
 
 
 def test_registration_opens_at_the_launch(monkeypatch):
     from kts.db import DEFAULT_SETTINGS, RETIRED_DEFAULTS
     from kts.utils import registration_state
     s = dict(DEFAULT_SETTINGS)
-    _clock(monkeypatch, _at(14, 16, 59))
+    _clock(monkeypatch, _at(22, 11, 59))
     assert registration_state(s) == "not_yet"
-    _clock(monkeypatch, _at(14, 17))
+    _clock(monkeypatch, _at(22, 12))
     assert registration_state(s) == "open"
-    _clock(monkeypatch, _at(23))
+    _clock(monkeypatch, _at(30))
     assert registration_state(s) == "closed"
-    # a database that kept the day of the timeline of 8 October 2026 takes the day of the launch
-    assert "2026-10-15" in RETIRED_DEFAULTS["reg.start"]
+    # a database that kept the day of the timeline of 8 October 2026, or the day first set for the launch, takes the day of
+    # the launch
+    assert "2026-10-15" in RETIRED_DEFAULTS["reg.start"] and "2026-10-14" in RETIRED_DEFAULTS["reg.start"]
+    assert "2026-10-14T17:00" in RETIRED_DEFAULTS["launch.at"]
 
 
 def test_the_banner_and_the_home_page_before_and_after(monkeypatch):
     app = _app()
     client = app.test_client()
-    _clock(monkeypatch, _at(14, 16, 30))
+    _clock(monkeypatch, _at(22, 11, 30))
     before = client.get("/?lang=en").get_data(as_text=True)
     assert ('<div class="banner launch">' in before and "The Kashi Tamil Sangamam 5.0 web portal and its registration will be launched by "
-            "the Hon&#39;ble Minister of Education, Shri Pralhad Joshi, on 14 Oct 2026 at 5:00 PM." in before)
+            "the Hon&#39;ble Minister of Education, Shri Pralhad Joshi, on 22 Oct 2026 at 12:00 PM." in before)
     assert '<div class="launch-card">' in before and "Launch of the KTS 5.0 web portal and registration" in before
-    assert 'data-countdown="2026-10-14T17:00:00+05:30" data-done="The KTS 5.0 web portal and its registration are being launched" data-reload="1"' in before
+    assert 'data-countdown="2026-10-22T12:00:00+05:30" data-done="The KTS 5.0 web portal and its registration are being launched" data-reload="1"' in before
     assert "Kashi Tamil Sangamam 5.0 begins in" not in before and 'id="launched"' not in before
     # the programme's purpose, under the theme
     assert ("Kashi Tamil Sangamam 5.0 will be held from 28 Nov 2026 to 12 Dec 2026 under the theme "
             "“Thirukkural Payilvom – Thirukkural Abhyas Karen”. The programme seeks to celebrate the cultural and civilisational "
             "bonds between Kashi and Tamil Nadu" in before)
     tamil = client.get("/?lang=ta").get_data(as_text=True)
-    assert "பிரகலாத் ஜோஷி" in tamil and "14-10-2026 அன்று 17:00 மணிக்கு" in tamil
+    assert "பிரகலாத் ஜோஷி" in tamil and "22-10-2026 அன்று 12:00 மணிக்கு" in tamil
     hindi = client.get("/?lang=hi").get_data(as_text=True)
     assert "KTS 5.0 वेब पोर्टल एवं पंजीकरण का शुभारंभ" in hindi
-    _clock(monkeypatch, _at(14, 17, 1))
+    _clock(monkeypatch, _at(22, 12, 1))
     after = client.get("/?lang=en").get_data(as_text=True)
     assert '<div class="banner launch">' not in after and "Applications for KTS 5.0" in after
     assert ('id="launched"' in after and "The Kashi Tamil Sangamam 5.0 web portal and its registration were launched by the "
-            "Hon&#39;ble Minister of Education, Shri Pralhad Joshi, on 14 Oct 2026." in after)
+            "Hon&#39;ble Minister of Education, Shri Pralhad Joshi, on 22 Oct 2026." in after)
     assert '<div class="launch-card">' not in after and "Kashi Tamil Sangamam 5.0 begins in" in after
     about = client.get("/about?lang=en").get_data(as_text=True)
     assert "were launched by the Hon&#39;ble Minister of Education" in about and "civilisational bonds between Kashi" in about
-    _clock(monkeypatch, _at(23))
+    _clock(monkeypatch, _at(30))
     assert 'id="launched"' not in client.get("/?lang=en").get_data(as_text=True)
 
 
@@ -94,7 +97,7 @@ def test_the_stage_shows_launched_after_the_button(monkeypatch):
     # the button of the stage screen opens the home page with ?launched=1; that browser sees the portal as launched
     app = _app()
     client = app.test_client()
-    _clock(monkeypatch, _at(14, 16, 58))
+    _clock(monkeypatch, _at(22, 11, 58))
     page = client.get("/?launched=1&lang=en").get_data(as_text=True)
     assert 'id="launched"' in page and '<div class="banner launch">' not in page
     assert 'id="launched"' in client.get("/?lang=en").get_data(as_text=True)
@@ -132,11 +135,11 @@ def test_the_launch_postponed(monkeypatch):
         set_setting("site.banner_on", "1")
     home = app.test_client().get("/?lang=en").get_data(as_text=True)
     assert "will be launched by" in home and "20 Oct 2026" in home and "launch-card" in home
-    assert "5:00 PM" in app.test_client().get(f"/notices/{nid}").get_data(as_text=True)
+    assert "Shri Pralhad Joshi" in app.test_client().get(f"/notices/{nid}").get_data(as_text=True)
     # after registration has really closed, its last day is named
     with app.app_context():
         set_setting("launch.on", "0")
-    _clock(monkeypatch, _at(23, 10))
+    _clock(monkeypatch, _at(30, 10))
     assert "Registrations closed on" in app.test_client().get("/register?lang=en").get_data(as_text=True)
 
 
@@ -156,21 +159,36 @@ def test_the_postponement_switches_the_launch_off_once():
     init_db(app)
     with app.app_context():
         assert [get_setting(k) for k in ("launch.on", "reg.open", "site.banner_on")] == ["0", "0", "0"]
-        assert get_setting("launch.at") == "2026-10-14T17:00"          # the rest stays as it was
+        assert get_setting("launch.at") == "2026-10-22T12:00"          # the rest stays as it was
         # CICT switches them on again with the new moment: later starts leave them on
         for key in ("launch.on", "reg.open", "site.banner_on"):
             set_setting(key, "1")
     init_db(app)
     with app.app_context():
         assert [get_setting(k) for k in ("launch.on", "reg.open", "site.banner_on")] == ["1", "1", "1"]
+    # the launch took place on 22 October 2026 (1.2.95): the live database, where they are still switched off, has them
+    # switched on at the next start, once; switched off in the Console afterwards, they stay off
+    with app.app_context():
+        execute("DELETE FROM settings WHERE key = 'seed.launch.done'")
+        for key in ("launch.on", "reg.open", "site.banner_on"):
+            set_setting(key, "0")
+    init_db(app)
+    with app.app_context():
+        assert [get_setting(k) for k in ("launch.on", "reg.open", "site.banner_on")] == ["1", "1", "1"]
+        assert get_setting("seed.launch.done") == "1"
+        for key in ("launch.on", "reg.open", "site.banner_on"):
+            set_setting(key, "0")
+    init_db(app)
+    with app.app_context():
+        assert [get_setting(k) for k in ("launch.on", "reg.open", "site.banner_on")] == ["0", "0", "0"]
 
 
 def test_the_launch_video_on_the_home_page(monkeypatch):
     app = _app()
-    _clock(monkeypatch, _at(14, 16, 30))
+    _clock(monkeypatch, _at(22, 11, 30))
     assert "kts5-launch.mp4" not in app.test_client().get("/?lang=en").get_data(as_text=True)
     # from the hour: two minutes on the programme and the portal; the poster opens it in the browser's own player
-    _clock(monkeypatch, _at(14, 17, 5))
+    _clock(monkeypatch, _at(22, 12, 5))
     page = app.test_client().get("/?lang=en").get_data(as_text=True)
     for text in ('<section class="section launch-video"', 'id="launch-video-title"', "Launch of the KTS 5.0 web portal and registration",
                  '<a href="/static/video/kts5-launch.mp4" target="_blank" rel="noopener"',
@@ -181,11 +199,11 @@ def test_the_launch_video_on_the_home_page(monkeypatch):
     _clock(monkeypatch, _at(30, 10))
     assert "kts5-launch.mp4" in app.test_client().get("/?lang=ta").get_data(as_text=True)
     # the hall's computer, opened as launched by the stage screen a few minutes before the hour
-    _clock(monkeypatch, _at(14, 16, 58))
+    _clock(monkeypatch, _at(22, 11, 58))
     hall = app.test_client()
     assert "kts5-launch.mp4" in hall.get("/?launched=1&lang=en").get_data(as_text=True)
     # no launch, no video
-    _clock(monkeypatch, _at(14, 17, 5))
+    _clock(monkeypatch, _at(22, 12, 5))
     assert "kts5-launch.mp4" not in _app(**{"launch.on": "0"}).test_client().get("/?lang=en").get_data(as_text=True)
     # the files: a web copy that streams, the poster, and the captions of all thirteen lines of the voice-over
     folder = ROOT / "static" / "video"
@@ -203,13 +221,15 @@ def test_the_launch_video_on_the_home_page(monkeypatch):
 def test_the_stage_screen(monkeypatch):
     app = _app()
     client = app.test_client()
+    _clock(monkeypatch, _at(22, 11))
     r = client.get("/launch")
     assert r.status_code == 200 and r.headers["X-Robots-Tag"] == "noindex"
     page = r.get_data(as_text=True)
     for text in ("Launch of the KTS 5.0 web portal and registration", "KTS 5.0 वेब पोर्टल एवं पंजीकरण का शुभारंभ",
                  "KTS 5.0 இணையதள வெளியீடும் பதிவுத் தொடக்கமும்",
-                 "माननीय शिक्षा मंत्री श्री प्रल्हाद जोशी द्वारा", "by the Hon&#39;ble Minister of Education, Shri Pralhad Joshi",
-                 "14 October 2026 · 5:00 PM", 'id="go"', "data:image/png;base64,", "kts.cict.in",
+                 'माननीय शिक्षा मंत्री <strong class="minister">श्री प्रल्हाद जोशी</strong> द्वारा',
+                 'by the Hon&#39;ble Minister of Education, <strong class="minister">Shri Pralhad Joshi</strong>',
+                 "22 October 2026 · 12:00 PM", 'id="go"', "data:image/png;base64,", "kts.cict.in",
                  'data-home="/?launched=1"', "/static/js/launch.js", "/static/css/launch.css",
                  "img/logos/moe.png", "img/cict-logo.png", "Opening the portal…"):
         assert text in page, text
@@ -243,7 +263,7 @@ def test_the_photograph_on_the_stage_screen():
     # the content is centred between the two pictures
     assert "padding-left: var(--pl); padding-right: var(--pl);" in css
     assert "@media (max-aspect-ratio: 1/1)" in css and "@media (max-aspect-ratio: 16/10)" in css
-    assert "css/launch.css') }}?v=5" in (ROOT / "templates" / "public" / "launch.html").read_text(encoding="utf-8")
+    assert "css/launch.css') }}?v=6" in (ROOT / "templates" / "public" / "launch.html").read_text(encoding="utf-8")
 
 
 def test_the_notice_and_the_schedule(monkeypatch):
@@ -252,14 +272,14 @@ def test_the_notice_and_the_schedule(monkeypatch):
         from kts.db import LAUNCH_NOTICE, query
         rows = query("SELECT * FROM notices WHERE title = ?", (LAUNCH_NOTICE[0],))
         assert len(rows) == 1 and rows[0]["pinned"] == 1 and rows[0]["published"] == 1
-        assert "Shri Pralhad Joshi" in rows[0]["body"] and "14 October 2026 (Wednesday) at 5:00 PM" in rows[0]["body"]
+        assert "Shri Pralhad Joshi" in rows[0]["body"] and "and its registration on 22 October 2026." in rows[0]["body"]
     client = app.test_client()
-    _clock(monkeypatch, _at(14, 10))
+    _clock(monkeypatch, _at(22, 10))
     assert "Launch of the KTS 5.0 web portal and registration" in client.get("/notices?lang=en").get_data(as_text=True)
     schedule = client.get("/schedule?lang=en").get_data(as_text=True)
-    # the schedule's own entry for the day: the launch of the web portal and the opening of registration, on 14 October
+    # the schedule's own entry for the day: the launch of the web portal and the opening of registration, on 22 October
     i = schedule.index("Launch of the KTS 5.0 web portal and opening of registration")
-    assert "14 Oct 2026" in schedule[max(0, i - 600):i]
+    assert "22 Oct 2026" in schedule[max(0, i - 600):i]
     assert "KTS 5.0 இணையதள வெளியீடும் பதிவுத் தொடக்கமும்" in client.get("/schedule?lang=ta").get_data(as_text=True)
 
 
@@ -302,3 +322,51 @@ def test_the_console_can_move_the_hour():
     from kts.admin import SETTING_GROUPS
     keys = [k for _title, items in SETTING_GROUPS for k, *_ in items]
     assert {"launch.on", "launch.at", "launch.until"} <= set(keys)
+
+
+def test_the_minister_and_the_day_on_the_stage_screen(monkeypatch):
+    # the launch of 22 October 2026 (1.2.95): the name of the Hon'ble Minister stands out in Hindi, English and Tamil, and
+    # the day is shown with it; before the hour the front gives the hour too, after it the day alone
+    client = _app().test_client()
+    _clock(monkeypatch, _at(22, 12, 30))
+    page = client.get("/launch").get_data(as_text=True)
+    front = page[page.index('id="front"'):]
+    assert '<p class="when">22 October 2026</p>' in front and "12:00 PM" not in front
+    reveal = page[page.index('class="r-minister"'):page.index('class="r-site"')]
+    for name in ("श्री प्रल्हाद जोशी", "Shri Pralhad Joshi", "திரு பிரகலாத் ஜோஷி"):
+        assert f'<strong class="minister">{name}</strong>' in reveal, name
+    assert '<p class="r-date">22 October 2026</p>' in reveal
+    assert page.count('<strong class="minister">') == 5
+    # in Tamil the line of the page's own language names him in Tamil
+    tamil = client.get("/launch?lang=ta").get_data(as_text=True)
+    assert tamil.count('<strong class="minister">திரு பிரகலாத் ஜோஷி</strong>') == 3
+    css = (ROOT / "static" / "css" / "launch.css").read_text(encoding="utf-8")
+    for rule in (".minister {", ".r-minister {", ".r-by {", ".r-date {"):
+        assert rule in css, rule
+    # no launch, no name and no day in the reveal
+    with_off = _app(**{"launch.on": "0"}).test_client().get("/launch").get_data(as_text=True)
+    assert 'class="r-minister"' not in with_off
+
+
+def test_the_notice_of_before_the_launch_says_that_it_took_place():
+    # a database that holds the notice of 14 October 2026, 5:00 PM unchanged receives the notice of the launch of 22 October
+    # (1.2.95), dated the day it changes; one that CICT has changed stays as it is
+    from kts.db import LAUNCH_NOTICE, RETIRED_LAUNCH_NOTICES, execute, init_db, query
+    assert "launched the web portal" in LAUNCH_NOTICE[1] and "on 22 October 2026" in LAUNCH_NOTICE[1]
+    assert "by 29 October 2026" in LAUNCH_NOTICE[1] and "will launch" not in LAUNCH_NOTICE[1]
+    app = make_app(ADMIN_PASSWORD=None)
+    old_title, old_body = RETIRED_LAUNCH_NOTICES[0]
+    with app.app_context():
+        execute("UPDATE notices SET title = ?, body = ?, created_at = '2026-10-13T10:00:00+00:00' WHERE title = ?",
+                (old_title, old_body, LAUNCH_NOTICE[0]))
+    # hidden while the launch is switched off, under the title of before too
+    assert "14 October 2026, 5:00 PM" not in app.test_client().get("/notices?lang=en").get_data(as_text=True)
+    init_db(app)
+    with app.app_context():
+        rows = query("SELECT * FROM notices WHERE title IN (?, ?)", (old_title, LAUNCH_NOTICE[0]))
+        assert len(rows) == 1 and (rows[0]["title"], rows[0]["body"]) == LAUNCH_NOTICE and rows[0]["pinned"] == 1
+        assert rows[0]["created_at"] > "2026-10-13T10:00:00+00:00"
+        execute("UPDATE notices SET title = ?, body = ? WHERE title = ?", (old_title, old_body + " Watch it live.", LAUNCH_NOTICE[0]))
+    init_db(app)
+    with app.app_context():
+        assert query("SELECT body FROM notices WHERE title = ?", (old_title,), one=True)["body"].endswith("Watch it live.")

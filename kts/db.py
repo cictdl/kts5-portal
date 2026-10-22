@@ -612,10 +612,10 @@ DEFAULT_SETTINGS = {
     "site.banner_on": "1",
     "reg.open": "1",
     # the dates of the tentative timeline of KTS 5.0 (28.11.2026 – 12.12.2026)
-    "reg.start": "2026-10-14",
+    "reg.start": "2026-10-22",
     # the D.O. letter of the Ministry of 9 October 2026: the institutions register their selected students by 22 October
-    "reg.end": "2026-10-22",
-    "exam.date": "2026-10-22",
+    "reg.end": "2026-10-29",
+    "exam.date": "2026-10-29",
     "exam.start_time": "11:30",
     "exam.end_time": "12:00",
     "exam.duration_min": "30",
@@ -649,8 +649,8 @@ DEFAULT_SETTINGS = {
     # the launch of the KTS 5.0 web portal and registration by the Hon'ble Minister of Education (1.2.69): registration opens then, the
     # banner announces it before, the home page says it was launched until launch.until; /launch is the stage screen
     "launch.on": "1",
-    "launch.at": "2026-10-14T17:00",
-    "launch.until": "2026-10-22",
+    "launch.at": "2026-10-22T12:00",
+    "launch.until": "2026-10-29",
     "kts.end": "2026-12-12",
     "schedule.tentative": "1",
     # every registered student receives a certificate of recognition (kts/certificate.py)
@@ -665,10 +665,10 @@ DEFAULT_SETTINGS = {
     "inaug.code": "",
     # the confirmation letter of the selected students, and the dates of the internship it names
     "letter.on": "1",
-    "letter.date": "2026-10-25",
-    "internship.start": "2026-10-26",
-    "papers.due": "2026-11-05",
-    "present.due": "2026-11-15",
+    "letter.date": "2026-11-01",
+    "internship.start": "2026-11-02",
+    "papers.due": "2026-11-12",
+    "present.due": "2026-11-22",
     # the research papers (kts/papers.py): auto = from internship.start to papers.due, 1 open, 0 closed;
     # a note and a link to the guidelines, shown above the form
     "papers.open": "auto",
@@ -680,7 +680,7 @@ DEFAULT_SETTINGS = {
     # anybody may host a classroom quiz, without an account (1.2.30)
     "quiz.public": "1",
     # the Nodal Officers of the States/UTs (1.2.39): verification closes the day before the test
-    "verify.end": "2026-10-24",
+    "verify.end": "2026-10-31",
     "nodal.digest": "1",
     "nodal.digest_time": "08:00",
     # the copies of the database (1.2.40, kts/backup.py)
@@ -689,7 +689,7 @@ DEFAULT_SETTINGS = {
     "backup.keep": "28",
     # the participating institutions (1.2.41, kts/heis.py)
     "hei.open": "1",
-    "hei.end": "2026-10-21",
+    "hei.end": "2026-10-29",
     "hei.max_per_state": "0",
     "hei.public": "1",
     # the Nodal Officer of each Nodal HEI, with the contact details given for the account, on the public pages (1.2.70)
@@ -697,14 +697,14 @@ DEFAULT_SETTINGS = {
     # the D.O. letter of 9 October 2026 (1.2.43): registration by the institutions' links; their online assessment
     "reg.by_institution": "1",
     "camp.on": "1",
-    "camp.from": "2026-10-15",
-    "camp.to": "2026-10-21",
+    "camp.from": "2026-10-22",
+    "camp.to": "2026-10-29",
     "camp.show_score": "1",
     # the reminders to the participating institutions that are behind (1.2.52, kts/progress.py)
     "remind.on": "1",
-    "remind.test_by": "2026-10-17",
-    "remind.select_by": "2026-10-20",
-    "remind.register_by": "2026-10-21",
+    "remind.test_by": "2026-10-24",
+    "remind.select_by": "2026-10-27",
+    "remind.register_by": "2026-10-28",
     # the practice test for students (1.2.54, kts/practice.py)
     "practice.on": "1",
     "practice.questions": "10",
@@ -740,20 +740,32 @@ RETIRED_DEFAULTS = {
     # the dates up to version 1.1.4, before the timeline of the programme was fixed, and those of the
     # timeline up to 1.2.31 (registration 10-16 October, test 19 October), moved by the timeline of
     # 8 October 2026 (registration 15-21 October, test 22 October)
-    "reg.start": ["2026-09-25", "2026-10-10", "2026-10-15"],
-    "reg.end": ["2026-11-15", "2026-10-16", "2026-10-21"],
-    "exam.date": ["2026-11-29", "2026-10-19"],
-    "letter.date": ["2026-10-22"],
-    "internship.start": ["2026-10-23"],
+    "reg.start": ["2026-09-25", "2026-10-10", "2026-10-15", "2026-10-14"],
+    "reg.end": ["2026-11-15", "2026-10-16", "2026-10-21", "2026-10-22"],
+    "exam.date": ["2026-11-29", "2026-10-19", "2026-10-22"],
+    "letter.date": ["2026-10-22", "2026-10-25"],
+    "internship.start": ["2026-10-23", "2026-10-26"],
     # the test begins at 11:30 (8 October 2026); the window still closes at 12:00
     "exam.start_time": ["11:00"],
     # the D.O. letter of 9 October 2026 (1.2.43): the institutions register their students by 22 October, the Nodal
     # Officers verify until the consolidation, no central test, no cap on the institutions of a State/UT
     "exam.open": ["auto"],
-    "verify.end": ["2026-10-21"],
+    "verify.end": ["2026-10-21", "2026-10-24"],
     "hei.max_per_state": ["50"],
     # the online orientation has two lectures, not ten (14 October 2026)
     "orientation.note": ["Language-wise online orientation sessions (10 lectures + 20-minute live Q&A) will be scheduled after the merit list is published."],
+    # the launch of 14 October 2026 was postponed; the Hon'ble Minister of Education launched the portal and its registration
+    # on 22 October 2026 (1.2.95): registration 22-29 October, and every later date a week on
+    "launch.at": ["2026-10-14T17:00"],
+    "launch.until": ["2026-10-22"],
+    "hei.end": ["2026-10-21"],
+    "camp.from": ["2026-10-15"],
+    "camp.to": ["2026-10-21"],
+    "remind.test_by": ["2026-10-17"],
+    "remind.select_by": ["2026-10-20"],
+    "remind.register_by": ["2026-10-21"],
+    "papers.due": ["2026-11-05"],
+    "present.due": ["2026-11-15"],
 }
 
 # Titles of the events of data/timeline.json as earlier versions put them in, by the key of the event: an event
@@ -768,11 +780,22 @@ RETIRED_EVENT_TITLES = {
 # (starts_at, ends_at). An event that still holds them receives the days of the present file; an event
 # moved in the console is left alone. The timeline of 8 October 2026 moved these three.
 RETIRED_EVENT_DAYS = {
-    "selection": [("2026-10-20T00:00", "2026-10-21T00:00")],
+    "selection": [("2026-10-20T00:00", "2026-10-21T00:00"), ("2026-10-23T00:00", "2026-10-24T00:00")],
     # the Nationwide Students' Engagement Programme: 15 October 2026 onwards, no longer until 15 November (1.2.81)
     "engage": [("2026-10-15T00:00", "2026-11-15T00:00")],
-    "letters": [("2026-10-22T00:00", None)],
-    "internship": [("2026-10-23T00:00", None)],
+    "letters": [("2026-10-22T00:00", None), ("2026-10-25T00:00", None)],
+    "internship": [("2026-10-23T00:00", None), ("2026-10-26T00:00", None)],
+    # the launch of 22 October 2026 (1.2.95): the assessment, the selection and every step after it a week on (the second
+    # days of selection, letters and internship above, and these)
+    "assess": [("2026-10-21T00:00", None)],
+    "live": [("2026-10-26T00:00", None)],
+    "papers": [("2026-11-05T00:00", None)],
+    "forward": [("2026-11-06T00:00", None)],
+    "eval_start": [("2026-11-07T00:00", None)],
+    "eval_end": [("2026-11-12T00:00", None)],
+    "booklet": [("2026-11-13T00:00", "2026-11-16T00:00")],
+    "present": [("2026-11-15T00:00", None)],
+    "printed": [("2026-11-20T00:00", None)],
 }
 
 
@@ -1224,6 +1247,23 @@ def init_db(app):
             conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)",
                          ("migrate.video_pmevidya", "1", now))
 
+    # Photographs of the gallery that every installation carries (data/gallery.json, 1.2.95): each is put in once, so that
+    # one the Console deletes does not come back. The file stays in data/gallery/ and is served from there (utils.file_folder).
+    seed_path = app.config["DATA_DIR"] / "gallery.json"
+    if seed_path.exists():
+        for p in json.loads(seed_path.read_text(encoding="utf-8")):
+            mark = f"seed.gallery.{p['key']}"
+            if conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
+                continue
+            source = app.config["DATA_DIR"] / "gallery" / p["file"]
+            if source.exists() and not conn.execute("SELECT 1 FROM gallery_photos WHERE file_path = ?",
+                                                    ("gallery/" + p["file"],)).fetchone():
+                conn.execute("INSERT INTO gallery_photos(album, caption, taken_on, file_path, file_name, file_size, published, "
+                             "sort_order, created_at) VALUES(?,?,?,?,?,?,1,?,?)",
+                             (p["album"], p["caption"], p["taken_on"], "gallery/" + p["file"], p["file"], source.stat().st_size,
+                              p.get("sort_order", 100), now))
+            conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
+
     # The timeline of the programme (data/timeline.json), as events of the schedule. Each is put
     # in once for each database, as the entries of the repository are, and not at all when an
     # event with the same title is there already. The dates kept as settings (registration, the
@@ -1285,6 +1325,20 @@ def init_db(app):
                              "ON CONFLICT(key) DO UPDATE SET value = '0', updated_at = excluded.updated_at", (key, now))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
 
+    # The launch took place on 22 October 2026 (1.2.95): on a database where it was switched off when it was postponed, the
+    # launch, registration and the banner are switched on again, once; CICT may switch them off in the Console afterwards.
+    mark = "seed.launch.done"
+    if not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
+        if conn.execute("SELECT 1 FROM settings WHERE key = 'seed.launch.postponed'").fetchone():
+            for key in ("launch.on", "reg.open", "site.banner_on"):
+                conn.execute("INSERT INTO settings(key, value, updated_at) VALUES(?, '1', ?) "
+                             "ON CONFLICT(key) DO UPDATE SET value = '1', updated_at = excluded.updated_at", (key, now))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
+    # the notice of before the launch, still unchanged, says that it took place, dated the day it is changed
+    for title, body in RETIRED_LAUNCH_NOTICES:
+        conn.execute("UPDATE notices SET title = ?, body = ?, created_at = ?, updated_at = ? WHERE title = ? AND body = ?",
+                     (LAUNCH_NOTICE[0], LAUNCH_NOTICE[1], now, now, title, body))
+
     # The launch of the KTS 5.0 web portal and registration (1.2.69), as a notice pinned at the top, put in once as the circular is.
     mark = "seed.notice.launch"
     if not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
@@ -1318,6 +1372,19 @@ def init_db(app):
 
 
 LAUNCH_NOTICE = (
+    "Launch of the KTS 5.0 web portal and registration by the Hon'ble Minister of Education, 22 October 2026",
+    "The Hon'ble Minister of Education, Shri Pralhad Joshi, launched the web portal of the fifth edition of Kashi Tamil "
+    "Sangamam (KTS 5.0), kts.cict.in, and its registration on 22 October 2026. KTS 5.0 is scheduled to be held from "
+    "28 November to 12 December 2026 under the theme “Thirukkural Payilvom – Thirukkural Abhyas Karen”. The programme "
+    "seeks to celebrate the cultural and civilisational bonds between Kashi and Tamil Nadu and to promote the timeless "
+    "ethical and moral values of the Thirukkural.\n\nThe registration of the selected students is open on kts.cict.in. "
+    "Each participating institution completes the assessment of its students by 29 October 2026, selects one student on "
+    "merit and registers that student on the portal by 29 October 2026.",
+)
+
+# The notice as put in before the launch took place, for 14 October 2026, 5:00 PM (1.2.69 to 1.2.94): one that a
+# database still holds unchanged receives the present title and text (1.2.95).
+RETIRED_LAUNCH_NOTICES = [(
     "Launch of the KTS 5.0 web portal and registration by the Hon'ble Minister of Education, 14 October 2026, 5:00 PM",
     "The Hon'ble Minister of Education, Shri Pralhad Joshi, will launch the web portal of the fifth edition of Kashi Tamil "
     "Sangamam (KTS 5.0), kts.cict.in, and its registration on 14 October 2026 (Wednesday) at 5:00 PM. KTS 5.0 is "
@@ -1327,7 +1394,7 @@ LAUNCH_NOTICE = (
     "ethical and moral values of the Thirukkural.\n\nThe registration of the selected students opens with the launch, on "
     "kts.cict.in. Each participating institution assesses its students from 15 to 21 October 2026 and selects one student "
     "on merit; the selected student registers by 22 October 2026.",
-)
+)]
 
 
 def init_app(app):

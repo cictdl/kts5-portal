@@ -18,12 +18,12 @@ from flask import (Blueprint, Response, abort, current_app, flash, g, make_respo
 from . import campus as CAMP
 from . import heis as HEI
 from . import kural as K
-from .db import LAUNCH_NOTICE, all_settings, audit, execute, get_setting, query, utcnow
+from .db import LAUNCH_NOTICE, RETIRED_LAUNCH_NOTICES, all_settings, audit, execute, get_setting, query, utcnow
 from . import i18n
 from . import search as S
 from .i18n import get_lang, t
 from .utils import (DOC_EXT, IMAGE_EXT, age_on, check_captcha, client_ip, college_key, csv_bytes,
-                    IST, exam_window, fmt_date, limiter, make_app_no, new_captcha, now_ist, plain_english,
+                    IST, exam_window, file_folder, fmt_date, limiter, make_app_no, new_captcha, now_ist, plain_english,
                     launch_at, qr_data_uri, registration_state, safe_int, save_upload, send_mail, valid_email, valid_mobile,
                     valid_pincode)
 from .version import RELEASED, VERSION
@@ -209,7 +209,8 @@ def _notice_filter(settings):
     """
     if settings.get("launch.on") == "1":
         return "", ()
-    return " AND title != ?", (LAUNCH_NOTICE[0],)
+    titles = (LAUNCH_NOTICE[0],) + tuple(title for title, _ in RETIRED_LAUNCH_NOTICES)
+    return " AND title NOT IN (%s)" % ", ".join("?" * len(titles)), titles
 
 
 @bp.route("/")
@@ -1000,7 +1001,7 @@ def public_file(relpath):
                                                      (relpath,), one=True):
         # a photograph that is not published, or one that is gone, is not served
         abort(404)
-    return send_from_directory(Path(current_app.config["UPLOAD_DIR"]), relpath)
+    return send_from_directory(file_folder(relpath), relpath)
 
 
 @bp.route("/thirukkural")
@@ -1054,7 +1055,8 @@ def launch():
     """
     settings = all_settings()
     base = current_app.config["BASE_URL"].rstrip("/")
-    resp = make_response(render_template("public/launch.html", at=launch_at(settings), settings=settings,
+    at = launch_at(settings)
+    resp = make_response(render_template("public/launch.html", at=at, done=at is not None and now_ist() >= at, settings=settings,
                                          qr=qr_data_uri(base or "https://kts.cict.in"), base=base,
                                          hi=lambda key: i18n.text(key, "hi"), ta=lambda key: i18n.text(key, "ta"),
                                          stay=request.args.get("stay") == "1"))

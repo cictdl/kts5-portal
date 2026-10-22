@@ -371,14 +371,14 @@ def test_the_letter_in_the_data_and_the_pages():
     by = {h["state"]: h for h in heis}
     assert by["Tamil Nadu"]["name"] == "Central University of Tamil Nadu" and by["Tamil Nadu"]["allocation"] == 150
     assert by["Goa"]["name"] == "NIT Goa" and by["Goa"]["type"] == "nit" and by["Assam"]["name"] == "Assam University"
-    assert DEFAULT_SETTINGS["exam.open"] == "0" and DEFAULT_SETTINGS["reg.by_institution"] == "1" and DEFAULT_SETTINGS["camp.to"] == "2026-10-21"
+    assert DEFAULT_SETTINGS["exam.open"] == "0" and DEFAULT_SETTINGS["reg.by_institution"] == "1" and DEFAULT_SETTINGS["camp.to"] == "2026-10-29"
     assert "auto" in RETIRED_DEFAULTS["exam.open"] and "2026-10-21" in RETIRED_DEFAULTS["reg.end"] and "50" in RETIRED_DEFAULTS["hei.max_per_state"]
     assert set(RETIRED_EVENT_TITLES) == {"selection", "letters", "live"}
     app = make_app(ADMIN_PASSWORD=None)
     client = app.test_client()
     home = client.get("/?lang=en").get_data(as_text=True)
     # the countdown of the home page is to Kashi Tamil Sangamam 5.0 (1.2.50), no longer to a test of CICT
-    assert "Institution-level assessments" in home and 'data-countdown="2026-10-22' not in home and "Assessment at the institution" in home
+    assert "Institution-level assessments" in home and 'data-countdown="2026-10-29' not in home and "Assessment at the institution" in home
     exam = client.get("/examination?lang=en").get_data(as_text=True)
     assert "Institution-level assessment" in exam and 'href="/institution/login"' in exam and "11:30" not in exam
     assert 'href="/institution/login">Institution sign-in</a>' in home
@@ -401,7 +401,7 @@ def test_the_letter_in_the_data_and_the_pages():
     again = create_app(type("Again", (Config,), {name: app.config[name] for name in ("INSTANCE_DIR", "DATABASE", "UPLOAD_DIR")} | {"ADMIN_PASSWORD": None}))
     conn = sqlite3.connect(str(again.config["DATABASE"]))
     assert conn.execute("SELECT COUNT(*) FROM events WHERE title LIKE 'Consolidation of the selected%'").fetchone()[0] == 1
-    assert dict(conn.execute("SELECT key, value FROM settings WHERE key IN ('exam.open', 'reg.end')")) == {"exam.open": "0", "reg.end": "2026-10-22"}
+    assert dict(conn.execute("SELECT key, value FROM settings WHERE key IN ('exam.open', 'reg.end')")) == {"exam.open": "0", "reg.end": "2026-10-29"}
     conn.close()
 
 

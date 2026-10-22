@@ -22,7 +22,7 @@ def site():
     from kts.db import set_setting
     app = make_app(ADMIN_PASSWORD=None)
     with app.app_context():
-        set_setting("reg.end", "2026-10-22")
+        set_setting("reg.end", "2026-10-29")
     return app.test_client()
 
 
@@ -37,10 +37,10 @@ def test_the_three_parts_with_their_dates_and_links(site):
     for heading in ("How to take part", "For students", "For participating institutions", "For Nodal Officers of the States/UTs"):
         assert heading in page
     # the dates of the settings in the steps
-    assert "ask the Head of your institution to register it by 21 Oct 2026." in page and "<b>Register by 22 Oct 2026</b>" in page
-    assert "Between 15 Oct 2026 and 21 Oct 2026, your institution assesses" in page
+    assert "ask the Head of your institution to register it by 29 Oct 2026." in page and "<b>Register by 29 Oct 2026</b>" in page
+    assert "Between 22 Oct 2026 and 29 Oct 2026, your institution assesses" in page
     assert "50 questions in 30 minutes" in page
-    assert "<b>Verify the registered students by 24 Oct 2026</b>" in page
+    assert "<b>Verify the registered students by 31 Oct 2026</b>" in page
     assert not any(p in page for p in PLACEHOLDERS)
     for href in ('href="/institutions"', 'href="/institutions/register"', 'href="/institution/login"', 'href="/register"',
                  'href="/status"', 'href="/nodal-institutions"', 'href="/console/login"', 'href="/how-to-take-part/institutions"',

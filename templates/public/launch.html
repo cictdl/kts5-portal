@@ -11,9 +11,11 @@
 <meta name="robots" content="noindex">
 <title>{{ t('launch.title') }} · {{ t('site.name') }}</title>
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/launch.css') }}?v=5">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/launch.css') }}?v=6">
 </head>
 <body>
+{# the name of the Hon'ble Minister stands out in each language (1.2.95) #}
+{% macro named(text) %}{% for name in ('श्री प्रल्हाद जोशी', 'Shri Pralhad Joshi', 'திரு பிரகலாத் ஜோஷி') if name in text %}{% if loop.first %}{% set parts = text.split(name, 1) %}{{ parts[0] }}<strong class="minister">{{ name }}</strong>{{ parts[1] }}{% endif %}{% else %}{{ text }}{% endfor %}{% endmacro %}
 <div class="tri" aria-hidden="true"></div>
 <main class="stage" id="stage" data-home="{{ url_for('public.home') }}?launched=1" data-stay="{{ '1' if stay else '' }}">
   {# what the curtain reveals #}
@@ -26,6 +28,10 @@
     </div>
     <p class="r-kicker"><span lang="hi">{{ hi('launch.launched') }}</span><span lang="ta">{{ ta('launch.launched') }}</span></p>
     <h2 class="r-title">{{ t('launch.launched') }}</h2>
+    {% if at %}<div class="r-minister">
+      <p class="r-by"><span lang="hi">{{ named(hi('launch.by')) }}</span><span>{{ named(t('launch.by')) }}</span><span lang="ta">{{ named(ta('launch.by')) }}</span></p>
+      <p class="r-date">{{ at.strftime('%d %B %Y').lstrip('0') }}</p>
+    </div>{% endif %}
     <div class="r-site">
       <img class="qr" src="{{ qr }}" alt="QR code: {{ base or 'https://kts.cict.in' }}" width="240" height="240">
       <div><div class="url">kts.cict.in</div><div class="r-theme"><span lang="ta">{{ site.theme_ta }}</span><span>{{ site.theme_en }}</span><span lang="hi">{{ site.theme_hi }}</span></div>
@@ -45,8 +51,9 @@
     <p class="kicker"><span lang="ta">{{ ta('site.name') }}</span><span lang="hi">{{ hi('site.name') }}</span><span>{{ t('site.name') }}</span></p>
     <div class="theme"><span lang="ta">{{ site.theme_ta }}</span><span>{{ site.theme_en }}</span><span lang="hi">{{ site.theme_hi }}</span></div>
     <h1><span class="hi" lang="hi">{{ hi('launch.title') }}</span><span class="en">{{ t('launch.title') }}</span><span class="ta" lang="ta">{{ ta('launch.title') }}</span></h1>
-    <p class="by"><span lang="hi">{{ hi('launch.by') }}</span><span>{{ t('launch.by') }}</span></p>
-    {% if at %}<p class="when">{{ at.strftime('%d %B %Y').lstrip('0') }} · {{ at.strftime('%I:%M %p').lstrip('0') }}</p>{% endif %}
+    <p class="by"><span lang="hi">{{ named(hi('launch.by')) }}</span><span>{{ named(t('launch.by')) }}</span></p>
+    {# the day; the hour only before the launch #}
+    {% if at %}<p class="when">{{ at.strftime('%d %B %Y').lstrip('0') }}{% if not done %} · {{ at.strftime('%I:%M %p').lstrip('0') }}{% endif %}</p>{% endif %}
     <button type="button" class="go" id="go"><span>{{ t('launch.button') }}</span><small lang="hi">{{ hi('launch.button') }}</small></button>
     <p class="hint">{{ t('launch.hint') }}</p>
     <p class="org">{{ site.organiser }} · {{ site.ministry }}</p>

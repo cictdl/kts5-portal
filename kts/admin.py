@@ -25,7 +25,7 @@ from .auth import PERMS, ROLES, current_user, has_perm, login_required, state_sc
 from .db import (DEFAULT_SETTINGS, INSTITUTE_HEAD, NODAL_FIELDS, NODAL_OFFICERS, SOCIAL_LINKS, all_settings, audit, execute, executemany, get_setting, query,
                  set_setting, utcnow)
 from .public import CATEGORIES
-from .utils import (RESOURCE_EXT, client_ip, csv_bytes, exam_window, now_ist, paginate, parse_iso,
+from .utils import (RESOURCE_EXT, client_ip, csv_bytes, exam_window, file_folder, now_ist, paginate, parse_iso,
                     fmt_date, registration_state, safe_int, save_upload, send_again, send_mail, valid_email, xlsx_bytes,
                     mail_check, SHEET_MAX_BYTES, sheet_rows)
 
@@ -335,7 +335,7 @@ def staff_file(relpath):
             abort(404)
         audit("bank_proof_opened", "application", entry["application_id"], detail=relpath, user=user, ip=client_ip())
         return send_from_directory(Path(current_app.config["UPLOAD_DIR"]), relpath, conditional=False)
-    return send_from_directory(Path(current_app.config["UPLOAD_DIR"]), relpath)
+    return send_from_directory(file_folder(relpath), relpath)
 
 
 # ---- question bank ----------------------------------------------------------
