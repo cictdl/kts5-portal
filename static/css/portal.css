@@ -228,7 +228,9 @@ mark { background: rgba(255, 196, 0, .45); color: inherit; padding: 0 1px; borde
 .band-group img { height: 54px; width: auto; }
 .band-group img.tall { height: 68px; }
 .band-group img.wordmark { height: 30px; }
-.band-group a { display: flex; border-radius: 6px; }
+.band-group a.band-link { display: flex; flex-direction: column; align-items: center; gap: 5px; border-radius: 6px; text-decoration: none; }
+.band-url { font-size: .72rem; font-weight: 700; color: var(--indigo-2); white-space: nowrap; border-bottom: 1px dashed currentColor; }
+.band-link:hover .band-url, .band-link:focus-visible .band-url { color: var(--kumkum); border-bottom-style: solid; }
 .logo-band + footer.site { margin-top: 0; }
 @media print { .logo-band, .pm-section { display: none !important; } }
 .stipend-note .amt { background: var(--green); color: #fff; border-radius: 8px; padding: 3px 10px; font-weight: 800; white-space: nowrap; flex: none; }

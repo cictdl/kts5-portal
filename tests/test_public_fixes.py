@@ -987,16 +987,16 @@ def test_version_of_style_sheet_and_script():
     for path in TEMPLATES:
         for name, version in re.findall(r"filename='((?:css|js)/portal\.(?:css|js))'\) \}\}\?v=(\d+)", path.read_text(encoding="utf-8")):
             linked.setdefault(path.relative_to(ROOT / "templates").as_posix(), []).append((name, version))
-    expected = {name: [("css/portal.css", "27"), ("js/portal.js", "19")]
+    expected = {name: [("css/portal.css", "28"), ("js/portal.js", "19")]
                 for name in ("base.html", "candidate/exam_paper.html", "console/base.html")}
     # the certificate has a style sheet of its own and the script for its print button
     expected["public/certificate.html"] = [("js/portal.js", "19")]
     expected["public/letter.html"] = [("js/portal.js", "19")]
     # the pages of the classroom quiz have a frame of their own, with the style sheet and the script of the portal
-    expected["quiz/layout.html"] = [("css/portal.css", "27"), ("js/portal.js", "19")]
+    expected["quiz/layout.html"] = [("css/portal.css", "28"), ("js/portal.js", "19")]
     assert linked == expected
     for path in TEMPLATES:
-        assert not re.search(r"portal\.css'\) \}\}(?!\?v=27\")", path.read_text(encoding="utf-8")), path
+        assert not re.search(r"portal\.css'\) \}\}(?!\?v=28\")", path.read_text(encoding="utf-8")), path
         assert not re.search(r"portal\.js'\) \}\}(?!\?v=19\")", path.read_text(encoding="utf-8")), path
 
 
@@ -1072,7 +1072,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.96" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.97" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 
@@ -1169,7 +1169,11 @@ def test_the_logos_of_iit_madras_and_bhu_open_their_portals():
         band = html[start:html.index("</section>", start)]
         assert band.count("<a ") == 2, page
         for address, logo in (("https://kashitamil.iitm.ac.in/", "img/logos/iitm.png"), ("https://kashitamil.bhu.edu.in/", "img/logos/bhu.png")):
-            link = band[band.index(f'<a href="{address}"'):]
+            link = band[band.rindex("<a ", 0, band.index(f'href="{address}"')):]
             link = link[:link.index("</a>")]
             assert 'target="_blank" rel="noopener noreferrer"' in link and logo in link, (page, address)
-    assert ".band-group a { display: flex;" in (ROOT / "static" / "css" / "portal.css").read_text(encoding="utf-8")
+            # the address under the logo shows that it opens a portal (1.2.97)
+            shown = address[len("https://"):-1]
+            assert f'<span class="band-url" lang="en" dir="ltr">{shown}&nbsp;<span aria-hidden="true">↗</span></span>' in link, (page, address)
+    css = (ROOT / "static" / "css" / "portal.css").read_text(encoding="utf-8")
+    assert ".band-group a.band-link { display: flex; flex-direction: column;" in css and ".band-url {" in css

@@ -21,7 +21,7 @@
 {% endblock %}
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=27">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=28">
 {% block head %}{% endblock %}
 </head>
 <body>
@@ -128,9 +128,9 @@
     <div class="band-group"><span class="band-label">{{ t('band.implemented') }}</span>
       <img src="{{ url_for('static', filename='img/logos/cict.png') }}" alt="{{ t('site.organiser') }}"></div>
     <div class="band-group"><span class="band-label">{{ t('band.association') }}</span>
-      {# the KTS 5.0 portals of IIT Madras and BHU, on their logos (1.2.96) #}
-      <a href="https://kashitamil.iitm.ac.in/" target="_blank" rel="noopener noreferrer" title="kashitamil.iitm.ac.in"><img src="{{ url_for('static', filename='img/logos/iitm.png') }}" alt="{{ t('agency.iitm.name') }}"></a>
-      <a href="https://kashitamil.bhu.edu.in/" target="_blank" rel="noopener noreferrer" title="kashitamil.bhu.edu.in"><img class="tall" src="{{ url_for('static', filename='img/logos/bhu.png') }}" alt="{{ t('agency.bhu.name') }}"></a>
+      {# the KTS 5.0 portals of IIT Madras and BHU, on their logos (1.2.96), with the address of each under it (1.2.97) #}
+      <a class="band-link" href="https://kashitamil.iitm.ac.in/" target="_blank" rel="noopener noreferrer"><img src="{{ url_for('static', filename='img/logos/iitm.png') }}" alt="{{ t('agency.iitm.name') }}"><span class="band-url" lang="en" dir="ltr">kashitamil.iitm.ac.in&nbsp;<span aria-hidden="true">↗</span></span></a>
+      <a class="band-link" href="https://kashitamil.bhu.edu.in/" target="_blank" rel="noopener noreferrer"><img class="tall" src="{{ url_for('static', filename='img/logos/bhu.png') }}" alt="{{ t('agency.bhu.name') }}"><span class="band-url" lang="en" dir="ltr">kashitamil.bhu.edu.in&nbsp;<span aria-hidden="true">↗</span></span></a>
       <img class="wordmark" src="{{ url_for('static', filename='img/logos/bbs.png') }}" alt="{{ t('agency.bbs.name') }}"></div>
   </div>
 </section>
