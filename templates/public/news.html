@@ -11,11 +11,13 @@
   <section class="news-day" style="margin-top:24px" aria-labelledby="day-{{ loop.index }}">
     <h2 id="day-{{ loop.index }}" style="font-size:1.3rem;padding-bottom:6px;border-bottom:1px solid var(--border)">{{ day|date if day else '—' }}</h2>
     {% for p in d.press %}
-    <div class="card news-press" style="margin-top:12px">
-      <p class="small muted" style="margin:0 0 8px"><span class="pill saffron">{{ t('news.press') }}</span> <bdi>{{ p.shown.office }}</bdi> · <bdi lang="{{ p.shown.lang|langtag }}">{{ p.shown.ministry }}</bdi> · {{ p.shown.time }}</p>
+    <div class="card news-{{ p.kind }}" style="margin-top:12px">
+      {% if p.kind == 'press' %}<p class="small muted" style="margin:0 0 8px"><span class="pill saffron">{{ t('news.press') }}</span> <bdi>{{ p.shown.office }}</bdi> · <bdi lang="{{ p.shown.lang|langtag }}">{{ p.shown.ministry }}</bdi> · {{ p.shown.time }}</p>
+      {% else %}<p class="small muted" style="margin:0 0 8px"><span class="pill">{{ p.source }}</span> {% if p.shown.byline %}<bdi>{{ p.shown.byline }}</bdi> · {% endif %}{{ p.shown.time }}</p>{% endif %}
       <h3 style="margin:0;line-height:1.4" lang="{{ p.shown.lang|langtag }}" dir="auto"><a href="{{ p.shown.url }}" target="_blank" rel="noopener">{{ p.shown.title }}</a></h3>
       {% if p.shown.subtitle %}<p class="dim" style="margin:6px 0 0" lang="{{ p.shown.lang|langtag }}" dir="auto">{{ p.shown.subtitle }}</p>{% endif %}
-      <p class="small" style="margin:12px 0 0"><b>{{ t('news.read_in') }}:</b> {% for v in p.versions %}<a href="{{ v.url }}" target="_blank" rel="noopener" lang="{{ v.lang|langtag }}">{{ v.lang|langnative }}</a>{% if not loop.last %} · {% endif %}{% endfor %} <span class="muted">· pib.gov.in ↗</span></p>
+      {% if p.versions|length > 1 %}<p class="small" style="margin:12px 0 0"><b>{{ t('news.read_in') }}:</b> {% for v in p.versions %}<a href="{{ v.url }}" target="_blank" rel="noopener" lang="{{ v.lang|langtag }}">{{ v.lang|langnative }}</a>{% if not loop.last %} · {% endif %}{% endfor %} <span class="muted">· {{ p.shown.url.split('/')[2]|replace('www.', '') }} ↗</span></p>
+      {% else %}<p class="small muted" style="margin:10px 0 0">{{ p.shown.url.split('/')[2]|replace('www.', '') }} ↗</p>{% endif %}
     </div>
     {% endfor %}
     {% if d.clips %}

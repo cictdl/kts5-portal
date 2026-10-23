@@ -1019,7 +1019,8 @@ def kural_browser():
                            variants=K.VARIANTS)
 
 
-# KTS 5.0 in the news (1.2.99): the press releases of data/news.json (each in the languages it was published in) and the
+# KTS 5.0 in the news (1.2.99): the press releases and (1.2.100) the news reports of data/news.json (each in the languages
+# it was published in) and the
 # newspaper clippings of the gallery album NEWS_ALBUM (which CICT fills in Console > Gallery), day by day, the latest first
 NEWS_ALBUM = "KTS 5.0 in the news"
 
