@@ -30,7 +30,8 @@ LECTURES = [f"https://www.youtube.com/watch?v={v}" for v in ("POU5PhXJRMU", "8k-
 # and the other Thirukkural and Thiruvalluvar videos of the playlists of the channel (version 1.2.15)
 CHANNEL = [s["url"] for s in SEEDS if s["key"].startswith("yt-") and s["url"] not in LECTURES]
 POSTERS = "/posters"      # the posters and charts (1.2.67)
-ALL = [PLAY, WEB, CORPUS, ARCHIVES, RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ] + SIGN + ISAI + LECTURES + CHANNEL + [POSTERS]
+SYLLABUS = "/syllabus"    # the study book of the institution-level assessment (1.2.98)
+ALL = [PLAY, WEB, CORPUS, ARCHIVES, RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ] + SIGN + ISAI + LECTURES + CHANNEL + [POSTERS, SYLLABUS]
 
 
 def _restart(app):
@@ -48,7 +49,7 @@ def test_the_seed_file_is_complete():
     assert [s["url"] for s in SEEDS] == ALL
     assert [s["category"] for s in SEEDS] == ["app", "app", "corpus", "corpus", "app", "app", "app", "study", "app", "app"] + ["video_sign"] * 44 + ["music"] * 6 + ["video_kural"] * 5 + \
         [s["category"] for s in SEEDS[65:]]
-    assert sorted(set(s["category"] for s in SEEDS[65:])) == ["poster", "video_kural", "video_pmevidya", "video_valluvar"]
+    assert sorted(set(s["category"] for s in SEEDS[65:])) == ["poster", "study", "video_kural", "video_pmevidya", "video_valluvar"]
     for s in SEEDS:
         assert s["key"] and s["title"] and s["description"]
     assert len({s["key"] for s in SEEDS}) == len(SEEDS)
@@ -62,7 +63,7 @@ def test_a_new_installation_carries_the_app():
     # seven chosen for the home page, which shows six in the order of sort_order: Kural Bridge first,
     # the Digital Archives in the repository only; the two of the prosody app and the classroom quiz
     # are in the repository only, the quiz first of them
-    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1, 0] + [0] * 44 + [0] * 6 + [0] * 5 + [0] * 87 + [1]
+    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1, 0] + [0] * 44 + [0] * 6 + [0] * 5 + [0] * 87 + [1, 1]
     client = app.test_client()
     page = client.get("/resources").get_data(as_text=True)
     for s in SEEDS:
@@ -134,8 +135,8 @@ def test_entries_added_later_reach_a_database_that_has_the_first_ones():
     conn = sqlite3.connect(str(app.config["DATABASE"]))
     later = ["kural-run", "kural-crossword", "yappu-kalam", "yappu-quick-guide", "kural-bridge", "classroom-quiz"] + \
         [f"kural-sign-{n:02d}" for n in range(1, 45)] + [f"kural-isai-{n}" for n in range(1, 7)] + \
-        [f"yt-{url.rsplit('=', 1)[1]}" for url in LECTURES + CHANNEL] + ["posters-charts"]
-    gone = [RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ] + SIGN + ISAI + LECTURES + CHANNEL + [POSTERS]
+        [f"yt-{url.rsplit('=', 1)[1]}" for url in LECTURES + CHANNEL] + ["posters-charts", "syllabus-thirukkural-payilvom"]
+    gone = [RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ] + SIGN + ISAI + LECTURES + CHANNEL + [POSTERS, SYLLABUS]
     conn.execute("DELETE FROM resources WHERE url IN (%s)" % ", ".join("?" * len(gone)), gone)
     conn.execute("DELETE FROM settings WHERE key IN (%s)" % ", ".join("?" * len(later)), ["seed.resource." + k for k in later])
     conn.commit()

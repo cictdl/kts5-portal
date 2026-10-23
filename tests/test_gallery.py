@@ -109,16 +109,16 @@ def test_the_photographs_of_the_launch():
     # the launch of the KTS 5.0 web portal and registration by the Hon'ble Minister of Education on 22 October 2026: four
     # photographs, carried in data/gallery/ and put in the gallery of every installation once (1.2.95)
     import json
-    seeds = json.loads((ROOT / "data" / "gallery.json").read_text(encoding="utf-8"))
+    seeds = [s for s in json.loads((ROOT / "data" / "gallery.json").read_text(encoding="utf-8")) if s["key"].startswith("launch-")]
     assert len(seeds) == 4 and {s["taken_on"] for s in seeds} == {"2026-10-22"}
     assert {s["album"] for s in seeds} == {"Launch of the KTS 5.0 web portal and registration"}
     app = make_app(ADMIN_PASSWORD=None)
     client = app.test_client()
-    page = client.get("/gallery?lang=en").get_data(as_text=True)
+    page = client.get("/gallery?lang=en&album=Launch+of+the+KTS+5.0+web+portal+and+registration").get_data(as_text=True)
     assert page.count('<figure class="photo">') == 4 and "4 photographs" in page and "22 Oct 2026" in page
     assert "<bdi>Launch of the KTS 5.0 web portal and registration</bdi> <span" in page
     assert "Shri Pralhad Joshi, Hon&#39;ble Union Minister of Education, launches the KTS 5.0 web portal" in page
-    rows = _rows(app)
+    rows = [r for r in _rows(app) if r["file_path"].startswith("gallery/kts5-launch-")]
     assert [r["caption"] for r in rows] == [s["caption"] for s in seeds] and all(r["published"] == 1 for r in rows)
     # in the order given, each served as it is in data/gallery/
     assert [page.index(r["file_path"]) for r in rows] == sorted(page.index(r["file_path"]) for r in rows)
@@ -134,4 +134,27 @@ def test_the_photographs_of_the_launch():
         from kts.db import execute
         execute("DELETE FROM gallery_photos WHERE id = ?", (rows[0]["id"],))
     again = make_app(**{name: app.config[name] for name in ("INSTANCE_DIR", "DATABASE", "UPLOAD_DIR")})
-    assert [r["id"] for r in _rows(again)] == [r["id"] for r in rows[1:]]
+    assert [r["id"] for r in _rows(again) if r["file_path"].startswith("gallery/kts5-launch-")] == [r["id"] for r in rows[1:]]
+
+
+def test_kts5_in_the_news():
+    # five newspaper clippings of 23 October 2026, the day after the launch, in the album "KTS 5.0 in the news" (1.2.98),
+    # newest album first; CICT adds later ones in the Console under the same album
+    import json
+    seeds = [s for s in json.loads((ROOT / "data" / "gallery.json").read_text(encoding="utf-8")) if s["key"].startswith("news-")]
+    assert [s["caption"].split(",")[0] for s in seeds] == ["Dinamani", "Hindu Tamil Thisai", "The Hindu", "Dinamalar", "Dinathanthi"]
+    assert {s["album"] for s in seeds} == {"KTS 5.0 in the news"} and {s["taken_on"] for s in seeds} == {"2026-10-23"}
+    for s in seeds:
+        data = (ROOT / "data" / "gallery" / s["file"]).read_bytes()
+        assert data[:3] == b"\xff\xd8\xff" and len(data) < 400_000 and b"Exif" not in data[:200]
+    client = make_app(ADMIN_PASSWORD=None).test_client()
+    page = client.get("/gallery?lang=en").get_data(as_text=True)
+    assert page.count('<figure class="photo">') == 9 and "9 photographs" in page
+    assert page.index("<bdi>KTS 5.0 in the news</bdi>") < page.index("<bdi>Launch of the KTS 5.0 web portal and registration</bdi>")
+    news = client.get("/gallery?lang=en&album=KTS+5.0+in+the+news").get_data(as_text=True)
+    assert news.count('<figure class="photo">') == 5 and "Classical text Thirukkural to take centre stage" in news
+    assert "காசி தமிழ் சங்கமம் நவ., 28ல் தொடக்கம்" in news
+    for s in seeds:
+        r = client.get(f"/files/gallery/{s['file']}")
+        assert r.status_code == 200 and r.data[:3] == b"\xff\xd8\xff"
+        r.close()

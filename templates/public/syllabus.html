@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ t('syl.title') }}{% endblock %}
+{% block content %}
+{# The syllabus of the institution-level assessment (1.2.98): CICT's study book in each language it has, from static/syllabus #}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('exam.title') }}</span>
+  <h1>{{ t('syl.title') }}</h1>
+  <p class="dim" style="max-width:78ch">{{ t('syl.intro') }}</p>
+  {% if not mine %}<div class="card flat" style="margin-top:12px;max-width:78ch"><p class="small" style="margin:0">{{ t('syl.not_yet') }}</p></div>{% endif %}
+  <div class="grid grid-3" style="margin-top:16px" id="books">
+    {% for b in books %}
+    <div class="card syl-book" lang="{{ b.lang|langtag }}"{% if mine and loop.first %} style="border:2px solid var(--saffron)"{% endif %}>
+      {% if mine and loop.first %}<span class="pill saffron" style="justify-self:start">{{ t('syl.yours') }}</span>{% endif %}
+      <a href="{{ url_for('static', filename=b.file) }}" target="_blank" rel="noopener"><img src="{{ url_for('static', filename=b.thumb) }}" alt="{{ t('syl.cover') }} · {{ b.lang|langnative }}" width="360" height="480" loading="lazy" style="display:block;width:100%;max-width:260px;height:auto;margin:10px auto;border-radius:8px;border:1px solid var(--border)"></a>
+      <h3 style="margin:0">{{ b.lang|langnative }}{% if (b.lang|langnative) != (b.lang|langname) %} <span class="dim" style="font-weight:500">· {{ b.lang|langname }}</span>{% endif %}</h3>
+      <p class="small dim" style="margin:6px 0 0">{% if b.translator %}{{ t('syl.translator') }}: <bdi>{{ b.translator }}</bdi>{% else %}{{ t('syl.original') }}{% endif %}</p>
+      <p class="small muted" style="margin:2px 0 10px">{{ t('syl.pages')|replace('{n}', b.pages) }} · PDF · {{ b.kb }} KB</p>
+      <div class="btn-row"><a class="btn sm saffron" href="{{ url_for('static', filename=b.file) }}" download>⬇ {{ t('common.download') }} (PDF)</a><a class="btn sm secondary" href="{{ url_for('static', filename=b.file) }}" target="_blank" rel="noopener">{{ t('syl.open') }}</a></div>
+    </div>
+    {% endfor %}
+  </div>
+  <p class="small dim" style="margin-top:18px">{{ t('syl.more') }}</p>
+  <div class="btn-row">
+    <a class="btn sm secondary" href="{{ url_for('public.kural108') }}">{{ t('k108.title') }}</a>
+    {% if settings['practice.on'] == '1' %}<a class="btn sm secondary" href="{{ url_for('practice.home') }}">{{ t('prac.cta') }}</a>{% endif %}
+    <a class="btn sm ghost" href="{{ url_for('public.examination') }}">{{ t('exam.title') }}</a>
+  </div>
+</div>
+{% endblock %}

@@ -1086,5 +1086,17 @@
   "search.more": "and {n} more: add a word to narrow the search",
   "search.result_one": "1 result for “{q}”",
   "ev.count_one": "1 event",
-  "res.cat_video_pmevidya": "PM eVidya CICT - Tamil"
+  "res.cat_video_pmevidya": "PM eVidya CICT - Tamil",
+  "syl.title": "Syllabus for the institution-level assessment",
+  "syl.cta": "Syllabus: the study book",
+  "syl.intro": "“Thirukkural Payilvom – Let's Learn Thirukkural” is the study book of the Central Institute of Classical Tamil for the institution-level assessment of KTS 5.0. It covers Kashi and Tamil Nadu, the life of Thiruvalluvar, the structure of the Thirukkural, its commentators and its themes, and the 108 Thirukkural, one couplet from each of the first 108 chapters, with their meaning.",
+  "syl.yours": "In your language",
+  "syl.not_yet": "The study book is not yet available in your language. It is available in the languages below, and more are being added.",
+  "syl.original": "The original, in Tamil",
+  "syl.translator": "Translator",
+  "syl.pages": "{n} pages",
+  "syl.open": "Open",
+  "syl.cover": "Cover of the study book",
+  "syl.more": "More languages will be added as their translations are ready.",
+  "syl.k108": "These 108 couplets are explained in the study book “Thirukkural Payilvom”, the syllabus of the institution-level assessment."
 }

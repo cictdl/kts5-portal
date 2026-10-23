@@ -18,6 +18,8 @@
           <div class="date-tile"><div class="lbl">⏳ {{ t('exam.duration') }}</div><div class="val">{{ settings['exam.duration_min'] }} {{ t('exam.minutes') }}</div></div>
         </div>
         <p><b>{{ t('exam.pattern') }}:</b> {{ settings['exam.questions'] }} {{ t('exam.pattern_text') }} · {{ settings['exam.marks_per_q'] }} {{ t('exam.marks_each') }}</p>
+        {# the syllabus: CICT's study book, in the languages it has (1.2.98) #}
+        {% if syllabus_langs %}<p class="exam-syllabus">📘 <a href="{{ url_for('public.syllabus') }}"><b>{{ t('syl.title') }}</b></a><br><span class="small dim">PDF · {% for c in syllabus_langs %}<span lang="{{ c|langtag }}">{{ c|langnative }}</span>{% if not loop.last %} · {% endif %}{% endfor %}</span></p>{% endif %}
         <h3>{{ t('exam.guidelines') }}</h3>
         <ul class="prose">
           <li>{{ t('exam.g1') }}</li><li>{{ t('exam.g2') }}</li><li>{{ t('exam.g3') }}</li><li>{{ t('exam.g4') }}</li>
@@ -41,7 +43,7 @@
       <div class="card" style="margin-top:14px">
         <h3>{{ t('res.cat_study') }}</h3>
         <p class="dim small">{{ t('exam.prepare') }}</p>
-        <div class="btn-row"><a class="btn sm secondary" href="{{ url_for('public.kural_browser') }}">{{ t('res.kural_browser') }}</a><a class="btn sm secondary" href="{{ url_for('public.kural108') }}">{{ t('k108.title') }}</a><a class="btn sm secondary" href="{{ url_for('public.resources', cat='study') }}">{{ t('res.cat_study') }}</a></div>
+        <div class="btn-row"><a class="btn sm saffron" href="{{ url_for('public.syllabus') }}">📘 {{ t('syl.cta') }}</a><a class="btn sm secondary" href="{{ url_for('public.kural_browser') }}">{{ t('res.kural_browser') }}</a><a class="btn sm secondary" href="{{ url_for('public.kural108') }}">{{ t('k108.title') }}</a><a class="btn sm secondary" href="{{ url_for('public.resources', cat='study') }}">{{ t('res.cat_study') }}</a></div>
       </div>
       <div class="card" style="margin-top:14px">
         <h3>{{ t('common.help') }}</h3>

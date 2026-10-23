@@ -748,7 +748,7 @@ def examination():
     settings = all_settings()
     start, end, is_open = exam_window(settings)
     return render_template("public/examination.html", settings=settings, start=start, end=end,
-                           is_open=is_open, dates=_key_dates(settings))
+                           is_open=is_open, dates=_key_dates(settings), syllabus_langs=[b["lang"] for b in syllabus_books()])
 
 
 @bp.route("/merit-list")
@@ -1017,6 +1017,33 @@ def kural_browser():
     return render_template("public/kural.html", chapter=chapter, rows=rows, stream=stream, stream_dir=stream_dir,
                            langs=K.languages(), chapters=K.chapters(), pals=K.corpus()["meta"]["pals"],
                            variants=K.VARIANTS)
+
+
+# the syllabus of the institution-level assessment (1.2.98): CICT's study book "Thirukkural Payilvom – Let's Learn
+# Thirukkural" in Tamil and in translation, static/syllabus/KTS5-Thirukkural-Payilvom-<lang>.pdf, as data/syllabus.json lists
+# them (tools/add_syllabus.py adds a language)
+def syllabus_books():
+    """The books of data/syllabus.json whose PDF is there: [{lang, pages, translator, file, thumb, kb}], in its order."""
+    rows = json.loads((current_app.config["DATA_DIR"] / "syllabus.json").read_text(encoding="utf-8"))
+    folder = Path(current_app.static_folder) / "syllabus"
+    books = []
+    for r in rows:
+        name = f"KTS5-Thirukkural-Payilvom-{r['lang']}"
+        pdf = folder / f"{name}.pdf"
+        if pdf.exists():
+            books.append({**r, "file": f"syllabus/{name}.pdf", "thumb": f"syllabus/thumbs/{name}.jpg",
+                          "kb": max(1, pdf.stat().st_size // 1024)})
+    return books
+
+
+@bp.route("/syllabus")
+def syllabus():
+    """The syllabus of the institution-level assessment: the study book in each language it has, the visitor's first."""
+    books = syllabus_books()
+    lang = get_lang()
+    mine = [b for b in books if b["lang"] == lang]
+    return render_template("public/syllabus.html", books=mine + [b for b in books if b["lang"] != lang], mine=bool(mine),
+                           settings=all_settings())
 
 
 # the posters and charts (1.2.67): four A3 PDFs in each language of the portal, static/posters/KTS5-poster-<n>-<lang>.pdf,
@@ -1314,7 +1341,7 @@ SITEMAP = [
                           ("public.notices", {}, "nav.notices"), ("public.partners", {}, "nav.partners"),
                           ("public.gallery", {}, "nav.gallery"), ("public.contact", {}, "nav.contact")]),
     ("pol.sm_students", [("public.guide", {}, "guide.title"), ("practice.home", {}, "prac.title"), ("public.kural108", {}, "k108.title"),
-                         ("public.posters", {}, "res.cat_poster"),
+                         ("public.syllabus", {}, "syl.title"), ("public.posters", {}, "res.cat_poster"),
                          ("public.register", {}, "nav.register"), ("public.status", {}, "nav.status"),
                          ("public.examination", {}, "nav.exam"), ("public.merit", {}, "nav.merit"),
                          ("public.stipend_guide", {}, "stip.title"), ("candidate.login", {}, "nav.candidate"),

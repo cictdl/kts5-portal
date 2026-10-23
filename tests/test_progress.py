@@ -166,8 +166,13 @@ def test_where_two_are_due_one_morning_only_the_later_goes():
         assert progress.sent_counts() == {"start": 2, "select": 3, "register": 0, "manual": 0}
 
 
-def test_the_page_for_cict_and_for_the_nodal_officer():
+def test_the_page_for_cict_and_for_the_nodal_officer(monkeypatch):
+    from kts import admin as console, progress
     from kts.db import query
+    # the reminder by hand goes while registration is open: the clock of the test stands at 21 October 2026, inside the
+    # window of its world, whatever the day the tests run on
+    monkeypatch.setattr(progress, "now_ist", lambda: _at(21, 10))
+    monkeypatch.setattr(console, "now_ist", lambda: _at(21, 10))
     app, ids = _world()
     admin = _staff(app, "progress-admin@tests.example", role="admin")
     page = admin.get("/console/progress").get_data(as_text=True)

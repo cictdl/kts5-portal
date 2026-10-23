@@ -7,6 +7,8 @@
   <span class="eyebrow">{{ t('res.cat_translation') }}</span>
   <h1>{% if t('k108.title') != '108 திருக்குறள்' %}<span class="ta" lang="ta">108 திருக்குறள்</span> · {% endif %}{{ t('k108.title') }}</h1>
   <p class="dim" style="max-width:78ch">{{ t('k108.intro') }}</p>
+  {# the study book that explains these couplets (1.2.98) #}
+  <p class="small no-print" style="max-width:78ch">📘 {{ t('syl.k108') }} <a href="{{ url_for('public.syllabus') }}"><b>{{ t('syl.cta') }}</b></a></p>
   <form method="get" class="chapter-nav no-print">
     <label for="l" class="small"><b>{{ t('common.language') }}</b></label>
     <select id="l" name="l" data-autosubmit style="max-width:260px">
