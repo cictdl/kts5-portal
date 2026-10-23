@@ -1019,6 +1019,26 @@ def kural_browser():
                            variants=K.VARIANTS)
 
 
+# KTS 5.0 in the news (1.2.99): the press releases of data/news.json (each in the languages it was published in) and the
+# newspaper clippings of the gallery album NEWS_ALBUM (which CICT fills in Console > Gallery), day by day, the latest first
+NEWS_ALBUM = "KTS 5.0 in the news"
+
+
+@bp.route("/in-the-news")
+def news():
+    lang = get_lang()
+    days = {}
+    for item in json.loads((current_app.config["DATA_DIR"] / "news.json").read_text(encoding="utf-8")):
+        versions = item["versions"]
+        shown = (next((v for v in versions if v["lang"] == lang), None) or next((v for v in versions if v["lang"] == "en"), None)
+                 or versions[0])
+        days.setdefault(item["date"], {"press": [], "clips": []})["press"].append({**item, "shown": shown})
+    for p in query("SELECT * FROM gallery_photos WHERE published = 1 AND album = ? ORDER BY sort_order, id", (NEWS_ALBUM,)):
+        days.setdefault(p["taken_on"] or "", {"press": [], "clips": []})["clips"].append(p)
+    return render_template("public/news.html", days=sorted(days.items(), reverse=True), news_album=NEWS_ALBUM,
+                           settings=all_settings())
+
+
 # the syllabus of the institution-level assessment (1.2.98): CICT's study book "Thirukkural Payilvom – Let's Learn
 # Thirukkural" in Tamil and in translation, static/syllabus/KTS5-Thirukkural-Payilvom-<lang>.pdf, as data/syllabus.json lists
 # them (tools/add_syllabus.py adds a language)
@@ -1338,7 +1358,7 @@ POLICY_LANGS = ("en", "hi", "ta")
 SITEMAP = [
     ("pol.sm_programme", [("public.home", {}, "nav.home"), ("public.about", {}, "nav.about"),
                           ("public.programme", {}, "nav.programme"), ("public.schedule", {}, "nav.schedule"),
-                          ("public.notices", {}, "nav.notices"), ("public.partners", {}, "nav.partners"),
+                          ("public.notices", {}, "nav.notices"), ("public.news", {}, "news.title"), ("public.partners", {}, "nav.partners"),
                           ("public.gallery", {}, "nav.gallery"), ("public.contact", {}, "nav.contact")]),
     ("pol.sm_students", [("public.guide", {}, "guide.title"), ("practice.home", {}, "prac.title"), ("public.kural108", {}, "k108.title"),
                          ("public.syllabus", {}, "syl.title"), ("public.posters", {}, "res.cat_poster"),

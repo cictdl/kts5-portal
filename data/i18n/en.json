@@ -1098,5 +1098,10 @@
   "syl.open": "Open",
   "syl.cover": "Cover of the study book",
   "syl.more": "More languages will be added as their translations are ready.",
-  "syl.k108": "These 108 couplets are explained in the study book “Thirukkural Payilvom”, the syllabus of the institution-level assessment."
+  "syl.k108": "These 108 couplets are explained in the study book “Thirukkural Payilvom”, the syllabus of the institution-level assessment.",
+  "news.title": "KTS 5.0 in the news",
+  "news.intro": "Press releases and newspaper reports on Kashi Tamil Sangamam 5.0, day by day, the latest first.",
+  "news.press": "Press release",
+  "news.read_in": "Read it in",
+  "news.papers": "In the newspapers"
 }

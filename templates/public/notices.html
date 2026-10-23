@@ -4,6 +4,7 @@
 <div class="wrap section">
   <span class="eyebrow">{{ t('site.organiser') }}</span>
   <h1>{{ t('notices.title') }}</h1>
+  <p class="small"><a href="{{ url_for('public.news') }}">📰 {{ t('news.title') }} {{ fwd }}</a></p>
   {% if cats|length > 1 %}<div class="res-tabs"><a href="{{ url_for('public.notices') }}" class="{{ 'on' if not cat }}">{{ t('common.all') }}</a>{% for c in cats %}<a href="{{ url_for('public.notices', cat=c) }}" class="{{ 'on' if cat == c }}">{{ tag(c) }}</a>{% endfor %}</div>{% endif %}
   <div class="card">
     {% if rows %}

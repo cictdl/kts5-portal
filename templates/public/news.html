@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ t('news.title') }}{% endblock %}
+{% block content %}
+{# KTS 5.0 in the news (1.2.99): the press releases of data/news.json and the newspaper clippings of the Gallery album
+   "KTS 5.0 in the news", day by day, the latest first #}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('site.name') }} · {{ t('site.theme') }}</span>
+  <h1>{{ t('news.title') }}</h1>
+  <p class="lead dim" style="max-width:74ch">{{ t('news.intro') }}</p>
+  {% for day, d in days %}
+  <section class="news-day" style="margin-top:24px" aria-labelledby="day-{{ loop.index }}">
+    <h2 id="day-{{ loop.index }}" style="font-size:1.3rem;padding-bottom:6px;border-bottom:1px solid var(--border)">{{ day|date if day else '—' }}</h2>
+    {% for p in d.press %}
+    <div class="card news-press" style="margin-top:12px">
+      <p class="small muted" style="margin:0 0 8px"><span class="pill saffron">{{ t('news.press') }}</span> <bdi>{{ p.shown.office }}</bdi> · <bdi lang="{{ p.shown.lang|langtag }}">{{ p.shown.ministry }}</bdi> · {{ p.shown.time }}</p>
+      <h3 style="margin:0;line-height:1.4" lang="{{ p.shown.lang|langtag }}" dir="auto"><a href="{{ p.shown.url }}" target="_blank" rel="noopener">{{ p.shown.title }}</a></h3>
+      {% if p.shown.subtitle %}<p class="dim" style="margin:6px 0 0" lang="{{ p.shown.lang|langtag }}" dir="auto">{{ p.shown.subtitle }}</p>{% endif %}
+      <p class="small" style="margin:12px 0 0"><b>{{ t('news.read_in') }}:</b> {% for v in p.versions %}<a href="{{ v.url }}" target="_blank" rel="noopener" lang="{{ v.lang|langtag }}">{{ v.lang|langnative }}</a>{% if not loop.last %} · {% endif %}{% endfor %} <span class="muted">· pib.gov.in ↗</span></p>
+    </div>
+    {% endfor %}
+    {% if d.clips %}
+    <h3 style="margin:18px 0 10px;font-size:1.05rem">{{ t('news.papers') }}</h3>
+    <div class="photo-grid">
+      {% for c in d.clips %}
+      <figure class="photo">
+        <a href="{{ url_for('public.public_file', relpath=c.file_path) }}" target="_blank" rel="noopener" aria-label="{{ t('gallery.open') }}"><img src="{{ url_for('public.public_file', relpath=c.file_path) }}" alt="{{ c.caption or c.album }}" loading="lazy" style="object-fit:contain;background:#fff"></a>
+        <figcaption><bdi>{{ c.caption or c.album }}</bdi></figcaption>
+      </figure>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </section>
+  {% endfor %}
+  <p class="small muted" style="margin-top:24px"><a href="{{ url_for('public.gallery', album=news_album) }}">{{ t('nav.gallery') }}</a> · <a href="{{ url_for('public.notices') }}">{{ t('notices.title') }}</a></p>
+</div>
+{% endblock %}

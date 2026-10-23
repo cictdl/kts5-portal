@@ -91,7 +91,11 @@
           <li><a href="{{ url_for('public.cict_events_page') }}">{{ t('ev.title') }}</a></li>
         </ul></li>
       <li><a href="{{ url_for('public.kural_browser') }}" class="{{ 'active' if ep.startswith('public.kural') or ep == 'public.daily_kural' }}">{{ t('nav.kural') }}</a></li>
-      <li><a href="{{ url_for('public.notices') }}" class="{{ 'active' if ep.startswith('public.notice') }}">{{ t('nav.notices') }}</a></li>
+      <li class="has-sub"><a href="{{ url_for('public.notices') }}" class="{{ 'active' if ep.startswith('public.notice') or ep == 'public.news' }}" aria-haspopup="true">{{ t('nav.notices') }}</a>
+        <ul class="sub">
+          <li><a href="{{ url_for('public.notices') }}">{{ t('notices.title') }}</a></li>
+          <li><a href="{{ url_for('public.news') }}">{{ t('news.title') }}</a></li>
+        </ul></li>
       <li><a href="{{ url_for('public.schedule') }}" class="{{ 'active' if ep == 'public.schedule' }}">{{ t('nav.schedule') }}</a></li>
       <li><a href="{{ url_for('public.partners') }}" class="{{ 'active' if ep == 'public.partners' }}">{{ t('nav.partners') }}</a></li>
       <li><a href="{{ url_for('public.gallery') }}" class="{{ 'active' if ep == 'public.gallery' }}">{{ t('nav.gallery') }}</a></li>

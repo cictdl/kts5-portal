@@ -190,7 +190,7 @@
 <section class="section alt">
   <div class="wrap two-col">
     <div class="card">
-      <div class="section-head"><h3>{{ t('home.latest') }}</h3><a class="small" href="{{ url_for('public.notices') }}">{{ t('home.all_notices') }} {{ fwd }}</a></div>
+      <div class="section-head"><h3>{{ t('home.latest') }}</h3><span class="small"><a href="{{ url_for('public.notices') }}">{{ t('home.all_notices') }} {{ fwd }}</a> · <a href="{{ url_for('public.news') }}">{{ t('news.title') }} {{ fwd }}</a></span></div>
       {% if notices %}
       <ul class="notice-list">
         {% for n in notices %}
