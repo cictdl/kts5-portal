@@ -463,5 +463,8 @@
    "url": "/posters", "featured": 1, "sort_order": 14},
   {"key": "syllabus-thirukkural-payilvom", "title": "Thirukkural Payilvom · Syllabus for the institution-level assessment", "category": "study", "lang": "",
    "description": "The study book of CICT for the institution-level assessment of KTS 5.0: Kashi and Tamil Nadu, the life of Thiruvalluvar, the structure, commentators and themes of the Thirukkural, and the 108 Thirukkural with their meaning. In Tamil and in translation (PDF); more languages are being added.",
-   "url": "/syllabus", "featured": 1, "sort_order": 8}
+   "url": "/syllabus", "featured": 1, "sort_order": 8},
+  {"key": "cict-manipuri-dance-katavul-valttu", "title": "திருக்குறள் – மணிப்புரி நடனம்: கடவுள் வாழ்த்து · Tirukkural – Manipuri Dance: Katavul Valttu (God’s Praise)", "category": "video_kural", "lang": "",
+   "description": "Verses of the Thirukkural’s first chapter, Katavul Valttu (God’s Praise), set to the graceful, devotional movements of Manipuri dance: a cultural production on the website of the Central Institute of Classical Tamil (MP4 video, 32 minutes, 244.2 MB).",
+   "url": "https://cict.in/videos/Manipuri%20Dance.mp4", "featured": 0, "sort_order": 400}
 ]

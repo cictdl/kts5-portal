@@ -31,7 +31,8 @@ LECTURES = [f"https://www.youtube.com/watch?v={v}" for v in ("POU5PhXJRMU", "8k-
 CHANNEL = [s["url"] for s in SEEDS if s["key"].startswith("yt-") and s["url"] not in LECTURES]
 POSTERS = "/posters"      # the posters and charts (1.2.67)
 SYLLABUS = "/syllabus"    # the study book of the institution-level assessment (1.2.98)
-ALL = [PLAY, WEB, CORPUS, ARCHIVES, RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ] + SIGN + ISAI + LECTURES + CHANNEL + [POSTERS, SYLLABUS]
+DANCE = "https://cict.in/videos/Manipuri%20Dance.mp4"     # Tirukkural – Manipuri Dance: Katavul Valttu (1.2.104)
+ALL = [PLAY, WEB, CORPUS, ARCHIVES, RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ] + SIGN + ISAI + LECTURES + CHANNEL + [POSTERS, SYLLABUS, DANCE]
 
 
 def _restart(app):
@@ -63,7 +64,7 @@ def test_a_new_installation_carries_the_app():
     # seven chosen for the home page, which shows six in the order of sort_order: Kural Bridge first,
     # the Digital Archives in the repository only; the two of the prosody app and the classroom quiz
     # are in the repository only, the quiz first of them
-    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1, 0] + [0] * 44 + [0] * 6 + [0] * 5 + [0] * 88 + [1, 1]
+    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1, 0] + [0] * 44 + [0] * 6 + [0] * 5 + [0] * 88 + [1, 1, 0]
     client = app.test_client()
     page = client.get("/resources").get_data(as_text=True)
     for s in SEEDS:
@@ -135,8 +136,9 @@ def test_entries_added_later_reach_a_database_that_has_the_first_ones():
     conn = sqlite3.connect(str(app.config["DATABASE"]))
     later = ["kural-run", "kural-crossword", "yappu-kalam", "yappu-quick-guide", "kural-bridge", "classroom-quiz"] + \
         [f"kural-sign-{n:02d}" for n in range(1, 45)] + [f"kural-isai-{n}" for n in range(1, 7)] + \
-        [f"yt-{url.rsplit('=', 1)[1]}" for url in LECTURES + CHANNEL] + ["posters-charts", "syllabus-thirukkural-payilvom"]
-    gone = [RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ] + SIGN + ISAI + LECTURES + CHANNEL + [POSTERS, SYLLABUS]
+        [f"yt-{url.rsplit('=', 1)[1]}" for url in LECTURES + CHANNEL] + ["posters-charts", "syllabus-thirukkural-payilvom",
+                                                                          "cict-manipuri-dance-katavul-valttu"]
+    gone = [RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ] + SIGN + ISAI + LECTURES + CHANNEL + [POSTERS, SYLLABUS, DANCE]
     conn.execute("DELETE FROM resources WHERE url IN (%s)" % ", ".join("?" * len(gone)), gone)
     conn.execute("DELETE FROM settings WHERE key IN (%s)" % ", ".join("?" * len(later)), ["seed.resource." + k for k in later])
     conn.commit()
@@ -199,11 +201,11 @@ def test_the_videos_in_sign_language_have_a_tab_of_their_own():
     # the Thirukkural lectures: five sent by Dr. Akilan (1.2.14) and sixteen more of the channel (1.2.15); the fourteen
     # Thirukkural stories of the channel PM eVidya CICT - Tamil have a tab of their own (1.2.94); the Thiruvalluvar
     # lectures: 57 (1.2.15)
-    assert 'href="/resources?cat=video_kural&amp;l=&amp;q=" class="">Thirukkural videos <span class="muted">21</span></a>' in page
+    assert 'href="/resources?cat=video_kural&amp;l=&amp;q=" class="">Thirukkural videos <span class="muted">22</span></a>' in page
     assert 'href="/resources?cat=video_pmevidya&amp;l=&amp;q=" class="">PM eVidya CICT - Tamil <span class="muted">15</span></a>' in page
     assert 'href="/resources?cat=video_valluvar&amp;l=&amp;q=" class="">Thiruvalluvar videos <span class="muted">57</span></a>' in page
     lectures = client.get("/resources?cat=video_kural&lang=en").get_data(as_text=True)
-    assert lectures.count('<div class="card res-card">') == 21
+    assert lectures.count('<div class="card res-card">') == 22
     valluvar = client.get("/resources?cat=video_valluvar&lang=en").get_data(as_text=True)
     assert valluvar.count('<div class="card res-card">') == 57
     # each series in the order of its parts
@@ -212,7 +214,7 @@ def test_the_videos_in_sign_language_have_a_tab_of_their_own():
     assert lectures.index("Thirukural in Telugu Part 1 |") < lectures.index("Thirukural Part 03") < lectures.index("Telugu Part 12")
     # the Telugu lectures stand under Telugu in the filter of languages (with those of no language), the Tamil one not
     telugu = client.get("/resources?cat=video_kural&l=te&lang=en").get_data(as_text=True)
-    assert telugu.count('<div class="card res-card">') == 20 and "Thirukural in Telugu Part 4 |" in telugu
+    assert telugu.count('<div class="card res-card">') == 21 and "Thirukural in Telugu Part 4 |" in telugu
     assert "உலகப் பொதுமறை திருக்குறள்" not in telugu and "உலகப் பொதுமறை திருக்குறள்" in lectures
     assert lectures.index("Leadership lessons from Thirukural") < lectures.index("Part 01 : Goal setting") \
         < lectures.index("Part 02 : Goal setting") < lectures.index("part 01 : Importance of the Right Communications")
@@ -338,3 +340,23 @@ def test_the_story_of_couplet_3_takes_its_place_once():
         conn.commit()
     rows = {r["url"]: r["sort_order"] for r in _rows(_restart(app))}
     assert rows[later[0]["url"]] == 445 and rows[later[1]["url"]] == 441
+
+
+def test_the_manipuri_dance_of_the_first_chapter():
+    # "Tirukkural – Manipuri Dance: Katavul Valttu" (God's Praise), the video on cict.in (1.2.104): first under the
+    # Thirukkural videos, in no language of its own, so under every language of the filter; it opens from cict.in
+    dance = [s for s in SEEDS if s["url"] == DANCE]
+    assert len(dance) == 1 and dance[0]["category"] == "video_kural" and dance[0]["lang"] == "" and dance[0]["featured"] == 0
+    assert dance[0]["sort_order"] < min(s["sort_order"] for s in SEEDS if s["category"] == "video_kural" and s["url"] != DANCE)
+    assert "Manipuri dance" in dance[0]["description"] and "32 minutes, 244.2 MB" in dance[0]["description"]
+    app = make_app(ADMIN_PASSWORD=None)
+    client = app.test_client()
+    tab = client.get("/resources?cat=video_kural&lang=en").get_data(as_text=True)
+    assert tab.index("Manipuri Dance: Katavul Valttu") < tab.index("Leadership lessons from Thirukural")
+    for code in ("mni", "ta", "hi"):
+        assert "Manipuri Dance: Katavul Valttu" in client.get(f"/resources?cat=video_kural&l={code}&lang=en").get_data(as_text=True)
+    rid = {r["url"]: r["id"] for r in _rows(app)}[DANCE]
+    r = client.get(f"/resources/{rid}")
+    assert r.status_code == 302 and r.headers["Location"] == DANCE
+    found = client.get("/search?lang=en&q=Manipuri dance").get_data(as_text=True)
+    assert f'href="/resources/{rid}"' in found and "Katavul Valttu" in found
