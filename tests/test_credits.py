@@ -1,7 +1,7 @@
 """
 The credits of the portal (version 1.2.83): under "Implementing institute" at the foot of every page, the five CICT staff
 who developed the portal and its content (data/credits.json), with their designations and their roles in KTS 5.0, in
-English in every language; the e-mails are written as name[dot]x[at]cict[dot]in, so that harvesters do not read them.
+English in every language, with their e-mail addresses as they are (1.2.103; name[dot]x[at]cict[dot]in before).
 And pages in long-worded languages fit a phone: the links of the footer and the tiles of the home page wrap.
 
     python -m pytest tests -q
@@ -40,11 +40,10 @@ def test_the_foot_of_every_page_in_every_language():
             assert f'<h4 class="credits-h">{escape(catalogue["cr.title"])}</h4>' in column, (code, path)
             assert '<ul class="credits" lang="en" dir="ltr">' in column
             for c in CREDITS:
-                mail = c["email"].replace(".", "[dot]").replace("@", "[at]")
                 assert (f'<li><b>{escape(c["name"])}</b>, {escape(c["designation"])}<br><span class="cr-role">{escape(c["role"])}</span>'
-                        f'<br><span class="cr-mail">{mail}</span></li>') in column, (code, c["name"])
-                # the address itself is nowhere in the page
-                assert c["email"] not in page and f'mailto:{c["email"]}' not in page
+                        f'<br><span class="cr-mail">{c["email"]}</span></li>') in column, (code, c["name"])
+            # the addresses as they are, kannan.k@cict.in: no [dot] or [at] left on the page
+            assert "[dot]" not in page and "[at]" not in page, (code, path)
 
 
 def test_long_words_wrap_on_a_phone():

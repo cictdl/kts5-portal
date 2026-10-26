@@ -265,11 +265,11 @@ def reels():
 def portal_credits():
     """
     The people who developed the portal and its content (data/credits.json, 1.2.83), shown under "Implementing
-    institute" at the foot of every page; each e-mail as name[dot]x[at]cict[dot]in, which harvesters of addresses
-    do not read.
+    institute" at the foot of every page, each with the e-mail address as it is (1.2.103; name[dot]x[at]cict[dot]in
+    before).
     """
     rows = json.loads((current_app.config["DATA_DIR"] / "credits.json").read_text(encoding="utf-8"))
-    return tuple(dict(r, mail=r["email"].replace(".", "[dot]").replace("@", "[at]")) for r in rows)
+    return tuple(rows)
 
 
 def home_reel():

@@ -173,7 +173,7 @@
       {# the people who developed the portal and its content (1.2.83) #}
       <h4 class="credits-h">{{ t('cr.title') }}</h4>
       <ul class="credits" lang="en" dir="ltr">
-        {% for c in portal_credits() %}<li><b>{{ c.name }}</b>, {{ c.designation }}<br><span class="cr-role">{{ c.role }}</span><br><span class="cr-mail">{{ c.mail }}</span></li>
+        {% for c in portal_credits() %}<li><b>{{ c.name }}</b>, {{ c.designation }}<br><span class="cr-role">{{ c.role }}</span><br><span class="cr-mail">{{ c.email }}</span></li>
         {% endfor %}
       </ul>
     </div>
