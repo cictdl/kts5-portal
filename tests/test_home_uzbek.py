@@ -61,6 +61,6 @@ def test_the_card_on_the_home_page_in_every_language():
     page = client.get("/?lang=en").get_data(as_text=True)
     assert "X · @ANI</span> · <bdi>31 Aug 2026</bdi> · <span lang=\"en\" dir=\"ltr\">YouTube · @cicttamil</span> · <bdi>23 Sep 2026</bdi>" in page
     assert "the first meeting was held online on 23 Sep 2026." in page
-    # under the reel of the Kashi Tamil Sangamam account, before the section for the institutions
-    assert page.index('class="section home-reel"') < page.index('class="section home-reel home-uzbek"') \
+    # after the hero, before the section for the institutions (the reel that stood above it is in KTS 5.0 in the news, 1.2.105)
+    assert page.index('<section class="hero">') < page.index('class="section home-reel home-uzbek"') \
         < page.index("For Higher Educational Institutions")

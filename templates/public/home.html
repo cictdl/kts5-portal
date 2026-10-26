@@ -91,31 +91,10 @@
 </section>
 {% endif %}
 
-{# A reel of the official Kashi Tamil Sangamam accounts on Instagram (1.2.79) and Facebook (1.2.80): links that open it
-   there, not an embedded player, so that no script or frame of another service enters the portal #}
-{% if reel %}
-<section class="section home-reel" aria-labelledby="home-reel-title">
-  <div class="wrap">
-    <div class="reel-card">
-      <a class="reel-play" href="{{ reel.url }}" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1">▶</a>
-      <span class="reel-body">
-        <span class="reel-from"><span lang="en" dir="ltr">Instagram · @{{ reel.account }}</span> · <bdi>{{ reel.date|date }}</bdi></span>
-        <span class="reel-title" id="home-reel-title">{{ t('home.reel_title') }}</span>
-        <span class="reel-quote" lang="en" dir="ltr">“{{ reel.quote }}”</span>
-        <span class="reel-tags" lang="en" dir="ltr">{% for tag in reel.tags %}#{{ tag }}{% if not loop.last %} {% endif %}{% endfor %}</span>
-        <span class="reel-links">
-          <a class="btn saffron sm" href="{{ reel.url }}" target="_blank" rel="noopener">{{ t('home.reel_watch') }} <span aria-hidden="true">↗</span></a>
-          {% if reel.facebook %}<a class="btn sm reel-fb" href="{{ reel.facebook }}" target="_blank" rel="noopener">{{ t('home.reel_watch_fb') }} <span aria-hidden="true">↗</span></a>{% endif %}
-        </span>
-      </span>
-    </div>
-  </div>
-</section>
-{% endif %}
-
 {# The Thirukkural in Uzbek (1.2.102): the Hon'ble Prime Minister's call at Tashkent State University of Oriental Studies
    (ANI on X) and CICT's short on its first meeting with the University on the translation (YouTube), from
-   data/home_uzbek.json; links that open them there, as for the reel above #}
+   data/home_uzbek.json; links that open them there, not an embedded player, so that nothing of X or YouTube enters the
+   portal (the reel of the Kashi Tamil Sangamam account that stood above it, 1.2.79-1.2.104, is in KTS 5.0 in the news) #}
 {% if uz %}
 <section class="section home-reel home-uzbek" aria-labelledby="home-uz-title">
   <div class="wrap">

@@ -107,3 +107,52 @@ def test_the_reports_of_22_to_25_october_on_the_page():
     assert day22.index("Press release") < day22.index("DD News") < day22.index("Dinamalar")
     assert "Kashi Tamil Sangamam 5.0 to Be Held from November 28 to December 12" in day22 and "ddnews.gov.in ↗" in day22
     assert "காசி தமிழ் சங்கமம் நவ., 28ல் தொடக்கம்" in day22 and "dinamalar.com ↗" in day22
+
+
+INSTAGRAM = "https://www.instagram.com/reel/Deg6QD_A4F3/"
+FACEBOOK = "https://www.facebook.com/reel/1797045828084084"
+
+
+def test_the_reel_of_15_october():
+    # the reel of the official Kashi Tamil Sangamam account: on the home page from 1.2.79 (Instagram) and 1.2.80
+    # (Facebook) to 1.2.104, in KTS 5.0 in the news on its day since 1.2.105
+    reels = [n for n in NEWS if n["kind"] == "reel"]
+    assert len(reels) == 1 and NEWS[0] is reels[0]
+    reel = reels[0]
+    assert reel["date"] == "2026-10-15" and reel["account"] == "ktsangamam" and reel["source"] == "Kashi Tamil Sangamam"
+    assert reel["versions"][0]["url"] == INSTAGRAM and reel["facebook"] == FACEBOOK
+    assert "?" not in INSTAGRAM and "?" not in FACEBOOK
+    assert reel["tags"] == ["KashiTamilSangamam5", "KTS5", "VanakkamKashi", "UnityInDiversity", "EkBharatShreshthaBharat"]
+    assert not (ROOT / "data" / "home_reel.json").exists()
+
+
+def test_the_facebook_button_is_the_instagram_one_with_the_other_name():
+    from kts.i18n import CATALOG
+    for code, catalogue in CATALOG.items():
+        assert catalogue["home.reel_watch_fb"] == catalogue["home.reel_watch"].replace("Instagram", "Facebook"), code
+
+
+def test_the_reel_is_on_the_news_page_and_no_longer_on_the_home_page():
+    from markupsafe import escape
+    from kts.i18n import CATALOG
+    client = make_app(ADMIN_PASSWORD=None).test_client()
+    for code, catalogue in CATALOG.items():
+        page = _page(client, f"/in-the-news?lang={code}")
+        card = page[page.index('<div class="card news-reel"'):]
+        card = card[:card.index("</div>")]
+        assert (f'<a href="{INSTAGRAM}" target="_blank" rel="noopener">{escape(catalogue["home.reel_title"])}</a></h3>') in card, code
+        assert (f'<a class="btn saffron sm" href="{INSTAGRAM}" target="_blank" rel="noopener">'
+                f'{escape(catalogue["home.reel_watch"])} <span aria-hidden="true">↗</span></a>') in card, code
+        assert (f'<a class="btn sm reel-fb" href="{FACEBOOK}" target="_blank" rel="noopener">'
+                f'{escape(catalogue["home.reel_watch_fb"])} <span aria-hidden="true">↗</span></a>') in card, code
+        assert '<span lang="en" dir="ltr">Instagram · @ktsangamam · Facebook</span>' in card
+        assert "#KashiTamilSangamam5 #KTS5 #VanakkamKashi #UnityInDiversity #EkBharatShreshthaBharat" in card
+        assert str(escape("“India’s diversity is best experienced through its people, languages and traditions.”")) in card
+        # links only: nothing of Instagram or Facebook is loaded by the page
+        for gone in ("<iframe", "instagram.com/embed", "cdninstagram", "connect.facebook.net", "facebook.com/plugins", "fbcdn"):
+            assert gone not in page, (code, gone)
+        home = _page(client, f"/?lang={code}")
+        assert INSTAGRAM not in home and FACEBOOK not in home and 'aria-labelledby="home-reel-title"' not in home, code
+    # on its own day, the earliest, after those of 22 October
+    page = _page(client, "/in-the-news?lang=en")
+    assert page.index("22 Oct 2026") < page.index("15 Oct 2026") < page.index('<div class="card news-reel"')

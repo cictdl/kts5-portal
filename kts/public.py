@@ -233,7 +233,7 @@ def home():
         kotd_lang, kotd_dir = "en", "ltr"
     seminars = cict_events()
     ev_years = (min(e["start"][:4] for e in seminars), max(e["start"][:4] for e in seminars)) if seminars else None
-    return render_template("public/home.html", settings=settings, dates=_key_dates(settings), reel=home_reel(), uz=home_uzbek(),
+    return render_template("public/home.html", settings=settings, dates=_key_dates(settings), uz=home_uzbek(),
                            ev_total=len(seminars), ev_years=ev_years,
                            notices=notices, events=events, agencies=agencies, stats=stats,
                            kotd=k, kotd_lines=K.lines(k, kotd_lang), kotd_lang=kotd_lang, kotd_dir=kotd_dir,
@@ -270,15 +270,6 @@ def portal_credits():
     """
     rows = json.loads((current_app.config["DATA_DIR"] / "credits.json").read_text(encoding="utf-8"))
     return tuple(rows)
-
-
-def home_reel():
-    """
-    The reel of the official Kashi Tamil Sangamam account shown on the home page (data/home_reel.json, 1.2.79): its
-    address, the account, the day, the opening line and the hashtags of its post; None without the file.
-    """
-    path = current_app.config["DATA_DIR"] / "home_reel.json"
-    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
 
 def home_uzbek():
