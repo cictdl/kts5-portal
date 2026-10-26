@@ -63,7 +63,7 @@ def test_a_new_installation_carries_the_app():
     # seven chosen for the home page, which shows six in the order of sort_order: Kural Bridge first,
     # the Digital Archives in the repository only; the two of the prosody app and the classroom quiz
     # are in the repository only, the quiz first of them
-    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1, 0] + [0] * 44 + [0] * 6 + [0] * 5 + [0] * 87 + [1, 1]
+    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1, 0] + [0] * 44 + [0] * 6 + [0] * 5 + [0] * 88 + [1, 1]
     client = app.test_client()
     page = client.get("/resources").get_data(as_text=True)
     for s in SEEDS:
@@ -200,7 +200,7 @@ def test_the_videos_in_sign_language_have_a_tab_of_their_own():
     # Thirukkural stories of the channel PM eVidya CICT - Tamil have a tab of their own (1.2.94); the Thiruvalluvar
     # lectures: 57 (1.2.15)
     assert 'href="/resources?cat=video_kural&amp;l=&amp;q=" class="">Thirukkural videos <span class="muted">21</span></a>' in page
-    assert 'href="/resources?cat=video_pmevidya&amp;l=&amp;q=" class="">PM eVidya CICT - Tamil <span class="muted">14</span></a>' in page
+    assert 'href="/resources?cat=video_pmevidya&amp;l=&amp;q=" class="">PM eVidya CICT - Tamil <span class="muted">15</span></a>' in page
     assert 'href="/resources?cat=video_valluvar&amp;l=&amp;q=" class="">Thiruvalluvar videos <span class="muted">57</span></a>' in page
     lectures = client.get("/resources?cat=video_kural&lang=en").get_data(as_text=True)
     assert lectures.count('<div class="card res-card">') == 21
@@ -262,19 +262,22 @@ def test_the_classroom_quiz_is_in_the_resources():
 
 
 def test_the_thirukkural_stories_of_pm_evidya():
-    # fourteen Thirukkural stories of CICT's channel PM eVidya CICT - Tamil (1.2.93), after the lectures, in the order of
-    # the couplets
+    # fourteen Thirukkural stories of CICT's channel PM eVidya CICT - Tamil (1.2.93) and that of couplet 3 (1.2.101), after
+    # the lectures, in the order of the couplets
     stories = [s for s in SEEDS if "PM eVidya CICT – Tamil" in s["description"]]
-    assert len(stories) == 14 and all(s["category"] == "video_pmevidya" and s["lang"] == "" for s in stories)
-    assert [s["sort_order"] for s in stories] == list(range(433, 447))
+    assert len(stories) == 15 and all(s["category"] == "video_pmevidya" and s["lang"] == "" for s in stories)
+    assert [s["sort_order"] for s in stories] == list(range(433, 448))
+    assert stories[6]["url"] == "https://www.youtube.com/watch?v=IgKzfkkAaSU" and "couplet 3," in stories[6]["description"]
     assert stories[0]["url"] == "https://www.youtube.com/watch?v=IK8J5aH9Szg"
     assert stories[-1]["url"] == "https://www.youtube.com/watch?v=N_hVT03XSCw"
     for s in stories:
         assert re.fullmatch(r"https://www\.youtube\.com/watch\?v=[A-Za-z0-9_-]{11}", s["url"]) and s["key"] == "yt-" + s["url"][-11:]
     app = make_app(ADMIN_PASSWORD=None)
     page = app.test_client().get("/resources?cat=video_pmevidya&lang=en").get_data(as_text=True)
-    assert page.count('<div class="card res-card">') == 14
+    assert page.count('<div class="card res-card">') == 15
     assert page.index("Why Learn Thirukkural?") < page.index("Thirukkural 517") < page.index("Thirukkural 619")
+    assert page.index("Behind Thirukkural 1<") < page.index("Meaningful Life | Thirukkural 3") \
+        < page.index("Can Love Really Be Hidden?")
     assert "Thirukural in Telugu" not in page
     # the tab has the name of the channel in every language, "Tamil" in the language's own script
     from kts.i18n import CATALOG
@@ -307,3 +310,31 @@ def test_the_stories_move_to_their_tab_once():
         conn.commit()
     rows = {r["url"]: r["category"] for r in _rows(_restart(app))}
     assert rows[stories[0]] == "video_kural" and rows[stories[1]] == "video_pmevidya"
+
+
+def test_the_story_of_couplet_3_takes_its_place_once():
+    # a database of 1.2.100 has the stories of couplets 71-619 at 439-446: at the next start they move one place on and the
+    # story of couplet 3 goes in at 439, once; a place that the Console gives a story afterwards stays
+    from kts.db import get_db
+    later = [s for s in SEEDS if s["category"] == "video_pmevidya" and s["sort_order"] > 439]
+    new = next(s for s in SEEDS if s["key"] == "yt-IgKzfkkAaSU")
+    assert len(later) == 8 and new["sort_order"] == 439
+    app = make_app(ADMIN_PASSWORD=None)
+    with app.app_context():
+        conn = get_db()
+        for s in later:
+            conn.execute("UPDATE resources SET sort_order = ? WHERE url = ?", (s["sort_order"] - 1, s["url"]))
+        conn.execute("DELETE FROM resources WHERE url = ?", (new["url"],))
+        conn.execute("DELETE FROM settings WHERE key IN ('migrate.pmevidya.couplet3', ?)", ("seed.resource." + new["key"],))
+        conn.commit()
+    app = _restart(app)
+    rows = {r["url"]: r["sort_order"] for r in _rows(app)}
+    assert [rows[s["url"]] for s in later] == list(range(440, 448)) and rows[new["url"]] == 439
+    page = app.test_client().get("/resources?cat=video_pmevidya&lang=en").get_data(as_text=True)
+    assert page.index("Behind Thirukkural 1<") < page.index("Meaningful Life | Thirukkural 3") < page.index("Thirukkural 71")
+    with app.app_context():
+        conn = get_db()
+        conn.execute("UPDATE resources SET sort_order = 445 WHERE url = ?", (later[0]["url"],))
+        conn.commit()
+    rows = {r["url"]: r["sort_order"] for r in _rows(_restart(app))}
+    assert rows[later[0]["url"]] == 445 and rows[later[1]["url"]] == 441

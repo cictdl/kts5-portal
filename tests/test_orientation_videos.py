@@ -13,15 +13,19 @@ from conftest import make_app
 ROOT = Path(__file__).resolve().parents[1]
 LECTURES = json.loads((ROOT / "data" / "orientation_lectures.json").read_text(encoding="utf-8"))
 CARD = {"en": ">English</bdi>", "ta": ">தமிழ்</bdi>", "hi": ">हिन्दी</bdi>", "ml": ">മലയാളം</bdi>", "kn": ">ಕನ್ನಡ</bdi>",
-        "sa": ">संस्कृतम्</bdi>"}
+        "sa": ">संस्कृतम्</bdi>", "mr": ">मराठी</bdi>", "te": ">తెలుగు</bdi>", "ne": ">नेपाली</bdi>"}
 
 
 def test_the_list_of_lectures():
-    # the lectures of CICT's channel @CICT_Online, uploaded again on 21 October 2026 (1.2.91): 11 videos, 6 languages
+    # the lectures of CICT's channel @CICT_Online, uploaded again on 21 October 2026 (1.2.91): 11 videos, 6 languages;
+    # seven more by 26 October (1.2.101): Sanskrit 2, Marathi, Telugu and Nepali 1 and 2 = 18 videos, 9 languages
     assert [(r["lang"], r["session"], r["youtube"]) for r in LECTURES] == [
         ("en", 1, "i_hSXzH5E9w"), ("en", 2, "Gw2g60MdH7I"), ("ta", 1, "85IHyYchdPE"), ("ta", 2, "FN-VgfQYoec"),
         ("hi", 1, "-z09JR2Z0nM"), ("hi", 2, "JkqyOBbmZxM"), ("ml", 1, "rJIF59YGhY4"), ("ml", 2, "gyNucEOvkTQ"),
-        ("kn", 1, "AVuHG4b7XLI"), ("kn", 2, "IVg8GRzGDkc"), ("sa", 1, "5okDiOi4xYE")]
+        ("kn", 1, "AVuHG4b7XLI"), ("kn", 2, "IVg8GRzGDkc"), ("sa", 1, "5okDiOi4xYE"), ("sa", 2, "ZK4XvOiqiyU"),
+        ("mr", 1, "GF6HH7H9zlk"), ("mr", 2, "-d6t_U9H8ok"), ("te", 1, "5XVI2_IPTh8"), ("te", 2, "esFy7zlzcAw"),
+        ("ne", 1, "bcxdaQUzIpw"), ("ne", 2, "PIZsaQ-eLiU")]
+    assert len({r["youtube"] for r in LECTURES}) == 18 and len({r["lang"] for r in LECTURES}) == 9
     # the earlier addresses, removed from the channel, are gone from the page
     old = {"2w6mgosRYAE", "Z3fGrbHLFr8", "tL9j8Dz7LLw", "FP8bmjuvpuk", "ptuQ7RaWf34", "q-8j2uP_lAA", "HUH2ZriU-0A",
            "U6hypuFpDRA", "BRczoN6wNa0", "A8qPl1T916Y", "_BSi16KkrXw", "g9qHDwL2i04", "oLDi_Yn7MU0"}
@@ -31,7 +35,7 @@ def test_the_list_of_lectures():
                                                   "பாடம் 01 · திருக்குறள் மற்றும் திருவள்ளுவர்",
                                                   "பாடம் 02 · திருக்குறள் சிந்தனைகள்",
                                                   "पाठ 01 · तिरुक्कुऱळ् और तिरुवळ्ळुवर्", "पाठ 02 · तिरुक्कुऱळ् के विचार"]
-    # CICT's English titles for the lectures in Malayalam, Kannada, Sanskrit and Marathi are marked as English
+    # CICT's English titles for the lectures in Malayalam, Kannada, Sanskrit, Marathi, Telugu and Nepali are marked as English
     for r in LECTURES[6:]:
         assert r["title_lang"] == "en" and r["title"] in ("Session 01 · Thirukkural and Thiruvalluvar",
                                                           "Session 02 · Insights from the Thirukkural")

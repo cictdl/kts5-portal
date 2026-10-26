@@ -70,7 +70,7 @@ def test_the_russian_short_of_naira_mkrtchyan():
 
 def test_the_shorts_added_on_21_october():
     # five Thirukkural shorts of @cicttamil (1.2.89): two new languages, Rajasthani and Malto, and Kurukh and Hindi
-    assert REELS[-5:] == [
+    assert REELS[36:41] == [
         {"id": "Le13vG99i_c", "lang": "Rajasthani", "native": "राजस्थानी", "presenter": "Dr. Gajadan Charan"},
         {"id": "45kzqtUXUk8", "lang": "Kurukh", "native": "कुँड़ुख़", "presenter": "Mahesh S. Minj"},
         {"id": "iqB7VU5SSYE", "lang": "Hindi", "native": "हिन्दी", "presenter": "Shankar Lal Sahu"},
@@ -78,9 +78,25 @@ def test_the_shorts_added_on_21_october():
         {"id": "EAvMVUp50-s", "lang": "Malto", "native": "माल्तो", "presenter": "R. George Edward"}]
     app = make_app(ADMIN_PASSWORD=None)
     page = app.test_client().get("/programme?lang=en").get_data(as_text=True)
-    assert "41 short videos in 25 languages" in page
+    assert "44 short videos in 27 languages" in page
     kurukh = page.split("कुँड़ुख़")[1].split('<div class="card reel">')[0]
     assert kurukh.count("youtube.com/shorts/") == 3
-    for native in ("राजस्थानी", "माल्तो"):
+    for native in ("माल्तो",):
+        card = page.split(f"<bdi>{native}</bdi>")[1].split('<div class="card reel">')[0]
+        assert card.count("youtube.com/shorts/") == 1, native
+
+
+def test_the_shorts_added_on_26_october():
+    # three Thirukkural shorts of @cicttamil of 22-24 October (1.2.101): Awadhi (CICT's English line says "Awati", its Tamil
+    # line அவதி) and Kisan are new languages; Rajasthani has a second presenter
+    assert REELS[-3:] == [
+        {"id": "j9ew6qLdTTo", "lang": "Awadhi", "native": "अवधी", "presenter": "Ram Lakhan Pratapgarhi"},
+        {"id": "0fFx8qOK-ZY", "lang": "Kisan", "native": "किसान", "presenter": "Dr. Laxman Kishan"},
+        {"id": "jHnmlzUEkWY", "lang": "Rajasthani", "native": "राजस्थानी", "presenter": "Dr. Sharda Krishna"}]
+    assert len(REELS) == 44 and len({r["id"] for r in REELS}) == 44 and len({r["lang"] for r in REELS}) == 27
+    page = make_app(ADMIN_PASSWORD=None).test_client().get("/programme?lang=en").get_data(as_text=True)
+    rajasthani = page.split("<bdi>राजस्थानी</bdi>")[1].split('<div class="card reel">')[0]
+    assert rajasthani.count("youtube.com/shorts/") == 2 and "Dr. Sharda Krishna" in rajasthani
+    for native in ("अवधी", "किसान"):
         card = page.split(f"<bdi>{native}</bdi>")[1].split('<div class="card reel">')[0]
         assert card.count("youtube.com/shorts/") == 1, native

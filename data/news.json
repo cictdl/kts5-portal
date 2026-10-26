@@ -98,6 +98,48 @@
     ]
   },
   {
+    "key": "ddnews-2026-10-22-kts5",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "DD News",
+    "versions": [
+      {
+        "lang": "en",
+        "title": "Kashi Tamil Sangamam 5.0 to Be Held from November 28 to December 12",
+        "time": "4:14 PM",
+        "url": "https://ddnews.gov.in/en/kashi-tamil-sangamam-5-0-to-be-held-from-november-28-to-december-12/"
+      }
+    ]
+  },
+  {
+    "key": "dinamalar-2026-10-22-kts5",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "Dinamalar",
+    "versions": [
+      {
+        "lang": "ta",
+        "title": "காசி தமிழ் சங்கமம் நவ., 28ல் தொடக்கம்",
+        "time": "7:54 PM",
+        "url": "https://www.dinamalar.com/news/tamil-nadu-news/kasi-tamil-sangamam-to-begin-on-november-28/4356448"
+      }
+    ]
+  },
+  {
+    "key": "dailythanthi-2026-10-23-kts5",
+    "date": "2026-10-23",
+    "kind": "article",
+    "source": "Daily Thanthi",
+    "versions": [
+      {
+        "lang": "ta",
+        "title": "காசி தமிழ் சங்கமத்தின் 5-ம் ஆண்டு விழா - இணையதள முன்பதிவு தொடக்கம்",
+        "time": "3:46 AM",
+        "url": "https://www.dailythanthi.com/news/india/5th-anniversary-of-kashi-tamil-sangam-online-bookings-start"
+      }
+    ]
+  },
+  {
     "key": "ndtv-2026-10-23-kts5-registration",
     "date": "2026-10-23",
     "kind": "article",
@@ -110,6 +152,20 @@
         "subtitle": "Candidates interested in applying for the Kashi Tamil Sangamam 5.0, must register for the programme by November 13, 2026. The programme will be organized from November 28 to December 12, 2026.",
         "time": "7:27 AM",
         "url": "https://www.ndtv.com/education/from-thirukkural-to-classrooms-kashi-tamil-sangamam-5-0-opens-registration-12223050"
+      }
+    ]
+  },
+  {
+    "key": "air-2026-10-25-kts5",
+    "date": "2026-10-25",
+    "kind": "article",
+    "source": "Akashvani News",
+    "versions": [
+      {
+        "lang": "en",
+        "title": "5th edition of Kashi Tamil Sangamam to be held from 28th November to 12th December this year",
+        "time": "8:55 AM",
+        "url": "https://newsonair.gov.in/5th-edition-of-kashi-tamil-sangamam-to-be-held-from-28th-november-to-12th-december-this-year/"
       }
     ]
   }

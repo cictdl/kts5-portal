@@ -1226,6 +1226,16 @@ def init_db(app):
     # and not at all when an entry with the same address is there already.
     seed_path = app.config["DATA_DIR"] / "resources.json"
     if seed_path.exists():
+        # the story of couplet 3 of PM eVidya CICT - Tamil (1.2.101) takes its place among the stories, which stand in the
+        # order of the couplets: the eight after it move one place on (439-446 to 440-447), once, where they still have the
+        # place they were given; before the new entries are put in, so that a new database is left as the file has it
+        later = [r["url"] for r in json.loads(seed_path.read_text(encoding="utf-8"))
+                 if r["category"] == "video_pmevidya" and r.get("sort_order", 100) > 439]
+        if later and not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.pmevidya.couplet3'").fetchone():
+            conn.execute("UPDATE resources SET sort_order = sort_order + 1 WHERE sort_order BETWEEN 439 AND 446 AND url IN (%s)"
+                         % ", ".join("?" * len(later)), later)
+            conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)",
+                         ("migrate.pmevidya.couplet3", "1", now))
         for r in json.loads(seed_path.read_text(encoding="utf-8")):
             mark = f"seed.resource.{r['key']}"
             if conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():

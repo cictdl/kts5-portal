@@ -79,9 +79,31 @@ def test_the_page_is_reached_from_the_menu_the_home_page_and_the_notices():
 
 
 def test_the_reports_of_the_web():
-    # a news report is one version, in the language of its outlet, linked to the outlet's own page (1.2.100)
+    # a news report is one version, in the language of its outlet, linked to the outlet's own page (1.2.100); DD News,
+    # Dinamalar, Daily Thanthi and Akashvani News (1.2.101); the file in the order of the days and the hours
     reports = [n for n in NEWS if n["kind"] == "article"]
-    assert [n["source"] for n in reports] == ["NDTV Education"]
+    assert [n["source"] for n in reports] == ["DD News", "Dinamalar", "Daily Thanthi", "NDTV Education", "Akashvani News"]
+    hosts = {"DD News": "https://ddnews.gov.in/en/", "Dinamalar": "https://www.dinamalar.com/",
+             "Daily Thanthi": "https://www.dailythanthi.com/", "NDTV Education": "https://www.ndtv.com/",
+             "Akashvani News": "https://newsonair.gov.in/"}
     for n in reports:
-        assert len(n["versions"]) == 1 and n["versions"][0]["url"].startswith("https://www.ndtv.com/")
-        assert "translate.goog" not in n["versions"][0]["url"]
+        assert len(n["versions"]) == 1 and n["versions"][0]["url"].startswith(hosts[n["source"]])
+        assert "translate.goog" not in n["versions"][0]["url"] and n["versions"][0]["time"]
+    assert [n["date"] for n in NEWS] == sorted(n["date"] for n in NEWS)
+    assert len({n["key"] for n in NEWS}) == len(NEWS)
+
+
+def test_the_reports_of_22_to_25_october_on_the_page():
+    client = make_app(ADMIN_PASSWORD=None).test_client()
+    page = _page(client, "/in-the-news?lang=en")
+    assert page.index("25 Oct 2026") < page.index("23 Oct 2026") < page.index("22 Oct 2026")
+    day25 = page[page.index("25 Oct 2026"):page.index("23 Oct 2026")]
+    assert '<span class="pill">Akashvani News</span>' in day25 and "8:55 AM" in day25 and "newsonair.gov.in ↗" in day25
+    day23 = page[page.index("23 Oct 2026"):page.index("22 Oct 2026")]
+    # the Tamil report in Tamil, marked as Tamil, before NDTV (3:46 and 7:27 in the morning)
+    assert day23.index("Daily Thanthi") < day23.index("NDTV Education")
+    assert '<h3 style="margin:0;line-height:1.4" lang="ta" dir="auto"><a href="https://www.dailythanthi.com/' in day23
+    day22 = page[page.index("22 Oct 2026"):]
+    assert day22.index("Press release") < day22.index("DD News") < day22.index("Dinamalar")
+    assert "Kashi Tamil Sangamam 5.0 to Be Held from November 28 to December 12" in day22 and "ddnews.gov.in ↗" in day22
+    assert "காசி தமிழ் சங்கமம் நவ., 28ல் தொடக்கம்" in day22 and "dinamalar.com ↗" in day22
