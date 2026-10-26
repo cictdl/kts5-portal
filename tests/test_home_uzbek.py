@@ -24,7 +24,7 @@ def test_the_two_videos():
     assert UZ["x"] == {"account": "ANI", "date": "2026-08-31", "url": X}
     assert UZ["youtube"] == {"account": "cicttamil", "date": "2026-09-23", "url": YOUTUBE}
     assert UZ["meeting"] == "2026-09-23"
-    assert UZ["quote"].startswith("The Thirukkural, written in Tamil centuries ago, remains a profound source of inspiration")
+    assert UZ["quote"].startswith("The Thirukkural, written in Tamil millennia ago, remains a profound source of inspiration")
 
 
 def test_the_strings_in_every_language():
@@ -54,7 +54,7 @@ def test_the_card_on_the_home_page_in_every_language():
                 f'{escape(catalogue["home.reel_watch_yt"])} <span aria-hidden="true">↗</span></a>') in card, code
         assert '<span class="reel-from"><span lang="en" dir="ltr">X · @ANI</span> · <bdi>' in card
         assert '<span lang="en" dir="ltr">YouTube · @cicttamil</span> · <bdi>' in card
-        assert str(escape("“The Thirukkural, written in Tamil centuries ago,")) in card
+        assert str(escape("“The Thirukkural, written in Tamil millennia ago,")) in card
         # links only: nothing of X or YouTube is loaded by the page
         for gone in ("<iframe", "platform.twitter.com", "twimg.com", "youtube.com/embed", "youtube-nocookie"):
             assert gone not in page, (code, gone)
