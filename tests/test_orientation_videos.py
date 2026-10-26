@@ -23,11 +23,11 @@ def test_the_list_of_lectures():
         ("en", 1, "i_hSXzH5E9w"), ("en", 2, "Gw2g60MdH7I"), ("ta", 1, "85IHyYchdPE"), ("ta", 2, "FN-VgfQYoec"),
         ("hi", 1, "-z09JR2Z0nM"), ("hi", 2, "JkqyOBbmZxM"), ("ml", 1, "rJIF59YGhY4"), ("ml", 2, "gyNucEOvkTQ"),
         ("kn", 1, "AVuHG4b7XLI"), ("kn", 2, "IVg8GRzGDkc"), ("sa", 1, "5okDiOi4xYE"), ("sa", 2, "ZK4XvOiqiyU"),
-        ("mr", 1, "GF6HH7H9zlk"), ("mr", 2, "-d6t_U9H8ok"), ("te", 1, "5XVI2_IPTh8"), ("te", 2, "esFy7zlzcAw"),
+        ("mr", 1, "DbHlmaVJTGo"), ("mr", 2, "-d6t_U9H8ok"), ("te", 1, "5XVI2_IPTh8"), ("te", 2, "esFy7zlzcAw"),
         ("ne", 1, "bcxdaQUzIpw"), ("ne", 2, "PIZsaQ-eLiU")]
     assert len({r["youtube"] for r in LECTURES}) == 18 and len({r["lang"] for r in LECTURES}) == 9
     # the earlier addresses, removed from the channel, are gone from the page
-    old = {"2w6mgosRYAE", "Z3fGrbHLFr8", "tL9j8Dz7LLw", "FP8bmjuvpuk", "ptuQ7RaWf34", "q-8j2uP_lAA", "HUH2ZriU-0A",
+    old = {"GF6HH7H9zlk", "2w6mgosRYAE", "Z3fGrbHLFr8", "tL9j8Dz7LLw", "FP8bmjuvpuk", "ptuQ7RaWf34", "q-8j2uP_lAA", "HUH2ZriU-0A",
            "U6hypuFpDRA", "BRczoN6wNa0", "A8qPl1T916Y", "_BSi16KkrXw", "g9qHDwL2i04", "oLDi_Yn7MU0"}
     assert not old & {r["youtube"] for r in LECTURES}
     assert [r["title"] for r in LECTURES][:6] == ["Session 01 · Thirukkural and Thiruvalluvar",
