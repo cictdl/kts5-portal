@@ -92,11 +92,11 @@ def test_the_stage_of_each_institution_and_the_figures_of_each_state():
         assert {r["id"]: r["stage"] for r in rows} == {ids[k]: ("none" if k == "tn" else k) for k in ids}
         b = progress.board()
     kerala = next(s for s in b["states"] if s["state"] == "Kerala")
-    assert kerala == {"state": "Kerala", "allocation": 45, "participating": 5, "testing": 2, "signed_up": 6, "tested": 3,
+    assert kerala == {"state": "Kerala", "allocation": 21, "participating": 5, "testing": 2, "signed_up": 6, "tested": 3,
                       "selected": 3, "registered": 2, "verified": 1, "not_selected": 2, "not_registered": 1}
     # the States/UTs of Annexure-I in its order, each one even without institutions yet
     assert b["states"][0]["state"] == "Andhra Pradesh" and b["states"][0]["participating"] == 0 and len(b["states"]) == 31
-    assert b["total"]["participating"] == 6 and b["total"]["allocation"] == 1385 and b["total"]["not_selected"] == 3
+    assert b["total"]["participating"] == 6 and b["total"]["allocation"] == 1000 and b["total"]["not_selected"] == 3
     with app.app_context():
         assert [s["state"] for s in progress.board(["Kerala"])["states"]] == ["Kerala"]
         assert progress.board(["Ladakh"])["states"] == [{"state": "Ladakh", "allocation": None, **progress._empty()}]
@@ -223,8 +223,8 @@ def test_the_dashboard_and_the_settings():
 
 
 def test_the_days_of_the_reminders_lie_within_registration():
-    # registration 22-29 October 2026 since the launch (1.2.95): the three reminders fall inside it, in their order, and the
-    # assessments at the institutions run from the first day to the last
+    # registration 22 October - 20 November 2026 (the revised D.O. letter, 1.2.110): the three reminders fall inside it, in
+    # their order, after the selection of the Participating Institutions, and the assessments run from the first day to the last
     from kts.db import DEFAULT_SETTINGS as D
-    assert D["reg.start"] < D["remind.test_by"] < D["remind.select_by"] < D["remind.register_by"] < D["reg.end"]
-    assert (D["camp.from"], D["camp.to"]) == (D["reg.start"], D["reg.end"]) == ("2026-10-22", "2026-10-29")
+    assert D["reg.start"] < D["hei.select_end"] < D["remind.test_by"] < D["remind.select_by"] < D["remind.register_by"] < D["reg.end"]
+    assert (D["camp.from"], D["camp.to"]) == (D["reg.start"], D["reg.end"]) == ("2026-10-22", "2026-11-20")

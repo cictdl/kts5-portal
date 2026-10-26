@@ -415,15 +415,15 @@ def test_a_selected_student_has_a_confirmation_letter():
     assert r.status_code == 200
     page = r.get_data(as_text=True)
     number = "CICT/KTS5/CL/" + "/".join(row["app_no"].split("-")[1:])
-    assert f"Ref. No. <b>{number}</b>" in page and "Date: <b>01 November 2026</b>" in page
+    assert f"Ref. No. <b>{number}</b>" in page and "Date: <b>06 December 2026</b>" in page
     assert "<b>Student Certificate 1</b>" in page and "Government College Thrissur" in page and f"Application No. {row['app_no']}" in page
     assert "confirmation of selection" in page and "Dear Student Certificate 1," in page
     flat = " ".join(page.split())
     assert "one of the 1,000 students" in page and "<b>12</b>" in page
     assert "on the basis of the assessment on the Thirukkural conducted by your institution." in flat
     assert "online test" not in flat and "held on" not in flat
-    assert "begins on 02 November 2026, under the guidance of your faculty mentor, Dr. K. Mentor, Assistant Professor of Tamil." in page
-    assert "sessions in Hindi;" in page and "on or before 12 November 2026" in page and "on or before 22 November 2026" in page
+    assert "begins on 12 December 2026, under the guidance of your faculty mentor, Dr. K. Mentor, Assistant Professor of Tamil." in page
+    assert "sessions in Hindi;" in page and page.count("on or before 11 January 2027") == 2
     assert "&#8377;10,000" in page and "from 28 November 2026 to 12 December 2026" in page
     assert "<b>Prof. R. Chandrasekaran</b>" in page and "Copy to: The Principal / Head of the Institution, Government College Thrissur" in page
     assert "Chemmozhi Salai, Perumbakkam" in page

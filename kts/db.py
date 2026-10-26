@@ -613,8 +613,9 @@ DEFAULT_SETTINGS = {
     "reg.open": "1",
     # the dates of the tentative timeline of KTS 5.0 (28.11.2026 – 12.12.2026)
     "reg.start": "2026-10-22",
-    # the D.O. letter of the Ministry of 9 October 2026: the institutions register their selected students by 22 October
-    "reg.end": "2026-10-29",
+    # the D.O. letter of the Ministry of 9 October 2026: the institutions register their selected students by 22 October; the
+    # revised D.O. letter (26 October 2026): each selected Participating Institution nominates its student by 20 November
+    "reg.end": "2026-11-20",
     "exam.date": "2026-10-29",
     "exam.start_time": "11:30",
     "exam.end_time": "12:00",
@@ -665,10 +666,10 @@ DEFAULT_SETTINGS = {
     "inaug.code": "",
     # the confirmation letter of the selected students, and the dates of the internship it names
     "letter.on": "1",
-    "letter.date": "2026-11-01",
-    "internship.start": "2026-11-02",
-    "papers.due": "2026-11-12",
-    "present.due": "2026-11-22",
+    "letter.date": "2026-12-06",
+    "internship.start": "2026-12-12",
+    "papers.due": "2027-01-11",
+    "present.due": "2027-01-11",
     # the research papers (kts/papers.py): auto = from internship.start to papers.due, 1 open, 0 closed;
     # a note and a link to the guidelines, shown above the form
     "papers.open": "auto",
@@ -680,7 +681,7 @@ DEFAULT_SETTINGS = {
     # anybody may host a classroom quiz, without an account (1.2.30)
     "quiz.public": "1",
     # the Nodal Officers of the States/UTs (1.2.39): verification closes the day before the test
-    "verify.end": "2026-10-31",
+    "verify.end": "2026-12-05",
     "nodal.digest": "1",
     "nodal.digest_time": "08:00",
     # the copies of the database (1.2.40, kts/backup.py)
@@ -689,8 +690,12 @@ DEFAULT_SETTINGS = {
     "backup.keep": "28",
     # the participating institutions (1.2.41, kts/heis.py)
     "hei.open": "1",
-    "hei.end": "2026-10-29",
+    "hei.end": "2026-11-10",
     "hei.max_per_state": "0",
+    # the revised D.O. letter (26 October 2026): the Nodal Institution selects only the number of Participating Institutions
+    # that Annexure-I prescribes for its State/UT (data/nodal_heis.json), between the close of registration and this day
+    "hei.cap_annexure": "1",
+    "hei.select_end": "2026-11-15",
     "hei.public": "1",
     # the Nodal Officer of each Nodal HEI, with the contact details given for the account, on the public pages (1.2.70)
     "nodal.officers_public": "1",
@@ -698,13 +703,13 @@ DEFAULT_SETTINGS = {
     "reg.by_institution": "1",
     "camp.on": "1",
     "camp.from": "2026-10-22",
-    "camp.to": "2026-10-29",
+    "camp.to": "2026-11-20",
     "camp.show_score": "1",
     # the reminders to the participating institutions that are behind (1.2.52, kts/progress.py)
     "remind.on": "1",
-    "remind.test_by": "2026-10-24",
-    "remind.select_by": "2026-10-27",
-    "remind.register_by": "2026-10-28",
+    "remind.test_by": "2026-11-16",
+    "remind.select_by": "2026-11-18",
+    "remind.register_by": "2026-11-19",
     # the practice test for students (1.2.54, kts/practice.py)
     "practice.on": "1",
     "practice.questions": "10",
@@ -741,16 +746,16 @@ RETIRED_DEFAULTS = {
     # timeline up to 1.2.31 (registration 10-16 October, test 19 October), moved by the timeline of
     # 8 October 2026 (registration 15-21 October, test 22 October)
     "reg.start": ["2026-09-25", "2026-10-10", "2026-10-15", "2026-10-14"],
-    "reg.end": ["2026-11-15", "2026-10-16", "2026-10-21", "2026-10-22"],
+    "reg.end": ["2026-11-15", "2026-10-16", "2026-10-21", "2026-10-22", "2026-10-29"],
     "exam.date": ["2026-11-29", "2026-10-19", "2026-10-22"],
-    "letter.date": ["2026-10-22", "2026-10-25"],
-    "internship.start": ["2026-10-23", "2026-10-26"],
+    "letter.date": ["2026-10-22", "2026-10-25", "2026-11-01"],
+    "internship.start": ["2026-10-23", "2026-10-26", "2026-11-02"],
     # the test begins at 11:30 (8 October 2026); the window still closes at 12:00
     "exam.start_time": ["11:00"],
     # the D.O. letter of 9 October 2026 (1.2.43): the institutions register their students by 22 October, the Nodal
     # Officers verify until the consolidation, no central test, no cap on the institutions of a State/UT
     "exam.open": ["auto"],
-    "verify.end": ["2026-10-21", "2026-10-24"],
+    "verify.end": ["2026-10-21", "2026-10-24", "2026-10-31"],
     "hei.max_per_state": ["50"],
     # the online orientation has two lectures, not ten (14 October 2026)
     "orientation.note": ["Language-wise online orientation sessions (10 lectures + 20-minute live Q&A) will be scheduled after the merit list is published."],
@@ -758,22 +763,31 @@ RETIRED_DEFAULTS = {
     # on 22 October 2026 (1.2.95): registration 22-29 October, and every later date a week on
     "launch.at": ["2026-10-14T17:00"],
     "launch.until": ["2026-10-22"],
-    "hei.end": ["2026-10-21"],
+    "hei.end": ["2026-10-21", "2026-10-29"],
     "camp.from": ["2026-10-15"],
-    "camp.to": ["2026-10-21"],
-    "remind.test_by": ["2026-10-17"],
-    "remind.select_by": ["2026-10-20"],
-    "remind.register_by": ["2026-10-21"],
-    "papers.due": ["2026-11-05"],
-    "present.due": ["2026-11-15"],
+    "camp.to": ["2026-10-21", "2026-10-29"],
+    "remind.test_by": ["2026-10-17", "2026-10-24"],
+    "remind.select_by": ["2026-10-20", "2026-10-27"],
+    "remind.register_by": ["2026-10-21", "2026-10-28"],
+    "papers.due": ["2026-11-05", "2026-11-12"],
+    "present.due": ["2026-11-15", "2026-11-22"],
 }
+
+# The dates of the revised D.O. letter of the Ministry of Education (26 October 2026, Annexure-III): put in once over the values
+# of each database, also where CICT had set others in the Console; changed in the Console afterwards, they stay so
+REVISED_DO_DATES = ("hei.end", "hei.select_end", "camp.to", "reg.end", "verify.end", "letter.date", "internship.start",
+                    "papers.due", "present.due", "remind.test_by", "remind.select_by", "remind.register_by")
 
 # Titles of the events of data/timeline.json as earlier versions put them in, by the key of the event: an event
 # that still holds one receives the present title, so that the schedule keeps finding its translation.
 RETIRED_EVENT_TITLES = {
-    "selection": ["Selection of the 1,000 students"],
+    "selection": ["Selection of the 1,000 students", "Consolidation of the selected students by CICT, with State-wise and language-wise representation"],
     "letters": ["Issue of confirmation letters"],
-    "live": ["Live sessions: 20 question-and-answer sessions"],
+    "live": ["Live sessions: 20 question-and-answer sessions", "Live online orientation with an interactive question-and-answer session"],
+    # the revised D.O. letter (26 October 2026)
+    "assess": ["Completion of the institution-level assessments: each institution selects one student on merit"],
+    "internship": ["Commencement of the one-month internship and research period"],
+    "papers": ["Submission of research papers"],
 }
 
 # Days of the events of data/timeline.json as earlier versions put them in, by the key of the event:
@@ -797,6 +811,25 @@ RETIRED_EVENT_DAYS = {
     "present": [("2026-11-15T00:00", None)],
     "printed": [("2026-11-20T00:00", None)],
 }
+# the revised D.O. letter of the Ministry (26 October 2026, Annexure-III D): the days of the steps it keeps, as 1.2.95 put them
+for _key, _days in (("assess", ("2026-10-29T00:00", None)), ("selection", ("2026-10-30T00:00", "2026-10-31T00:00")),
+                    ("live", ("2026-11-02T00:00", None)), ("internship", ("2026-11-02T00:00", None)),
+                    ("papers", ("2026-11-12T00:00", None))):
+    RETIRED_EVENT_DAYS[_key].append(_days)
+
+# Steps of the timeline that the revised D.O. letter (26 October 2026) no longer has: (title, starts_at, ends_at) as the
+# portal put them in. Each is taken off the schedule once (published = 0), where it still holds them; nothing is deleted.
+RETIRED_EVENTS = [
+    ("Last date for the list of participating institutions", "2026-10-15T00:00", None),
+    ("Nationwide Students' Engagement Programme in the participating institutions", "2026-10-15T00:00", None),
+    ("Confirmation by email and on the portal, and collection of the details for the stipend", "2026-11-01T00:00", None),
+    ("Classification and forwarding of research papers", "2026-11-13T00:00", None),
+    ("Commencement of evaluation by CIIL", "2026-11-14T00:00", None),
+    ("Completion of evaluation by CIIL", "2026-11-18T00:00", None),
+    ("Compilation, design and production of the booklet", "2026-11-19T00:00", "2026-11-22T00:00"),
+    ("Last date for student presentations and knowledge dissemination", "2026-11-22T00:00", None),
+    ("Printed booklet ready", "2026-11-25T00:00", None),
+]
 
 
 # Roles of agencies as earlier versions seeded them (data/agencies.json of that time).
@@ -1168,22 +1201,23 @@ def nodal_notice(heis):
     lines = [f"{i}. {h['state']}: {h['name']} ({h['allocation']})" for i, h in enumerate(heis, 1)]
     total = sum(h["allocation"] for h in heis)
     body = "\n".join([
-        "As communicated by the Ministry of Education, Government of India: the Nodal Higher Educational Institution of each "
-        "State/UT for the Students' Engagement Programme of Kashi Tamil Sangamam 5.0 (Thirukkural Payilvom). The number in "
-        "brackets is the tentative number of participating HEIs (Central/State/Private Universities and Colleges) to be "
-        "identified in that State/UT.",
+        "As communicated by the Ministry of Education, Government of India (revised, Annexure-I): the Nodal Higher Educational "
+        "Institution of each State/UT for the Students' Engagement Programme of Kashi Tamil Sangamam 5.0 (Thirukkural "
+        "Payilvom). The number in brackets is the number of Participating HEIs to be selected in that State/UT.",
         "",
         *lines,
         "",
-        f"Total: {total:,} participating HEIs.",
+        f"Total: {total:,} Participating HEIs.",
         "",
-        "The State/UT-wise allocation is tentative and indicates the number of participating HEIs to be identified. "
-        "Nodal Institutions may nominate additional HEIs beyond the indicated allocation.",
+        "Registration is open to institutions without any State/UT-wise ceiling. The figures above indicate the final number of "
+        "Participating Institutions to be selected by the respective Nodal Institution in accordance with the Standard "
+        "Operating Procedure (Annexure-V). Registration does not by itself confer selection.",
         "",
-        "The Nodal Higher Educational Institution of each State/UT identifies the participating institutions of its State/UT, "
-        "ensures that they register on this portal (Register › Register your institution), and coordinates their assessments, "
-        "nominations and campus activities. The list with the participating institutions accepted so far is on the page "
-        "of the Nodal Institutions.",
+        "All interested higher educational institutions (Central/State/Private Universities and Colleges) register on this "
+        "portal (Register › Register your institution) up to 10 November 2026. The Nodal Institution of each State/UT "
+        "scrutinises them and selects the prescribed number between 11 and 15 November 2026, with a reserve list; each "
+        "selected Participating Institution assesses its interested students and nominates one on merit by 20 November 2026. "
+        "The participating institutions accepted so far are listed on the page of the Nodal Institutions.",
     ])
     return "State/UT-wise list of Nodal Higher Educational Institutions", body
 
@@ -1209,6 +1243,10 @@ def init_db(app):
         for old in old_values:
             conn.execute("UPDATE settings SET value = ?, updated_at = ? WHERE key = ? AND value = ?",
                          (DEFAULT_SETTINGS[key], now, key, old))
+    if not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.revised_do'").fetchone():
+        for key in REVISED_DO_DATES:
+            conn.execute("UPDATE settings SET value = ?, updated_at = ? WHERE key = ?", (DEFAULT_SETTINGS[key], now, key))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", ("migrate.revised_do", "1", now))
 
     if conn.execute("SELECT COUNT(*) FROM agencies").fetchone()[0] == 0:
         seed_path = app.config["DATA_DIR"] / "agencies.json"
@@ -1293,8 +1331,14 @@ def init_db(app):
                      e["ends"] + "T00:00" if e.get("ends") else None, agency[0] if agency else None, now, now),
                 )
             conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
-        # the days of an event that an earlier version put in, still unchanged, become those of the file
         seeds = {e["key"]: e for e in json.loads(seed_path.read_text(encoding="utf-8"))}
+        for key, olds in RETIRED_EVENT_TITLES.items():
+            e = seeds.get(key)
+            if e is None:
+                continue
+            for old in olds:
+                conn.execute("UPDATE events SET title = ?, updated_at = ? WHERE title = ?", (e["title"], now, old))
+        # the days of an event that an earlier version put in, still unchanged, become those of the file
         for key, olds in RETIRED_EVENT_DAYS.items():
             e = seeds.get(key)
             if e is None:
@@ -1304,18 +1348,25 @@ def init_db(app):
                 conn.execute("UPDATE events SET starts_at = ?, ends_at = ?, updated_at = ? "
                              "WHERE title = ? AND starts_at = ? AND ends_at IS ?",
                              (new[0], new[1], now, e["title"], starts, ends))
-        for key, olds in RETIRED_EVENT_TITLES.items():
-            e = seeds.get(key)
-            if e is None:
-                continue
-            for old in olds:
-                conn.execute("UPDATE events SET title = ?, updated_at = ? WHERE title = ?", (e["title"], now, old))
+        # the steps the revised D.O. letter no longer has leave the schedule, once
+        if not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.revised_do.events'").fetchone():
+            for title, starts, ends in RETIRED_EVENTS:
+                conn.execute("UPDATE events SET published = 0, updated_at = ? WHERE title = ? AND starts_at = ? AND ends_at IS ?",
+                             (now, title, starts, ends))
+            conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", ("migrate.revised_do.events", "1", now))
 
     # The State/UT-wise list of the Nodal Higher Educational Institutions (data/nodal_heis.json), as
     # a circular pinned among the notices (1.2.51). Put in once for each database, as the events are:
     # a notice that CICT has changed or deleted in the console stays so, and none is added when a
     # notice with the same title is there already.
     seed_path = app.config["DATA_DIR"] / "nodal_heis.json"
+    # the circular as 1.2.51 put it in, with the tentative allocation, takes the numbers and the text of the revised D.O.
+    # letter (26 October 2026), once
+    if seed_path.exists() and not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.revised_do.notice'").fetchone():
+        title, body = nodal_notice(json.loads(seed_path.read_text(encoding="utf-8")))
+        conn.execute("UPDATE notices SET body = ?, updated_at = ? WHERE title = ? AND body LIKE '%allocation is tentative%'",
+                     (body, now, title))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", ("migrate.revised_do.notice", "1", now))
     mark = "seed.notice.nodal_heis"
     if seed_path.exists() and not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
         title, body = nodal_notice(json.loads(seed_path.read_text(encoding="utf-8")))

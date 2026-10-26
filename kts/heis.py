@@ -67,11 +67,21 @@ def window(settings):
 
 
 def max_per_state():
-    """The institutions accepted in one State/UT at most; 0: no limit (the allocation of Annexure-I is tentative)."""
+    """The institutions accepted in one State/UT at most (hei.max_per_state), the same for every State/UT; 0: no limit."""
     try:
         return max(0, int(get_setting("hei.max_per_state") or 0))
     except ValueError:
         return 0
+
+
+def cap_of(state):
+    """
+    The institutions that may be accepted in the State/UT at most: the number Annexure-I prescribes for it (the revised D.O.
+    letter of 26 October 2026) while hei.cap_annexure is on, else hei.max_per_state; 0: no limit.
+    """
+    if get_setting("hei.cap_annexure") == "1" and allocation_of(state):
+        return allocation_of(state)
+    return max_per_state()
 
 
 def nodal_heis():
@@ -79,7 +89,7 @@ def nodal_heis():
 
 
 def allocation_of(state):
-    """The tentative number of participating institutions of the State/UT (Annexure-I of the D.O. letter), or 0."""
+    """The number of Participating Institutions to be selected in the State/UT (Annexure-I of the revised D.O. letter), or 0."""
     for h in nodal_heis():
         if h["state"] == state:
             return int(h.get("allocation") or 0)

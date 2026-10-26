@@ -64,7 +64,7 @@ def test_the_accounts_from_a_spreadsheet():
         assert query("SELECT role, states FROM users WHERE email = 'verifier@tests.example'", one=True)["role"] == "verifier"
         assert query("SELECT id FROM users WHERE email = 'x@x.example'", one=True) is None
         mail = query("SELECT body FROM outbox WHERE to_addr = 'k.nair@ker.example'", one=True)["body"]
-    assert "As Nodal Officer for Kerala, Tamil Nadu" in mail and "Verification closes on 31 October 2026." in mail
+    assert "As Nodal Officer for Kerala, Tamil Nadu" in mail and "Verification closes on 5 December 2026." in mail
     assert "Temporary password: Kts5-" in mail
     # the same sheet again: nothing more to do
     page = _upload(admin, xlsx_bytes(HEAD, filled, "Nodal officers", text_cols=(4, 5)), "officers.xlsx").get_data(as_text=True)
@@ -108,7 +108,7 @@ def test_who_may_do_what():
     assert officer.post("/console/nodal", data={"_csrf": _token(officer), "action": "remind_all"}).status_code == 403
     # the officer reads when verification closes
     page = officer.get("/console/applications?status=submitted").get_data(as_text=True)
-    assert "Verification closes on 31 October 2026 (end of the day, IST). Only verified students are consolidated by CICT" in page
+    assert "Verification closes on 5 December 2026 (end of the day, IST). Only verified students are consolidated by CICT" in page
 
 
 def _at(day, hour, minute=0):

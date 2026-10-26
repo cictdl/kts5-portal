@@ -85,6 +85,7 @@ def test_a_nodal_officer_decides_for_their_state_only_and_the_most_is_kept():
         _apply(app.test_client(), name=name, state=state, aishe_code="", head_email=f"h{n}@x.example", coord_email=f"c{n}@x.example")
     with app.app_context():
         ids = {r["name"]: r["id"] for r in query("SELECT id, name FROM institutions")}
+        set_setting("hei.cap_annexure", "0")    # the number of Annexure-I (1.2.110) off: the limit for all States/UTs
         set_setting("hei.max_per_state", "1")   # 0, the default since 1.2.43, is no limit
     officer = _nodal(app, "nodal.kerala@tests.example", ["Kerala"])
     page = officer.get("/console/institutions").get_data(as_text=True)
@@ -94,7 +95,7 @@ def test_a_nodal_officer_decides_for_their_state_only_and_the_most_is_kept():
     officer.post("/console/institutions", data={"_csrf": _token(officer), "id": ids["College One"], "action": "accept"})
     r = officer.post("/console/institutions", data={"_csrf": _token(officer), "id": ids["College Two"], "action": "accept"},
                      follow_redirects=True)
-    assert "that is the most" in r.get_data(as_text=True)
+    assert "that is the number Annexure-I prescribes for it" in r.get_data(as_text=True)
     officer.post("/console/institutions", data={"_csrf": _token(officer), "id": ids["College Two"], "action": "decline",
                                                 "note": "Not a higher educational institution"})
     with app.app_context():
@@ -110,7 +111,7 @@ def test_a_nodal_officer_decides_for_their_state_only_and_the_most_is_kept():
     # the page of the Nodal Officers counts them
     admin = _staff(app, "admin@tests.example", "superadmin")
     kerala = admin.get("/console/nodal").get_data(as_text=True).split("Central University of Kerala")[1].split("</tr>")[0]
-    assert "1<span class=\"small muted\">/45</span>" in kerala
+    assert "1<span class=\"small muted\">/21</span>" in kerala
 
 
 def test_the_form_checks_and_closes():
@@ -205,3 +206,29 @@ def test_the_coordinator_and_the_faculty_supervisor_are_two_people():
         "Assistant Professor of Tamil", "Dr. C. Guide", "guide@gac.example", "9876501234")
     assert "Institutional Coordinator: Dr. B. Coordinator, Assistant Professor of Tamil" in mail
     assert "Faculty Supervisor/Guide: Dr. C. Guide, Associate Professor of History" in mail
+
+
+def test_each_state_accepts_at_most_its_number_of_annexure_i():
+    # the revised D.O. letter (1.2.110): the Nodal Institution selects only the number Annexure-I prescribes for its State/UT
+    from kts import heis as HEI
+    from kts.db import execute, query, set_setting, utcnow
+    app = _app()
+    with app.app_context():
+        assert (HEI.cap_of("Kerala"), HEI.cap_of("Uttar Pradesh"), HEI.cap_of("Tamil Nadu"), HEI.cap_of("Puducherry")) == (21, 350, 150, 5)
+        assert HEI.cap_of("Ladakh") == 0          # a State/UT without a Nodal Institution: no limit
+        for n in range(21):
+            execute("INSERT INTO institutions(ref, name, itype, state, district, inst_key, status, created_at, updated_at) "
+                    "VALUES(?, ?, 'Government college', 'Kerala', 'Thrissur', ?, 'accepted', ?, ?)",
+                    (f"KTS5-HEI-9{n:04d}", f"Accepted College {n}", f"name:accepted college {n}|kerala", utcnow(), utcnow()))
+    _apply(app.test_client(), name="College Twenty-two", state="Kerala", aishe_code="", head_email="h@x.example", coord_email="c@x.example")
+    with app.app_context():
+        rid = query("SELECT id FROM institutions WHERE name = 'College Twenty-two'", one=True)["id"]
+    officer = _nodal(app, "nodal.kerala2@tests.example", ["Kerala"])
+    r = officer.post("/console/institutions", data={"_csrf": _token(officer), "id": rid, "action": "accept"}, follow_redirects=True)
+    assert "Kerala has 21 accepted institutions: that is the number Annexure-I prescribes for it" in r.get_data(as_text=True)
+    with app.app_context():
+        assert query("SELECT status FROM institutions WHERE id = ?", (rid,), one=True)["status"] == "pending"
+        set_setting("hei.cap_annexure", "0")      # switched off in Settings: no limit (hei.max_per_state is 0)
+    officer.post("/console/institutions", data={"_csrf": _token(officer), "id": rid, "action": "accept"})
+    with app.app_context():
+        assert query("SELECT status FROM institutions WHERE id = ?", (rid,), one=True)["status"] == "accepted"

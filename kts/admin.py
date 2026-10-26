@@ -1107,11 +1107,12 @@ def institutions():
         action = request.form.get("action")
         note = (request.form.get("note") or "").strip()[:500]
         if action == "accept":
-            cap = HEI.max_per_state()
+            cap = HEI.cap_of(row["state"])
             taken = query("SELECT COUNT(*) AS n FROM institutions WHERE state = ? AND status = 'accepted' AND id != ?",
                           (row["state"], row["id"]), one=True)["n"]
             if cap and taken >= cap:
-                flash(f"{row['state']} has {taken} accepted institutions: that is the most (Settings › Participating institutions).", "error")
+                flash(f"{row['state']} has {taken} accepted institutions: that is the number Annexure-I prescribes for it "
+                      f"(Settings › Participating institutions).", "error")
                 return redirect(back)
             status = "accepted"
         elif action == "decline":
@@ -1576,7 +1577,9 @@ SETTING_GROUPS = [
     ("Participating institutions (Console › Institutions; the website: /institutions)", [
         ("hei.open", "Institutions may apply on the website (/institutions/register); those identified by a Nodal Institution register with their invitation at any time", "bool"),
         ("hei.end", "Last date for institutions to apply (YYYY-MM-DD; empty: none)", "date"),
-        ("hei.max_per_state", "Institutions accepted in one State/UT at most (0: no limit; the allocation of Annexure-I is tentative)", "number"),
+        ("hei.cap_annexure", "Each State/UT accepts at most the number of Participating Institutions that Annexure-I of the revised D.O. letter prescribes for it", "bool"),
+        ("hei.select_end", "Last date for the Nodal Institutions to select the Participating Institutions (YYYY-MM-DD)", "date"),
+        ("hei.max_per_state", "Otherwise: institutions accepted in one State/UT at most, the same for all (0: no limit)", "number"),
         ("hei.public", "Show the participating institutions on the website, State/UT by State/UT", "bool"),
         ("nodal.officers_public", "Show the Nodal Officer of each State/UT (name, designation, e-mail and phone of the active Nodal Officer accounts) on the Nodal HEIs and Partners pages", "bool"),
         ("hei.orientation", "Pre-assessment orientation session by CICT for the institutions: date, time and link, shown on the institutions' page (empty: nothing)", "text")]),

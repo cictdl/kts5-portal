@@ -1,18 +1,12 @@
 [
   {"key": "circular", "title": "Issue of the circular and nationwide outreach", "kind": "general", "starts": "2026-10-07"},
   {"key": "hei_list", "title": "Nodal Institutions furnish the details of their Nodal Officer and the preliminary list of institutions", "kind": "registration", "starts": "2026-10-13"},
-  {"key": "hei_final", "title": "Last date for the list of participating institutions", "kind": "registration", "starts": "2026-10-15"},
-  {"key": "engage", "title": "Nationwide Students' Engagement Programme in the participating institutions", "kind": "general", "starts": "2026-10-15", "onwards": true},
-  {"key": "assess", "title": "Completion of the institution-level assessments: each institution selects one student on merit", "kind": "examination", "starts": "2026-10-29"},
-  {"key": "selection", "title": "Consolidation of the selected students by CICT, with State-wise and language-wise representation", "kind": "general", "starts": "2026-10-30", "ends": "2026-10-31"},
-  {"key": "letters", "title": "Confirmation by email and on the portal, and collection of the details for the stipend", "kind": "general", "starts": "2026-11-01"},
-  {"key": "internship", "title": "Commencement of the one-month internship and research period", "kind": "internship", "starts": "2026-11-02"},
-  {"key": "live", "title": "Live online orientation with an interactive question-and-answer session", "kind": "orientation", "starts": "2026-11-02"},
-  {"key": "papers", "title": "Submission of research papers", "kind": "internship", "starts": "2026-11-12"},
-  {"key": "forward", "title": "Classification and forwarding of research papers", "kind": "internship", "starts": "2026-11-13"},
-  {"key": "eval_start", "title": "Commencement of evaluation by CIIL", "kind": "internship", "starts": "2026-11-14", "agency": "CIIL"},
-  {"key": "eval_end", "title": "Completion of evaluation by CIIL", "kind": "internship", "starts": "2026-11-18", "agency": "CIIL"},
-  {"key": "booklet", "title": "Compilation, design and production of the booklet", "kind": "general", "starts": "2026-11-19", "ends": "2026-11-22"},
-  {"key": "present", "title": "Last date for student presentations and knowledge dissemination", "kind": "internship", "starts": "2026-11-22", "description": "Each student may make the presentation on a date of their choice, on or before this date."},
-  {"key": "printed", "title": "Printed booklet ready", "kind": "general", "starts": "2026-11-25"}
+  {"key": "hei_reg", "title": "Last date for the registration of institutions; wide outreach by the Nodal Institutions", "kind": "registration", "starts": "2026-11-10"},
+  {"key": "hei_select", "title": "Scrutiny and selection of the Participating Institutions by the Nodal Institutions, with a reserve list", "kind": "registration", "starts": "2026-11-11", "ends": "2026-11-15"},
+  {"key": "assess", "title": "Last date for the assessment of interested students by each selected Participating Institution", "kind": "examination", "starts": "2026-11-20"},
+  {"key": "selection", "title": "Consolidation and verification of the nominations by the Nodal Institutions and CICT", "kind": "general", "starts": "2026-11-21", "ends": "2026-12-05"},
+  {"key": "live", "title": "Academic orientation by CICT, with access to the study material and educational videos", "kind": "orientation", "starts": "2026-12-10"},
+  {"key": "internship", "title": "Commencement of the one-month research and academic engagement", "kind": "internship", "starts": "2026-12-12"},
+  {"key": "research", "title": "Research, writing and knowledge dissemination: articles/research notes and presentations at the institutions under faculty guidance", "kind": "internship", "starts": "2026-12-12", "ends": "2027-01-11"},
+  {"key": "papers", "title": "Completion of the engagement: submission of the article/research note, the activity report and the supporting records", "kind": "internship", "starts": "2027-01-11"}
 ]

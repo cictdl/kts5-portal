@@ -367,13 +367,13 @@ def test_the_letter_in_the_data_and_the_pages():
     import json
     from kts.db import DEFAULT_SETTINGS, RETIRED_DEFAULTS, RETIRED_EVENT_TITLES
     heis = json.loads((ROOT / "data" / "nodal_heis.json").read_text(encoding="utf-8"))
-    assert len(heis) == 31 and sum(h["allocation"] for h in heis) == 1385
+    assert len(heis) == 31 and sum(h["allocation"] for h in heis) == 1000
     by = {h["state"]: h for h in heis}
     assert by["Tamil Nadu"]["name"] == "Central University of Tamil Nadu" and by["Tamil Nadu"]["allocation"] == 150
     assert by["Goa"]["name"] == "NIT Goa" and by["Goa"]["type"] == "nit" and by["Assam"]["name"] == "Assam University"
-    assert DEFAULT_SETTINGS["exam.open"] == "0" and DEFAULT_SETTINGS["reg.by_institution"] == "1" and DEFAULT_SETTINGS["camp.to"] == "2026-10-29"
+    assert DEFAULT_SETTINGS["exam.open"] == "0" and DEFAULT_SETTINGS["reg.by_institution"] == "1" and DEFAULT_SETTINGS["camp.to"] == "2026-11-20"
     assert "auto" in RETIRED_DEFAULTS["exam.open"] and "2026-10-21" in RETIRED_DEFAULTS["reg.end"] and "50" in RETIRED_DEFAULTS["hei.max_per_state"]
-    assert set(RETIRED_EVENT_TITLES) == {"selection", "letters", "live"}
+    assert set(RETIRED_EVENT_TITLES) == {"selection", "letters", "live", "assess", "internship", "papers"}
     app = make_app(ADMIN_PASSWORD=None)
     client = app.test_client()
     home = client.get("/?lang=en").get_data(as_text=True)
@@ -383,15 +383,17 @@ def test_the_letter_in_the_data_and_the_pages():
     assert "Institution-level assessment" in exam and 'href="/institution/login"' in exam and "11:30" not in exam
     assert 'href="/institution/login">Institution sign-in</a>' in home
     sched = client.get("/schedule?lang=en").get_data(as_text=True)
-    assert "Completion of the institution-level assessments" in sched and "Online examination" not in sched
-    assert "Nationwide Students' Engagement Programme" in sched.replace("&#39;", "'")
+    assert "Last date for the assessment of interested students" in sched and "Online examination" not in sched
+    # the revised D.O. letter (1.2.110): the one-month engagement from 12 December, no longer a programme from 15 October
+    assert "Nationwide Students' Engagement Programme" not in sched.replace("&#39;", "'")
+    assert "Commencement of the one-month research and academic engagement" in sched
     # the partners page names the Nodal Institutions of the letter
     partners = client.get("/partners?lang=en").get_data(as_text=True)
     assert "Assam University" in partners and "Indian Institute of Technology Guwahati" not in partners
     # the live database: the old titles of the events receive the new ones, the retired settings move
     import sqlite3
     conn = sqlite3.connect(str(app.config["DATABASE"]))
-    conn.execute("UPDATE events SET title = 'Selection of the 1,000 students' WHERE title LIKE 'Consolidation of the selected%'")
+    conn.execute("UPDATE events SET title = 'Selection of the 1,000 students' WHERE title LIKE 'Consolidation and verification%'")
     conn.execute("UPDATE settings SET value = 'auto' WHERE key = 'exam.open'")
     conn.execute("UPDATE settings SET value = '2026-10-21' WHERE key = 'reg.end'")
     conn.commit()
@@ -400,8 +402,8 @@ def test_the_letter_in_the_data_and_the_pages():
     from kts import create_app
     again = create_app(type("Again", (Config,), {name: app.config[name] for name in ("INSTANCE_DIR", "DATABASE", "UPLOAD_DIR")} | {"ADMIN_PASSWORD": None}))
     conn = sqlite3.connect(str(again.config["DATABASE"]))
-    assert conn.execute("SELECT COUNT(*) FROM events WHERE title LIKE 'Consolidation of the selected%'").fetchone()[0] == 1
-    assert dict(conn.execute("SELECT key, value FROM settings WHERE key IN ('exam.open', 'reg.end')")) == {"exam.open": "0", "reg.end": "2026-10-29"}
+    assert conn.execute("SELECT COUNT(*) FROM events WHERE title LIKE 'Consolidation and verification%'").fetchone()[0] == 1
+    assert dict(conn.execute("SELECT key, value FROM settings WHERE key IN ('exam.open', 'reg.end')")) == {"exam.open": "0", "reg.end": "2026-11-20"}
     conn.close()
 
 

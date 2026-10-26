@@ -12,11 +12,13 @@ HEIS = json.loads((ROOT / "data" / "nodal_heis.json").read_text(encoding="utf-8"
 
 def test_the_list_is_the_one_of_the_ministry():
     assert len(HEIS) == 31
-    # Annexure-I of the D.O. letter of 9 October 2026, with the tentative allocation of participating institutions
-    assert HEIS[0] == {"state": "Andhra Pradesh", "type": "central_university", "name": "Central University of Andhra Pradesh", "allocation": 65}
+    # Annexure-I of the revised D.O. letter (26 October 2026): the number of Participating HEIs to be selected (1.2.110)
+    assert HEIS[0] == {"state": "Andhra Pradesh", "type": "central_university", "name": "Central University of Andhra Pradesh", "allocation": 30}
     assert HEIS[22]["name"] == "Central University of Tamil Nadu" and HEIS[25]["name"] == "Banaras Hindu University"
-    assert HEIS[30] == {"state": "Puducherry", "type": "central_university", "name": "Pondicherry University", "allocation": 10}
-    assert {h["type"] for h in HEIS} == {"central_university", "nit"} and sum(h["allocation"] for h in HEIS) == 1385
+    assert HEIS[30] == {"state": "Puducherry", "type": "central_university", "name": "Pondicherry University", "allocation": 5}
+    assert {h["type"] for h in HEIS} == {"central_university", "nit"} and sum(h["allocation"] for h in HEIS) == 1000
+    assert [h["allocation"] for h in HEIS] == [30, 7, 14, 18, 14, 7, 25, 21, 9, 11, 34, 21, 25, 46, 5, 5, 5, 5, 23, 21, 37, 5, 150,
+                                               23, 5, 350, 11, 23, 34, 11, 5]
     assert len({h["state"] for h in HEIS}) == 31 and len({h["name"] for h in HEIS}) == 31
 
 
@@ -29,8 +31,8 @@ def test_the_page_shows_them_in_the_language_of_the_reader():
     assert page.count('<td lang="en" dir="ltr">') == 31
     assert '<td lang="en" dir="ltr">Central University of Tamil Nadu</td>' in page
     assert page.index("Central University of Andhra Pradesh") < page.index("Pondicherry University")
-    # the columns of Annexure-I: the tentative allocation in place of the type of institution (1.2.45)
-    assert "Tentative number of participating HEIs" in page and "<td>Central University</td>" not in page
+    # the columns of Annexure-I: the number to be selected in place of the type of institution (1.2.45, 1.2.110)
+    assert "Number of Participating HEIs to be selected" in page and "<td>Central University</td>" not in page
     assert "How the programme reaches the institutions" in page and "selects one student on merit and nominates them with one Faculty Supervisor/Guide" in page
     # the names of the States follow the language of the page; the names of the institutions stay in English
     tamil = client.get("/partners?lang=ta").get_data(as_text=True)
@@ -52,10 +54,10 @@ def test_the_list_has_a_page_of_its_own_with_the_allocation():
     page = client.get("/nodal-institutions?lang=en").get_data(as_text=True)
     assert "State/UT-wise list of Nodal Higher Educational Institutions" in page
     assert page.count('<td lang="en" dir="ltr">') == 31 and "Central University of Tamil Nadu" in page
-    assert "Tentative number of participating HEIs" in page and ">1,385</th>" in page
-    assert "Nodal Institutions may nominate additional HEIs beyond the indicated allocation." in page
+    assert "Number of Participating HEIs to be selected" in page and ">1,000</th>" in page
+    assert "Registration does not by itself confer selection." in page and "tentative" not in page
     kerala = page.split("Central University of Kerala")[1].split("</tr>")[0]
-    assert '<td class="num"><b>45</b></td>' in kerala and 'href="/institutions#st-kerala">1</a>' in kerala
+    assert '<td class="num"><b>21</b></td>' in kerala and 'href="/institutions#st-kerala">1</a>' in kerala
     # the page of the participating institutions has the anchor, and a link back
     assert 'id="st-kerala"' in client.get("/institutions?lang=en").get_data(as_text=True)
     assert 'href="/nodal-institutions"' in client.get("/institutions?lang=en").get_data(as_text=True)
@@ -66,4 +68,4 @@ def test_the_list_has_a_page_of_its_own_with_the_allocation():
     assert "/nodal-institutions" in client.get("/sitemap?lang=en").get_data(as_text=True)
     # the partners page shows the same table
     partners = client.get("/partners?lang=en").get_data(as_text=True)
-    assert "Tentative number of participating HEIs" in partners and ">1,385</th>" in partners
+    assert "Number of Participating HEIs to be selected" in partners and ">1,000</th>" in partners

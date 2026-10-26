@@ -37,9 +37,9 @@ def test_the_moment_and_the_phases():
     from kts.db import DEFAULT_SETTINGS
     from kts.utils import launch_at, launch_phase, registration_state
     s = dict(DEFAULT_SETTINGS)
-    # the launch of 22 October 2026 (1.2.95): registration 22-29 October
+    # the launch of 22 October 2026 (1.2.95): registration from 22 October, to 20 November since the revised D.O. letter (1.2.110)
     assert s["launch.on"] == "1" and s["launch.at"] == "2026-10-22T12:00" and s["launch.until"] == "2026-10-29"
-    assert s["reg.start"] == "2026-10-22" and s["reg.end"] == "2026-10-29"
+    assert s["reg.start"] == "2026-10-22" and s["reg.end"] == "2026-11-20"
     assert launch_at(s).isoformat() == "2026-10-22T12:00:00+05:30"
     assert launch_phase(s, _at(22, 11, 59)) == "before" and launch_phase(s, _at(22, 12)) == "after"
     assert launch_phase(s, _at(29, 23, 59)) == "after" and launch_phase(s, _at(30)) is None
@@ -55,7 +55,9 @@ def test_registration_opens_at_the_launch(monkeypatch):
     assert registration_state(s) == "not_yet"
     _clock(monkeypatch, _at(22, 12))
     assert registration_state(s) == "open"
-    _clock(monkeypatch, _at(30))
+    _clock(monkeypatch, _at(20, 23, 59, month=11))
+    assert registration_state(s) == "open"
+    _clock(monkeypatch, _at(21, month=11))
     assert registration_state(s) == "closed"
     # a database that kept the day of the timeline of 8 October 2026, or the day first set for the launch, takes the day of
     # the launch
@@ -139,7 +141,7 @@ def test_the_launch_postponed(monkeypatch):
     # after registration has really closed, its last day is named
     with app.app_context():
         set_setting("launch.on", "0")
-    _clock(monkeypatch, _at(30, 10))
+    _clock(monkeypatch, _at(21, 10, month=11))
     assert "Registrations closed on" in app.test_client().get("/register?lang=en").get_data(as_text=True)
 
 

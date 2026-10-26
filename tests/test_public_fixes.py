@@ -1041,8 +1041,9 @@ def test_alt_texts_use_keys_that_exist():
     # and the 9 of the live banners for metro trains and buses (1.2.63), the 8 of the 108 Thirukkural (1.2.64),
     # the 7 of the posters and charts (1.2.67)
     # and the 11 of the launch of the KTS 5.0 web portal and registration (1.2.69), the heading of the Nodal Officer (1.2.70)
-    # and the 4 of the Thirukkural in Uzbek on the home page (1.2.102), the 12 names of the months (1.2.106)
-    assert len(CATALOG["en"]) == 1121
+    # and the 4 of the Thirukkural in Uzbek on the home page (1.2.102), the 12 names of the months (1.2.106), the 4 new of the
+    # revised D.O. letter (1.2.110: the selection tile, three steps of the timeline)
+    assert len(CATALOG["en"]) == 1125
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1074,7 +1075,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.109" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.110" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

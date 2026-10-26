@@ -14,7 +14,7 @@ from markupsafe import escape
 from conftest import ROOT, make_app
 
 CODES = sorted(p.stem for p in (ROOT / "data" / "i18n").glob("*.json"))
-PLACEHOLDERS = ("{hei_end}", "{camp_from}", "{camp_to}", "{reg_end}", "{verify_end}", "{questions}", "{minutes}", "{email}", "{phone}")
+PLACEHOLDERS = ("{hei_end}", "{hei_select_end}", "{camp_from}", "{camp_to}", "{reg_end}", "{verify_end}", "{questions}", "{minutes}", "{email}", "{phone}")
 
 
 @pytest.fixture(scope="module")
@@ -22,7 +22,7 @@ def site():
     from kts.db import set_setting
     app = make_app(ADMIN_PASSWORD=None)
     with app.app_context():
-        set_setting("reg.end", "2026-10-29")
+        set_setting("reg.end", "2026-11-20")
     return app.test_client()
 
 
@@ -37,10 +37,13 @@ def test_the_three_parts_with_their_dates_and_links(site):
     for heading in ("How to take part", "For students", "For participating institutions", "For Nodal Officers of the States/UTs"):
         assert heading in page
     # the dates of the settings in the steps
-    assert "ask the Head of your institution to register it by 29 Oct 2026." in page and "<b>Register by 29 Oct 2026</b>" in page
-    assert "Between 22 Oct 2026 and 29 Oct 2026, your institution assesses" in page
+    assert "ask the Head of your institution to register it by 10 Nov 2026." in page and "<b>Register by 20 Nov 2026</b>" in page
+    assert "Between 22 Oct 2026 and 20 Nov 2026, your institution assesses" in page
+    # the Nodal Officers accept the institutions up to the last day of the selection (the revised D.O. letter, 1.2.110)
+    assert "Accept or decline the institutions that apply on the portal, by 15 Nov 2026." in page
+    assert "Selection of the Participating Institutions by the Nodal Institutions</div><div class=\"val\">15 Nov 2026</div>" in page
     assert "50 questions in 30 minutes" in page
-    assert "<b>Verify the registered students by 31 Oct 2026</b>" in page
+    assert "<b>Verify the registered students by 05 Dec 2026</b>" in page
     assert not any(p in page for p in PLACEHOLDERS)
     for href in ('href="/institutions"', 'href="/institutions/register"', 'href="/institution/login"', 'href="/register"',
                  'href="/status"', 'href="/nodal-institutions"', 'href="/console/login"', 'href="/how-to-take-part/institutions"',

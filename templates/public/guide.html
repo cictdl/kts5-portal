@@ -2,7 +2,7 @@
 {% block title %}{% if only %}{{ t('guide.print_head') }}{% else %}{{ t('guide.title') }}{% endif %}{% endblock %}
 {% block content %}
 {# How to take part (1.2.53): the steps of the students, the participating institutions and the Nodal Officers, with the dates of the settings #}
-{% macro g(key) %}{{ t(key)|replace('{hei_end}', settings['hei.end']|date)|replace('{camp_from}', settings['camp.from']|date)|replace('{camp_to}', settings['camp.to']|date)|replace('{reg_end}', settings['reg.end']|date)|replace('{verify_end}', settings['verify.end']|date)|replace('{questions}', settings['exam.questions'])|replace('{minutes}', settings['exam.duration_min'])|replace('{email}', settings['contact.email'])|replace('{phone}', settings['contact.phone']) }}{% endmacro %}
+{% macro g(key) %}{{ t(key)|replace('{hei_end}', settings['hei.end']|date)|replace('{hei_select_end}', settings['hei.select_end']|date)|replace('{camp_from}', settings['camp.from']|date)|replace('{camp_to}', settings['camp.to']|date)|replace('{reg_end}', settings['reg.end']|date)|replace('{verify_end}', settings['verify.end']|date)|replace('{questions}', settings['exam.questions'])|replace('{minutes}', settings['exam.duration_min'])|replace('{email}', settings['contact.email'])|replace('{phone}', settings['contact.phone']) }}{% endmacro %}
 {% set parts = [('students', 's', 6), ('institutions', 'i', 6), ('nodal', 'n', 5)] %}
 <div class="wrap section guide-page">
   <span class="eyebrow">{{ t('site.name') }}</span>
@@ -13,6 +13,7 @@
   {% endif %}
   <div class="dates" style="margin:18px 0 8px">
     <div class="date-tile"><div class="lbl">{{ t('guide.date_hei') }}</div><div class="val">{{ settings['hei.end']|date }}</div></div>
+    <div class="date-tile"><div class="lbl">{{ t('guide.date_select') }}</div><div class="val">{{ settings['hei.select_end']|date }}</div></div>
     <div class="date-tile"><div class="lbl">{{ t('guide.date_assess') }}</div><div class="val"><bdi>{{ settings['camp.from']|date }} – {{ settings['camp.to']|date }}</bdi></div></div>
     <div class="date-tile"><div class="lbl">{{ t('guide.date_reg') }}</div><div class="val">{{ settings['reg.end']|date }}</div></div>
     <div class="date-tile"><div class="lbl">{{ t('guide.date_verify') }}</div><div class="val">{{ settings['verify.end']|date }}</div></div>
