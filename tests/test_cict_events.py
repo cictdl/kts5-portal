@@ -180,3 +180,44 @@ def test_the_years_before_2020_are_not_shown():
             sum(e["start"][:4] == max(x["start"][:4] for x in EVENTS) for e in EVENTS)
     home = _page(client, "/?lang=en")
     assert '<span class="ev-home-n"><bdi dir="ltr">2020–' in home
+
+
+def test_month_by_month_in_each_year():
+    # 1.2.106: in each year a row of its months with their counts, then a heading for each month, newest first; every
+    # event under the month in which it began
+    from kts.i18n import CATALOG
+    client = _client()
+    page = _page(client, "/seminars-workshops?lang=en&y=all")
+    for year in sorted({e["start"][:4] for e in EVENTS}, reverse=True):
+        start = page.index(f'<section class="ev-year" id="y{year}">')
+        end = page.find('<section class="ev-year"', start + 1)
+        section = page[start:end if end > 0 else len(page)]
+        months = re.findall(r'<section class="ev-month" id="m(\d{4}-\d{2})"', section)
+        expected = sorted({e["start"][:7] for e in EVENTS if e["start"][:4] == year}, reverse=True)
+        assert months == expected, year
+        for key in months:
+            block = section[section.index(f'id="m{key}"'):]
+            block = block[:block.index("</ol>")]
+            ids = re.findall(r'<li class="ev" id="([^"]+)">', block)
+            assert ids and all(next(e for e in EVENTS if e["id"] == i)["start"][:7] == key for i in ids), key
+            n = len(ids)
+            name = CATALOG["en"][f"month.{int(key[5:])}"]
+            assert (f'<h3 class="ev-month-h" id="m{key}-h">{name} {year} <span class="muted ev-n">'
+                    f'{"1 event" if n == 1 else f"{n} events"}</span></h3>') in block, key
+            if len(months) > 1:
+                assert f'<a href="#m{key}">{name} <span class="muted">{n}</span></a>' in section, key
+    # the event titles are headings below the months
+    assert page.count('<h4 class="ev-title">') == len(EVENTS) and '<h3 class="ev-title">' not in page
+    # in Tamil the months are named in Tamil
+    tamil = _page(client, "/seminars-workshops?lang=ta&y=2026")
+    assert '<h3 class="ev-month-h" id="m2026-10-h">அக்டோபர் 2026 <span class="muted ev-n">' in tamil
+    assert '<a href="#m2026-09">செப்டம்பர் <span class="muted">' in tamil
+
+
+def test_the_names_of_the_months_in_every_language():
+    from kts.i18n import CATALOG
+    for code, catalogue in CATALOG.items():
+        names = [catalogue[f"month.{i}"] for i in range(1, 13)]
+        assert len(set(names)) == 12 and all(n.strip() == n and n for n in names), code
+        if code != "en":
+            assert not any(n == CATALOG["en"][f"month.{i + 1}"] for i, n in enumerate(names)), code

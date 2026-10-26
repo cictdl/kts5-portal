@@ -825,8 +825,9 @@ def resources():
 @bp.route("/seminars-workshops")
 def cict_events_page():
     """
-    The seminars and workshops of CICT (1.2.84): year by year, newest first; by year, by kind and by words. The page opens
-    on the latest year (all of them make a page of 1.4 MB); "all" (y=all), a kind or words look in every year.
+    The seminars and workshops of CICT (1.2.84): year by year, newest first, and month by month in each year (1.2.106); by
+    year, by kind and by words. The page opens on the latest year (all of them make a page of 1.4 MB); "all" (y=all), a
+    kind or words look in every year.
     """
     events = cict_events()
     year = request.args.get("y") or ""
@@ -851,10 +852,15 @@ def cict_events_page():
                              e.get("dept") or "", " ".join(e.get("people") or [])]).casefold()
             if not all(w in text for w in words):
                 continue
-        if not groups or groups[-1][0] != e["start"][:4]:
-            groups.append((e["start"][:4], []))
-        groups[-1][1].append((e, _ev_when(e, numeric)))
-    return render_template("public/cict_events.html", groups=groups, total=sum(len(g[1]) for g in groups),
+        # a year, then its months (an event known only by its year would stand under the year alone: num 0)
+        if not groups or groups[-1]["year"] != e["start"][:4]:
+            groups.append({"year": e["start"][:4], "count": 0, "months": []})
+        months = groups[-1]["months"]
+        if not months or months[-1]["key"] != e["start"][:7]:
+            months.append({"key": e["start"][:7], "num": int(e["start"][5:7]) if len(e["start"]) >= 7 else 0, "items": []})
+        months[-1]["items"].append((e, _ev_when(e, numeric)))
+        groups[-1]["count"] += 1
+    return render_template("public/cict_events.html", groups=groups, total=sum(g["count"] for g in groups),
                            years=sorted(years.items(), reverse=True), kinds=[k for k in EV_TYPES if kinds.get(k)],
                            kind_counts=kinds, year=year, kind=kind, q=q, all_count=len(events))
 

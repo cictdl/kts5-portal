@@ -117,7 +117,7 @@ def test_the_reel_of_15_october():
     # the reel of the official Kashi Tamil Sangamam account: on the home page from 1.2.79 (Instagram) and 1.2.80
     # (Facebook) to 1.2.104, in KTS 5.0 in the news on its day since 1.2.105
     reels = [n for n in NEWS if n["kind"] == "reel"]
-    assert len(reels) == 1 and NEWS[0] is reels[0]
+    assert len(reels) == 1 and NEWS[1] is reels[0]
     reel = reels[0]
     assert reel["date"] == "2026-10-15" and reel["account"] == "ktsangamam" and reel["source"] == "Kashi Tamil Sangamam"
     assert reel["versions"][0]["url"] == INSTAGRAM and reel["facebook"] == FACEBOOK
@@ -156,3 +156,35 @@ def test_the_reel_is_on_the_news_page_and_no_longer_on_the_home_page():
     # on its own day, the earliest, after those of 22 October
     page = _page(client, "/in-the-news?lang=en")
     assert page.index("22 Oct 2026") < page.index("15 Oct 2026") < page.index('<div class="card news-reel"')
+
+
+def test_the_thirukkural_in_uzbek_in_the_news():
+    # 1.2.106: the card of the home page (1.2.102) in the news too, on the day of the post of ANI, 31 August 2026
+    from markupsafe import escape
+    from kts.i18n import CATALOG
+    uz = json.loads((ROOT / "data" / "home_uzbek.json").read_text(encoding="utf-8"))
+    posts = [n for n in NEWS if n["kind"] == "post"]
+    assert len(posts) == 1 and NEWS[0] is posts[0] and posts[0]["date"] == "2026-08-31"
+    assert [lk["url"] for lk in posts[0]["links"]] == [uz["x"]["url"], uz["youtube"]["url"]]
+    client = make_app(ADMIN_PASSWORD=None).test_client()
+    for code, catalogue in CATALOG.items():
+        page = _page(client, f"/in-the-news?lang={code}")
+        card = page[page.index('<div class="card news-post"'):]
+        card = card[:card.index("</div>")]
+        assert f'target="_blank" rel="noopener">{escape(catalogue["home.uz_title"])}</a></h3>' in card, code
+        before, after = catalogue["home.uz_text"].split("{date}")
+        assert str(escape(before)) in card and str(escape(after)) in card and "{date}" not in card, code
+        assert (f'<a class="btn sm saffron" href="{uz["x"]["url"]}" target="_blank" rel="noopener">'
+                f'{escape(catalogue["home.reel_watch_x"])} <span aria-hidden="true">↗</span></a>') in card, code
+        assert (f'<a class="btn sm reel-yt" href="{uz["youtube"]["url"]}" target="_blank" rel="noopener">'
+                f'{escape(catalogue["home.reel_watch_yt"])} <span aria-hidden="true">↗</span></a>') in card, code
+        for gone in ("<iframe", "platform.twitter.com", "twimg.com", "youtube.com/embed"):
+            assert gone not in page, (code, gone)
+    page = _page(client, "/in-the-news?lang=en")
+    assert '<span lang="en" dir="ltr">X · @ANI</span> · <bdi>31 Aug 2026</bdi> · <span lang="en" dir="ltr">YouTube · @cicttamil</span> · <bdi>23 Sep 2026</bdi>' in page
+    assert "the first meeting was held online on 23 Sep 2026." in page
+    # the latest day first: its day, 31 August, after that of the reel, 15 October
+    assert page.index('<div class="card news-reel"') < page.rindex("31 Aug 2026") and \
+        page.index('<div class="card news-reel"') < page.index('<div class="card news-post"')
+    # and still on the home page
+    assert "home-uzbek" in _page(client, "/?lang=en")

@@ -21,6 +21,14 @@
       <p class="reel-tags" style="margin:6px 0 0" lang="en" dir="ltr">{% for tag in p.tags %}#{{ tag }}{% if not loop.last %} {% endif %}{% endfor %}</p>
       <p class="reel-links" style="margin:12px 0 0"><a class="btn saffron sm" href="{{ p.shown.url }}" target="_blank" rel="noopener">{{ t('home.reel_watch') }} <span aria-hidden="true">↗</span></a>
         {% if p.facebook %}<a class="btn sm reel-fb" href="{{ p.facebook }}" target="_blank" rel="noopener">{{ t('home.reel_watch_fb') }} <span aria-hidden="true">↗</span></a>{% endif %}</p>
+      {% elif p.kind == 'post' %}
+      {# posts on the social media of others, told with a title and a text of the portal in every language (1.2.106: the
+         Thirukkural in Uzbek, as on the home page): links that open them there, nothing of theirs on the page #}
+      <p class="small muted" style="margin:0 0 8px"><span class="pill">{{ p.source }}</span> {% for l in p.links %}<span lang="en" dir="ltr">{{ l.site }} · @{{ l.account }}</span> · <bdi>{{ l.date|date }}</bdi>{% if not loop.last %} · {% endif %}{% endfor %}</p>
+      <h3 style="margin:0;line-height:1.4"><a href="{{ p.shown.url }}" target="_blank" rel="noopener">{{ t(p.title_key) }}</a></h3>
+      {% if p.quote %}<p class="reel-quote" style="margin:6px 0 0" lang="en" dir="ltr">“{{ p.quote }}”</p>{% endif %}
+      {% if p.text_key %}<p style="margin:6px 0 0">{{ t(p.text_key)|replace('{date}', p.text_date|date) }}</p>{% endif %}
+      <p class="reel-links" style="margin:12px 0 0">{% for l in p.links %}<a class="btn sm {{ l.style }}" href="{{ l.url }}" target="_blank" rel="noopener">{{ t(l.button) }} <span aria-hidden="true">↗</span></a>{% endfor %}</p>
       {% else %}
       {% if p.kind == 'press' %}<p class="small muted" style="margin:0 0 8px"><span class="pill saffron">{{ t('news.press') }}</span> <bdi>{{ p.shown.office }}</bdi> · <bdi lang="{{ p.shown.lang|langtag }}">{{ p.shown.ministry }}</bdi> · {{ p.shown.time }}</p>
       {% else %}<p class="small muted" style="margin:0 0 8px"><span class="pill">{{ p.source }}</span> {% if p.shown.byline %}<bdi>{{ p.shown.byline }}</bdi> · {% endif %}{{ p.shown.time }}</p>{% endif %}

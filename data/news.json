@@ -1,5 +1,40 @@
 [
   {
+    "key": "uzbek-2026-08-31-thirukkural",
+    "date": "2026-08-31",
+    "kind": "post",
+    "source": "ANI · CICT",
+    "title_key": "home.uz_title",
+    "text_key": "home.uz_text",
+    "text_date": "2026-09-23",
+    "quote": "The Thirukkural, written in Tamil centuries ago, remains a profound source of inspiration across all walks of life today",
+    "links": [
+      {
+        "site": "X",
+        "account": "ANI",
+        "date": "2026-08-31",
+        "url": "https://x.com/ANI/status/2094289671467700615",
+        "button": "home.reel_watch_x",
+        "style": "saffron"
+      },
+      {
+        "site": "YouTube",
+        "account": "cicttamil",
+        "date": "2026-09-23",
+        "url": "https://www.youtube.com/shorts/G4bi2H_fmXk",
+        "button": "home.reel_watch_yt",
+        "style": "reel-yt"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "The Hon’ble Prime Minister in Tashkent: the Thirukkural in Uzbek",
+        "url": "https://x.com/ANI/status/2094289671467700615"
+      }
+    ]
+  },
+  {
     "key": "ktsangamam-2026-10-15-pm-reel",
     "date": "2026-10-15",
     "kind": "reel",

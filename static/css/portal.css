@@ -506,6 +506,13 @@ table.table td.num, table.table th.num { text-align: end; font-variant-numeric: 
 .ev-meta { font-size: .82rem; color: var(--mute); }
 .ev-meta .ev-kind { color: var(--kumkum); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; font-size: .75rem; }
 .ev-title { font-size: 1.05rem; margin: 4px 0 2px; line-height: 1.4; }
+/* the months of a year (1.2.106): a row of links with their counts, and a heading for each month */
+.ev-months { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; }
+.ev-months a { padding: 3px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); font-size: .82rem; font-weight: 600; color: var(--indigo); }
+.ev-months a:hover { border-color: var(--saffron); text-decoration: none; }
+.ev-month { margin-top: 16px; scroll-margin-top: 12px; }
+.ev-month-h { font-size: 1.08rem; margin: 0; padding: 6px 0 5px; color: var(--indigo); border-bottom: 1px dashed var(--border); }
+.ev-month-h .ev-n { font-size: .8rem; font-weight: 500; }
 .ev-title .ev-ta { display: block; font-weight: 600; color: var(--dim); font-size: .98rem; }
 .ev-facts { display: flex; flex-wrap: wrap; gap: 2px 16px; color: var(--dim); margin-top: 4px; }
 .ev-people { color: var(--dim); margin-top: 2px; }
