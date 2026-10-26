@@ -113,6 +113,29 @@
 </section>
 {% endif %}
 
+{# The Thirukkural in Uzbek (1.2.102): the Hon'ble Prime Minister's call at Tashkent State University of Oriental Studies
+   (ANI on X) and CICT's short on its first meeting with the University on the translation (YouTube), from
+   data/home_uzbek.json; links that open them there, as for the reel above #}
+{% if uz %}
+<section class="section home-reel home-uzbek" aria-labelledby="home-uz-title">
+  <div class="wrap">
+    <div class="reel-card">
+      <a class="reel-play" href="{{ uz.x.url }}" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1">▶</a>
+      <span class="reel-body">
+        <span class="reel-from"><span lang="en" dir="ltr">X · @{{ uz.x.account }}</span> · <bdi>{{ uz.x.date|date }}</bdi> · <span lang="en" dir="ltr">YouTube · @{{ uz.youtube.account }}</span> · <bdi>{{ uz.youtube.date|date }}</bdi></span>
+        <span class="reel-title" id="home-uz-title">{{ t('home.uz_title') }}</span>
+        <span class="reel-quote" lang="en" dir="ltr">“{{ uz.quote }}”</span>
+        <span class="reel-text">{{ t('home.uz_text')|replace('{date}', uz.meeting|date) }}</span>
+        <span class="reel-links">
+          <a class="btn saffron sm" href="{{ uz.x.url }}" target="_blank" rel="noopener">{{ t('home.reel_watch_x') }} <span aria-hidden="true">↗</span></a>
+          <a class="btn sm reel-yt" href="{{ uz.youtube.url }}" target="_blank" rel="noopener">{{ t('home.reel_watch_yt') }} <span aria-hidden="true">↗</span></a>
+        </span>
+      </span>
+    </div>
+  </div>
+</section>
+{% endif %}
+
 {# For the Higher Educational Institutions (1.2.55): what they do on the portal, with the guidelines and the timelines #}
 <section class="section hei-intro" style="padding:28px 0 4px">
   <div class="wrap">

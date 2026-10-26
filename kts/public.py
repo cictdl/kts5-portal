@@ -233,7 +233,7 @@ def home():
         kotd_lang, kotd_dir = "en", "ltr"
     seminars = cict_events()
     ev_years = (min(e["start"][:4] for e in seminars), max(e["start"][:4] for e in seminars)) if seminars else None
-    return render_template("public/home.html", settings=settings, dates=_key_dates(settings), reel=home_reel(),
+    return render_template("public/home.html", settings=settings, dates=_key_dates(settings), reel=home_reel(), uz=home_uzbek(),
                            ev_total=len(seminars), ev_years=ev_years,
                            notices=notices, events=events, agencies=agencies, stats=stats,
                            kotd=k, kotd_lines=K.lines(k, kotd_lang), kotd_lang=kotd_lang, kotd_dir=kotd_dir,
@@ -278,6 +278,16 @@ def home_reel():
     address, the account, the day, the opening line and the hashtags of its post; None without the file.
     """
     path = current_app.config["DATA_DIR"] / "home_reel.json"
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
+
+
+def home_uzbek():
+    """
+    The Thirukkural in Uzbek on the home page (data/home_uzbek.json, 1.2.102): the Hon'ble Prime Minister's call at
+    Tashkent State University of Oriental Studies (the post of ANI on X) and CICT's short on its first meeting with the
+    University on the translation (YouTube), the words quoted and the day of that meeting; None without the file.
+    """
+    path = current_app.config["DATA_DIR"] / "home_uzbek.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
 

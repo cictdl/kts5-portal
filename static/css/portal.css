@@ -381,6 +381,11 @@ mark { background: rgba(255, 196, 0, .45); color: inherit; padding: 0 1px; borde
 .reel-play:hover { text-decoration: none; color: #fff; }
 .btn.reel-fb { background: #1465d1; border-color: #1465d1; color: #fff; }   /* white on it 5.5:1 */
 .btn.reel-fb:hover { background: #0f54b0; border-color: #0f54b0; }
+/* the Thirukkural in Uzbek (1.2.102): a card like the reel's, with a line of text and a YouTube button */
+.reel-text { color: var(--ink); max-width: 96ch; }
+.reel-from bdi { white-space: nowrap; }   /* a date stays on one line */
+.btn.reel-yt { background: #b3261e; border-color: #b3261e; color: #fff; }   /* white on it 6.5:1 */
+.btn.reel-yt:hover { background: #8f1e18; border-color: #8f1e18; }
 @media (max-width: 599px) { .reel-card { flex-direction: column; align-items: flex-start; } .reel-play { width: 64px; height: 64px; font-size: 1.5rem; border-radius: 16px; } }
 /* the Back button on every page but the home page (1.2.77): the previous page of the portal, else the home page */
 .back-row { padding-top: 14px; }
