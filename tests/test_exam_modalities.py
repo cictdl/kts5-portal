@@ -191,12 +191,12 @@ def test_the_result_page_names_the_merit_list_only_once_it_is_published():
     client.post("/candidate/exam", data={"_csrf": token})
     client.post("/candidate/exam/submit", data={"_csrf": token})
     page = client.get("/candidate/exam/result?lang=en").get_data(as_text=True)
-    assert "Score" in page and "The merit list has not been published yet." in page
+    assert "Score" in page and "The list of selected students has not been published yet." in page
     assert CATALOG["en"]["exam.merit_intro"] not in page and 'href="/merit-list"' not in page.split("<main")[1].split("</main>")[0]
     with app.app_context():
         set_setting("merit.published", "1")
     page = client.get("/candidate/exam/result?lang=en").get_data(as_text=True)
-    assert CATALOG["en"]["exam.merit_intro"] in page and 'href="/merit-list">Merit list →</a>' in page
+    assert CATALOG["en"]["exam.merit_intro"] in page and 'href="/merit-list">Selected students →</a>' in page
 
 
 def test_the_close_is_spread_and_the_database_does_not_wait_for_the_disk():

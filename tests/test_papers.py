@@ -90,13 +90,13 @@ def test_a_delegate_sends_the_paper_and_may_replace_it_until_the_review():
         assert message in _send(student, file, **values).get_data(as_text=True), message
         assert _paper(app, row) is None
     page = _send(student).get_data(as_text=True)
-    assert "Your research paper has been received." in page and "Received" in page
+    assert "Your article/research note has been received." in page and "Received" in page
     number = "KTS5/RP/" + "/".join(row["app_no"].split("-")[1:])
     assert number in page and "paper.pdf" in page
     paper = _paper(app, row)
     assert paper["status"] == "submitted" and paper["version"] == 1 and paper["lang"] == "hi"
     assert paper["abstract"] == "The chapter on learning read with students of a college.\nA second paragraph."
-    assert _mails(app, row["email"]) [-1] == f"KTS 5.0: research paper received ({number})"
+    assert _mails(app, row["email"]) [-1] == f"KTS 5.0: article/research note received ({number})"
     r = student.get("/candidate/paper/file")
     assert r.status_code == 200 and r.data == PDF and "attachment" in r.headers["Content-Disposition"]
     # replaced by a Word file before the review: version 2; changes without a file keep it
@@ -131,12 +131,12 @@ def test_the_review_returns_and_accepts_the_paper():
     reviewer.post(f"/console/papers/{row['id']}", data={"_csrf": token, "action": "return", "version": "1",
                                                         "remarks": "Cite the commentary of Parimelazhagar."})
     assert _paper(app, row)["status"] == "returned"
-    assert _mails(app, row["email"])[-1].startswith("KTS 5.0: research paper returned for changes")
+    assert _mails(app, row["email"])[-1].startswith("KTS 5.0: article/research note returned for changes")
     page = student.get("/candidate/paper?lang=en").get_data(as_text=True)
     assert "Returned for changes" in page and "Cite the commentary of Parimelazhagar." in page
     # the last date has passed: a returned paper is sent again all the same
     _set(app, "papers.due", "2026-01-02")
-    assert "Your research paper has been received." in _send(student, (DOCX, "second.docx")).get_data(as_text=True)
+    assert "Your article/research note has been received." in _send(student, (DOCX, "second.docx")).get_data(as_text=True)
     paper = _paper(app, row)
     assert paper["status"] == "submitted" and paper["version"] == 2
     # a review made on an older version is not taken
@@ -146,9 +146,9 @@ def test_the_review_returns_and_accepts_the_paper():
     reviewer.post(f"/console/papers/{row['id']}", data={"_csrf": token, "action": "accept", "version": "2", "score": "86"})
     paper = _paper(app, row)
     assert paper["status"] == "accepted" and paper["score"] == 86
-    assert _mails(app, row["email"])[-1].startswith("KTS 5.0: research paper accepted")
+    assert _mails(app, row["email"])[-1].startswith("KTS 5.0: article/research note accepted")
     page = student.get("/candidate/paper?lang=en").get_data(as_text=True)
-    assert "Your paper has been accepted." in page and 'name="title"' not in page
+    assert "Your article has been accepted." in page and 'name="title"' not in page
     assert _send(student).status_code == 403
     # the export of the list
     xlsx = reviewer.get("/console/papers?export=xlsx")
@@ -162,15 +162,15 @@ def test_the_period_of_submission():
     student = _signed_in(app, row)
     _set(app, "internship.start", "2099-01-01")
     page = student.get("/candidate/paper?lang=en").get_data(as_text=True)
-    assert "Papers can be sent from the start of the internship:" in page and 'name="title"' not in page
+    assert "Articles can be sent from the start of the one-month engagement:" in page and 'name="title"' not in page
     assert _send(student).status_code == 403
     _set(app, "internship.start", "2026-01-01")
     _set(app, "papers.due", "2026-01-02")
     page = student.get("/candidate/paper?lang=en").get_data(as_text=True)
-    assert "The submission of research papers is closed." in page and 'name="title"' not in page
+    assert "The submission of articles/research notes is closed." in page and 'name="title"' not in page
     # an administrator opens it again
     _set(app, "papers.open", "1")
-    assert "Your research paper has been received." in _send(student).get_data(as_text=True)
+    assert "Your article/research note has been received." in _send(student).get_data(as_text=True)
     # and closes it, also for returned papers
     from kts.db import execute
     with app.app_context():
@@ -187,7 +187,7 @@ def test_only_the_delegates_send_a_paper(outcome, published):
     student = _signed_in(app, row)
     assert 'id="paper-card"' not in student.get("/candidate/").get_data(as_text=True)
     page = student.get("/candidate/paper?lang=en").get_data(as_text=True)
-    assert "The research paper is written by the students selected as delegates of KTS 5.0." in page
+    assert "The article/research note is written by the students selected for KTS 5.0." in page
     assert _send(student).status_code == 403 and _paper(app, row) is None
 
 

@@ -1115,6 +1115,8 @@ def institutions():
                       f"(Settings › Participating institutions).", "error")
                 return redirect(back)
             status = "accepted"
+        elif action == "reserve":
+            status = "reserve"
         elif action == "decline":
             status = "declined"
         elif action == "pending":
@@ -1143,8 +1145,11 @@ def institutions():
                  "w.name AS winner_name"
                  + sql.replace(" FROM institutions i WHERE", " FROM institutions i LEFT JOIN applications a ON a.id = i.application_id "
                                                              "LEFT JOIN campus_students w ON w.id = i.winner_id WHERE")
-                 + " ORDER BY i.state, CASE i.status WHEN 'pending' THEN 0 WHEN 'identified' THEN 1 WHEN 'accepted' THEN 2 ELSE 3 END, i.name COLLATE NOCASE"
+                 + " ORDER BY i.state, CASE i.status WHEN 'pending' THEN 0 WHEN 'identified' THEN 1 WHEN 'accepted' THEN 2 WHEN 'reserve' THEN 3 ELSE 4 END, i.name COLLATE NOCASE"
                  + " LIMIT ?", args + [INST_ROWS_SHOWN + 1])
+    # in the order of the marks of Annexure-V (1.2.111), best first, when asked
+    if request.args.get("order") == "marks":
+        rows = sorted(rows, key=lambda r: (r["state"], HEI.sop_order(r)))
     # the States/UTs: identified, pending, accepted, declined, assessing, winners selected and registered
     summary = {}
     s_sql, s_args = " FROM institutions WHERE 1=1", []
@@ -1159,10 +1164,88 @@ def institutions():
             c.update(testing=r["testing"] or 0, winners=r["winners"] or 0, registered=r["registered"] or 0)
     states = scope if scope is not None else _states()
     allocation = {h["state"]: h.get("allocation", 0) for h in _nodal_heis()}
+    settings = all_settings()
     return render_template("console/institutions.html", rows=rows[:INST_ROWS_SHOWN], more=len(rows) > INST_ROWS_SHOWN, f=f,
                            states=states, summary=summary, allocation=allocation, scope=scope,
-                           can_decide=has_perm(user, "hei.decide"), window=HEI.window(all_settings()),
-                           reg_end=all_settings().get("reg.end"), assess_to=all_settings().get("camp.to"))
+                           can_decide=has_perm(user, "hei.decide"), window=HEI.window(settings),
+                           reg_end=settings.get("reg.end"), assess_to=settings.get("camp.to"), hei_end=settings.get("hei.end"),
+                           select_end=settings.get("hei.select_end"), reserve={s: HEI.reserve_of(s) for s in states},
+                           sop_max=sum(m for _k, _c, m, *_ in HEI.SOP), benchmark=HEI.SOP_BENCHMARK,
+                           marks={r["id"]: HEI.sop_marks(r) for r in rows[:INST_ROWS_SHOWN]}, order=request.args.get("order", ""))
+
+
+@bp.route("/institutions/<int:iid>/marks", methods=["GET", "POST"])
+@login_required("hei.decide")
+def institution_marks(iid):
+    """
+    The marks of the evaluation committee of the Nodal Institution on the six criteria of Annexure-V (the revised D.O. letter,
+    1.2.111), each within its maximum; their total out of 100 orders the institutions of the State/UT.
+    """
+    user = _user()
+    scope = state_scope(user)
+    row = query("SELECT * FROM institutions WHERE id = ?", (iid,), one=True)
+    if row is None or (scope is not None and row["state"] not in scope):
+        abort(404)
+    marks, errors = HEI.sop_marks(row), {}
+    note = row["sop_note"] or ""
+    if request.method == "POST":
+        note = (request.form.get("note") or "").strip()[:1000]
+        marks = {}
+        for key, _criterion, most, *_ in HEI.SOP:
+            value = (request.form.get(key) or "").strip()
+            if not value.isdigit() or not 0 <= int(value) <= most:
+                errors[key] = f"a whole number from 0 to {most}"
+            else:
+                marks[key] = int(value)
+        if not errors:
+            now = utcnow()
+            execute("UPDATE institutions SET sop_scores = ?, sop_total = ?, sop_note = ?, sop_by = ?, sop_at = ?, updated_at = ? WHERE id = ?",
+                    (json.dumps(marks), sum(marks.values()), note, user["id"], now, now, iid))
+            audit("institution_marked", "institution", iid, detail={"ref": row["ref"], "total": sum(marks.values())}, user=user, ip=client_ip())
+            flash(f"{row['name']}: {sum(marks.values())} of 100 recorded.", "success")
+            return redirect(url_for("admin.institutions", state=row["state"], order="marks"))
+    return render_template("console/institution_marks.html", row=row, marks=marks, errors=errors, note=note, sop=HEI.SOP,
+                           benchmark=HEI.SOP_BENCHMARK, allocation=HEI.allocation_of(row["state"]), reserve=HEI.reserve_of(row["state"]))
+
+
+@bp.route("/institutions/evaluation.xlsx")
+@login_required("hei.view")
+def institutions_evaluation():
+    """
+    The evaluation sheet of Annexure-V, State/UT by State/UT: every registered institution with the marks of the committee, ranked
+    by the total and the tie-breaks, with the number Annexure-I prescribes and the reserve list it suggests, for the committee to
+    sign and the competent authority to approve (1.2.111).
+    """
+    scope = state_scope(_user())
+    sql, args = "SELECT * FROM institutions WHERE status != 'identified'", []
+    if scope is not None:
+        sql += f" AND state IN ({','.join('?' * len(scope))})" if scope else " AND 0"
+        args += scope
+    if request.args.get("state"):
+        sql += " AND state = ?"
+        args.append(request.args["state"])
+    rows = query(sql, args)
+    nodal = {h["state"]: h["name"] for h in _nodal_heis()}
+    headers = (["State/UT", "Nodal HEI", "Number to be selected (Annexure-I)", "Reserve list (up to 20%)", "Rank", "Name of Institution",
+                "Reference", "District/City", "Type", "AISHE/Institution Code", "Registered on"]
+               + [f"{criterion} (max {most})" for _k, criterion, most, *_ in HEI.SOP]
+               + ["Total (100)", f"Benchmark {HEI.SOP_BENCHMARK}", "Status", "Remarks of the committee"])
+    data, ranks = [], {}
+    for r in sorted(rows, key=lambda r: (r["state"], HEI.sop_order(r))):
+        marks = HEI.sop_marks(r)
+        ranks[r["state"]] = ranks.get(r["state"], 0) + 1
+        scored = r["sop_total"] is not None
+        status = {"accepted": "selected", "reserve": "reserve list"}.get(r["status"], r["status"])
+        data.append((r["state"], nodal.get(r["state"], ""), HEI.allocation_of(r["state"]) or "", HEI.reserve_of(r["state"]) or "",
+                     ranks[r["state"]] if scored else "", r["name"], r["ref"], r["district"], r["itype"], r["aishe_code"],
+                     (r["created_at"] or "")[:10])
+                    + tuple(marks.get(k, "") for k, *_ in HEI.SOP)
+                    + (r["sop_total"] if scored else "", ("yes" if r["sop_total"] >= HEI.SOP_BENCHMARK else "no") if scored else "",
+                       status, r["sop_note"] or ""))
+    audit("institutions_evaluation_exported", "institution", None, detail={"rows": len(data)}, user=_user(), ip=client_ip())
+    return Response(xlsx_bytes(headers, data, "Evaluation (Annexure-V)", text_cols=(9,)),
+                    mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    headers={"Content-Disposition": "attachment; filename=KTS5-evaluation-sheet-Annexure-V.xlsx"})
 
 
 # ---- the progress of the institutions in the week of the assessments (1.2.52) ------------------------------------
@@ -1606,14 +1689,15 @@ SETTING_GROUPS = [
                      ("exam.questions", "Questions per paper", "number"), ("exam.marks_per_q", "Marks per question", "number"),
                      ("exam.negative", "Negative marks per wrong answer", "number"), ("exam.show_score", "Show score to candidates", "bool"),
                      ("exam.open", "Window mode: auto | 1 (force open) | 0 (force closed)", "text"), ("exam.instructions_url", "Link to the official instructions PDF", "text")]),
-    ("Internship (dates named in the confirmation letter of the selected students)",
+    ("Internship: the one-month research and academic engagement (dates named in the confirmation letter of the selected students)",
      [("letter.date", "Date of the confirmation letter (YYYY-MM-DD)", "date"),
-      ("internship.start", "Internship and research period begins (YYYY-MM-DD)", "date"),
-      ("papers.due", "Last date for the research paper (YYYY-MM-DD)", "date"),
+      ("internship.start", "One-month research and academic engagement begins (YYYY-MM-DD)", "date"),
+      ("papers.due", "Last date for the article/research note (YYYY-MM-DD)", "date"),
       ("present.due", "Last date for the presentation (YYYY-MM-DD)", "date"),
       ("papers.open", "Research papers: auto (from the start of the internship to the last date) | 1 (open) | 0 (closed, also for returned papers)", "text"),
       ("papers.note", "Research papers: note shown above the form (empty: none)", "text"),
-      ("papers.guide_url", "Research papers: link to the guidelines (https://… or /static/…; empty: none)", "text")]),
+      ("papers.guide_url", "Research papers: link to the guidelines (https://… or /static/…; empty: none)", "text"),
+      ("orientation.by", "Academic orientation by CICT, by (YYYY-MM-DD; the schedule and the home page)", "date")]),
     ("Classroom quiz", [("quiz.on", "Classroom quiz open (hosting and joining)", "bool"),
                         ("quiz.candidates", "Selected students may host a quiz once the merit list is published", "bool"),
                         ("quiz.public", "Anybody may host a quiz, without an account (10 quizzes an hour from one address, 300 a day in all)", "bool"),

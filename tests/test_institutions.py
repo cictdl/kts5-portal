@@ -67,7 +67,7 @@ def test_an_institution_applies_and_the_nodal_officer_accepts_it():
     with app.app_context():
         assert query("SELECT status FROM institutions", one=True)["status"] == "accepted"
         accepted = query("SELECT body FROM outbox WHERE to_addr = 'coord@gac.example' ORDER BY id DESC LIMIT 1", one=True)["body"]
-    assert "has accepted your institution" in accepted and "KTS5-nomination-form.pdf" in accepted
+    assert "has selected your institution as a Participating Institution" in accepted and "KTS5-nomination-form.pdf" in accepted
     listing = client.get("/institutions?lang=en").get_data(as_text=True)
     assert "Government Arts College Thrissur" in listing and "Central University of Kerala" in listing
     assert "1 institutions from 1 States/UTs" in listing
@@ -103,7 +103,7 @@ def test_a_nodal_officer_decides_for_their_state_only_and_the_most_is_kept():
         mail = query("SELECT body FROM outbox WHERE to_addr = 'c1@x.example' ORDER BY id DESC LIMIT 1", one=True)["body"]
     assert status == {"College One": ("accepted", ""), "College Two": ("declined", "Not a higher educational institution"),
                       "College Three": ("pending", "")}
-    assert "could not accept" in mail and "Remark: Not a higher educational institution" in mail
+    assert "could not select your institution" in mail and "Remark: Not a higher educational institution" in mail
     # a viewer sees, does not decide
     viewer = _staff(app, "viewer@tests.example", "viewer")
     assert "College Three" in viewer.get("/console/institutions").get_data(as_text=True)
@@ -232,3 +232,72 @@ def test_each_state_accepts_at_most_its_number_of_annexure_i():
     officer.post("/console/institutions", data={"_csrf": _token(officer), "id": rid, "action": "accept"})
     with app.app_context():
         assert query("SELECT status FROM institutions WHERE id = ?", (rid,), one=True)["status"] == "accepted"
+
+
+def test_the_marks_of_annexure_v_rank_the_institutions_and_the_reserve_list():
+    # the revised D.O. letter (1.2.111): the committee's marks on the six criteria, the order they give, the evaluation sheet,
+    # and the reserve list, from which a selected institution that drops out is replaced
+    import json as _json
+    from kts import heis as HEI
+    from kts.db import query
+    app = _app()
+    for n, name in enumerate(("College Alpha", "College Beta", "College Gamma")):
+        _apply(app.test_client(), name=name, state="Kerala", aishe_code="", head_email=f"ha{n}@x.example", coord_email=f"ca{n}@x.example")
+    with app.app_context():
+        ids = {r["name"]: r["id"] for r in query("SELECT id, name FROM institutions")}
+        assert [k for k, *_ in HEI.SOP] == ["readiness", "outreach", "academic", "geography", "diversity", "record"]
+        assert sum(m for _k, _c, m, *_ in HEI.SOP) == 100 and HEI.SOP_BENCHMARK == 60
+        assert (HEI.reserve_of("Kerala"), HEI.reserve_of("Uttar Pradesh"), HEI.reserve_of("Puducherry"), HEI.reserve_of("Ladakh")) == (5, 70, 1, 0)
+    officer = _nodal(app, "nodal.kerala3@tests.example", ["Kerala"])
+    page = officer.get(f"/console/institutions/{ids['College Beta']}/marks").get_data(as_text=True)
+    assert "Institutional readiness" in page and "Past record and documentation capacity" in page and 'max="25"' in page
+    # a mark above the maximum is refused
+    r = officer.post(f"/console/institutions/{ids['College Beta']}/marks",
+                     data={"_csrf": _token(officer), "readiness": "26", "outreach": "10", "academic": "10", "geography": "10",
+                           "diversity": "5", "record": "5"})
+    assert r.status_code == 200 and "a whole number from 0 to 25" in r.get_data(as_text=True)
+    for name, marks in (("College Alpha", (20, 15, 15, 10, 5, 5)), ("College Beta", (25, 15, 15, 10, 5, 0)),
+                        ("College Gamma", (10, 10, 10, 10, 5, 5))):
+        officer.post(f"/console/institutions/{ids[name]}/marks",
+                     data=dict(zip(("readiness", "outreach", "academic", "geography", "diversity", "record"), map(str, marks)),
+                               _csrf=_token(officer), note="Committee of 3, 12 Nov 2026"))
+    with app.app_context():
+        rows = {r["name"]: r for r in query("SELECT * FROM institutions")}
+        assert (rows["College Alpha"]["sop_total"], rows["College Beta"]["sop_total"], rows["College Gamma"]["sop_total"]) == (70, 70, 50)
+        assert _json.loads(rows["College Beta"]["sop_scores"])["readiness"] == 25
+        # a tie of 70: institutional readiness first
+        order = sorted(rows.values(), key=HEI.sop_order)
+        assert [r["name"] for r in order] == ["College Beta", "College Alpha", "College Gamma"]
+    listing = officer.get("/console/institutions?state=Kerala&order=marks").get_data(as_text=True)
+    listing = listing[listing.index('<table class="table institutions">'):]
+    assert listing.index("College Beta") < listing.index("College Alpha") < listing.index("College Gamma")
+    assert "<b>50</b>/100" in listing and "(below 60)" in listing
+    # select one, put one in the reserve list (each is informed by mail), and replace the first from the reserve list
+    officer.post("/console/institutions", data={"_csrf": _token(officer), "id": ids["College Beta"], "action": "accept"})
+    officer.post("/console/institutions", data={"_csrf": _token(officer), "id": ids["College Alpha"], "action": "reserve"})
+    with app.app_context():
+        assert query("SELECT status FROM institutions WHERE id = ?", (ids["College Alpha"],), one=True)["status"] == "reserve"
+        mail = query("SELECT body FROM outbox WHERE to_addr = 'ca0@x.example' ORDER BY id DESC", one=True)["body"]
+        assert "placed your institution in the reserve list" in mail
+    page = officer.get("/console/institutions?state=Kerala").get_data(as_text=True)
+    assert '<span class="pill saffron">reserve list</span>' in page and '<span class="pill green">selected</span>' in page
+    # the reserve list is not among the Participating Institutions of the website
+    public = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
+    assert "College Beta" in public and "College Alpha" not in public
+    officer.post("/console/institutions", data={"_csrf": _token(officer), "id": ids["College Beta"], "action": "decline", "note": "Withdrew"})
+    officer.post("/console/institutions", data={"_csrf": _token(officer), "id": ids["College Alpha"], "action": "accept"})
+    with app.app_context():
+        assert query("SELECT status FROM institutions WHERE id = ?", (ids["College Alpha"],), one=True)["status"] == "accepted"
+    # the evaluation sheet of Annexure-V, ranked
+    r = officer.get("/console/institutions/evaluation.xlsx?state=Kerala")
+    assert r.status_code == 200 and r.data[:2] == b"PK"
+    import io
+    from openpyxl import load_workbook
+    ws = load_workbook(io.BytesIO(r.data)).active
+    values = [[c.value for c in row] for row in ws.iter_rows()]
+    assert values[0][:5] == ["State/UT", "Nodal HEI", "Number to be selected (Annexure-I)", "Reserve list (up to 20%)", "Rank"]
+    assert [(v[4], v[5], v[17]) for v in values[1:]] == [(1, "College Beta", 70), (2, "College Alpha", 70), (3, "College Gamma", 50)]
+    assert values[1][2] == 21 and values[1][3] == 5 and values[3][18] == "no"
+    # a Nodal Officer of another State/UT sees none of them
+    other = _nodal(app, "nodal.assam3@tests.example", ["Assam"])
+    assert other.get(f"/console/institutions/{ids['College Gamma']}/marks").status_code == 404

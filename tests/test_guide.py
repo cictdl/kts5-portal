@@ -40,7 +40,7 @@ def test_the_three_parts_with_their_dates_and_links(site):
     assert "ask the Head of your institution to register it by 10 Nov 2026." in page and "<b>Register by 20 Nov 2026</b>" in page
     assert "Between 22 Oct 2026 and 20 Nov 2026, your institution assesses" in page
     # the Nodal Officers accept the institutions up to the last day of the selection (the revised D.O. letter, 1.2.110)
-    assert "Accept or decline the institutions that apply on the portal, by 15 Nov 2026." in page
+    assert "and select the number that Annexure-I prescribes, with a reserve list, by 15 Nov 2026." in page
     assert "Selection of the Participating Institutions by the Nodal Institutions</div><div class=\"val\">15 Nov 2026</div>" in page
     assert "50 questions in 30 minutes" in page
     assert "<b>Verify the registered students by 05 Dec 2026</b>" in page
@@ -107,11 +107,12 @@ def test_the_closed_registration_page_leads_to_the_guide():
 def test_the_home_page_tells_the_institutions_what_they_do(site):
     """The paragraph for the Higher Educational Institutions under the hero (1.2.55), with its links."""
     home = _page(site, "/")
-    text = ("Higher Educational Institutions identified by the designated Nodal Institution of their respective State/UT register on "
-            "this portal to participate in KTS 5.0. Participating institutions access multilingual study resources hosted here, "
-            "conduct their campus-level assessment on the theme “Thirukkural Payilvom – Thirukkural Abhyas Karen”, and register "
-            "one selected student on merit, duly endorsed by the Head of the Institution. Detailed programme guidelines and "
-            "timelines are available here.")
+    # the selection of the Participating Institutions by the Nodal Institutions (the revised D.O. letter, 1.2.111)
+    text = ("All interested Higher Educational Institutions register on this portal, and the Nodal Institution of each State/UT "
+            "selects the prescribed number of Participating Institutions. The Participating Institutions access the multilingual "
+            "study resources hosted here, assess their interested students on the theme “Thirukkural Payilvom – Thirukkural "
+            "Abhyas Karen”, and register one student nominated on merit, duly endorsed by the Head of the Institution. Detailed "
+            "programme guidelines and timelines are available here.")
     assert "<h2" in home and "For Higher Educational Institutions</h2>" in home and text in home
     section = home.split('class="section hei-intro"')[1].split("</section>")[0]
     assert re.findall(r'href="([^"]+)"', section) == ["/how-to-take-part", "/schedule", "/resources", "/institutions/register"]

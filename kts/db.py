@@ -577,6 +577,13 @@ LATER_COLUMNS = [
     ("users", "designation", "TEXT NOT NULL DEFAULT ''"),
     # the syllabus of the institution's online assessment (1.2.64): 'all' (the 1,330 couplets) or '108' (the 108 Thirukkural)
     ("institutions", "test_syllabus", "TEXT NOT NULL DEFAULT 'all'"),
+    # the marks of the evaluation committee of the Nodal Institution on the six criteria of Annexure-V of the revised D.O. letter
+    # (1.2.111): sop_scores a JSON object of the criteria (kts/heis.py SOP), sop_total their sum out of 100
+    ("institutions", "sop_scores", "TEXT NOT NULL DEFAULT ''"),
+    ("institutions", "sop_total", "INTEGER"),
+    ("institutions", "sop_note", "TEXT NOT NULL DEFAULT ''"),
+    ("institutions", "sop_by", "INTEGER"),
+    ("institutions", "sop_at", "TEXT"),
 ]
 
 # CICT on social media: (setting, name of the service, address). The links stand in the footer of
@@ -636,7 +643,11 @@ DEFAULT_SETTINGS = {
     "stipend.last_date": "",
     "stipend.amount": "10000",
     "stipend.aadhaar": "1",
-    "orientation.note": "Language-wise online orientation sessions (2 lectures + 20-minute live Q&A) will be scheduled after the merit list is published.",
+    # the academic orientation of the revised D.O. letter is CICT's two lectures with their live Q&A (1.2.71, 1.2.111)
+    "orientation.note": "CICT holds language-wise online academic orientation sessions (2 lectures + 20-minute live Q&A), with its multilingual study material and educational videos, before the one-month research and academic engagement begins.",
+    # the academic orientation by CICT, with the study material and educational videos: by 10 December 2026 (the revised D.O.
+    # letter, Annexure-III D)
+    "orientation.by": "2026-12-10",
     "contact.email": "office@cict.in",
     "contact.phone": "044-22540125",
     # the address that receives a copy of every message of the contact form (empty: none)
@@ -758,7 +769,8 @@ RETIRED_DEFAULTS = {
     "verify.end": ["2026-10-21", "2026-10-24", "2026-10-31"],
     "hei.max_per_state": ["50"],
     # the online orientation has two lectures, not ten (14 October 2026)
-    "orientation.note": ["Language-wise online orientation sessions (10 lectures + 20-minute live Q&A) will be scheduled after the merit list is published."],
+    "orientation.note": ["Language-wise online orientation sessions (10 lectures + 20-minute live Q&A) will be scheduled after the merit list is published.",
+                         "Language-wise online orientation sessions (2 lectures + 20-minute live Q&A) will be scheduled after the merit list is published."],
     # the launch of 14 October 2026 was postponed; the Hon'ble Minister of Education launched the portal and its registration
     # on 22 October 2026 (1.2.95): registration 22-29 October, and every later date a week on
     "launch.at": ["2026-10-14T17:00"],

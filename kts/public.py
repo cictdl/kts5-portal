@@ -773,7 +773,8 @@ def merit():
         if state:
             sql += " AND a.college_state = ?"
             args.append(state)
-        sql += " ORDER BY m.rank LIMIT 2000"
+        # State/UT by State/UT and institution by institution (the revised D.O. letter, 1.2.111): no merit rank among them
+        sql += " ORDER BY a.college_state, a.college_name COLLATE NOCASE, m.rank LIMIT 2000"
         rows = query(sql, args)
     return render_template("public/merit.html", settings=settings, published=published, rows=rows,
                            q=q, state=state, outcome=outcome, ref=_states())
@@ -783,10 +784,11 @@ def merit():
 def merit_csv():
     if get_setting("merit.published") != "1":
         abort(404)
-    rows = query("SELECT m.rank, a.app_no, a.full_name, a.college_name, a.college_state, m.outcome "
-                 "FROM merit_list m JOIN applications a ON a.id = m.application_id ORDER BY m.rank")
-    data = csv_bytes(["Rank", "Application No", "Name", "Institution", "State", "Outcome"],
-                     [tuple(r) for r in rows])
+    rows = query("SELECT a.app_no, a.full_name, a.college_name, a.college_state, m.outcome "
+                 "FROM merit_list m JOIN applications a ON a.id = m.application_id "
+                 "ORDER BY a.college_state, a.college_name COLLATE NOCASE, m.rank")
+    data = csv_bytes(["S. No.", "Application No", "Name", "Institution", "State", "Outcome"],
+                     [(n,) + tuple(r) for n, r in enumerate(rows, 1)])
     return Response(data, mimetype="text/csv",
                     headers={"Content-Disposition": "attachment; filename=KTS5-merit-list.csv"})
 

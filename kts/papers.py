@@ -125,7 +125,7 @@ def _store_file(upload):
 
 def _mail(cand, subject, lines):
     body = "\n\n".join([f"Dear {cand['full_name']},"] + lines + [
-        f"Your research paper on the portal: {current_app.config['BASE_URL'].rstrip('/')}/candidate/paper",
+        f"Your article/research note on the portal: {current_app.config['BASE_URL'].rstrip('/')}/candidate/paper",
         "Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom\nCentral Institute of Classical Tamil, Chennai"])
     send_mail(cand["email"], subject, body)
 
@@ -185,8 +185,8 @@ def research_paper():
             conn.commit()
             audit("paper_submitted", "application", cand["id"], detail={"version": version, "new_file": bool(stored)}, ip=client_ip())
             if current is None or stored or current["status"] == "returned":
-                _mail(cand, f"KTS 5.0: research paper received ({number_of(cand['app_no'])})", [
-                    f"Your research paper \"{data['title']}\" has been received (version {version}).",
+                _mail(cand, f"KTS 5.0: article/research note received ({number_of(cand['app_no'])})", [
+                    f"Your article/research note \"{data['title']}\" has been received (version {version}).",
                     "The reviewers of CICT will read it. Until then you may replace it on the portal within the last date."])
             flash(t("paper.sent_ok"), "success")
             return redirect(url_for("candidate.research_paper"))
@@ -302,14 +302,14 @@ def paper_entry(aid):
             audit("paper_" + status, "application", aid, detail={"version": current["version"], "score": score},
                   user=user, ip=client_ip())
             if status == "accepted":
-                _mail(a, f"KTS 5.0: research paper accepted ({number_of(a['app_no'])})", [
-                    f"Your research paper \"{current['title']}\" has been accepted. Congratulations!"]
+                _mail(a, f"KTS 5.0: article/research note accepted ({number_of(a['app_no'])})", [
+                    f"Your article/research note \"{current['title']}\" has been accepted. Congratulations!"]
                     + ([f"Remarks of the reviewers: {remarks}"] if remarks else []))
             else:
-                _mail(a, f"KTS 5.0: research paper returned for changes ({number_of(a['app_no'])})", [
-                    f"The reviewers have returned your research paper \"{current['title']}\" for changes.",
+                _mail(a, f"KTS 5.0: article/research note returned for changes ({number_of(a['app_no'])})", [
+                    f"The reviewers have returned your article/research note \"{current['title']}\" for changes.",
                     f"Remarks of the reviewers: {remarks}",
-                    "Revise the paper and send it again on the portal."])
+                    "Revise it and send it again on the portal."])
             flash(f"The paper is {status}; the student is told by e-mail.", "success")
         return redirect(url_for("admin.paper_entry", aid=aid))
     files = query("SELECT * FROM paper_files WHERE paper_id = ? ORDER BY version DESC", (current["id"],))

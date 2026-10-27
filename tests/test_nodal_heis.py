@@ -27,13 +27,14 @@ def test_the_page_shows_them_in_the_language_of_the_reader():
     client = app.test_client()
     page = client.get("/partners?lang=en").get_data(as_text=True)
     assert "State/UT-wise list of Nodal Higher Educational Institutions" in page
-    assert "The Nodal Higher Educational Institution of each State/UT identifies the participating institutions" in page
+    assert ("The Nodal Higher Educational Institution of each State/UT undertakes outreach for the registration of the institutions "
+            "of its State/UT on this portal, selects the number of Participating Institutions prescribed for it") in page
     assert page.count('<td lang="en" dir="ltr">') == 31
     assert '<td lang="en" dir="ltr">Central University of Tamil Nadu</td>' in page
     assert page.index("Central University of Andhra Pradesh") < page.index("Pondicherry University")
     # the columns of Annexure-I: the number to be selected in place of the type of institution (1.2.45, 1.2.110)
     assert "Number of Participating HEIs to be selected" in page and "<td>Central University</td>" not in page
-    assert "How the programme reaches the institutions" in page and "selects one student on merit and nominates them with one Faculty Supervisor/Guide" in page
+    assert "How the programme reaches the institutions" in page and "nominates one student on merit with one Faculty Supervisor/Guide" in page
     # the names of the States follow the language of the page; the names of the institutions stay in English
     tamil = client.get("/partners?lang=ta").get_data(as_text=True)
     assert "<td>தமிழ்நாடு</td>" in tamil and '<td lang="en" dir="ltr">Central University of Tamil Nadu</td>' in tamil

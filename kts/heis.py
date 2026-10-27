@@ -1,9 +1,11 @@
 """
 The participating Higher Educational Institutions of the States/UTs (version 1.2.41).
 
-As the D.O. letter of CICT sets out: the Nodal Institution of each State/UT identifies up to 50
-institutions of its State/UT (hei.max_per_state) and coordinates their participation; each of them
-nominates one student and one Faculty Supervisor/Guide, endorsed by the Head of the Institution.
+As the revised D.O. letter of the Ministry sets out (26 October 2026): every interested institution registers; the Nodal
+Institution of each State/UT scrutinises them and selects the number of Participating Institutions that Annexure-I prescribes
+(cap_of), by the Standard Operating Procedure of Annexure-V (SOP: the marks of its evaluation committee, 1.2.111), and keeps a
+reserve list (status 'reserve'); each selected institution nominates one student and one Faculty Supervisor/Guide, endorsed by
+the Head of the Institution.
 
 * An institution applies on the website (/institutions/register) while hei.open is on and up to
   hei.end: its name, type, State/UT, district, AISHE code, its Head and a coordinator/Faculty
@@ -26,8 +28,51 @@ from flask import current_app
 from .db import get_setting, query
 from .utils import college_key, now_ist, send_later, send_mail
 
-# identified: in the list of the Nodal Institution (Annexure-II), invited, not yet registered (1.2.43)
-STATUSES = ["identified", "pending", "accepted", "declined"]
+# identified: in the list of the Nodal Institution (Annexure-II), invited, not yet registered (1.2.43); accepted: a selected
+# Participating Institution; reserve: in the reserve list of the Nodal Institution, to replace one that drops out (1.2.111)
+STATUSES = ["identified", "pending", "accepted", "reserve", "declined"]
+
+# Annexure-V of the revised D.O. letter (26 October 2026), 3. Selection criteria: (key, criterion, maximum marks, indicators,
+# evidence). Total 100; recommended qualifying benchmark 60. In a tie: higher marks in institutional readiness, then in
+# academic engagement with the Thirukkural, then wider geographical representation, then the earlier complete registration.
+SOP = [("readiness", "Institutional readiness", 25,
+        "Nodal/Institutional Coordinator identified; faculty support; ability to conduct assessment and one-month academic engagement.",
+        "Official nomination/undertaking and brief implementation plan"),
+       ("outreach", "Proposed student outreach", 20,
+        "Credible plan to mobilise students across disciplines and conduct a transparent assessment.", "Outreach and assessment plan"),
+       ("academic", "Academic engagement with the Thirukkural", 20,
+        "Plan for the use of prescribed resources, faculty-guided study, an article/research note and a presentation.", "Academic activity note"),
+       ("geography", "Geographical representation", 15,
+        "Contribution to balanced district/regional representation within the State/UT.", "Institution location and district coverage"),
+       ("diversity", "Institutional diversity and inclusion", 10,
+        "Representation across institution types, disciplines and underserved/remote areas, as applicable.", "Institution profile"),
+       ("record", "Past record and documentation capacity", 10,
+        "Ability to complete activities, maintain records and submit reports within timelines.", "Relevant institutional record/undertaking")]
+SOP_BENCHMARK = 60
+# the reserve list: ordinarily up to 20 per cent of the prescribed allocation
+RESERVE_SHARE = 20
+
+
+def sop_marks(row):
+    """{criterion: marks} of the institution, as the committee recorded them; {} when not yet."""
+    try:
+        marks = json.loads(row["sop_scores"] or "{}")
+    except (ValueError, TypeError):
+        return {}
+    return {key: int(marks[key]) for key, *_ in SOP if isinstance(marks.get(key), int)}
+
+
+def sop_order(row):
+    """The order of Annexure-V, best first: the total, then the tie-breaks it names (the geographical one is the committee's)."""
+    marks = sop_marks(row)
+    return (-(row["sop_total"] if row["sop_total"] is not None else -1), -marks.get("readiness", 0), -marks.get("academic", 0),
+            row["created_at"] or "")
+
+
+def reserve_of(state):
+    """The reserve list that Annexure-V suggests for the State/UT: up to 20 per cent of its allocation, rounded up; 0 without one."""
+    n = allocation_of(state)
+    return -(-n * RESERVE_SHARE // 100) if n else 0
 # what an institution writes, in English, as the student does
 # Annexure-IV of the D.O. letter of 9 October 2026: the Institutional Coordinator and the Faculty Supervisor/Guide, each with
 # name, designation, mobile and e-mail (1.2.46)
@@ -147,6 +192,15 @@ def _details(row):
                if row["guide_name"] else ""))
 
 
+def _by(day):
+    """25 November 2026, as a mail says a last day; the day as it is when it cannot be read."""
+    try:
+        d = date.fromisoformat((day or "")[:10])
+        return f"{d.day} {d.strftime('%B %Y')}"
+    except ValueError:
+        return day or "the date shown on the portal"
+
+
 def _to_institution(row):
     return [a for a in dict.fromkeys([row["head_email"], row["coord_email"]]) if a]
 
@@ -171,18 +225,26 @@ def mail_received(row):
 
 def mail_decision(row):
     base = current_app.config["BASE_URL"]
-    if row["status"] == "accepted":
-        subject = f"KTS 5.0: {row['name']} is a participating institution"
-        body = (f"Dear Sir/Madam,\n\nThe Nodal Officer of {row['state']} has accepted your institution as a participating "
-                f"institution of Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom.\n\nReference: {row['ref']}\n{_details(row)}\n"
-                f"Please nominate one eligible student and one Faculty Supervisor/Guide. The nomination form, signed by the Head of "
+    if row["status"] == "reserve":
+        subject = f"KTS 5.0: {row['name']} is in the reserve list"
+        body = (f"Dear Sir/Madam,\n\nThe Nodal Institution of {row['state']} has placed your institution in the reserve list of the "
+                f"Participating Institutions of Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom, in accordance with the Standard "
+                f"Operating Procedure. If a selected institution withdraws, does not respond or does not nominate its student, the "
+                f"next institution of the reserve list may be included; you will then receive another mail.\n\nReference: {row['ref']}\n"
+                f"\nFor any question, please write to the Nodal Officer of your State/UT or to CICT.\n\nCentral Institute of Classical Tamil, Chennai")
+    elif row["status"] == "accepted":
+        subject = f"KTS 5.0: {row['name']} is a Participating Institution"
+        body = (f"Dear Sir/Madam,\n\nThe Nodal Institution of {row['state']} has selected your institution as a Participating "
+                f"Institution of Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom.\n\nReference: {row['ref']}\n{_details(row)}\n"
+                f"Please assess your interested students on the Thirukkural and nominate one eligible student on merit, with one "
+                f"Faculty Supervisor/Guide, by {_by(get_setting('reg.end'))}. The nomination form, signed by the Head of "
                 f"the Institution, is at {base}/static/KTS5-nomination-form.pdf. The student registers at {base}/register, "
                 f"chooses \"{row['name']}\" as the institution and uploads the signed form.\n\n"
                 f"The participating institutions are listed at {base}/institutions\n\nCentral Institute of Classical Tamil, Chennai")
     else:
         subject = f"KTS 5.0: application of {row['name']} ({row['ref']})"
-        body = (f"Dear Sir/Madam,\n\nThe Nodal Officer of {row['state']} could not accept your institution as a participating "
-                f"institution of KTS 5.0.\n\nReference: {row['ref']}\n"
+        body = (f"Dear Sir/Madam,\n\nThe Nodal Institution of {row['state']} could not select your institution as a Participating "
+                f"Institution of KTS 5.0. Registration does not by itself confer selection.\n\nReference: {row['ref']}\n"
                 + (f"Remark: {row['decision_note']}\n" if row["decision_note"] else "")
                 + "\nFor any question, please write to the Nodal Officer of your State/UT or to CICT.\n\n"
                 "Central Institute of Classical Tamil, Chennai")

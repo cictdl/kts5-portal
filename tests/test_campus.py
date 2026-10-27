@@ -114,7 +114,7 @@ def test_the_nodal_officer_uploads_annexure_ii_and_the_institution_completes_its
     with app.app_context():
         row = query("SELECT * FROM institutions", one=True)
     assert row["status"] == "accepted" and row["invite_token"] is None and row["head_name"] == "Dr. Principal T"
-    assert "has accepted your institution" in _mails(app, "coord@stthomas.example")[-1]["body"]
+    assert "has selected your institution" in _mails(app, "coord@stthomas.example")[-1]["body"]
     assert "St. Thomas College Thrissur" in app.test_client().get("/institutions?lang=en").get_data(as_text=True)
     # a used invitation
     assert "not valid or has been used" in client.get(f"/institutions/register?invite={data['invite']}&lang=en", follow_redirects=True).get_data(as_text=True)

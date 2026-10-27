@@ -49,7 +49,7 @@
     <div class="sub"><span></span>{{ {'merit': 'OF MERIT', 'inaugural': 'OF PARTICIPATION'}.get(kind, 'OF RECOGNITION') }}<span></span></div>
     {% if kts_start and kts_end %}<p class="when">Kashi Tamil Sangamam 5.0 &middot; {{ kts_start }} &ndash; {{ kts_end }}</p>{% endif %}
     {% if kind == 'merit' %}
-    <div class="pill">&#9733; Merit List{% if waitlisted %} &middot; Waiting List{% endif %}{% if rank %} &middot; Rank {{ rank }}{% endif %} &#9733;</div>
+    <div class="pill">&#9733; Selected Student{% if waitlisted %} &middot; Waiting List{% endif %} &#9733;</div>
     <p class="certify">This certificate is awarded to</p>
     {% elif kind == 'inaugural' %}
     <div class="pill">&#9733; Student Delegate &middot; Online Participation &#9733;</div>
@@ -61,17 +61,18 @@
     <div class="name{{ ' long' if name|length > 30 }}">{{ name }}</div>
     {% if college %}<p class="college">{{ college }}{% if place %}, {{ place }}{% endif %}</p>{% endif %}
     {% if kind == 'merit' and waitlisted %}
-    <p class="text">for securing a place on the waiting list of the merit list of
-      <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural Payilvom</b>, as the student selected on merit by the institution
-      in its assessment on the Thirukkural, in the spirit of <b>Ek Bharat Shreshtha Bharat</b>.</p>
+    <p class="text">for securing a place on the waiting list of the selected students of
+      <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural Payilvom</b>, as the student nominated on merit by the institution
+      on the basis of its assessment on the Thirukkural, in the spirit of <b>Ek Bharat Shreshtha Bharat</b>.</p>
     {% elif kind == 'inaugural' %}
     <p class="text">for participating online, as a student delegate of <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural
       Payilvom</b>, in the <b>Inauguration of Kashi Tamil Sangamam 5.0</b>{% if kts_start %} on {{ kts_start }}{% endif %},
       and joining the nationwide movement to learn the Thirukkural in the spirit of <b>Ek Bharat Shreshtha Bharat</b>.</p>
     {% elif kind == 'merit' %}
-    <p class="text">for being selected in the merit list of <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural Payilvom</b>,
-      as one of the {{ selected or '1,000' }} students chosen from colleges across India, each selected on merit by the
-      institution in its assessment on the Thirukkural, in the spirit of <b>Ek Bharat Shreshtha Bharat</b>.</p>
+    <p class="text">for being selected for <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural Payilvom</b>, as one of the
+      {{ selected or '1,000' }} students nominated on merit by their institutions across India, each on the basis of the
+      institution's assessment on the Thirukkural and verified by the Nodal Institution of the State/UT and CICT, in the
+      spirit of <b>Ek Bharat Shreshtha Bharat</b>.</p>
     {% else %}
     <p class="text">for registering for <b>Kashi Tamil Sangamam 5.0 &ndash; Thirukkural Payilvom</b> and joining the
       nationwide movement to learn the Thirukkural, the timeless classic of Tamil, in the spirit of

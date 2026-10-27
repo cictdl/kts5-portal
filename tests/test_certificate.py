@@ -283,10 +283,13 @@ def test_a_student_of_the_merit_list_has_a_certificate_of_merit():
     assert r.status_code == 200
     page = r.get_data(as_text=True)
     assert '<main class="sheet merit"' in page and "OF MERIT" in page and "OF RECOGNITION" not in page
-    assert "&#9733; Merit List &middot; Rank 7 &#9733;" in page and "This certificate is awarded to" in page
+    # no merit list and no rank since the revised D.O. letter (1.2.111)
+    assert "&#9733; Selected Student &#9733;" in page and "This certificate is awarded to" in page
+    assert "Rank" not in page and "merit list" not in page
     assert "Student Certificate 1" in page and "Government College Thrissur, Kerala" in page
     flat = " ".join(page.split())
-    assert "as one of the 1,000 students chosen from colleges across India, each selected on merit by the institution in its assessment on the Thirukkural," in flat
+    assert ("as one of the 1,000 students nominated on merit by their institutions across India, each on the basis of the institution's "
+            "assessment on the Thirukkural and verified by the Nodal Institution of the State/UT and CICT," in flat)
     # since the D.O. letter of 9 October 2026 the institutions assess: no CICT test, no date of a test (1.2.62)
     assert "online test" not in flat and "held on" not in flat
     number = "KTS5/CM/" + "/".join(row["app_no"].split("-")[1:])
@@ -339,13 +342,13 @@ def test_a_waitlisted_student_has_a_certificate_of_merit_that_names_the_waiting_
     link = _merit_link(app, row)
     assert link and link.startswith(f"/certificate/merit/{row['app_no']}/")
     page = app.test_client().get(link).get_data(as_text=True)
-    assert "OF MERIT" in page and "&#9733; Merit List &middot; Waiting List &middot; Rank 1042 &#9733;" in page
+    assert "OF MERIT" in page and "&#9733; Selected Student &middot; Waiting List &#9733;" in page and "1042" not in page
     flat = " ".join(page.split())
-    assert "for securing a place on the waiting list of the merit list of" in page
-    assert "as the student selected on merit by the institution in its assessment on the Thirukkural," in flat
+    assert "for securing a place on the waiting list of the selected students of" in page
+    assert "as the student nominated on merit by the institution on the basis of its assessment on the Thirukkural," in flat
     assert "online test" not in flat and "held on" not in flat
     # a waitlisted student is not said to be one of the students chosen
-    assert "students chosen" not in page and "for being selected" not in page
+    assert "students nominated" not in page and "for being selected" not in page
     number = "KTS5/CM/" + "/".join(row["app_no"].split("-")[1:])
     assert f"Certificate No. <b>{number}</b>" in page
     # moved up into the selected list, the same address gives the certificate of the selected
@@ -353,7 +356,7 @@ def test_a_waitlisted_student_has_a_certificate_of_merit_that_names_the_waiting_
     with app.app_context():
         execute("UPDATE applications SET status = 'selected' WHERE id = ?", (row["id"],))
     page = app.test_client().get(link).get_data(as_text=True)
-    assert "for being selected in the merit list of" in page and "Waiting List" not in page
+    assert "for being selected for" in page and "Waiting List" not in page
 
 
 def test_a_withdrawal_after_the_selection_ends_the_certificate_of_merit():
@@ -384,7 +387,8 @@ def test_certificates_of_merit_are_switched_off_and_on_and_a_sample_is_shown():
     admin.post("/console/certificate", data={"_csrf": token, "action": "merit_on"})
     assert app.test_client().get(link).status_code == 200
     sample = admin.get("/console/certificate/sample?kind=merit").get_data(as_text=True)
-    assert "OF MERIT" in sample and "Rank 1" in sample and "KTS5/CM/2026/000000" in sample and "Waiting List" not in sample
+    assert "OF MERIT" in sample and "Selected Student" in sample and "Rank" not in sample and "KTS5/CM/2026/000000" in sample
+    assert "Waiting List" not in sample
     sample = admin.get("/console/certificate/sample?kind=merit&waitlisted=1").get_data(as_text=True)
     assert "Waiting List" in sample and "for securing a place on the waiting list" in sample
     sample = admin.get("/console/certificate/sample").get_data(as_text=True)
@@ -419,11 +423,16 @@ def test_a_selected_student_has_a_confirmation_letter():
     assert "<b>Student Certificate 1</b>" in page and "Government College Thrissur" in page and f"Application No. {row['app_no']}" in page
     assert "confirmation of selection" in page and "Dear Student Certificate 1," in page
     flat = " ".join(page.split())
-    assert "one of the 1,000 students" in page and "<b>12</b>" in page
-    assert "on the basis of the assessment on the Thirukkural conducted by your institution." in flat
+    # no rank: the selected students are those the Participating Institutions nominate, once verified (the revised D.O. letter, 1.2.111)
+    assert "one of the 1,000 students" in page and "<b>12</b>" not in page and "merit list" not in page
+    assert "verified by the Nodal Institution of your State/UT and CICT" in " ".join(page.split())
+    assert "nominated on merit by your institution on the basis of its assessment on the Thirukkural," in flat
     assert "online test" not in flat and "held on" not in flat
-    assert "begins on 12 December 2026, under the guidance of your faculty mentor, Dr. K. Mentor, Assistant Professor of Tamil." in page
-    assert "sessions in Hindi;" in page and page.count("on or before 11 January 2027") == 2
+    assert "begins on 12 December 2026, under the guidance of your Faculty Supervisor/Guide, Dr. K. Mentor, Assistant Professor of Tamil." in page
+    assert "educational videos, in Hindi;" in page and page.count("on or before 11 January 2027") == 2
+    flat = " ".join(page.split())
+    assert "one-month research and academic engagement" in flat and "article or research note of 4&ndash;5 pages" in flat
+    assert "subject to the programme guidelines and completion of the prescribed requirements" in flat and "internship" not in flat
     assert "&#8377;10,000" in page and "from 28 November 2026 to 12 December 2026" in page
     assert "<b>Prof. R. Chandrasekaran</b>" in page and "Copy to: The Principal / Head of the Institution, Government College Thrissur" in page
     assert "Chemmozhi Salai, Perumbakkam" in page
@@ -447,8 +456,8 @@ def test_the_dates_of_the_letter_follow_the_settings():
     page = app.test_client().get(_letter_link(app, row)).get_data(as_text=True)
     assert "Date: <b>24 October 2026</b>" in page and "begins on 26 October 2026" in page
     assert "on or before 09 November 2026" in page and "on or before 20 November 2026" in page
-    # without a last date the presentation is "on a date of your choice"
-    assert "on a date of your choice." in page
+    # without a last date the presentation is "during the engagement period"
+    assert "at your institution during the engagement period." in " ".join(page.split())
 
 
 @pytest.mark.parametrize("outcome, published", [("selected", "0"), ("waitlisted", "1"), ("not_selected", "1")])
@@ -499,4 +508,4 @@ def test_letters_are_switched_off_and_on_and_a_sample_is_shown():
     group = [items for title, items in SETTING_GROUPS if title.startswith("Internship")]
     # and the switch, the note and the guidelines of the research papers (version 1.2.11)
     assert [key for key, _l, _k in group[0]] == ["letter.date", "internship.start", "papers.due", "present.due",
-                                                 "papers.open", "papers.note", "papers.guide_url"]
+                                                 "papers.open", "papers.note", "papers.guide_url", "orientation.by"]

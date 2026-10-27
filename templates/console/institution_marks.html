@@ -1,0 +1,28 @@
+{% extends "console/base.html" %}
+{% block title %}Marks of Annexure-V · {{ row.name }}{% endblock %}
+{% block content %}
+{# The marks of the evaluation committee of the Nodal Institution on the six criteria of the Standard Operating Procedure,
+   Annexure-V of the revised D.O. letter (1.2.111) #}
+<p><a href="{{ url_for('admin.institutions', state=row.state, order='marks') }}">← Institutions of {{ row.state }}</a></p>
+<h1 style="margin-bottom:4px">{{ row.name }}</h1>
+<p class="dim" style="margin-top:0">{{ row.ref }} · {{ row.state }} · {{ row.district }} · {{ row.itype }}{% if row.aishe_code %} · AISHE {{ row.aishe_code }}{% endif %} · registered {{ row.created_at|datetime }}</p>
+<p class="dim" style="max-width:92ch">The marks of the evaluation committee (at least three members, with the State/UT Nodal Officer) on the selection
+  criteria of the Standard Operating Procedure, Annexure-V: 100 in all, recommended qualifying benchmark {{ benchmark }}. The institutions of
+  {{ row.state }} are ranked by the total; in a tie, by institutional readiness, then academic engagement with the Thirukkural, then wider
+  geographical representation, then the earlier complete registration. Annexure-I prescribes <b>{{ allocation or '–' }}</b> Participating
+  Institutions for {{ row.state }}{% if reserve %}, with a reserve list of ordinarily up to <b>{{ reserve }}</b>{% endif %}.</p>
+<form method="post" class="card" style="max-width:980px">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <div class="table-wrap"><table class="table">
+    <thead><tr><th>Criterion</th><th>Indicators</th><th>Evidence</th><th class="num">Marks</th></tr></thead>
+    <tbody>{% for key, criterion, most, indicators, evidence in sop %}
+    <tr><td><b>{{ criterion }}</b></td><td class="small">{{ indicators }}</td><td class="small muted">{{ evidence }}</td>
+      <td class="num" style="white-space:nowrap"><input type="number" name="{{ key }}" min="0" max="{{ most }}" step="1" required value="{{ marks.get(key, '') }}" style="width:5em" aria-label="{{ criterion }}, out of {{ most }}"> / {{ most }}
+        {% if errors.get(key) %}<div class="small" style="color:var(--kumkum)">{{ errors[key] }}</div>{% endif %}</td></tr>
+    {% endfor %}</tbody>
+  </table></div>
+  <div class="field" style="margin-top:12px"><label for="note">Remarks of the committee (optional)</label><textarea id="note" name="note" rows="3" maxlength="1000">{{ note }}</textarea></div>
+  <div class="btn-row"><button class="btn" type="submit">Save the marks</button>
+    {% if row.sop_total is not none %}<span class="small muted">Recorded: {{ row.sop_total }}/100, {{ row.sop_at|datetime }}</span>{% endif %}</div>
+</form>
+{% endblock %}

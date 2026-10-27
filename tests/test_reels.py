@@ -78,7 +78,7 @@ def test_the_shorts_added_on_21_october():
         {"id": "EAvMVUp50-s", "lang": "Malto", "native": "माल्तो", "presenter": "R. George Edward"}]
     app = make_app(ADMIN_PASSWORD=None)
     page = app.test_client().get("/programme?lang=en").get_data(as_text=True)
-    assert "44 short videos in 27 languages" in page
+    assert "45 short videos in 27 languages" in page
     kurukh = page.split("कुँड़ुख़")[1].split('<div class="card reel">')[0]
     assert kurukh.count("youtube.com/shorts/") == 3
     for native in ("माल्तो",):
@@ -89,14 +89,23 @@ def test_the_shorts_added_on_21_october():
 def test_the_shorts_added_on_26_october():
     # three Thirukkural shorts of @cicttamil of 22-24 October (1.2.101): Awadhi (CICT's English line says "Awati", its Tamil
     # line அவதி) and Kisan are new languages; Rajasthani has a second presenter
-    assert REELS[-3:] == [
+    assert REELS[41:44] == [
         {"id": "j9ew6qLdTTo", "lang": "Awadhi", "native": "अवधी", "presenter": "Ram Lakhan Pratapgarhi"},
         {"id": "0fFx8qOK-ZY", "lang": "Kisan", "native": "किसान", "presenter": "Dr. Laxman Kishan"},
         {"id": "jHnmlzUEkWY", "lang": "Rajasthani", "native": "राजस्थानी", "presenter": "Dr. Sharda Krishna"}]
-    assert len(REELS) == 44 and len({r["id"] for r in REELS}) == 44 and len({r["lang"] for r in REELS}) == 27
+    assert len({r["id"] for r in REELS}) == len(REELS) and len({r["lang"] for r in REELS}) == 27
     page = make_app(ADMIN_PASSWORD=None).test_client().get("/programme?lang=en").get_data(as_text=True)
     rajasthani = page.split("<bdi>राजस्थानी</bdi>")[1].split('<div class="card reel">')[0]
     assert rajasthani.count("youtube.com/shorts/") == 2 and "Dr. Sharda Krishna" in rajasthani
     for native in ("अवधी", "किसान"):
         card = page.split(f"<bdi>{native}</bdi>")[1].split('<div class="card reel">')[0]
         assert card.count("youtube.com/shorts/") == 1, native
+
+
+def test_the_short_added_on_27_october():
+    # the Thirukkural short of @cicttamil in Gondi by Sidam Varaprasad (1.2.111): the second of the Gondi card
+    assert REELS[-1] == {"id": "ZpDwuVm8O1U", "lang": "Gondi", "native": "गोंडी", "presenter": "Sidam Varaprasad"}
+    assert len(REELS) == 45 and len({r["lang"] for r in REELS}) == 27
+    page = make_app(ADMIN_PASSWORD=None).test_client().get("/programme?lang=en").get_data(as_text=True)
+    gondi = page.split("<bdi>गोंडी</bdi>")[1].split('<div class="card reel">')[0]
+    assert gondi.count("youtube.com/shorts/") == 2 and "Madhavi Limbarao" in gondi and "Sidam Varaprasad" in gondi
