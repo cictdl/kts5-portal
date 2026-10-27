@@ -19,15 +19,16 @@ def _page(client, path):
     return r.get_data(as_text=True)
 
 
-def test_the_press_release_of_the_launch_in_ten_languages():
+def test_the_press_release_of_the_launch_in_eleven_languages():
+    # ten languages in 1.2.99, Punjabi (PIB Chandigarh) in 1.2.112
     from kts import kural as K
     press = [n for n in NEWS if n["kind"] == "press"]
     assert len(press) == 1 and press[0]["date"] == "2026-10-22"
     versions = press[0]["versions"]
-    assert [v["lang"] for v in versions] == ["en", "as", "gu", "hi", "kn", "ml", "mr", "or", "ta", "ur"]
+    assert [v["lang"] for v in versions] == ["en", "as", "gu", "hi", "kn", "ml", "mr", "or", "pa", "ta", "ur"]
     assert all(v["lang"] in K.ORIENTATION_LANGS and v["title"] and v["office"].startswith("PIB ") for v in versions)
     assert all(v["url"].startswith("https://www.pib.gov.in/PressReleasePage.aspx?PRID=") and "_gl" not in v["url"] for v in versions)
-    assert len({v["url"] for v in versions}) == 10
+    assert len({v["url"] for v in versions}) == 11
 
 
 def test_the_page_day_by_day():
@@ -47,7 +48,7 @@ def test_the_page_day_by_day():
     day22 = page[page.index("22 Oct 2026"):]
     assert "Kashi Tamil Sangamam 5.0 to be organised from Nov 28 to Dec 12, 2026" in day22
     assert "Union Minister for Education, Shri Pralhad Joshi, launches Registration Portal for KTS 5.0" in day22
-    assert "Read it in:" in day22 and day22.count('target="_blank" rel="noopener" lang=') == 10
+    assert "Read it in:" in day22 and day22.count('target="_blank" rel="noopener" lang=') == 11
     assert '<a href="https://www.pib.gov.in/PressReleasePage.aspx?PRID=2326724" target="_blank" rel="noopener" lang="ta">தமிழ்</a>' in day22
     # in Tamil, the Tamil headline; in Telugu, which PIB did not publish, the English one
     tamil = _page(client, "/in-the-news?lang=ta")
@@ -80,12 +81,17 @@ def test_the_page_is_reached_from_the_menu_the_home_page_and_the_notices():
 
 def test_the_reports_of_the_web():
     # a news report is one version, in the language of its outlet, linked to the outlet's own page (1.2.100); DD News,
-    # Dinamalar, Daily Thanthi and Akashvani News (1.2.101); the file in the order of the days and the hours
+    # Dinamalar, Daily Thanthi and Akashvani News (1.2.101); Careers360, Akashvani News, DD India, Punjab Kesari (IANS),
+    # ETV Bharat and Akashvani News again (1.2.112); the file in the order of the days and the hours
     reports = [n for n in NEWS if n["kind"] == "article"]
-    assert [n["source"] for n in reports] == ["DD News", "Dinamalar", "Daily Thanthi", "NDTV Education", "Akashvani News"]
+    assert [n["source"] for n in reports] == ["Careers360", "Akashvani News", "DD News", "DD India", "Punjab Kesari", "ETV Bharat",
+                                              "Dinamalar", "Daily Thanthi", "NDTV Education", "Akashvani News",
+                                              "Akashvani News"]
     hosts = {"DD News": "https://ddnews.gov.in/en/", "Dinamalar": "https://www.dinamalar.com/",
              "Daily Thanthi": "https://www.dailythanthi.com/", "NDTV Education": "https://www.ndtv.com/",
-             "Akashvani News": "https://newsonair.gov.in/"}
+             "Akashvani News": "https://newsonair.gov.in/", "Careers360": "https://news.careers360.com/",
+             "DD India": "https://ddindia.co.in/", "Punjab Kesari": "https://english.punjabkesari.com/",
+             "ETV Bharat": "https://www.etvbharat.com/ta/"}
     for n in reports:
         assert len(n["versions"]) == 1 and n["versions"][0]["url"].startswith(hosts[n["source"]])
         assert "translate.goog" not in n["versions"][0]["url"] and n["versions"][0]["time"]
@@ -188,3 +194,25 @@ def test_the_thirukkural_in_uzbek_in_the_news():
         page.index('<div class="card news-reel"') < page.index('<div class="card news-post"')
     # and still on the home page
     assert "home-uzbek" in _page(client, "/?lang=en")
+
+
+def test_the_news_added_on_27_october():
+    # the Punjabi release of PIB and six reports of 22 and 24 October (1.2.112), each in its day, in the order of the hours
+    client = make_app(ADMIN_PASSWORD=None).test_client()
+    page = _page(client, "/in-the-news?lang=en")
+    assert page.index("25 Oct 2026") < page.index("24 Oct 2026") < page.index("23 Oct 2026") < page.index("22 Oct 2026")
+    day24 = page[page.index("24 Oct 2026"):page.index("23 Oct 2026")]
+    assert day24.count('<div class="card news-article"') == 1 and "1:02 PM" in day24 and "newsonair.gov.in ↗" in day24
+    assert ('<a href="https://newsonair.gov.in/registration-opens-for-fifth-edition-of-kashi-tamil-sangamam/" target="_blank"'
+            ' rel="noopener">Registration Opens for Fifth Edition of Kashi Tamil Sangamam</a>') in day24
+    day22 = page[page.index("22 Oct 2026"):]
+    assert day22.count('<div class="card news-article"') == 7 and day22.count('<div class="card news-press"') == 1
+    marks = ["Press release", "Careers360", "4:10 PM", "DD News", "DD India", "Punjab Kesari", "ETV Bharat", "Dinamalar"]
+    assert [day22.index(m) for m in marks] == sorted(day22.index(m) for m in marks)
+    assert "<bdi>Soumi Roy</bdi> · 3:59 PM" in day22 and "<bdi>IANS</bdi> · 5:11 PM" in day22
+    assert "english.punjabkesari.com ↗" in day22 and "ddindia.co.in ↗" in day22 and "news.careers360.com ↗" in day22
+    assert '<h3 style="margin:0;line-height:1.4" lang="ta" dir="auto"><a href="https://www.etvbharat.com/ta/' in day22
+    assert 'href="https://www.pib.gov.in/PressReleasePage.aspx?PRID=2327441"' in day22
+    # in Punjabi, the Punjabi headline of PIB Chandigarh
+    punjabi = _page(client, "/in-the-news?lang=pa")
+    assert "ਕਾਸ਼ੀ ਤਮਿਲ ਸੰਗਮਮ 5.0 ਦਾ ਆਯੋਜਨ" in punjabi and "PIB Chandigarh" in punjabi

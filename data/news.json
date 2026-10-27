@@ -136,6 +136,15 @@
         "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2326930"
       },
       {
+        "lang": "pa",
+        "office": "PIB Chandigarh",
+        "ministry": "ਸਿੱਖਿਆ ਮੰਤਰਾਲਾ",
+        "title": "ਕਾਸ਼ੀ ਤਮਿਲ ਸੰਗਮਮ 5.0 ਦਾ ਆਯੋਜਨ 28 ਨਵੰਬਰ ਤੋਂ 12 ਦਸੰਬਰ, 2026 ਤੱਕ “ਤਿਰੁੱਕੁਰਲ ਪੇਇਲਵੋਮ-ਤਿਰੁੱਕੁਰਲ ਅਭਿਆਸ ਕਰੇਂ” ਥੀਮ ‘ਤੇ ਕੀਤਾ ਜਾਵੇਗਾ",
+        "subtitle": "ਕੇਂਦਰੀ ਸਿੱਖਿਆ ਮੰਤਰੀ ਸ਼੍ਰੀ ਪ੍ਰਹਿਲਾਦ ਜੋਸ਼ੀ ਨੇ ਕੇਟੀਐੱਸ 5.0 ਲਈ ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਪੋਰਟਲ ਦੀ ਸ਼ੁਰੂਆਤ ਕੀਤੀ",
+        "time": "2:24 PM",
+        "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2327441"
+      },
+      {
         "lang": "ta",
         "office": "PIB Chennai",
         "ministry": "மனித வள மேம்பாட்டு அமைச்சகம்",
@@ -156,6 +165,35 @@
     ]
   },
   {
+    "key": "careers360-2026-10-22-kts5",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "Careers360",
+    "versions": [
+      {
+        "lang": "en",
+        "byline": "Soumi Roy",
+        "title": "Kashi Tamil Sangamam 5.0 registration portal launched",
+        "time": "3:59 PM",
+        "url": "https://news.careers360.com/pralhad-joshi-launches-registration-portal-kashi-tamil-sangamam-5-0-iit-madras-bhu-varanasi-from-november-28-december-12"
+      }
+    ]
+  },
+  {
+    "key": "air-2026-10-22-kts5-portal",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "Akashvani News",
+    "versions": [
+      {
+        "lang": "en",
+        "title": "Education Minister Pralhad Joshi launches registration portal for fifth Kashi Tamil Sangamam",
+        "time": "4:10 PM",
+        "url": "https://newsonair.gov.in/education-minister-pralhad-joshi-launches-registration-portal-for-fifth-kashi-tamil-sangamam/"
+      }
+    ]
+  },
+  {
     "key": "ddnews-2026-10-22-kts5",
     "date": "2026-10-22",
     "kind": "article",
@@ -166,6 +204,49 @@
         "title": "Kashi Tamil Sangamam 5.0 to Be Held from November 28 to December 12",
         "time": "4:14 PM",
         "url": "https://ddnews.gov.in/en/kashi-tamil-sangamam-5-0-to-be-held-from-november-28-to-december-12/"
+      }
+    ]
+  },
+  {
+    "key": "ddindia-2026-10-22-kts5",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "DD India",
+    "versions": [
+      {
+        "lang": "en",
+        "title": "Kashi Tamil Sangamam 5.0 to Be Held from November 28 to December 12",
+        "time": "4:17 PM",
+        "url": "https://ddindia.co.in/2026/10/kashi-tamil-sangamam-5-0-to-be-held-from-november-28-to-december-12/"
+      }
+    ]
+  },
+  {
+    "key": "punjabkesari-2026-10-22-kts5",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "Punjab Kesari",
+    "versions": [
+      {
+        "lang": "en",
+        "byline": "IANS",
+        "title": "Education Minister Pralhad Joshi launches Kashi Tamil Sangamam 5.0 portal",
+        "time": "5:11 PM",
+        "url": "https://english.punjabkesari.com/india/education-minister-pralhad-joshi-launches-kashi-tamil-sangamam-50-portal/"
+      }
+    ]
+  },
+  {
+    "key": "etvbharat-2026-10-22-kts5",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "ETV Bharat",
+    "versions": [
+      {
+        "lang": "ta",
+        "title": "நவ.28-இல் தொடங்கும் 'காசி தமிழ் சங்கமம் 5.0': சென்னை ஐஐடி போட்டியில் பங்கேற்க ஆன்லைனில் விண்ணப்பிக்கலாம்",
+        "time": "6:15 PM",
+        "url": "https://www.etvbharat.com/ta/state/madras-iit-kasi-tamil-sangamam-competion-online-application-open-tns26102203730"
       }
     ]
   },
@@ -210,6 +291,20 @@
         "subtitle": "Candidates interested in applying for the Kashi Tamil Sangamam 5.0, must register for the programme by November 13, 2026. The programme will be organized from November 28 to December 12, 2026.",
         "time": "7:27 AM",
         "url": "https://www.ndtv.com/education/from-thirukkural-to-classrooms-kashi-tamil-sangamam-5-0-opens-registration-12223050"
+      }
+    ]
+  },
+  {
+    "key": "air-2026-10-24-kts5-registration",
+    "date": "2026-10-24",
+    "kind": "article",
+    "source": "Akashvani News",
+    "versions": [
+      {
+        "lang": "en",
+        "title": "Registration Opens for Fifth Edition of Kashi Tamil Sangamam",
+        "time": "1:02 PM",
+        "url": "https://newsonair.gov.in/registration-opens-for-fifth-edition-of-kashi-tamil-sangamam/"
       }
     ]
   },
