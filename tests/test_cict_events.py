@@ -221,3 +221,20 @@ def test_the_names_of_the_months_in_every_language():
         assert len(set(names)) == 12 and all(n.strip() == n and n for n in names), code
         if code != "en":
             assert not any(n == CATALOG["en"][f"month.{i + 1}"] for i, n in enumerate(names)), code
+
+
+def test_the_workshop_and_the_note_added_on_27_october():
+    # 1.2.113: the workshop "Heritage of Tamil Medicine" (no. 144 of the series) from CICT's inaugural invitation, the
+    # newest event; the Tamil note on KTS 5.0 of CICT's Tamil list beside the English one
+    e = DATA["events"][0]
+    assert e["id"] == "2026-10-27-heritage-of-tamil-medicine" and e["serial"] == 144 and e["end"] == "2026-11-05"
+    assert DATA["updated"] == "2026-10-27"
+    client = make_app(ADMIN_PASSWORD=None).test_client()
+    page = _page(client, "/seminars-workshops?lang=en&y=2026")
+    assert page.index("Heritage of Tamil Medicine") < page.index("Seminar Commemorating Tirumular Day")
+    assert 'href="https://cict.in/cict2023/wp-content/uploads/2026/10/26.10.2026.jpeg"' in page
+    assert "Prof. Dr. K. Balagurusamy MD(S)" in page
+    assert "தமிழ் மருத்துவ மரபுகள்" in _page(client, "/seminars-workshops?lang=ta&y=2026")
+    kts = next(x for x in DATA["events"] if x["id"] == "2026-10-kashi-tamil-sangamam-5-0-thirukkural")
+    assert [l["label"] for l in kts["links"] if l["kind"] == "report"] == ["cict.in", "cict.in · தமிழ்"]
+    assert "<bdi>cict.in · தமிழ்</bdi>" in page

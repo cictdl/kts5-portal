@@ -1,6 +1,36 @@
 {
- "updated": "2026-10-26",
+ "updated": "2026-10-27",
  "events": [
+  {
+   "id": "2026-10-27-heritage-of-tamil-medicine",
+   "type": "workshop",
+   "title": "Heritage of Tamil Medicine",
+   "title_ta": "தமிழ் மருத்துவ மரபுகள்",
+   "start": "2026-10-27",
+   "end": "2026-11-05",
+   "mode": "inperson",
+   "venue": "Thiruvalluvar Hall, CICT, Chennai",
+   "serial": 144,
+   "people": [
+    "Mr. T.G. Aruloli (Workshop Co-ordinator, CICT; welcome address at inaugural)",
+    "Dr. S. Karumbayiram (Junior Research Officer & Workshop Associate Co-ordinator, CICT; vote of thanks at inaugural)",
+    "Prof. R. Chandrasekaran (Director, CICT; presidential address)",
+    "Dr. R. Bhuvaneshwari (Registrar, CICT; introductory address)",
+    "Prof. Dr. K. Balagurusamy MD(S) (keynote address at inaugural; Principal, Velumayilu Siddha Medical College and Hospital, Sriperumbudur)"
+   ],
+   "links": [
+    {
+     "kind": "inaugural",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2026/10/26.10.2026.jpeg"
+    }
+   ],
+   "sources": [
+    "https://cict.in/cict2023/wp-content/uploads/2026/10/26.10.2026.jpeg"
+   ],
+   "origins": [
+    "seeall"
+   ]
+  },
   {
    "id": "2026-10-26-seminar-commemorating-tirumular-day",
    "type": "seminar",
@@ -230,12 +260,18 @@
      "kind": "report",
      "url": "https://cict.in/cict2023/wp-content/uploads/2026/10/Kashi_Tamil_Sangamam_5.0.pdf",
      "label": "cict.in"
+    },
+    {
+     "kind": "report",
+     "url": "https://cict.in/cict2023/wp-content/uploads/2026/10/காசி_தமிழ்_சங்கமம்_5.0.pdf",
+     "label": "cict.in · தமிழ்"
     }
    ],
    "sources": [
     "https://www.youtube.com/channel/UClcpBhlKWoOe_72f075sjpQ",
     "https://www.youtube.com/watch?v=i_hSXzH5E9w",
-    "https://cict.in/cict2023/wp-content/uploads/2026/10/Kashi_Tamil_Sangamam_5.0.pdf"
+    "https://cict.in/cict2023/wp-content/uploads/2026/10/Kashi_Tamil_Sangamam_5.0.pdf",
+    "https://cict.in/cict2023/wp-content/uploads/2026/10/காசி_தமிழ்_சங்கமம்_5.0.pdf"
    ],
    "origins": [
     "youtube"
