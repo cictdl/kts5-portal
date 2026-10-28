@@ -30,7 +30,7 @@ Image.frombytes("RGB", (pix.width, pix.height), pix.samples).save(folder / "thum
 data_file = ROOT / "data" / "syllabus.json"
 rows = [r for r in json.loads(data_file.read_text(encoding="utf-8")) if r["lang"] != lang]
 rows.append({"lang": lang, "pages": len(doc), "translator": translator})
-order = {"ta": -1, **{code: i for i, code in enumerate(ORIENTATION_LANGS)}}
+order = {**{code: i for i, code in enumerate(ORIENTATION_LANGS)}, "ta": -1}  # the Tamil original first
 rows.sort(key=lambda r: order[r["lang"]])
 data_file.write_text("[\n" + ",\n".join("  " + json.dumps(r, ensure_ascii=False) for r in rows) + "\n]\n", encoding="utf-8")
 print(name, len(doc), "pages,", (folder / f"{name}.pdf").stat().st_size // 1024, "KB")

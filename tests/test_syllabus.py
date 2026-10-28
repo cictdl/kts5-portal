@@ -23,7 +23,9 @@ def _page(client, path):
 
 def test_each_book_has_its_pdf_and_cover():
     from kts import kural as K
-    assert [b["lang"] for b in BOOKS][:5] == ["ta", "en", "hi", "kn", "mr"]
+    # Tamil, English, Hindi, Kannada and Marathi in 1.2.98; Bengali, Maithili and Odia in 1.2.114 (with the new editions of
+    # the Hindi and the Marathi book)
+    assert [b["lang"] for b in BOOKS] == ["ta", "en", "bn", "hi", "kn", "mai", "mr", "or"]
     for b in BOOKS:
         assert b["lang"] in K.ORIENTATION_LANGS and b["pages"] > 40
         name = f"KTS5-Thirukkural-Payilvom-{b['lang']}"
@@ -63,3 +65,15 @@ def test_the_syllabus_is_reached_from_where_students_look():
     assert 'href="/syllabus"' in _page(client, "/sitemap?lang=en")
     assert 'href="/syllabus"' in _page(client, "/resources?cat=study&lang=en")
     assert "/syllabus" in _page(client, "/search?lang=en&q=syllabus")
+
+
+def test_the_books_added_on_28_october():
+    by_lang = {b["lang"]: b for b in BOOKS}
+    assert {k: (by_lang[k]["pages"], by_lang[k]["translator"]) for k in ("bn", "mai", "or")} == {
+        "bn": (84, "Dr. Shibnath Dutta"), "mai": (64, "Dr. Arun Kumar"), "or": (62, "Geetarani Bisoyi")}
+    client = make_app(ADMIN_PASSWORD=None).test_client()
+    page = _page(client, "/syllabus?lang=or")
+    assert page.index("KTS5-Thirukkural-Payilvom-or.pdf") < page.index("KTS5-Thirukkural-Payilvom-ta.pdf")
+    assert "Geetarani Bisoyi" in page and "The study book is not yet available in your language" not in page
+    for code in ("bn", "mai"):
+        assert f'href="/static/syllabus/KTS5-Thirukkural-Payilvom-{code}.pdf" download' in _page(client, f"/syllabus?lang={code}")
