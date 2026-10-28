@@ -68,6 +68,10 @@ def test_the_syllabus_is_reached_from_where_students_look():
 
 
 def test_the_books_added_on_28_october():
+    # the Bengali book of 28 October, 10:52 (1.2.115): its cover title drawn right, the vowel signs ি before their consonants
+    import fitz
+    bengali = fitz.open(ROOT / "static" / "syllabus" / "KTS5-Thirukkural-Payilvom-bn.pdf")
+    assert bengali.metadata["modDate"].startswith("D:20261028") and "(Bengali)" in bengali[0].get_text()
     by_lang = {b["lang"]: b for b in BOOKS}
     assert {k: (by_lang[k]["pages"], by_lang[k]["translator"]) for k in ("bn", "mai", "or")} == {
         "bn": (84, "Dr. Shibnath Dutta"), "mai": (64, "Dr. Arun Kumar"), "or": (62, "Geetarani Bisoyi")}
