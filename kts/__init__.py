@@ -11,6 +11,10 @@ from werkzeug.routing import IntegerConverter
 
 from config import Config
 
+# The Tolkappiyam recordings (1.2.116), streamed from the portal by other sites and apps: no page, script, sitemap or
+# search result names their folder, and search engines are asked not to list its files.
+UNLISTED = ("/static/audio/tolkappiyam-055ece6df3/",)
+
 
 class _RowNumber(IntegerConverter):
     """
@@ -112,6 +116,8 @@ def create_app(config_object=Config):
             resp.headers["Cache-Control"] = "no-store"
         if app.config.get("HSTS") and app.config.get("SESSION_COOKIE_SECURE"):
             resp.headers.setdefault("Strict-Transport-Security", "max-age=31536000")
+        if request.path.startswith(UNLISTED):
+            resp.headers["X-Robots-Tag"] = "noindex"
         return resp
 
     # ---- template helpers -------------------------------------------------
