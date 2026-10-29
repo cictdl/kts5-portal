@@ -36,9 +36,9 @@ def test_the_programme_page_links_every_short():
     # the presenters of one language stand under it: two in Kurukh
     kurukh = page.split("कुँड़ुख़")[1].split('<div class="card reel">')[0]
     assert "Bhubaneswar Oraon" in kurukh and "Mahesh S. Minj" in kurukh
-    # twelve in Hindi under one card, in the order of CICT's list (two added in 1.2.89)
+    # thirteen in Hindi under one card, in the order of CICT's list (two added in 1.2.89, one in 1.2.117)
     hindi = page.split("<bdi>हिन्दी</bdi>")[1].split('<div class="card reel">')[0]
-    assert hindi.count("youtube.com/shorts/") == 12 and hindi.index("Imtiyaz Dhafrani") < hindi.index("Mrs. Sabitri Tripathy")
+    assert hindi.count("youtube.com/shorts/") == 13 and hindi.index("Imtiyaz Dhafrani") < hindi.index("Mrs. Sabitri Tripathy")
     assert "facebook.com" not in page.split('id="reels"')[1].split("<footer")[0]
     assert 'href="https://www.youtube.com/@cicttamil/shorts"' in page
     # in Tamil the texts are Tamil, the names stay as they are written
@@ -78,7 +78,7 @@ def test_the_shorts_added_on_21_october():
         {"id": "EAvMVUp50-s", "lang": "Malto", "native": "माल्तो", "presenter": "R. George Edward"}]
     app = make_app(ADMIN_PASSWORD=None)
     page = app.test_client().get("/programme?lang=en").get_data(as_text=True)
-    assert "45 short videos in 27 languages" in page
+    assert "47 short videos in 27 languages" in page
     kurukh = page.split("कुँड़ुख़")[1].split('<div class="card reel">')[0]
     assert kurukh.count("youtube.com/shorts/") == 3
     for native in ("माल्तो",):
@@ -97,15 +97,30 @@ def test_the_shorts_added_on_26_october():
     page = make_app(ADMIN_PASSWORD=None).test_client().get("/programme?lang=en").get_data(as_text=True)
     rajasthani = page.split("<bdi>राजस्थानी</bdi>")[1].split('<div class="card reel">')[0]
     assert rajasthani.count("youtube.com/shorts/") == 2 and "Dr. Sharda Krishna" in rajasthani
-    for native in ("अवधी", "किसान"):
+    # Kisan has a second short since 1.2.117
+    for native in ("अवधी",):
         card = page.split(f"<bdi>{native}</bdi>")[1].split('<div class="card reel">')[0]
         assert card.count("youtube.com/shorts/") == 1, native
 
 
 def test_the_short_added_on_27_october():
     # the Thirukkural short of @cicttamil in Gondi by Sidam Varaprasad (1.2.111): the second of the Gondi card
-    assert REELS[-1] == {"id": "ZpDwuVm8O1U", "lang": "Gondi", "native": "गोंडी", "presenter": "Sidam Varaprasad"}
-    assert len(REELS) == 45 and len({r["lang"] for r in REELS}) == 27
+    assert REELS[44] == {"id": "ZpDwuVm8O1U", "lang": "Gondi", "native": "गोंडी", "presenter": "Sidam Varaprasad"}
+    assert len({r["lang"] for r in REELS}) == 27
     page = make_app(ADMIN_PASSWORD=None).test_client().get("/programme?lang=en").get_data(as_text=True)
     gondi = page.split("<bdi>गोंडी</bdi>")[1].split('<div class="card reel">')[0]
     assert gondi.count("youtube.com/shorts/") == 2 and "Madhavi Limbarao" in gondi and "Sidam Varaprasad" in gondi
+
+
+def test_the_shorts_added_on_29_october():
+    # two Thirukkural shorts of @cicttamil of 27 and 28 October (1.2.117): Vijay Chittori, Awadhi translator, in Hindi, and
+    # a second recording of Dr. Laxman Kishan in Kisan
+    assert REELS[45:] == [
+        {"id": "_3tLAQMZ_eQ", "lang": "Hindi", "native": "हिन्दी", "presenter": "Vijay Chittori"},
+        {"id": "Kd5sxY9ltOY", "lang": "Kisan", "native": "किसान", "presenter": "Dr. Laxman Kishan"}]
+    assert len(REELS) == 47 and len({r["lang"] for r in REELS}) == 27
+    page = make_app(ADMIN_PASSWORD=None).test_client().get("/programme?lang=en").get_data(as_text=True)
+    hindi = page.split("<bdi>हिन्दी</bdi>")[1].split('<div class="card reel">')[0]
+    assert hindi.rindex("Vijay Chittori") > hindi.index("Dr. Gajadan Charan")
+    kisan = page.split("<bdi>किसान</bdi>")[1].split('<div class="card reel">')[0]
+    assert kisan.count("youtube.com/shorts/") == 2 and kisan.index("0fFx8qOK-ZY") < kisan.index("Kd5sxY9ltOY")
