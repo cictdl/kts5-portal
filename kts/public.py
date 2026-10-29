@@ -16,6 +16,7 @@ from flask import (Blueprint, Response, abort, current_app, flash, g, make_respo
                    request, send_from_directory, session, url_for)
 
 from . import campus as CAMP
+from . import companion as C
 from . import heis as HEI
 from . import kural as K
 from .db import LAUNCH_NOTICE, RETIRED_LAUNCH_NOTICES, all_settings, audit, execute, get_setting, query, utcnow
@@ -1149,6 +1150,60 @@ def kural_single(n):
                            prose=(k.get("prose") or {}) if isinstance(k.get("prose"), dict) else {})
 
 
+# The Thirukkural study companion (1.2.119): a question in any of the 23 languages, answered with the couplets that
+# speak of it (kts/companion.py), on the portal alone and free to use; Console > Settings > companion.on. The subjects
+# offered to start from are chapters.
+COMPANION_TOPICS = (79, 31, 40, 11, 62, 30, 16, 9, 104, 2)
+COMPANION_CHECK = 3      # questions of the self-check
+
+
+def _companion_card(n, stream):
+    k = K.kural(n)
+    tac = (k.get("tr") or {}).get("tac") or []
+    prose = k.get("prose") if isinstance(k.get("prose"), dict) else {}
+    return {"k": k, "lines": K.lines(k, stream) if stream not in ("ta", "en") else [], "english": K.lines(k, "en"),
+            "commentary": tac[0] if tac else prose.get("tac", "")}
+
+
+def _companion_check(numbers, lang, seed):
+    """
+    A short self-check on the couplets shown: choose the second line. Made as the practice test makes its questions,
+    never one that the question bank asks of the same couplet in the same way in this language.
+    """
+    if not numbers or lang not in K.ORIENTATION_LANGS:
+        return []
+    taken = {(r["qtype"], r["kural_no"]) for r in query(
+        "SELECT DISTINCT qtype, kural_no FROM questions WHERE lang = ? AND kural_no IS NOT NULL", (lang,))}
+    out = []
+    for r in K.generate_questions(lang, 2 * len(numbers), seed, kurals=numbers):
+        if r["qtype"] != "complete" or (r["qtype"], r["kural_no"]) in taken:
+            continue
+        stem, _, first = r["text"].partition("\n\n")
+        options = [r[f"opt_{L.lower()}"] for L in "ABCD"]
+        out.append({"stem": stem, "first": first, "options": options, "correct": r["correct"],
+                    "answer": options["ABCD".index(r["correct"])], "n": r["kural_no"]})
+        if len(out) == COMPANION_CHECK:
+            break
+    return out
+
+
+@bp.route("/companion")
+def companion():
+    if get_setting("companion.on") != "1":
+        abort(404)
+    q = " ".join((request.args.get("q") or "").split())[:C.MAX_QUERY]
+    more = request.args.get("more") == "1"
+    lang = get_lang()
+    stream, stream_dir = _stream()
+    answer = C.ask(q, stream) if q else {"kurals": [], "chapters": [], "number": None}
+    shown = answer["kurals"][:C.MAX_SHOWN if more else C.SHOWN]
+    return render_template("public/companion.html", q=q, more=more, stream=stream, stream_dir=stream_dir,
+                           cards=[_companion_card(n, stream) for n in shown], left=len(answer["kurals"]) - len(shown),
+                           chapters=[K.chapter(ch) for ch in answer["chapters"]], number=answer["number"],
+                           check=_companion_check(shown[:C.SHOWN], lang, q) if shown else [],
+                           topics=[K.chapter(ch) for ch in COMPANION_TOPICS])
+
+
 @bp.route("/daily-kural")
 def daily_kural():
     stream, stream_dir = _stream(request.args.get("l"))
@@ -1380,7 +1435,8 @@ SITEMAP = [
                          ("campus.login", {}, "camp.login_title")]),
     ("pol.sm_learning", [("public.orientation", {}, "nav.orientation"), ("public.resources", {}, "nav.resources"),
                          ("public.cict_events_page", {}, "ev.title"),
-                         ("public.kural_browser", {}, "nav.kural"), ("public.daily_kural", {}, "nav.daily"),
+                         ("public.kural_browser", {}, "nav.kural"), ("public.companion", {}, "comp.title"),
+                         ("public.daily_kural", {}, "nav.daily"),
                          ("quiz.join", {}, "quiz.title")]),
     ("pol.sm_help", [("public.search", {}, "search.title")] +
      [("public.policy", {"page": p}, "pol." + p) for p in POLICY_PAGES if p != "sitemap"]),

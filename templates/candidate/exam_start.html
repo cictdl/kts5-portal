@@ -14,7 +14,7 @@
     <p class="alert info ends-note"><b>{{ t('exam.ends_note')|replace('{end}', settings['exam.end_time']|string)|replace('{start}', settings['exam.start_time']|string)|replace('{minutes}', settings['exam.duration_min']|string) }}</b></p>
     <p class="small dim">{{ t('common.language') }}: <b>{{ cand.pref_lang|langnative }} · {{ cand.pref_lang|langname }}</b></p>
     {% if not eligible %}
-      <div class="alert warning">{{ t('exam.not_eligible') }}</div>
+      <div class="alert warning">{{ not_eligible }}</div>
     {% elif exam %}
       <a class="btn saffron" href="{{ url_for('candidate.paper') }}">{{ t('cand.resume_exam') }} {{ fwd }}</a>
     {% elif is_open %}

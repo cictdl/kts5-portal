@@ -61,6 +61,24 @@ def logout():
     return redirect(url_for("public.home"))
 
 
+# The applications that may take the central test: the verified ones, and (1.2.119, Console > Settings exam.unverified)
+# also those still awaiting the verification of the Nodal Officer; never one not accepted or withdrawn.
+TEST_STATUSES = ("verified", "selected", "waitlisted", "not_selected")
+
+
+def test_statuses(settings):
+    return TEST_STATUSES + (("submitted",) if settings.get("exam.unverified") == "1" else ())
+
+
+def may_take_test(cand, settings):
+    return cand["status"] in test_statuses(settings)
+
+
+def not_eligible_text(cand):
+    """Why a student may not take the test: not yet verified, or the status (not accepted, withdrawn)."""
+    return t("exam.not_eligible") if cand["status"] == "submitted" else t("status." + cand["status"])
+
+
 def _exam_session(cand):
     return query("SELECT * FROM exam_sessions WHERE application_id = ?", (cand["id"],), one=True)
 
@@ -91,6 +109,7 @@ def home():
     from .papers import card_state
     return render_template("candidate/home.html", cand=cand, settings=settings, start=start, end=end,
                            is_open=is_open, exam=exam, sessions=sessions, materials=materials, merit=merit,
+                           may_test=may_take_test(cand, settings),
                            bank=bank, quiz=may_host_candidate(cand, settings), inaug=inaug_state(cand, settings),
                            paper=card_state(cand, settings),
                            lang_name=K.lang_info(cand["pref_lang"])["name"])
@@ -110,8 +129,8 @@ def ack():
 def admit_card():
     cand = g.candidate
     settings = all_settings()
-    if cand["status"] not in ("verified", "selected", "waitlisted", "not_selected"):
-        flash(t("exam.not_eligible"), "warning")
+    if not may_take_test(cand, settings):
+        flash(not_eligible_text(cand), "warning")
         return redirect(url_for("candidate.home"))
     start, end, _ = exam_window(settings)
     return render_template("candidate/admit_card.html", cand=cand, settings=settings, start=start, end=end,
@@ -168,10 +187,10 @@ def exam():
     exam = _exam_session(cand)
     if exam and exam["status"] != "in_progress":
         return redirect(url_for("candidate.result"))
-    eligible = cand["status"] in ("verified", "selected", "waitlisted", "not_selected")
+    eligible = may_take_test(cand, settings)
     if request.method == "POST":
         if not eligible:
-            flash(t("exam.not_eligible"), "error")
+            flash(not_eligible_text(cand), "error")
             return redirect(url_for("candidate.home"))
         if not is_open and exam is None:
             flash(t("exam.not_open"), "error")
@@ -203,7 +222,7 @@ def exam():
             audit("exam_started", "application", cand["id"], ip=client_ip())
         return redirect(url_for("candidate.paper"))
     return render_template("candidate/exam_start.html", cand=cand, settings=settings, start=start, end=end,
-                           is_open=is_open, exam=exam, eligible=eligible)
+                           is_open=is_open, exam=exam, eligible=eligible, not_eligible=not_eligible_text(cand))
 
 
 def _load_paper(exam):

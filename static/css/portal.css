@@ -690,3 +690,23 @@ footer.site .bottom .wrap { display: flex; justify-content: space-between; gap: 
 .launch-done .tick { color: #138808; font-weight: 800; }
 .hero .purpose { font-size: 1rem; color: var(--ink); max-width: 62ch; margin: 10px 0 6px; }
 @media (prefers-reduced-motion: reduce) { .banner .dot { animation: none; opacity: 1; } }
+
+/* the Thirukkural study companion (1.2.119) */
+.companion .comp-form { max-width: 820px; }
+.companion .comp-lead { margin: 6px 0 14px; }
+.companion .comp-h { margin-top: 22px; }
+.companion .comp-list { list-style: none; padding: 0; margin: 10px 0; display: grid; gap: 12px; }
+.companion .comp-card { margin: 0; }
+.companion .comp-head { display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; margin-bottom: 6px; }
+.companion .comp-n { font-weight: 800; }
+.companion .comp-card .couplet { font-size: 1.08rem; font-weight: 600; margin: 4px 0; }
+.companion .comp-tr { margin-top: 8px; }
+.companion .comp-urai { margin-top: 8px; }
+.companion .comp-urai summary { cursor: pointer; color: var(--indigo); font-weight: 600; }
+.companion .comp-card .btn-row { margin-top: 10px; }
+.companion .comp-check { margin-top: 18px; }
+.companion .comp-check > ol > li { margin-bottom: 14px; }
+.companion .comp-first { font-weight: 600; }
+.companion .comp-options { margin: 4px 0 6px; }
+.companion .comp-chips { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.companion .comp-chips .pill { font-size: .85rem; padding: 5px 12px; white-space: normal; }

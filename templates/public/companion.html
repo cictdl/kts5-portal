@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ t('comp.title') }}{% if q %} · {{ q }}{% endif %}{% endblock %}
+{% block content %}
+{# The Thirukkural study companion (1.2.119): a question in any language, answered with the couplets that speak of it
+   (kts/companion.py); everything shown is the portal's own text. Works without JavaScript; the form is a plain GET. #}
+{% from "public/_listen.html" import listen, slower, voice_note with context %}
+{% macro chapter_name(c) -%}
+<bdi dir="ltr">{{ c.adhigaram }}. <span class="ta" lang="ta">{{ c.name }}</span>{% if lang != 'ta' %} · {{ c.nameEn }}{% endif %}</bdi>
+{%- endmacro %}
+<div class="wrap section companion">
+  <span class="eyebrow">{{ t('nav.kural') }}</span>
+  <h1>{{ t('comp.title') }}</h1>
+  <p class="dim" style="max-width:78ch">{{ t('comp.intro') }}</p>
+  <form method="get" action="{{ url_for('public.companion') }}" class="filters search-form comp-form" role="search">
+    <div class="field grow"><label for="cq">{{ t('comp.label') }}</label><input type="search" id="cq" name="q" value="{{ q }}" dir="auto" maxlength="160" placeholder="{{ t('comp.placeholder') }}" autocomplete="off"></div>
+    <div class="field"><button class="btn" type="submit">{{ t('comp.ask') }}</button></div>
+  </form>
+
+  {% if q and not cards %}
+  <div class="card comp-none"><p style="margin:0">{{ t('comp.none') }}</p></div>
+  {% endif %}
+
+  {% if cards %}
+  <div class="card accent comp-lead">
+    {% set lead = chapters[0] %}
+    <p style="margin:0">{% if number %}<b>{{ t('common.verse') }} {{ number }}</b> · {% endif %}{{ t('comp.lead') }} <a href="{{ url_for('public.kural_browser', ch=lead.adhigaram) }}">{{ chapter_name(lead) }}</a></p>
+    {% if chapters|length > 1 %}<p class="small" style="margin:6px 0 0">{{ t('comp.also') }}: {% for c in chapters[1:] %}<a href="{{ url_for('public.kural_browser', ch=c.adhigaram) }}">{{ chapter_name(c) }}</a>{% if not loop.last %} · {% endif %}{% endfor %}</p>{% endif %}
+  </div>
+
+  <h2 class="comp-h">{{ t('comp.found') }}</h2>
+  <div class="listen-bar no-print">{{ voice_note() }}{{ slower() }}</div>
+  <ol class="comp-list">
+    {% for c in cards %}{% set k = c.k %}
+    <li class="card comp-card" id="k{{ k.n }}">
+      <div class="comp-head"><a class="comp-n" href="{{ url_for('public.kural_single', n=k.n) }}">{{ t('common.verse') }} {{ k.n }}</a> <span class="small muted"><a href="{{ url_for('public.kural_browser', ch=k.adhigaram) }}#k{{ k.n }}" dir="ltr">{{ k.adhigaram }}. <span lang="ta">{{ k.chapter_name }}</span>{% if lang != 'ta' %} · {{ k.chapter_name_en }}{% endif %}</a></span></div>
+      <div class="couplet ta" dir="ltr" lang="ta"><span>{{ k.l1 }}</span><span>{{ k.l2 }}</span></div>
+      <div class="small dim" dir="ltr">{{ k.tl|join(' · ') }}</div>
+      {% if c.lines %}<div class="comp-tr" dir="{{ stream_dir }}" lang="{{ stream|langtag }}">{% for line in c.lines %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}</div>{% endif %}
+      {% if c.english and lang != 'ta' %}<div class="comp-tr dim" dir="ltr" lang="en">{% for line in c.english %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}</div>{% endif %}
+      {% if c.commentary %}<details class="comp-urai"{% if lang == 'ta' %} open{% endif %}><summary>{{ t('comp.commentary') }}</summary><p class="ta" dir="ltr" lang="ta">{{ c.commentary }}</p></details>{% endif %}
+      <div class="btn-row no-print">{{ listen(k.n) }}<a class="btn sm ghost" href="{{ url_for('public.kural_single', n=k.n) }}">{{ t('comp.open') }}</a></div>
+    </li>
+    {% endfor %}
+  </ol>
+  {% if left > 0 and not more %}<p><a class="btn secondary" href="{{ url_for('public.companion', q=q, more=1) }}">{{ t('comp.more') }}</a></p>{% endif %}
+
+  {% if check %}
+  <section class="card comp-check" aria-labelledby="comp-check-h">
+    <h2 id="comp-check-h">{{ t('comp.test') }}</h2>
+    <p class="small muted">{{ t('comp.test_intro') }}</p>
+    <ol>
+      {% for qn in check %}
+      <li>
+        <p dir="auto">{{ qn.stem }}</p>
+        <p class="comp-first" dir="auto">{{ qn.first }}</p>
+        <ol type="A" class="comp-options">{% for o in qn.options %}<li dir="auto">{{ o }}</li>{% endfor %}</ol>
+        <details><summary>{{ t('comp.answer') }}</summary><p dir="auto"><b>{{ qn.correct }}</b> · {{ qn.answer }} · <a href="{{ url_for('public.kural_single', n=qn.n) }}">{{ t('common.verse') }} {{ qn.n }}</a></p></details>
+      </li>
+      {% endfor %}
+    </ol>
+    <p class="small"><a href="{{ url_for('practice.home') }}">{{ t('prac.title') }} {{ fwd }}</a></p>
+  </section>
+  {% endif %}
+  {% endif %}
+
+  <section class="comp-topics" aria-labelledby="comp-topics-h">
+    <h2 id="comp-topics-h" class="comp-h">{{ t('comp.try') }}</h2>
+    <ul class="comp-chips">
+      {% for c in topics %}<li><a class="pill" href="{{ url_for('public.companion', q=(c.name if lang == 'ta' else c.nameEn)) }}">{{ chapter_name(c) }}</a></li>{% endfor %}
+    </ul>
+  </section>
+  <p class="small muted" style="max-width:78ch;margin-top:18px">{{ t('comp.note') }}</p>
+  <p class="small muted">{{ t('kural.credit') }}</p>
+</div>
+{% endblock %}

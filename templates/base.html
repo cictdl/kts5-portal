@@ -21,7 +21,7 @@
 {% endblock %}
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=30">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=31">
 {% block head %}{% endblock %}
 </head>
 <body>
@@ -90,7 +90,12 @@
           <li><a href="{{ url_for('public.syllabus') }}">{{ t('syl.title') }}</a></li>
           <li><a href="{{ url_for('public.cict_events_page') }}">{{ t('ev.title') }}</a></li>
         </ul></li>
-      <li><a href="{{ url_for('public.kural_browser') }}" class="{{ 'active' if ep.startswith('public.kural') or ep == 'public.daily_kural' }}">{{ t('nav.kural') }}</a></li>
+      <li class="has-sub"><a href="{{ url_for('public.kural_browser') }}" class="{{ 'active' if ep.startswith('public.kural') or ep in ('public.daily_kural', 'public.companion') }}" aria-haspopup="true">{{ t('nav.kural') }}</a>
+        <ul class="sub">
+          <li><a href="{{ url_for('public.kural_browser') }}">{{ t('res.kural_browser') }}</a></li>
+          {% if get_setting('companion.on') == '1' %}<li><a href="{{ url_for('public.companion') }}">{{ t('comp.title') }}</a></li>{% endif %}
+          <li><a href="{{ url_for('public.daily_kural') }}">{{ t('nav.daily') }}</a></li>
+        </ul></li>
       <li class="has-sub"><a href="{{ url_for('public.notices') }}" class="{{ 'active' if ep.startswith('public.notice') or ep == 'public.news' }}" aria-haspopup="true">{{ t('nav.notices') }}</a>
         <ul class="sub">
           <li><a href="{{ url_for('public.notices') }}">{{ t('notices.title') }}</a></li>

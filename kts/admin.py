@@ -523,7 +523,9 @@ def exam_monitor():
         return redirect(url_for("admin.exam_monitor"))
     start, end, is_open = exam_window(settings)
     counts = {r["status"]: r["n"] for r in query("SELECT status, COUNT(*) AS n FROM exam_sessions GROUP BY status")}
-    eligible = query("SELECT COUNT(*) AS n FROM applications WHERE status IN ('verified','selected','waitlisted','not_selected')", one=True)["n"]
+    from .candidate import test_statuses
+    statuses = test_statuses(settings)
+    eligible = query("SELECT COUNT(*) AS n FROM applications WHERE status IN (%s)" % ",".join("?" * len(statuses)), statuses, one=True)["n"]
     by_lang = query("SELECT lang, COUNT(*) AS n, AVG(score) AS avg, MAX(score) AS best FROM exam_sessions WHERE status != 'in_progress' GROUP BY lang ORDER BY n DESC")
     live = query("SELECT s.*, a.app_no, a.full_name FROM exam_sessions s JOIN applications a ON a.id = s.application_id "
                  "WHERE s.status = 'in_progress' ORDER BY s.started_at DESC LIMIT 100")
@@ -1675,6 +1677,7 @@ SETTING_GROUPS = [
         ("practice.on", "Practice test for students on the public site (/practice): questions made afresh from the Thirukkural, never those of the question bank; nothing is recorded", "bool"),
         ("practice.questions", "Practice test: number of questions (3–30)", "number"),
         ("practice.minutes", "Practice test: minutes (1–60)", "number"),
+        ("companion.on", "Thirukkural study companion on the public site (/companion): a question in any language answered with the couplets that speak of it, from the portal's own translations and commentaries; free, nothing is sent outside", "bool"),
         ("remind.on", "Reminders by mail to the participating institutions that are behind: each once, in the morning at the time of the Nodal Officers' mail, up to the last day of registration (Console › Progress)", "bool"),
         ("remind.test_by", "Reminder to assess the students and select one, to the institutions that have done nothing yet, from (YYYY-MM-DD)", "date"),
         ("remind.select_by", "Reminder to select the student, to those that have not, with the Head of the Institution in copy, from (YYYY-MM-DD)", "date"),
@@ -1688,7 +1691,8 @@ SETTING_GROUPS = [
                      ("exam.end_time", "The test closes for everyone (HH:MM IST): nobody starts after it, and every attempt ends at it", "text"), ("exam.duration_min", "Duration in minutes", "number"),
                      ("exam.questions", "Questions per paper", "number"), ("exam.marks_per_q", "Marks per question", "number"),
                      ("exam.negative", "Negative marks per wrong answer", "number"), ("exam.show_score", "Show score to candidates", "bool"),
-                     ("exam.open", "Window mode: auto | 1 (force open) | 0 (force closed)", "text"), ("exam.instructions_url", "Link to the official instructions PDF", "text")]),
+                     ("exam.open", "Window mode: auto | 1 (force open) | 0 (force closed)", "text"), ("exam.instructions_url", "Link to the official instructions PDF", "text"),
+                     ("exam.unverified", "Registered students may take the central test before the Nodal Officer verifies their application (off: verified students only; the selection counts verified students only either way)", "bool")]),
     ("Internship: the one-month research and academic engagement (dates named in the confirmation letter of the selected students)",
      [("letter.date", "Date of the confirmation letter (YYYY-MM-DD)", "date"),
       ("internship.start", "One-month research and academic engagement begins (YYYY-MM-DD)", "date"),

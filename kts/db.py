@@ -633,6 +633,9 @@ DEFAULT_SETTINGS = {
     "exam.show_score": "1",
     # no central test by CICT since the D.O. letter of 9 October 2026 (1.2.43): the institutions assess (kts/campus.py)
     "exam.open": "0",
+    # the central test also for registered students not yet verified (1.2.119; the user's "let unverified registered
+    # students take it too", 29 October 2026)
+    "exam.unverified": "1",
     "exam.instructions_url": "",
     "merit.published": "0",
     "merit.select_count": "1000",
@@ -725,6 +728,8 @@ DEFAULT_SETTINGS = {
     "practice.on": "1",
     "practice.questions": "10",
     "practice.minutes": "6",
+    # the Thirukkural study companion (1.2.119, kts/companion.py)
+    "companion.on": "1",
     "hei.orientation": "",
     # the sender of mails (kts/mailq.py, 1.2.35): below the 2,000 mails a day of a Google Workspace account
     "mail.daily_limit": "1800",

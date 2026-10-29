@@ -174,10 +174,12 @@ def test_the_test_closes_at_the_end_of_the_window_for_everyone(monkeypatch):
 
 
 def test_a_student_not_yet_verified_cannot_start():
-    from kts.db import execute
+    # with Console > Settings exam.unverified off; on (since 1.2.119), such a student may: tests/test_exam_unverified.py
+    from kts.db import execute, set_setting
     app, students = _ready()
     with app.app_context():
         execute("UPDATE applications SET status = 'submitted'")
+        set_setting("exam.unverified", "0")
     client, token = _signed_in(app, students[0])
     r = client.post("/candidate/exam", data={"_csrf": token})
     assert r.headers["Location"].endswith("/candidate/") and _attempt(app, students[0]) is None

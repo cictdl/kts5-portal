@@ -23,7 +23,7 @@
           {% if inaug and inaug.certificate %}<a class="btn sm saffron" href="{{ inaug.certificate }}">🎥 {{ t('cert.inaug_get') }}</a>{% endif %}
           {% set merit_cert = merit_link(cand) %}{% if merit_cert %}<a class="btn sm saffron" href="{{ merit_cert }}">🏆 {{ t('cert.merit_get') }}</a>{% endif %}
           {% set cert = certificate_link(cand) %}{% if cert %}<a class="btn sm {{ 'secondary' if merit_cert else 'saffron' }}" href="{{ cert }}">🏅 {{ t('cert.get') }}</a>{% endif %}
-          {% if cand.status in ('verified', 'selected', 'waitlisted', 'not_selected') and settings['exam.open'] != '0' %}<a class="btn sm secondary" href="{{ url_for('candidate.admit_card') }}">{{ t('cand.admit') }}</a>{% endif %}</div>
+          {% if may_test and settings['exam.open'] != '0' %}<a class="btn sm secondary" href="{{ url_for('candidate.admit_card') }}">{{ t('cand.admit') }}</a>{% endif %}</div>
       </div>
 
       {% if bank %}
@@ -83,7 +83,7 @@
           <a class="btn sm secondary" href="{{ url_for('candidate.result') }}">{{ t('exam.done_title') }}</a>
         {% elif exam %}
           <div class="alert warning">{{ t('cand.in_progress') }}</div><a class="btn saffron" href="{{ url_for('candidate.paper') }}">{{ t('cand.resume_exam') }} {{ fwd }}</a>
-        {% elif is_open and cand.status in ('verified', 'selected', 'waitlisted', 'not_selected') %}
+        {% elif is_open and may_test %}
           <a class="btn saffron" href="{{ url_for('candidate.exam') }}">{{ t('cand.take_exam') }} {{ fwd }}</a>
         {% else %}
           <div class="alert info">{{ t('status.exam_pending') }}</div>

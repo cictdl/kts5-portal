@@ -6,6 +6,7 @@
   <span class="eyebrow">{{ t('res.cat_translation') }}</span>
   <h1>{{ t('res.kural_browser') }}</h1>
   <p class="dim" style="max-width:70ch">{{ t('res.kural_intro') }}</p>
+  {% if get_setting('companion.on') == '1' %}<p class="no-print"><a class="btn sm secondary" href="{{ url_for('public.companion') }}">{{ t('comp.cta') }} {{ fwd }}</a></p>{% endif %}
   <form method="get" class="chapter-nav">
     <label for="ch" class="small"><b>{{ t('common.chapter') }}</b></label>
     <select id="ch" name="ch" data-autosubmit style="max-width:340px" dir="ltr">
