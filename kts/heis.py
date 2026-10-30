@@ -154,7 +154,8 @@ def mail_invited(row):
         send_mail(address, f"KTS 5.0: {row['name']} is identified as a participating institution",
                   f"Dear Sir/Madam,\n\nThe Nodal Institution of {row['state']} has identified {row['name']} as a participating "
                   f"institution of Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom, the nationwide Students' Engagement "
-                  f"Programme of the Ministry of Education (15 October – 15 November 2026).\n\n"
+                  f"Programme of the Ministry of Education (the Sangamam at Varanasi: {_by(get_setting('kts.start'))} – "
+                  f"{_by(get_setting('kts.end'))}).\n\n"
                   f"Please complete the registration of the institution on the KTS 5.0 portal with this link:\n\n{link}\n\n"
                   f"It asks for the Head of the Institution and confirms the Institutional Coordinator. The institution then "
                   f"assesses its students on the Thirukkural (the portal offers a ready online test), selects one student on "

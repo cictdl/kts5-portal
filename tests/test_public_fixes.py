@@ -1045,8 +1045,9 @@ def test_alt_texts_use_keys_that_exist():
     # revised D.O. letter (1.2.110: the selection tile, three steps of the timeline), the assessment at the selected
     # Participating Institutions on the home page (1.2.111)
     # 1.2.119: the 18 texts of the Thirukkural study companion (comp.*); 1.2.120: the note of a test of several days;
-    # 1.2.122: the 15 of the dashboard KTS 5.0 by State/UT (dash.*) and the 6 of its blocks of the States/UTs (1.2.124)
-    assert len(CATALOG["en"]) == 1166
+    # 1.2.122: the 15 of the dashboard KTS 5.0 by State/UT (dash.*) and the 6 of its blocks of the States/UTs (1.2.124);
+    # 1.2.126: the central online test on the Schedule
+    assert len(CATALOG["en"]) == 1167
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1078,7 +1079,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.125" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.126" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

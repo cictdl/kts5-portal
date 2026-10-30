@@ -1164,5 +1164,6 @@
   "dash.delegate": "Student delegate: {name}",
   "dash.awaiting": "Student registered, awaiting verification",
   "dash.no_student": "No student registered yet",
-  "dash.no_inst": "No Participating Institution selected yet"
+  "dash.no_inst": "No Participating Institution selected yet",
+  "timeline.exam": "CICT's central online test, from the candidate portal"
 }

@@ -14,6 +14,7 @@ The texts come from the portal's own interface strings (data/i18n) and corpus (d
 """
 import base64
 import html
+from datetime import date
 import json
 import time
 import re
@@ -193,6 +194,7 @@ h1.big { font-size: 44pt; }
 .p1 .card .couplet { font-size: 26pt; }
 .p1 .card .tr { font-size: 15pt; }
 .p1 .step b { font-size: 15.5pt; } .p1 .step small { font-size: 12pt; }
+.p1 .step small bdi { white-space: nowrap; }  /* a date range stays on one line (1.2.126) */
 .p1 .band .val { font-size: 22pt; }
 .p1 .stipend { font-size: 14pt; } .p1 .stipend b { font-size: 24pt; }
 .hows { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm 5mm; margin-top: 2mm; }
@@ -326,8 +328,26 @@ def chapter_cite(k, lang):
             f'<span class="en">{esc(k["chapter_name_en"])}</span>')
 
 
-DATES = {"{hei_end}": "21 Oct 2026", "{camp_from}": "15 Oct 2026", "{camp_to}": "21 Oct 2026", "{reg_end}": "22 Oct 2026",
-         "{verify_end}": "24 Oct 2026", "{questions}": "50", "{minutes}": "30", "{email}": "kts@cict.in", "{phone}": "044-22540125"}
+# the dates of the programme as the portal sets them (kts/db.py DEFAULT_SETTINGS; 1.2.126: no longer written in here)
+from kts.db import DEFAULT_SETTINGS  # noqa: E402
+
+
+def short(key, month="%b"):
+    """10 Nov 2026 (with month="%B": 10 November 2026), the day of a setting."""
+    day = date.fromisoformat(DEFAULT_SETTINGS[key])
+    return f"{day.day} {day.strftime(month)} {day.year}"
+
+
+def span(first, last, month="%b"):
+    """22 Oct – 20 Nov 2026: two days of the same year."""
+    a, b = date.fromisoformat(DEFAULT_SETTINGS[first]), date.fromisoformat(DEFAULT_SETTINGS[last])
+    left = f"{a.day} {a.strftime(month)}" if a.year == b.year else f"{a.day} {a.strftime(month)} {a.year}"
+    return f"{left} – {b.day} {b.strftime(month)} {b.year}"
+
+
+DATES = {"{hei_end}": short("hei.end"), "{camp_from}": short("camp.from"), "{camp_to}": short("camp.to"),
+         "{reg_end}": short("reg.end"), "{verify_end}": short("verify.end"), "{questions}": "50", "{minutes}": "30",
+         "{email}": "kts@cict.in", "{phone}": "044-22540125"}
 
 
 def filled(text):
@@ -341,12 +361,13 @@ def filled(text):
 def ltr_numbers(text):
     """Escaped text in which the dates and amounts keep their order in a right-to-left line: '₹10,000', '15–21 Oct 2026'."""
     out = esc(text)
-    return re.sub(r"(₹\s?[\d,]+|\d{1,2}(?:[–-]\d{1,2})? \w{3} \d{4}|\d{1,2} \w{3,9} \d{4})", r'<bdi dir="ltr">\1</bdi>', out)
+    return re.sub(r"(₹\s?[\d,]+|\d{1,2} \w{3,9} – \d{1,2} \w{3,9} \d{4}|\d{1,2}(?:[–-]\d{1,2})? \w{3} \d{4}|\d{1,2} \w{3,9} \d{4})",
+                  r'<bdi dir="ltr">\1</bdi>', out)
 
 
 def poster1(lang, cat):
     k = K.kural(391)
-    steps = [(cat["home.step_exam"], f'{cat["guide.date_assess"]} · 15–21 Oct 2026'),
+    steps = [(cat["home.step_exam"], f'{cat["guide.date_assess"]} · {span("camp.from", "camp.to")}'),
              (cat["home.step_merit"], cat["home.step_merit_sub"]),
              (cat["home.step_orient"], cat["home.step_orient_sub"]),
              (cat["home.step_present"], cat["home.step_present_sub"])]
@@ -362,8 +383,8 @@ def poster1(lang, cat):
             f'<div class="lead">{esc(cat["home.hero_sub"])}</div>'
             f'<div class="card">{couplet_html(k, lang)}<div class="cite">{chapter_cite(k, lang)}</div></div>'
             f'<div class="steps">{step_html}</div>'
-            f'<div class="band"><div><div class="lbl">{esc(cat["guide.date_assess"])}</div><div class="val">15 – 21 October 2026</div></div>'
-            f'<div><div class="lbl">{esc(cat["site.name"])}</div><div class="val">28 Nov – 12 Dec 2026 · <span class="en">Varanasi</span> · <span class="ta" lang="ta">வாரணாசி</span></div></div></div>'
+            f'<div class="band"><div><div class="lbl">{esc(cat["guide.date_assess"])}</div><div class="val"><bdi dir="ltr">{span("camp.from", "camp.to", "%B")}</bdi></div></div>'
+            f'<div><div class="lbl">{esc(cat["site.name"])}</div><div class="val"><bdi dir="ltr">{span("kts.start", "kts.end")}</bdi> · <span class="en">Varanasi</span> · <span class="ta" lang="ta">வாரணாசி</span></div></div></div>'
             f'<div class="stipend"><b>₹10,000</b><span>{ltr_numbers(cat["home.stipend"])}</span></div>'
             f'<div><div class="kicker">{esc(cat["guide.title"])}</div><div class="hows">{how}</div></div>'
             + foot(cat, BASE + "/how-to-take-part"))
@@ -523,10 +544,12 @@ def to_pdf(html_path, pdf_path):
     return doc, problems, len(words)
 
 
-def build(lang, out_dir):
+def build(lang, out_dir, only=None):
     cat = catalogue(lang)
     made = []
     for n, (title_key, fn) in POSTERS.items():
+        if only and n not in only:
+            continue
         name = f"KTS5-poster-{n}-{lang}"
         h = out_dir / "html" / f"{name}.html"
         h.parent.mkdir(parents=True, exist_ok=True)
@@ -546,13 +569,19 @@ def build(lang, out_dir):
 
 
 if __name__ == "__main__":
-    langs = sys.argv[1:] or ["en"]
+    args = sys.argv[1:]
+    only = None
+    if "--posters" in args:  # e.g. --posters 1 or --posters 1,3: those posters alone (1.2.126)
+        i = args.index("--posters")
+        only = {int(n) for n in args[i + 1].split(",")}
+        args = args[:i] + args[i + 2:]
+    langs = args or ["en"]
     if langs == ["all"]:
         langs = list(K.ORIENTATION_LANGS)
     OUT.mkdir(parents=True, exist_ok=True)
     report = {}
     for lang in langs:
-        report[lang] = build(lang, OUT)
+        report[lang] = build(lang, OUT, only)
     (OUT / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=1), encoding="utf-8")
     bad = {l: [m for m in ms if m["problems"]] for l, ms in report.items()}
     bad = {l: v for l, v in bad.items() if v}

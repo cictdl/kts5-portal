@@ -115,6 +115,10 @@ def _timeline(settings):
                                     ("timeline.reg_close", "registration", reg_on and _iso_day(settings.get("reg.end"))),
                                     ("timeline.inauguration", "general", _iso_day(settings.get("kts.start"))),
                                     ("timeline.valedictory", "general", _iso_day(settings.get("kts.end")))) if day]
+    # CICT's central online test (1.2.126), its days as the settings have them, while it is not switched off
+    first, last = _iso_day(settings.get("exam.date")), _iso_day(settings.get("exam.date_to"))
+    if first and settings.get("exam.open") != "0":
+        fixed.append(("timeline.exam", "examination", first + "T00:00", last + "T00:00" if last and last > first else None))
     for key, kind, starts_at, ends_at in fixed:
         rows.append({"id": None, "title": i18n.text(key, "en"), "description": "", "kind": kind, "lang": "",
                      "starts_at": starts_at, "ends_at": ends_at, "venue": "", "link": "", "agency": None})
