@@ -84,7 +84,9 @@ def test_in_every_language_and_where_it_is_found():
         assert f"<h1>{escape(catalogue['dash.title'])}</h1>" in page, code
         assert f'<th scope="row">{escape(place("Tamil Nadu", code))}</th>' in page, code
         home = client.get(f"/?lang={code}").get_data(as_text=True)
-        assert f'<a class="small" href="/dashboard">{escape(catalogue["dash.link"])}' in home, code
+        # a bold saffron button with an icon beside At a glance (1.2.123)
+        assert '<a class="btn saffron dash-cta" href="/dashboard"' in home, code
+        assert f'<span aria-hidden="true" style="font-size:1.35rem;line-height:1">📊</span> {escape(catalogue["dash.link"])}' in home, code
     assert "/dashboard</loc>" in client.get("/sitemap.xml").get_data(as_text=True)
 
 
