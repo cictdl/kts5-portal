@@ -1,0 +1,21 @@
+{# The video guide to the portal (1.2.128): four videos on CICT's YouTube channel (data/guide_videos.json), each shown by its
+   poster, a frame of the video kept on the portal; pressed, the poster plays its video in the page, in YouTube's player
+   from youtube-nocookie.com (static/js/portal.js; nothing of YouTube loads before that), and without scripts it opens the
+   video on YouTube. video_guide() gives all four with their heading; video_part(n) one part, where its readers are. #}
+{% macro gv_card(v) %}<div class="gv-card"><a class="gv-poster" href="{{ v.url }}" target="_blank" rel="noopener" data-yt="{{ v.youtube }}" aria-label="▶ {{ t('gv.p' ~ v.n) }}"><img src="{{ url_for('static', filename=v.poster) }}" alt="" width="640" height="360" loading="lazy"><span class="gv-play" aria-hidden="true">▶</span><span class="gv-len" dir="ltr">{{ v.duration }}</span></a><span class="gv-text"><span class="gv-name">{{ t('gv.p' ~ v.n) }}</span><a class="gv-watch" href="{{ v.url }}" target="_blank" rel="noopener">{{ t('home.reel_watch_yt') }} <span aria-hidden="true">↗</span></a></span></div>{% endmacro %}
+
+{% macro video_guide(id='video-guide', h='h2') %}
+<section class="gv-block no-print" id="{{ id }}" aria-labelledby="{{ id }}-h">
+  <{{ h }} class="gv-h" id="{{ id }}-h"><span aria-hidden="true">▶</span> {{ t('gv.title') }}</{{ h }}>
+  <p class="dim gv-lead">{{ t('gv.lead') }}</p>
+  <div class="gv-grid">{% for v in guide_videos() %}{{ gv_card(v) }}{% endfor %}</div>
+</section>
+{% endmacro %}
+
+{% macro video_part(n) %}
+<div class="gv-block gv-one no-print">
+  <p class="gv-kicker"><span aria-hidden="true">▶</span> {{ t('gv.short') }}</p>
+  <div class="gv-grid">{% for v in guide_videos() if v.n == n %}{{ gv_card(v) }}{% endfor %}</div>
+  <p class="small gv-all"><a href="{{ url_for('public.home') }}#video-guide">{{ t('gv.all') }} →</a></p>
+</div>
+{% endmacro %}

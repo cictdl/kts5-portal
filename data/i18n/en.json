@@ -1165,5 +1165,13 @@
   "dash.awaiting": "Student registered, awaiting verification",
   "dash.no_student": "No student registered yet",
   "dash.no_inst": "No Participating Institution selected yet",
-  "timeline.exam": "CICT's central online test, from the candidate portal"
+  "timeline.exam": "CICT's central online test, from the candidate portal",
+  "gv.title": "Video guide to the KTS 5.0 portal",
+  "gv.short": "Video guide",
+  "gv.lead": "Four videos show, step by step, how to register on the portal and use it. In English, with English subtitles.",
+  "gv.p1": "Part 1: For Nodal Officers",
+  "gv.p2": "Part 2: For Participating Institutions",
+  "gv.p3": "Part 3: For Students",
+  "gv.p4": "Part 4: The resources of the portal",
+  "gv.all": "All four videos"
 }

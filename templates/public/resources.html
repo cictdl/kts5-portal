@@ -5,6 +5,7 @@
   <span class="eyebrow">{{ t('site.organiser') }}</span>
   <h1>{{ t('res.title') }}</h1>
   <p class="lead dim" style="max-width:74ch">{{ t('res.intro') }}</p>
+  {% from "public/_guide_videos.html" import video_guide, video_part with context %}{{ video_guide(id='video-guide-res') }}
 
   <div class="grid grid-4" style="margin:18px 0 26px">
     <a class="card accent res-card" href="{{ url_for('public.kural_browser') }}"><span class="cat">{{ t('res.cat_translation') }}</span><h3>{{ t('res.kural_browser') }}</h3><div class="desc">{{ t('res.kural_intro') }}</div></a>

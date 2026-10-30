@@ -4,6 +4,8 @@
 {# How to take part (1.2.53): the steps of the students, the participating institutions and the Nodal Officers, with the dates of the settings #}
 {% macro g(key) %}{{ t(key)|replace('{hei_end}', settings['hei.end']|date)|replace('{hei_select_end}', settings['hei.select_end']|date)|replace('{camp_from}', settings['camp.from']|date)|replace('{camp_to}', settings['camp.to']|date)|replace('{reg_end}', settings['reg.end']|date)|replace('{verify_end}', settings['verify.end']|date)|replace('{questions}', settings['exam.questions'])|replace('{minutes}', settings['exam.duration_min'])|replace('{email}', settings['contact.email'])|replace('{phone}', settings['contact.phone']) }}{% endmacro %}
 {% set parts = [('students', 's', 6), ('institutions', 'i', 6), ('nodal', 'n', 5)] %}
+{% from "public/_guide_videos.html" import video_guide, video_part with context %}
+{% set part_video = {'students': 3, 'institutions': 2, 'nodal': 1} %}
 <div class="wrap section guide-page">
   <span class="eyebrow">{{ t('site.name') }}</span>
   <h1>{% if only %}{{ t('guide.print_head') }}{% else %}{{ t('guide.title') }}{% endif %}</h1>
@@ -21,6 +23,7 @@
   {% for part, letter, count in parts if not only or only == part %}
   <section id="{{ part }}" class="card guide-part" style="margin-top:18px">
     {% if not only %}<h2 style="margin-top:0">{{ t('guide.for_' ~ part) }}</h2>{% endif %}
+    {{ video_part(part_video[part]) }}
     <ol class="guide-steps" style="padding-inline-start:24px;margin:0 0 14px">
       {% for n in range(1, count + 1) %}
       <li style="margin-bottom:12px"><b>{{ g('guide.%s%d_t' % (letter, n)) }}</b><p class="dim" style="margin:4px 0 0">{{ g('guide.%s%d' % (letter, n)) }}</p></li>

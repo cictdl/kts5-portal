@@ -4,6 +4,7 @@
 <div class="wrap-narrow section" lang="en" dir="ltr">
   <span class="eyebrow">{{ t('nav.institutions') }}</span>
   <h1>{{ t('camp.login_title') }}</h1>
+  {% from "public/_guide_videos.html" import video_guide, video_part with context %}<div lang="{{ lang|langtag }}" dir="{{ lang_dir }}">{{ video_part(2) }}</div>
   <p class="dim" style="max-width:62ch">The Institutional Coordinator or the Head of a participating institution signs in with the e-mail address given
     when the institution registered. The portal mails a six-digit code; no password is needed.</p>
   {% if error %}<div class="alert error">{{ error }}</div>{% endif %}

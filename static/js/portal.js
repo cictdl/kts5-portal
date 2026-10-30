@@ -262,3 +262,27 @@
     });
   });
 })();
+
+// The video guide to the portal (1.2.128): a poster pressed plays its video in the page, in YouTube's player from
+// www.youtube-nocookie.com (the only frame the policy of the portal allows); nothing of YouTube loads before. Without scripts,
+// the poster's link opens the video on YouTube.
+(function () {
+  document.querySelectorAll("a[data-yt]").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      var id = a.getAttribute("data-yt") || "";
+      if (!/^[A-Za-z0-9_-]{11}$/.test(id)) return;
+      e.preventDefault();
+      var f = document.createElement("iframe");
+      f.src = "https://www.youtube-nocookie.com/embed/" + id + "?autoplay=1&rel=0";
+      f.title = (a.getAttribute("aria-label") || "").replace(/^\u25B6\s*/, "");
+      f.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+      f.allowFullscreen = true;
+      f.referrerPolicy = "strict-origin-when-cross-origin";
+      f.className = "gv-frame";
+      var card = a.closest(".gv-card");
+      if (card) card.classList.add("gv-playing");
+      a.replaceWith(f);
+      f.focus();
+    });
+  });
+})();

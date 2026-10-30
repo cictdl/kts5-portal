@@ -522,6 +522,38 @@ table.table td.num, table.table th.num { text-align: end; font-variant-numeric: 
 .ev-more summary::-webkit-details-marker { display: none; }
 .ev-more[open] summary { display: none; }
 .ev-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+/* ---- the video guide to the portal (1.2.128): four posters that open the videos on YouTube ---- */
+.gv-block { margin: 0 0 18px; }
+.gv-h { margin: 0 0 4px; }
+.gv-h span { color: var(--saffron, #E07B1A); }
+.gv-lead { margin: 0 0 14px; max-width: 78ch; }
+.gv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); gap: 14px; }
+.gv-card { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+  background: var(--surface); color: var(--ink); transition: box-shadow .15s; }
+.gv-card:hover, .gv-card:focus-within { box-shadow: 0 6px 18px rgba(15, 30, 56, .16); }
+.gv-poster { position: relative; display: block; aspect-ratio: 16 / 9; background: #1B2A4A; }
+.gv-poster:hover .gv-play, .gv-poster:focus-visible .gv-play { transform: translate(-50%, -50%) scale(1.12); }
+/* playing: the video takes the whole width of its block, in YouTube's player */
+.gv-card.gv-playing { grid-column: 1 / -1; }
+.gv-frame { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; background: #000; }
+.gv-one .gv-card.gv-playing { flex-direction: column; }
+.gv-poster img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.gv-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 54px; height: 54px; border-radius: 50%;
+  background: rgba(224, 123, 26, .92); color: #fff; font-size: 22px; display: flex; align-items: center; justify-content: center;
+  padding-left: 4px; transition: transform .15s; }
+.gv-len { position: absolute; right: 8px; bottom: 8px; background: rgba(0, 0, 0, .72); color: #fff; font-size: .75rem; font-weight: 700;
+  padding: 1px 6px; border-radius: 4px; }
+.gv-text { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px 12px; }
+.gv-name { font-weight: 700; line-height: 1.35; }
+.gv-watch { color: var(--indigo); font-size: .85rem; font-weight: 600; }
+.gv-one { max-width: 560px; margin: 14px 0 18px; }
+.gv-one .gv-grid { grid-template-columns: 1fr; }
+.gv-one .gv-card { flex-direction: row; align-items: stretch; }
+.gv-one .gv-poster { flex: 0 0 min(46%, 220px); }
+.gv-one .gv-play { width: 40px; height: 40px; font-size: 16px; }
+.gv-kicker { margin: 0 0 6px; font-weight: 700; color: var(--dim); font-size: .9rem; }
+.gv-kicker span, .gv-btn span { color: var(--saffron, #E07B1A); }
+.gv-all { margin: 6px 0 0; }
 .res-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
 .res-tabs a { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); font-size: .85rem; font-weight: 600; color: var(--ink); }
 .res-tabs a.on { background: var(--indigo); border-color: var(--indigo); color: #fff; }

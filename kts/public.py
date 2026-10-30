@@ -288,6 +288,14 @@ def home_uzbek():
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
 
+# the video guide to the portal (1.2.128): four videos on CICT's YouTube channel, data/guide_videos.json
+@lru_cache(maxsize=1)
+def guide_videos():
+    """The parts of the video guide, [{n, url, duration, poster}], part 1 (Nodal Officers) to 4 (the resources)."""
+    data = json.loads((current_app.config["DATA_DIR"] / "guide_videos.json").read_text(encoding="utf-8"))
+    return tuple(dict(v, url=f"https://www.youtube.com/watch?v={v['youtube']}") for v in data["videos"])
+
+
 # the kinds of event and of link of the seminars and workshops of CICT (data/cict_events.json, 1.2.83), in this order
 EV_TYPES = ("workshop", "seminar", "conference", "lecture", "training", "internship", "hackathon", "day", "launch",
             "exhibition", "meeting", "other")

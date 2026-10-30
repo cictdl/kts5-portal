@@ -110,7 +110,8 @@ def create_app(config_object=Config):
         if resp.mimetype in ("text/html", "image/svg+xml"):
             resp.headers.setdefault("Content-Security-Policy",
                                     "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
-                                    "script-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; "
+                                    "script-src 'self'; frame-src https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; "
+                                    "form-action 'self'; "
                                     "frame-ancestors 'self'")
         if request.path.startswith(("/console", "/candidate", "/hub", "/register", "/status", "/contact", "/quiz")):
             resp.headers["Cache-Control"] = "no-store"
@@ -238,6 +239,7 @@ def create_app(config_object=Config):
             "launch_view": launch_view,
             "social_links": db.social_links,
             "portal_credits": public.portal_credits,
+            "guide_videos": public.guide_videos,
             "nodal_officers": db.nodal_officers,
             "institute_head": db.institute_head,
             "now_ist": utils.now_ist,

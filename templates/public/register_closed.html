@@ -4,6 +4,7 @@
 <div class="wrap-narrow section">
   <span class="eyebrow">{{ t('reg.subtitle') }}</span>
   <h1>{{ t('reg.title') }}</h1>
+  {% from "public/_guide_videos.html" import video_guide, video_part with context %}{{ video_part(3) }}
   <div class="card kumkum">
     {% if state == 'not_yet' %}
       <h2>{{ t('reg.not_yet') }} {{ dates.reg_start|date }}</h2>

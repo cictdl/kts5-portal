@@ -1,0 +1,29 @@
+{
+ "channel": "https://www.youtube.com/@CICT_Online",
+ "videos": [
+  {
+   "n": 1,
+   "youtube": "V3JtCOfqIzo",
+   "duration": "13:23",
+   "poster": "img/guide-video/kts5-guide-part1.jpg"
+  },
+  {
+   "n": 2,
+   "youtube": "Xmtf4A6oH7U",
+   "duration": "11:55",
+   "poster": "img/guide-video/kts5-guide-part2.jpg"
+  },
+  {
+   "n": 3,
+   "youtube": "CxoeFOP-xBg",
+   "duration": "13:41",
+   "poster": "img/guide-video/kts5-guide-part3.jpg"
+  },
+  {
+   "n": 4,
+   "youtube": "gYW8YlyL2Ro",
+   "duration": "12:39",
+   "poster": "img/guide-video/kts5-guide-part4.jpg"
+  }
+ ]
+}
