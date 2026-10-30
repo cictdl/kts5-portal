@@ -222,6 +222,21 @@
     ]
   },
   {
+    "key": "awaz-2026-10-22-kts5",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "Awaz-The Voice",
+    "versions": [
+      {
+        "lang": "hi",
+        "byline": "PTI",
+        "title": "‘काशी तमिल संगमम’ का पांचवां संस्करण 28 नवंबर से 12 दिसंबर तक आयोजित होगा: प्रह्लाद जोशी",
+        "time": "4:48 PM",
+        "url": "https://www.hindi.awazthevoice.in/india-news/the-fifth-edition-of-kashi-tamil-sangamam-will-be-held-from-november-to-december-prahlad-joshi-102793.html"
+      }
+    ]
+  },
+  {
     "key": "punjabkesari-2026-10-22-kts5",
     "date": "2026-10-22",
     "kind": "article",
@@ -233,6 +248,20 @@
         "title": "Education Minister Pralhad Joshi launches Kashi Tamil Sangamam 5.0 portal",
         "time": "5:11 PM",
         "url": "https://english.punjabkesari.com/india/education-minister-pralhad-joshi-launches-kashi-tamil-sangamam-50-portal/"
+      }
+    ]
+  },
+  {
+    "key": "revoi-2026-10-22-kts5",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "REVOI",
+    "versions": [
+      {
+        "lang": "hi",
+        "title": "काशी तमिल संगमम 5.0 का रजिस्ट्रेशन पोर्टल लॉन्च, 28 नवम्बर से 12 दिसम्बर तक होगा आयोजन",
+        "time": "5:17 PM",
+        "url": "https://hindi.revoi.in/registration-portal-for-kashi-tamil-sangamam-5-0-launched-event-to-be-held-from-november-28-to-december-12/"
       }
     ]
   },
@@ -261,6 +290,36 @@
         "title": "காசி தமிழ் சங்கமம் நவ., 28ல் தொடக்கம்",
         "time": "7:54 PM",
         "url": "https://www.dinamalar.com/news/tamil-nadu-news/kasi-tamil-sangamam-to-begin-on-november-28/4356448"
+      }
+    ]
+  },
+  {
+    "key": "tnie-2026-10-22-kts5",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "The New Indian Express",
+    "versions": [
+      {
+        "lang": "en",
+        "byline": "Express News Service",
+        "title": "Registration begins for Kashi Tamil Sangamam 5.0",
+        "time": "8:51 PM",
+        "url": "https://www.newindianexpress.com/india/2026/Oct/22/registration-begins-for-kashi-tamil-sangamam-50"
+      }
+    ]
+  },
+  {
+    "key": "indianexpress-2026-10-23-kts5",
+    "date": "2026-10-23",
+    "kind": "article",
+    "source": "The Indian Express",
+    "versions": [
+      {
+        "lang": "en",
+        "byline": "Express News Service",
+        "title": "Pralhad Joshi launches registration portal for fifth edition of Kashi Tamil Sangamam",
+        "time": "2:43 AM",
+        "url": "https://indianexpress.com/article/india/pralhad-joshi-registration-portal-kashi-tamil-sangamam-10932945/"
       }
     ]
   },
@@ -295,6 +354,80 @@
     ]
   },
   {
+    "key": "dtnext-2026-10-23-kts5",
+    "date": "2026-10-23",
+    "kind": "article",
+    "source": "DT Next",
+    "versions": [
+      {
+        "lang": "en",
+        "byline": "DT NEXT Bureau",
+        "title": "Kashi Tamil Sangamam's fifth edition to be held from Nov 28-Dec 12",
+        "time": "7:37 AM",
+        "url": "https://www.dtnext.in/news/tamilnadu/kashi-tamil-sangamams-fifth-edition-to-be-held-from-nov-28-dec-12"
+      }
+    ]
+  },
+  {
+    "key": "educationpost-2026-10-23-kts5",
+    "date": "2026-10-23",
+    "kind": "article",
+    "source": "Education Post",
+    "versions": [
+      {
+        "lang": "en",
+        "byline": "Pragya Kumari",
+        "title": "Connecting Tamil Nadu and Kashi through literature: Kashi Tamil Sangamam 5.0 registration opens",
+        "time": "8:36 AM",
+        "url": "https://educationpost.in/news/education/connecting-tamil-nadu-and-kashi-through-literature-kashi-tamil-sangamam-50-registration-opens"
+      }
+    ]
+  },
+  {
+    "key": "hindustantimes-2026-10-23-kts5",
+    "date": "2026-10-23",
+    "kind": "article",
+    "source": "Hindustan Times",
+    "versions": [
+      {
+        "lang": "en",
+        "byline": "Sanjay Maurya",
+        "title": "Kashi Tamil Sangamam 5.0 to focus on promotion of classical text Thirukkural",
+        "time": "9:39 AM",
+        "url": "https://www.hindustantimes.com/india-news/kashi-tamil-sangamam-5-0-to-focus-on-promotion-of-classical-text-thirukkural-101792728588889.html"
+      }
+    ]
+  },
+  {
+    "key": "organiser-2026-10-23-kts5",
+    "date": "2026-10-23",
+    "kind": "article",
+    "source": "Organiser",
+    "versions": [
+      {
+        "lang": "en",
+        "title": "Kashi Tamil Sangamam 2026 to promote Thirukkural among youth",
+        "time": "11:00 AM",
+        "url": "https://organiser.org/2026/10/23/419528/bharat/kashi-tamil-sangamam-5-0-to-celebrate-civilisational-bonds-between-tamil-nadu-and-kashi-from-november-28-to-december-12/"
+      }
+    ]
+  },
+  {
+    "key": "jagranjosh-2026-10-23-kts5",
+    "date": "2026-10-23",
+    "kind": "article",
+    "source": "Jagran Josh",
+    "versions": [
+      {
+        "lang": "en",
+        "byline": "Apeksha Agarwal",
+        "title": "Kashi Tamil Sangamam 2026: Registration Opens Now For Students; Application Process, Steps Here",
+        "time": "11:49 AM",
+        "url": "https://www.jagranjosh.com/news/kashi-tamil-sangamam-2026-registration-opens-now-for-students-application-process-steps-here-188617"
+      }
+    ]
+  },
+  {
     "key": "air-2026-10-24-kts5-registration",
     "date": "2026-10-24",
     "kind": "article",
@@ -319,6 +452,21 @@
         "title": "5th edition of Kashi Tamil Sangamam to be held from 28th November to 12th December this year",
         "time": "8:55 AM",
         "url": "https://newsonair.gov.in/5th-edition-of-kashi-tamil-sangamam-to-be-held-from-28th-november-to-12th-december-this-year/"
+      }
+    ]
+  },
+  {
+    "key": "hindutamil-2026-10-30-kts5",
+    "date": "2026-10-30",
+    "kind": "article",
+    "source": "Hindu Tamil Thisai",
+    "versions": [
+      {
+        "lang": "ta",
+        "byline": "ஆர்.ஷபிமுன்னா",
+        "title": "காசி தமிழ் சங்கமம் 5.0 நிகழ்வில் 23 மொழிகளில் திருக்குறள்: 1,000 கல்லூரி மாணவர்களுக்கு கற்றல் பயிற்சி",
+        "time": "10:18 AM",
+        "url": "https://www.hindutamil.in/news/india/thirukkural-in-23-languages-at-kashi-tamil-sangamam-50-event"
       }
     ]
   }
