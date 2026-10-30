@@ -2,6 +2,8 @@
 {% block robots %}{% endblock %}
 {% block content %}
 <div class="quiz-narrow">
+  {# hosting first (1.2.121): a large button at the top of the page, for the teacher who brings the quiz to the class #}
+  <a class="btn host-top" href="{{ url_for('quiz.host_new') }}"><span class="host-ico" aria-hidden="true">🖥</span><span>{{ t('quiz.host_title') }}</span><span aria-hidden="true">{{ fwd }}</span></a>
   <div class="quiz-card join-card">
     <div class="join-icon" aria-hidden="true">🎯</div>
     <h1>{{ t('quiz.title') }}</h1>
@@ -23,9 +25,5 @@
     </form>
     {% endif %}
   </div>
-  <p class="host-line">
-    {% if host %}<a class="btn secondary" href="{{ url_for('quiz.host_new') }}">🖥 {{ t('quiz.host_title') }} {{ fwd }}</a>
-    {% else %}<a href="{{ url_for('quiz.host_new') }}">🖥 {{ t('quiz.host_title') }}</a>{% endif %}
-  </p>
 </div>
 {% endblock %}
