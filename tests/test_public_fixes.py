@@ -988,16 +988,16 @@ def test_version_of_style_sheet_and_script():
     for path in TEMPLATES:
         for name, version in re.findall(r"filename='((?:css|js)/portal\.(?:css|js))'\) \}\}\?v=(\d+)", path.read_text(encoding="utf-8")):
             linked.setdefault(path.relative_to(ROOT / "templates").as_posix(), []).append((name, version))
-    expected = {name: [("css/portal.css", "33"), ("js/portal.js", "19")]
+    expected = {name: [("css/portal.css", "34"), ("js/portal.js", "19")]
                 for name in ("base.html", "candidate/exam_paper.html", "console/base.html")}
     # the certificate has a style sheet of its own and the script for its print button
     expected["public/certificate.html"] = [("js/portal.js", "19")]
     expected["public/letter.html"] = [("js/portal.js", "19")]
     # the pages of the classroom quiz have a frame of their own, with the style sheet and the script of the portal
-    expected["quiz/layout.html"] = [("css/portal.css", "33"), ("js/portal.js", "19")]
+    expected["quiz/layout.html"] = [("css/portal.css", "34"), ("js/portal.js", "19")]
     assert linked == expected
     for path in TEMPLATES:
-        assert not re.search(r"portal\.css'\) \}\}(?!\?v=33\")", path.read_text(encoding="utf-8")), path
+        assert not re.search(r"portal\.css'\) \}\}(?!\?v=34\")", path.read_text(encoding="utf-8")), path
         assert not re.search(r"portal\.js'\) \}\}(?!\?v=19\")", path.read_text(encoding="utf-8")), path
 
 
@@ -1078,7 +1078,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.124" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.125" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 
@@ -1183,3 +1183,12 @@ def test_the_logos_of_iit_madras_and_bhu_open_their_portals():
             assert f'<span class="band-url" lang="en" dir="ltr">{shown}&nbsp;<span aria-hidden="true">↗</span></span>' in link, (page, address)
     css = (ROOT / "static" / "css" / "portal.css").read_text(encoding="utf-8")
     assert ".band-group a.band-link { display: flex; flex-direction: column;" in css and ".band-url {" in css
+
+
+def test_the_home_page_and_the_companion_fit_a_phone():
+    """1.2.125: the columns of the hero and of the companion's couplets may shrink below their widest line (a couplet
+    scrolls inside its card), so a 390-pixel phone neither clips the home page nor scrolls the companion sideways."""
+    css = (ROOT / "static" / "css" / "portal.css").read_text(encoding="utf-8")
+    assert ".hero .wrap { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, .9fr);" in css
+    assert "@media (max-width: 899px) { .hero .wrap { grid-template-columns: minmax(0, 1fr); padding: 32px 0; } }" in css
+    assert ".companion .comp-list { list-style: none; padding: 0; margin: 10px 0; display: grid; grid-template-columns: minmax(0, 1fr);" in css
