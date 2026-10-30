@@ -747,3 +747,18 @@ footer.site .bottom .wrap { display: flex; justify-content: space-between; gap: 
   .dash .dash-n, .dash .dash-tip { display: none !important; }
   .dash .dash-tile b { font-size: .7rem; }
 }
+
+/* each State/UT of the dashboard: its Nodal Officers, its Participating Institutions and their student delegates (1.2.124) */
+.dash .dash-details { margin-top: 26px; }
+.dash .dash-state { margin: 10px 0; padding: 0; }
+.dash .dash-state > summary { cursor: pointer; padding: 14px 18px; }
+.dash .dash-state[open] > summary { border-bottom: 1px solid var(--border); }
+.dash .dash-state:target { outline: 2px solid var(--saffron); }
+.dash .dash-state-body { padding: 12px 18px 16px; }
+.dash .dash-officers { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: flex-start; margin: 4px 0 8px; }
+.dash .dash-officers > b { flex-basis: 100%; }
+.dash .dash-sub { font-size: 1rem; margin: 12px 0 6px; }
+.dash .dash-insts { margin: 0; padding-inline-start: 1.4em; display: grid; gap: 6px; }
+.dash .dash-st { margin-top: 1px; color: var(--mute); }
+.dash .dash-st.delegate, .dash .dash-st.verified { color: var(--green); font-weight: 600; }
+.dash .dash-st.awaiting { color: var(--amber); }

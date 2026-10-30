@@ -745,6 +745,8 @@ DEFAULT_SETTINGS = {
     "stats.public": "1",
     # the public dashboard KTS 5.0 by State/UT (1.2.122, kts/dashboard.py)
     "dashboard.public": "1",
+    # its student delegates by name, once verified (1.2.124)
+    "dashboard.names": "1",
     "site.draft_note_on": "1",
     "home.pm_on": "1",
     "home.pm_quote": "Kashi Tamil Sangamam furthers the spirit of \u2018Ek Bharat, Shreshtha Bharat\u2019.",

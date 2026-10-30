@@ -5,15 +5,23 @@ took an institution's online test, and the student delegates registered and veri
 students counted as At a glance on the home page counts them (every application not withdrawn), by the State/UT of the
 institution. Console > Settings dashboard.public switches the page off.
 
+Below the figures (1.2.124, the user's "the nodal officers details, participating institutions and students registered
+details should come"), each State/UT in a block of its own: its Nodal HEI and Nodal Officers as /nodal-institutions shows
+them (Console > Settings nodal.officers_public), its Participating Institutions as /institutions shows them (hei.public),
+and under each its student delegate: the name, with the institution, once the Nodal Officer has verified the student, as
+the students agreed on registering ("publication of my name and institution in the list of selected students"; the user
+chose verified students only, 30 October 2026; dashboard.names); never another detail of a student.
+
 The grid is no map: each State/UT is a square, placed roughly as on the map of India (a map would have to follow the
 boundaries of the Survey of India exactly), shaded by its student delegates registered against its number.
 """
 import json
+from collections import defaultdict
 
 from flask import current_app
 
-from .db import query
-from .progress import VERIFIED, nodal_heis
+from .db import get_setting, query
+from .progress import VERIFIED, institutions, nodal_heis
 
 # (row, column, short name) of each State/UT in the grid
 GRID = {
@@ -74,3 +82,26 @@ def figures():
     total = {f: sum(r[f] for r in states) for f in FIELDS}
     total["to_select"] = sum(r["to_select"] or 0 for r in states)
     return {"states": states, "total": total}
+
+
+def details(officers):
+    """
+    {State/UT: {"nodal": name of the Nodal HEI, "officers": [...], "institutions": [...]}} for the blocks of the page; each
+    institution {"name", "district", "status", "delegate"}, status one of delegate (verified, the name shown), verified
+    (verified, names switched off), awaiting (registered, not yet verified), none. `officers` as the public pages have them.
+    """
+    names = get_setting("dashboard.names") == "1"
+    found = defaultdict(lambda: {"nodal": "", "officers": [], "institutions": []})
+    for h in nodal_heis():
+        found[h["state"]]["nodal"] = h["name"]
+    for state, people in officers.items():
+        found[state]["officers"] = people
+    if get_setting("hei.public") == "1":
+        for i in institutions():
+            if i["stage"] == "verified":
+                status = "delegate" if names else "verified"
+            else:
+                status = "awaiting" if i["stage"] == "registered" else "none"
+            found[i["state"]]["institutions"].append({"name": i["name"], "district": i["district"], "status": status,
+                                                      "delegate": i["app_name"] if status == "delegate" else None})
+    return dict(found)

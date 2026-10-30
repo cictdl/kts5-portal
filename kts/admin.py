@@ -1645,7 +1645,8 @@ def nodal_import():
 
 SETTING_GROUPS = [
     ("Site", [("site.banner", "Banner text", "text"), ("site.banner_on", "Show banner", "bool"), ("stats.public", "Show live counts on the home page", "bool"),
-              ("dashboard.public", "Public dashboard KTS 5.0 by State/UT (/dashboard): the live counts of each State/UT, no names", "bool"),
+              ("dashboard.public", "Public dashboard KTS 5.0 by State/UT (/dashboard): the live counts of each State/UT, its Nodal Officers and its Participating Institutions", "bool"),
+              ("dashboard.names", "The dashboard names the student delegate of each Participating Institution once the Nodal Officer has verified the student (name and institution only, as the students agreed on registering)", "bool"),
               ("site.visitors", "Show the count of visitors in the footer of every page", "bool"),
               ("site.draft_note_on", "Show the note “this translation is a draft” in interface languages that are not yet reviewed", "bool")]),
     ("Home page", [("home.pm_on", "Show the Prime Minister's photograph and quotation", "bool"),

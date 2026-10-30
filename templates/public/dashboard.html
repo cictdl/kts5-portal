@@ -25,7 +25,7 @@
     <ul class="dash-grid">
       {% for r in states if r.grid %}
       <li style="grid-row:{{ r.grid[0] + 1 }};grid-column:{{ r.grid[1] + 1 }}">
-        <a class="dash-tile {{ r.shade }}" href="#st-{{ r.grid[2] }}">
+        <a class="dash-tile {{ r.shade }}" href="#d-{{ r.grid[2] }}">
           <b dir="ltr">{{ r.grid[2] }}</b>
           <span class="dash-n" dir="ltr">{{ r.registered }}{% if r.to_select %}/{{ r.to_select }}{% endif %}</span>
           <span class="dash-tip" role="tooltip"><b>{{ place(r.state) }}</b>
@@ -56,7 +56,7 @@
       <tbody>
         {% for r in states %}
         <tr{% if r.grid %} id="st-{{ r.grid[2] }}"{% endif %}>
-          <th scope="row">{{ place(r.state) }}</th>
+          <th scope="row">{% if r.grid %}<a href="#d-{{ r.grid[2] }}">{{ place(r.state) }}</a>{% else %}{{ place(r.state) }}{% endif %}</th>
           <td class="num">{{ r.to_select if r.to_select else '–' }}</td>
           <td class="num">{{ r.inst_reg }}</td><td class="num">{{ r.inst_sel }}</td><td class="num">{{ r.assessed }}</td>
           <td class="num">{{ r.registered }}{% if r.share is not none %}<span class="dash-meter" aria-hidden="true"><span style="width:{{ r.share }}%"></span></span>{% endif %}</td>
@@ -69,6 +69,35 @@
         <td class="num">{{ '{:,}'.format(total.assessed) }}</td><td class="num">{{ '{:,}'.format(total.registered) }}</td>
         <td class="num">{{ '{:,}'.format(total.verified) }}</td></tr></tfoot>
     </table></div>
+  </section>
+
+  {# each State/UT: its Nodal Officers, its Participating Institutions and their student delegates (1.2.124) #}
+  <section class="dash-details" aria-labelledby="dash-det-h">
+    <h2 id="dash-det-h">{{ t('dash.details_title') }}</h2>
+    <p class="small muted" style="max-width:80ch">{{ t('dash.details_note') }}</p>
+    {% for r in states %}{% set d = details.get(r.state) %}
+    {% if d and (r.to_select or d.institutions) %}
+    <details class="card dash-state"{% if r.grid %} id="d-{{ r.grid[2] }}"{% endif %}>
+      <summary><b>{{ place(r.state) }}</b> <span class="small muted">· {{ t('dash.inst_sel') }}: {{ r.inst_sel }} · {{ t('home.stat_apps') }}: {{ r.registered }}{% if r.to_select %} · {{ t('dash.to_select') }}: {{ r.to_select }}{% endif %}</span></summary>
+      <div class="dash-state-body">
+        {% if d.nodal %}<p class="small"><b>{{ t('nodal.col_hei') }}:</b> <span lang="en" dir="ltr">{{ d.nodal }}</span></p>{% endif %}
+        {% if d.officers %}
+        <div class="dash-officers"><b class="small">{{ t('nodal.col_officer') }}</b>
+          {% for o in d.officers %}<div class="dash-officer small" lang="en" dir="ltr"><b>{{ o.name }}</b>{% if o.designation %}<br><span class="dim">{{ o.designation }}</span>{% endif %}{% if o.email %}<br><a href="mailto:{{ o.email }}">{{ o.email }}</a>{% endif %}{% if o.phone %}<br><a href="tel:{{ o.phone|replace(' ', '') }}">{{ o.phone }}</a>{% endif %}</div>{% endfor %}
+        </div>
+        {% endif %}
+        <h3 class="dash-sub">{{ t('dash.inst_sel') }}</h3>
+        {% if d.institutions %}
+        <ol class="dash-insts">
+          {% for i in d.institutions %}
+          <li><span lang="en" dir="ltr">{{ i.name }}</span>{% if i.district %} <span class="small muted" lang="en" dir="ltr">· {{ i.district }}</span>{% endif %}
+            <div class="small dash-st {{ i.status }}">{% if i.status == 'delegate' %}✓ <bdi>{{ t('dash.delegate')|replace('{name}', i.delegate) }}</bdi>{% elif i.status == 'verified' %}✓ {{ t('dash.verified') }}{% elif i.status == 'awaiting' %}{{ t('dash.awaiting') }}{% else %}{{ t('dash.no_student') }}{% endif %}</div></li>
+          {% endfor %}
+        </ol>
+        {% else %}<p class="small muted">{{ t('dash.no_inst') }}</p>{% endif %}
+      </div>
+    </details>
+    {% endif %}{% endfor %}
   </section>
 </div>
 {% endblock %}

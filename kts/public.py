@@ -1211,7 +1211,8 @@ def dashboard():
     if get_setting("dashboard.public") != "1":
         abort(404)
     data = D.figures()
-    return render_template("public/dashboard.html", states=data["states"], total=data["total"], now=now_ist().strftime("%H:%M"))
+    return render_template("public/dashboard.html", states=data["states"], total=data["total"], now=now_ist().strftime("%H:%M"),
+                           details=D.details(_nodal_officers_by_state()))
 
 
 @bp.route("/daily-kural")
