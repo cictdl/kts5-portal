@@ -16,7 +16,7 @@
           <dt>{{ t('reg.dob') }}</dt><dd>{{ cand.dob|date }}</dd>
           <dt>{{ t('reg.college_name') }}</dt><dd><bdi>{{ cand.college_name }}</bdi>, {{ place(cand.college_state) }}</dd>
           <dt>{{ t('common.language') }}</dt><dd>{{ cand.pref_lang|langnative }} · {{ lang_name }}</dd>
-          <dt>{{ t('common.date') }}</dt><dd><b>{{ settings['exam.date']|date }}</b></dd>
+          <dt>{{ t('common.date') }}</dt><dd><b>{{ settings['exam.date']|date }}{% if settings['exam.date_to'] and settings['exam.date_to'] > settings['exam.date'] %} – {{ settings['exam.date_to']|date }}{% endif %}</b></dd>
           <dt>{{ t('exam.window') }}</dt><dd><b><bdi>{{ settings['exam.start_time'] }} – {{ settings['exam.end_time'] }} IST</bdi></b></dd>
           <dt>{{ t('exam.duration') }}</dt><dd>{{ settings['exam.duration_min'] }} {{ t('exam.minutes') }} · {{ t('admit.from_start') }}</dd>
           <dt>{{ t('exam.pattern') }}</dt><dd>{{ settings['exam.questions'] }} {{ t('exam.pattern_text') }} · {{ settings['exam.marks_per_q'] }} {{ t('exam.marks_each') }}</dd>

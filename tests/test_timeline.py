@@ -100,8 +100,9 @@ def test_the_dates_of_the_timeline_are_the_defaults():
     assert DEFAULT_SETTINGS["reg.start"] == "2026-10-22" and DEFAULT_SETTINGS["reg.end"] == "2026-11-20"
     assert DEFAULT_SETTINGS["hei.end"] == "2026-11-10" and DEFAULT_SETTINGS["hei.select_end"] == "2026-11-15"
     assert DEFAULT_SETTINGS["camp.to"] == "2026-11-20" and DEFAULT_SETTINGS["verify.end"] == "2026-12-05"
-    assert DEFAULT_SETTINGS["exam.date"] == "2026-10-29"
-    assert (DEFAULT_SETTINGS["exam.start_time"], DEFAULT_SETTINGS["exam.end_time"]) == ("11:30", "12:00")
+    # the central online test of CICT, 10 November 00:00 to 20 November 23:59 (1.2.120)
+    assert (DEFAULT_SETTINGS["exam.date"], DEFAULT_SETTINGS["exam.date_to"]) == ("2026-11-10", "2026-11-20")
+    assert (DEFAULT_SETTINGS["exam.start_time"], DEFAULT_SETTINGS["exam.end_time"]) == ("00:00", "23:59")
     assert DEFAULT_SETTINGS["letter.date"] == "2026-12-06" and DEFAULT_SETTINGS["internship.start"] == "2026-12-12"
     assert DEFAULT_SETTINGS["papers.due"] == DEFAULT_SETTINGS["present.due"] == "2027-01-11"
     # the steps of the seed file that the settings name fall on the same days
@@ -114,7 +115,7 @@ def test_the_dates_of_the_timeline_are_the_defaults():
     assert DEFAULT_SETTINGS["kts.start"] == "2026-11-28" and DEFAULT_SETTINGS["kts.end"] == "2026-12-12"
     # the days of the week as the calendar has them
     days = [datetime.fromisoformat(DEFAULT_SETTINGS[key]).strftime("%a") for key in ("reg.start", "reg.end", "exam.date", "kts.start", "kts.end")]
-    assert days == ["Thu", "Fri", "Thu", "Sat", "Sat"]
+    assert days == ["Thu", "Fri", "Tue", "Sat", "Sat"]
 
 
 def test_a_database_of_an_earlier_version_receives_the_dates():
@@ -123,7 +124,7 @@ def test_a_database_of_an_earlier_version_receives_the_dates():
         _sql(app, "UPDATE settings SET value = ? WHERE key = ?", (old, key))
     _sql(app, "DELETE FROM settings WHERE key IN ('kts.start', 'kts.end', 'schedule.tentative')")
     settings = _settings(_start(app))
-    assert (settings["reg.start"], settings["reg.end"], settings["exam.date"]) == ("2026-10-22", "2026-11-20", "2026-10-29")
+    assert (settings["reg.start"], settings["reg.end"], settings["exam.date"]) == ("2026-10-22", "2026-11-20", "2026-11-10")
     assert (settings["kts.start"], settings["kts.end"], settings["schedule.tentative"]) == ("2026-11-28", "2026-12-12", "1")
 
 def test_the_live_database_moves_to_the_timeline_of_8_october():
@@ -141,7 +142,7 @@ def test_the_live_database_moves_to_the_timeline_of_8_october():
     again = _start(app)
     settings = _settings(again)
     moved = [settings[k] for k in ("reg.start", "reg.end", "exam.date", "letter.date", "internship.start", "exam.start_time")]
-    assert moved == ["2026-10-22", "2026-11-20", "2026-10-29", "2026-12-06", "2026-12-12", "11:30"]
+    assert moved == ["2026-10-22", "2026-11-20", "2026-11-10", "2026-12-06", "2026-12-12", "00:00"]
     rows = {t: (s, e) for t, s, e in _sql(again, "SELECT title, starts_at, ends_at FROM events")}
     assert rows[S["selection"]["title"]] == ("2026-11-21T00:00", "2026-12-05T00:00")
     assert rows[S["internship"]["title"]] == ("2026-12-12T00:00", None)

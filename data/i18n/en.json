@@ -1142,5 +1142,6 @@
   "comp.answer": "Answer",
   "comp.try": "Start from a subject",
   "comp.note": "The companion matches your words with the portal's own translations and commentaries of the Thirukkural. It writes no text of its own, and your question stays on the portal. It is free to use, in all 23 languages.",
-  "comp.cta": "Ask the Thirukkural study companion"
+  "comp.cta": "Ask the Thirukkural study companion",
+  "exam.days_note": "The test is open from {from} to {to} IST: take it at any time in these days. It lasts {minutes} minutes, and every attempt ends at {to} at the latest."
 }

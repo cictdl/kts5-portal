@@ -6,12 +6,16 @@
   <h1>{{ t('exam.title') }}</h1>
   <div class="card accent">
     <div class="grid grid-2" style="margin-bottom:12px">
-      <div class="date-tile"><div class="lbl">{{ t('cand.exam_window') }}</div><div class="val">{{ settings['exam.date']|date }}</div><div class="sub"><bdi>{{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST</bdi></div></div>
+      <div class="date-tile"><div class="lbl">{{ t('cand.exam_window') }}</div><div class="val">{{ settings['exam.date']|date }}{% if settings['exam.date_to'] and settings['exam.date_to'] > settings['exam.date'] %} – {{ settings['exam.date_to']|date }}{% endif %}</div><div class="sub"><bdi>{{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST</bdi></div></div>
       <div class="date-tile"><div class="lbl">{{ t('exam.duration') }}</div><div class="val">{{ settings['exam.duration_min'] }} {{ t('exam.minutes') }}</div><div class="sub">{{ settings['exam.questions'] }} {{ t('exam.pattern_text') }} · {{ settings['exam.marks_per_q'] }} {{ t('exam.marks_each') }}</div></div>
     </div>
     <h3>{{ t('exam.guidelines') }}</h3>
     <ol class="prose"><li>{{ t('exam.g1') }}</li><li>{{ t('exam.g2') }}</li><li>{{ t('exam.g3') }}</li><li>{{ t('exam.g4') }}</li></ol>
+    {% if settings['exam.date_to'] and settings['exam.date_to'] > settings['exam.date'] %}
+    <p class="alert info ends-note"><b>{{ t('exam.days_note')|replace('{from}', (settings['exam.date']|date) ~ ', ' ~ settings['exam.start_time'])|replace('{to}', (settings['exam.date_to']|date) ~ ', ' ~ settings['exam.end_time'])|replace('{minutes}', settings['exam.duration_min']|string) }}</b></p>
+    {% else %}
     <p class="alert info ends-note"><b>{{ t('exam.ends_note')|replace('{end}', settings['exam.end_time']|string)|replace('{start}', settings['exam.start_time']|string)|replace('{minutes}', settings['exam.duration_min']|string) }}</b></p>
+    {% endif %}
     <p class="small dim">{{ t('common.language') }}: <b>{{ cand.pref_lang|langnative }} · {{ cand.pref_lang|langname }}</b></p>
     {% if not eligible %}
       <div class="alert warning">{{ not_eligible }}</div>

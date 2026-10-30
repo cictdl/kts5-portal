@@ -143,10 +143,15 @@ def registration_state(settings):
 
 
 def exam_window(settings):
-    """(start, end, is_open) for the test login window, in IST."""
+    """
+    (start, end, is_open) for the test login window, in IST: from the opening time of the test date to the closing time of
+    its last day (exam.date_to, 1.2.120), or of the test date itself when there is none or it comes before.
+    """
     try:
-        start = datetime.fromisoformat(f"{settings['exam.date']}T{settings['exam.start_time']}").replace(tzinfo=IST)
-        end = datetime.fromisoformat(f"{settings['exam.date']}T{settings['exam.end_time']}").replace(tzinfo=IST)
+        first = settings["exam.date"]
+        last = max(settings.get("exam.date_to") or first, first)
+        start = datetime.fromisoformat(f"{first}T{settings['exam.start_time']}").replace(tzinfo=IST)
+        end = datetime.fromisoformat(f"{last}T{settings['exam.end_time']}").replace(tzinfo=IST)
     except (KeyError, ValueError):
         return None, None, False
     mode = settings.get("exam.open", "auto")

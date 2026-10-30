@@ -623,16 +623,20 @@ DEFAULT_SETTINGS = {
     # the D.O. letter of the Ministry of 9 October 2026: the institutions register their selected students by 22 October; the
     # revised D.O. letter (26 October 2026): each selected Participating Institution nominates its student by 20 November
     "reg.end": "2026-11-20",
-    "exam.date": "2026-10-29",
-    "exam.start_time": "11:30",
-    "exam.end_time": "12:00",
+    # the central online test of CICT (1.2.120, the user's "the online exam should be 10-20 november"): open from 10 November
+    # 00:00 to 20 November 23:59 IST, at any time in these days
+    "exam.date": "2026-11-10",
+    "exam.date_to": "2026-11-20",
+    "exam.start_time": "00:00",
+    "exam.end_time": "23:59",
     "exam.duration_min": "30",
     "exam.questions": "50",
     "exam.marks_per_q": "2",
     "exam.negative": "0",
     "exam.show_score": "1",
-    # no central test by CICT since the D.O. letter of 9 October 2026 (1.2.43): the institutions assess (kts/campus.py)
-    "exam.open": "0",
+    # the central test, retired by the D.O. letter of 9 October 2026 (1.2.43; the institutions assess, kts/campus.py), open
+    # again in its days (1.2.120)
+    "exam.open": "auto",
     # the central test also for registered students not yet verified (1.2.119; the user's "let unverified registered
     # students take it too", 29 October 2026)
     "exam.unverified": "1",
@@ -770,7 +774,6 @@ RETIRED_DEFAULTS = {
     "exam.start_time": ["11:00"],
     # the D.O. letter of 9 October 2026 (1.2.43): the institutions register their students by 22 October, the Nodal
     # Officers verify until the consolidation, no central test, no cap on the institutions of a State/UT
-    "exam.open": ["auto"],
     "verify.end": ["2026-10-21", "2026-10-24", "2026-10-31"],
     "hei.max_per_state": ["50"],
     # the online orientation has two lectures, not ten (14 October 2026)
@@ -794,6 +797,10 @@ RETIRED_DEFAULTS = {
 # of each database, also where CICT had set others in the Console; changed in the Console afterwards, they stay so
 REVISED_DO_DATES = ("hei.end", "hei.select_end", "camp.to", "reg.end", "verify.end", "letter.date", "internship.start",
                     "papers.due", "present.due", "remind.test_by", "remind.select_by", "remind.register_by")
+
+# The days of the central online test (1.2.120): put in once over the values of each database, as the dates of the revised
+# D.O. letter; changed in the Console afterwards, they stay so
+EXAM_DAYS = ("exam.date", "exam.date_to", "exam.start_time", "exam.end_time", "exam.open")
 
 # Titles of the events of data/timeline.json as earlier versions put them in, by the key of the event: an event
 # that still holds one receives the present title, so that the schedule keeps finding its translation.
@@ -1264,6 +1271,10 @@ def init_db(app):
         for key in REVISED_DO_DATES:
             conn.execute("UPDATE settings SET value = ?, updated_at = ? WHERE key = ?", (DEFAULT_SETTINGS[key], now, key))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", ("migrate.revised_do", "1", now))
+    if not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.exam_days'").fetchone():
+        for key in EXAM_DAYS:
+            conn.execute("UPDATE settings SET value = ?, updated_at = ? WHERE key = ?", (DEFAULT_SETTINGS[key], now, key))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", ("migrate.exam_days", "1", now))
 
     if conn.execute("SELECT COUNT(*) FROM agencies").fetchone()[0] == 0:
         seed_path = app.config["DATA_DIR"] / "agencies.json"

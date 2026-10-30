@@ -371,8 +371,9 @@ def test_the_letter_in_the_data_and_the_pages():
     by = {h["state"]: h for h in heis}
     assert by["Tamil Nadu"]["name"] == "Central University of Tamil Nadu" and by["Tamil Nadu"]["allocation"] == 150
     assert by["Goa"]["name"] == "NIT Goa" and by["Goa"]["type"] == "nit" and by["Assam"]["name"] == "Assam University"
-    assert DEFAULT_SETTINGS["exam.open"] == "0" and DEFAULT_SETTINGS["reg.by_institution"] == "1" and DEFAULT_SETTINGS["camp.to"] == "2026-11-20"
-    assert "auto" in RETIRED_DEFAULTS["exam.open"] and "2026-10-21" in RETIRED_DEFAULTS["reg.end"] and "50" in RETIRED_DEFAULTS["hei.max_per_state"]
+    # the central test of CICT, closed by the letter, open again in its days from 1.2.120 (10 to 20 November 2026)
+    assert DEFAULT_SETTINGS["exam.open"] == "auto" and DEFAULT_SETTINGS["reg.by_institution"] == "1" and DEFAULT_SETTINGS["camp.to"] == "2026-11-20"
+    assert "exam.open" not in RETIRED_DEFAULTS and "2026-10-21" in RETIRED_DEFAULTS["reg.end"] and "50" in RETIRED_DEFAULTS["hei.max_per_state"]
     assert set(RETIRED_EVENT_TITLES) == {"selection", "letters", "live", "assess", "internship", "papers"}
     app = make_app(ADMIN_PASSWORD=None)
     client = app.test_client()
@@ -394,7 +395,8 @@ def test_the_letter_in_the_data_and_the_pages():
     import sqlite3
     conn = sqlite3.connect(str(app.config["DATABASE"]))
     conn.execute("UPDATE events SET title = 'Selection of the 1,000 students' WHERE title LIKE 'Consolidation and verification%'")
-    conn.execute("UPDATE settings SET value = 'auto' WHERE key = 'exam.open'")
+    # the test closed by CICT in the Console stays closed (1.2.120)
+    conn.execute("UPDATE settings SET value = '0' WHERE key = 'exam.open'")
     conn.execute("UPDATE settings SET value = '2026-10-21' WHERE key = 'reg.end'")
     conn.commit()
     conn.close()

@@ -2,9 +2,12 @@
   {"lang": "ta", "pages": 54, "translator": ""},
   {"lang": "en", "pages": 61, "translator": "Dr. Sripada Divya"},
   {"lang": "bn", "pages": 84, "translator": "Dr. Shibnath Dutta"},
+  {"lang": "gu", "pages": 61, "translator": "Dr. Neelavaty Meghani"},
   {"lang": "hi", "pages": 103, "translator": "डॉ. पि. सरस्वती"},
   {"lang": "kn", "pages": 78, "translator": "Dr. M. Rangaswamy"},
   {"lang": "mai", "pages": 64, "translator": "Dr. Arun Kumar"},
   {"lang": "mr", "pages": 71, "translator": "Mrs Padma Sridha"},
-  {"lang": "or", "pages": 62, "translator": "Geetarani Bisoyi"}
+  {"lang": "or", "pages": 62, "translator": "Geetarani Bisoyi"},
+  {"lang": "sat", "pages": 84, "translator": "Bodi Baski"},
+  {"lang": "te", "pages": 75, "translator": "Dr. S. Jayaprakash"}
 ]

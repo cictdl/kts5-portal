@@ -128,6 +128,10 @@ def test_the_test_closes_at_the_end_of_the_window_for_everyone(monkeypatch):
     with app.app_context():
         set_setting("exam.open", "auto")
         set_setting("exam.date", "2026-10-22")
+        # a window of one day (the days of 1.2.120 are tests/test_exam_days.py)
+        set_setting("exam.date_to", "")
+        set_setting("exam.start_time", "11:30")
+        set_setting("exam.end_time", "12:00")
 
     def at(hhmm):
         now = datetime.fromisoformat(f"2026-10-22T{hhmm}").replace(tzinfo=utils.IST)

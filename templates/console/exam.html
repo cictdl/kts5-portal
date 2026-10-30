@@ -2,7 +2,7 @@
 {% block title %}Test monitor{% endblock %}
 {% block content %}
 <div class="kpis">
-  <div class="kpi"><div class="lbl">Window</div><div class="num" style="font-size:1.2rem">{{ settings['exam.date']|date }}</div><div class="sub">{{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST · {% if is_open %}<span class="pill green">open now</span>{% else %}<span class="pill grey">closed · mode {{ settings['exam.open'] }}</span>{% endif %}</div></div>
+  <div class="kpi"><div class="lbl">Window</div><div class="num" style="font-size:1.2rem">{{ settings['exam.date']|date }}{% if settings['exam.date_to'] and settings['exam.date_to'] > settings['exam.date'] %} – {{ settings['exam.date_to']|date }}{% endif %}</div><div class="sub">{{ settings['exam.start_time'] }}–{{ settings['exam.end_time'] }} IST · {% if is_open %}<span class="pill green">open now</span>{% else %}<span class="pill grey">closed · mode {{ settings['exam.open'] }}</span>{% endif %}</div></div>
   <div class="kpi"><div class="lbl">Eligible</div><div class="num">{{ '{:,}'.format(eligible) }}</div><div class="sub">{{ 'registered and verified' if settings['exam.unverified'] == '1' else 'verified' }} candidates</div></div>
   <div class="kpi"><div class="lbl">In progress</div><div class="num">{{ counts.get('in_progress', 0) }}</div></div>
   <div class="kpi"><div class="lbl">Submitted</div><div class="num">{{ counts.get('submitted', 0) }}</div><div class="sub">{{ counts.get('expired', 0) }} auto-submitted at time-out</div></div>
