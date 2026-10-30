@@ -17,6 +17,7 @@ from flask import (Blueprint, Response, abort, current_app, flash, g, make_respo
 
 from . import campus as CAMP
 from . import companion as C
+from . import dashboard as D
 from . import heis as HEI
 from . import kural as K
 from .db import LAUNCH_NOTICE, RETIRED_LAUNCH_NOTICES, all_settings, audit, execute, get_setting, query, utcnow
@@ -1204,6 +1205,15 @@ def companion():
                            topics=[K.chapter(ch) for ch in COMPANION_TOPICS])
 
 
+@bp.route("/dashboard")
+def dashboard():
+    """KTS 5.0 by State/UT (1.2.122): the live figures of each State/UT, counts only (kts/dashboard.py)."""
+    if get_setting("dashboard.public") != "1":
+        abort(404)
+    data = D.figures()
+    return render_template("public/dashboard.html", states=data["states"], total=data["total"], now=now_ist().strftime("%H:%M"))
+
+
 @bp.route("/daily-kural")
 def daily_kural():
     stream, stream_dir = _stream(request.args.get("l"))
@@ -1422,7 +1432,8 @@ POLICY_LANGS = ("en", "hi", "ta")
 # the sitemap: (heading, [(endpoint, arguments, label)]), the public pages only
 SITEMAP = [
     ("pol.sm_programme", [("public.home", {}, "nav.home"), ("public.about", {}, "nav.about"),
-                          ("public.programme", {}, "nav.programme"), ("public.schedule", {}, "nav.schedule"),
+                          ("public.programme", {}, "nav.programme"), ("public.dashboard", {}, "dash.title"),
+                          ("public.schedule", {}, "nav.schedule"),
                           ("public.notices", {}, "nav.notices"), ("public.news", {}, "news.title"), ("public.partners", {}, "nav.partners"),
                           ("public.gallery", {}, "nav.gallery"), ("public.contact", {}, "nav.contact")]),
     ("pol.sm_students", [("public.guide", {}, "guide.title"), ("practice.home", {}, "prac.title"), ("public.kural108", {}, "k108.title"),

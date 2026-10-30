@@ -710,3 +710,40 @@ footer.site .bottom .wrap { display: flex; justify-content: space-between; gap: 
 .companion .comp-options { margin: 4px 0 6px; }
 .companion .comp-chips { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .companion .comp-chips .pill { font-size: .85rem; padding: 5px 12px; white-space: normal; }
+
+/* KTS 5.0 by State/UT (1.2.122): the grid of squares (no map), its legend and the table; one hue, lighter to darker */
+.dash .dash-time { margin-top: -4px; }
+.dash .dash-kpis { margin: 14px 0 18px; }
+.dash .stat .sub { margin-top: 2px; }
+.dash .dash-map { margin-bottom: 22px; }
+.dash .dash-grid { list-style: none; margin: 14px 0 12px; padding: 0; display: grid; grid-template-columns: repeat(9, minmax(0, 66px));
+  grid-auto-rows: 58px; gap: 4px; }
+.dash .dash-grid li { position: relative; }
+.dash .dash-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; border-radius: 6px;
+  color: #0b0b0b; line-height: 1.15; font-size: .78rem; text-decoration: none; }
+.dash .dash-tile b { font-size: .95rem; }
+.dash .dash-tile:hover, .dash .dash-tile:focus-visible { outline: 2px solid var(--saffron); outline-offset: 1px; text-decoration: none; }
+.dash .b0 { background: #cde2fb; }
+.dash .b1 { background: #86b6ef; }
+.dash .b2 { background: #2a78d6; color: #fff; }
+.dash .b3 { background: #1c5cab; color: #fff; }
+.dash .b4 { background: #0d366b; color: #fff; }
+.dash .nb { background: #f0efec; color: #52514e; }
+.dash .dash-tip { display: none; position: absolute; z-index: 5; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%);
+  width: max-content; max-width: 240px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface);
+  color: var(--ink); box-shadow: var(--shadow); font-size: .8rem; line-height: 1.4; text-align: start; }
+.dash .dash-tip > * { display: block; }
+.dash .dash-tile:hover .dash-tip, .dash .dash-tile:focus .dash-tip { display: block; }
+.dash .dash-legend { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .82rem; color: var(--dim); }
+.dash .dash-legend li { display: flex; align-items: center; gap: 6px; }
+.dash .dash-sw { display: inline-block; width: 14px; height: 14px; border-radius: 3px; }
+.dash .dash-table thead th { white-space: normal; text-transform: none; letter-spacing: 0; font-size: .8rem; min-width: 6.5em; vertical-align: bottom; }
+.dash .dash-table th[scope="row"] { font-weight: 600; text-transform: none; letter-spacing: 0; font-size: .92rem; color: var(--ink); background: none; white-space: normal; }
+.dash .dash-table tfoot th, .dash .dash-table tfoot td { font-weight: 800; border-top: 2px solid var(--border); }
+.dash .dash-meter { display: block; min-width: 60px; height: 4px; margin-top: 4px; border-radius: 2px; background: #e1e0d9; overflow: hidden; }
+.dash .dash-meter > span { display: block; height: 100%; border-radius: 2px; background: #2a78d6; }
+@media (max-width: 599px) {
+  .dash .dash-grid { grid-template-columns: repeat(9, minmax(0, 1fr)); grid-auto-rows: 36px; gap: 3px; }
+  .dash .dash-n, .dash .dash-tip { display: none !important; }
+  .dash .dash-tile b { font-size: .7rem; }
+}

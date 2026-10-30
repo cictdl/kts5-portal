@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{{ t('dash.title') }}{% endblock %}
+{% block content %}
+{# KTS 5.0 by State/UT (1.2.122): the live figures of each State/UT, counts only (kts/dashboard.py). The grid is no map:
+   a square per State/UT placed roughly as on the map; every figure of a square is also in the table below. #}
+{% macro of(n, total) -%}{{ t('dash.of')|replace('{n}', '{:,}'.format(n))|replace('{total}', '{:,}'.format(total)) }}{%- endmacro %}
+<div class="wrap section dash">
+  <span class="eyebrow">{{ t('nav.programme') }}</span>
+  <h1>{{ t('dash.title') }}</h1>
+  <p class="dim" style="max-width:80ch">{{ t('dash.intro') }}</p>
+  <p class="small muted dash-time">{{ t('dash.updated')|replace('{time}', now) }}</p>
+
+  <div class="grid grid-3 dash-kpis">
+    <div class="card stat"><div class="num">{{ '{:,}'.format(total.to_select) }}</div><div class="lbl">{{ t('dash.to_select') }}</div></div>
+    <div class="card stat indigo"><div class="num">{{ '{:,}'.format(total.inst_reg) }}</div><div class="lbl">{{ t('dash.inst_reg') }}</div></div>
+    <div class="card stat accent"><div class="num">{{ '{:,}'.format(total.inst_sel) }}</div><div class="lbl">{{ t('dash.inst_sel') }}</div></div>
+    <div class="card stat"><div class="num">{{ '{:,}'.format(total.assessed) }}</div><div class="lbl">{{ t('dash.assessed') }}</div></div>
+    <div class="card stat kumkum"><div class="num">{{ '{:,}'.format(total.registered) }}</div><div class="lbl">{{ t('home.stat_apps') }}</div><div class="sub small muted"><bdi>{{ of(total.registered, total.to_select) }}</bdi></div></div>
+    <div class="card stat green"><div class="num">{{ '{:,}'.format(total.verified) }}</div><div class="lbl">{{ t('dash.verified') }}</div></div>
+  </div>
+
+  <section class="card dash-map" aria-labelledby="dash-grid-h">
+    <h2 id="dash-grid-h">{{ t('dash.grid_title') }}</h2>
+    <p class="small muted">{{ t('dash.grid_note') }}</p>
+    <ul class="dash-grid">
+      {% for r in states if r.grid %}
+      <li style="grid-row:{{ r.grid[0] + 1 }};grid-column:{{ r.grid[1] + 1 }}">
+        <a class="dash-tile {{ r.shade }}" href="#st-{{ r.grid[2] }}">
+          <b dir="ltr">{{ r.grid[2] }}</b>
+          <span class="dash-n" dir="ltr">{{ r.registered }}{% if r.to_select %}/{{ r.to_select }}{% endif %}</span>
+          <span class="dash-tip" role="tooltip"><b>{{ place(r.state) }}</b>
+            <span>{{ t('home.stat_apps') }}: <bdi>{% if r.to_select %}{{ of(r.registered, r.to_select) }}{% else %}{{ r.registered }} · {{ t('dash.no_number') }}{% endif %}</bdi></span>
+            <span>{{ t('dash.inst_sel') }}: <bdi>{{ r.inst_sel }}</bdi></span>
+            <span>{{ t('dash.verified') }}: <bdi>{{ r.verified }}</bdi></span></span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    <ul class="dash-legend">
+      <li><i class="dash-sw b0"></i><bdi dir="ltr">0%</bdi></li>
+      <li><i class="dash-sw b1"></i><bdi dir="ltr">≤ 25%</bdi></li>
+      <li><i class="dash-sw b2"></i><bdi dir="ltr">≤ 50%</bdi></li>
+      <li><i class="dash-sw b3"></i><bdi dir="ltr">≤ 75%</bdi></li>
+      <li><i class="dash-sw b4"></i><bdi dir="ltr">&gt; 75%</bdi></li>
+      <li><i class="dash-sw nb"></i>{{ t('dash.no_number') }}</li>
+    </ul>
+  </section>
+
+  <section class="dash-table-sec" aria-labelledby="dash-table-h">
+    <h2 id="dash-table-h">{{ t('dash.table_title') }}</h2>
+    <div class="table-wrap"><table class="table dash-table">
+      <thead><tr><th scope="col">{{ t('reg.state') }}</th><th scope="col" class="num">{{ t('dash.to_select') }}</th>
+        <th scope="col" class="num">{{ t('dash.inst_reg') }}</th><th scope="col" class="num">{{ t('dash.inst_sel') }}</th>
+        <th scope="col" class="num">{{ t('dash.assessed') }}</th><th scope="col" class="num">{{ t('home.stat_apps') }}</th>
+        <th scope="col" class="num">{{ t('dash.verified') }}</th></tr></thead>
+      <tbody>
+        {% for r in states %}
+        <tr{% if r.grid %} id="st-{{ r.grid[2] }}"{% endif %}>
+          <th scope="row">{{ place(r.state) }}</th>
+          <td class="num">{{ r.to_select if r.to_select else '–' }}</td>
+          <td class="num">{{ r.inst_reg }}</td><td class="num">{{ r.inst_sel }}</td><td class="num">{{ r.assessed }}</td>
+          <td class="num">{{ r.registered }}{% if r.share is not none %}<span class="dash-meter" aria-hidden="true"><span style="width:{{ r.share }}%"></span></span>{% endif %}</td>
+          <td class="num">{{ r.verified }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot><tr><th scope="row">{{ t('dash.total') }}</th><td class="num">{{ '{:,}'.format(total.to_select) }}</td>
+        <td class="num">{{ '{:,}'.format(total.inst_reg) }}</td><td class="num">{{ '{:,}'.format(total.inst_sel) }}</td>
+        <td class="num">{{ '{:,}'.format(total.assessed) }}</td><td class="num">{{ '{:,}'.format(total.registered) }}</td>
+        <td class="num">{{ '{:,}'.format(total.verified) }}</td></tr></tfoot>
+    </table></div>
+  </section>
+</div>
+{% endblock %}

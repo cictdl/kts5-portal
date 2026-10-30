@@ -743,6 +743,8 @@ DEFAULT_SETTINGS = {
     "site.visitors": "1",
     "quiz.max_players": "200",
     "stats.public": "1",
+    # the public dashboard KTS 5.0 by State/UT (1.2.122, kts/dashboard.py)
+    "dashboard.public": "1",
     "site.draft_note_on": "1",
     "home.pm_on": "1",
     "home.pm_quote": "Kashi Tamil Sangamam furthers the spirit of \u2018Ek Bharat, Shreshtha Bharat\u2019.",

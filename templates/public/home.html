@@ -177,7 +177,7 @@
 
 <section class="section">
   <div class="wrap">
-    <div class="section-head"><h2>{{ t('home.stats') }}</h2></div>
+    <div class="section-head"><h2>{{ t('home.stats') }}</h2>{% if get_setting('dashboard.public') == '1' %}<a class="small" href="{{ url_for('public.dashboard') }}">{{ t('dash.link') }} {{ fwd }}</a>{% endif %}</div>
     <div class="grid grid-4">
       {% if stats %}
       <div class="card stat indigo"><div class="num">{{ '{:,}'.format(stats.apps) }}</div><div class="lbl">{{ t('home.stat_apps') }}</div></div>

@@ -1143,5 +1143,20 @@
   "comp.try": "Start from a subject",
   "comp.note": "The companion matches your words with the portal's own translations and commentaries of the Thirukkural. It writes no text of its own, and your question stays on the portal. It is free to use, in all 23 languages.",
   "comp.cta": "Ask the Thirukkural study companion",
-  "exam.days_note": "The test is open from {from} to {to} IST: take it at any time in these days. It lasts {minutes} minutes, and every attempt ends at {to} at the latest."
+  "exam.days_note": "The test is open from {from} to {to} IST: take it at any time in these days. It lasts {minutes} minutes, and every attempt ends at {to} at the latest.",
+  "dash.title": "KTS 5.0 by State/UT",
+  "dash.intro": "Where the programme stands in each State/UT: the institutions registered and selected, the students who took an institution's online test, and the student delegates registered and verified, against the number each State/UT is to select (Annexure-I of the D.O. letter of the Ministry of Education). Counts only, no names.",
+  "dash.updated": "Live figures, as on {time} IST",
+  "dash.to_select": "To be selected",
+  "dash.inst_reg": "Institutions registered",
+  "dash.inst_sel": "Participating Institutions selected",
+  "dash.assessed": "Students who took an institution's online test",
+  "dash.verified": "Verified by the Nodal Officers",
+  "dash.grid_title": "Student delegates registered, against the number to be selected",
+  "dash.grid_note": "Each square is a State/UT, placed roughly as on the map of India; the darker the square, the nearer the State/UT is to its number.",
+  "dash.no_number": "No number in Annexure-I",
+  "dash.table_title": "The figures of each State/UT",
+  "dash.total": "All States/UTs",
+  "dash.link": "KTS 5.0 by State/UT",
+  "dash.of": "{n} of {total}"
 }
