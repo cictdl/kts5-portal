@@ -19,4 +19,4 @@ def test_host_a_quiz_comes_first():
         assert page.count('href="/quiz/host"') == 1 and button in page, code
         assert page.index(button) < page.index('<div class="quiz-card join-card">') < page.index('class="join-form"'), code
         assert "host-line" not in page, code
-    assert '<link rel="stylesheet" href="/static/css/quiz.css?v=2">' in page
+    assert '<link rel="stylesheet" href="/static/css/quiz.css?v=3">' in page

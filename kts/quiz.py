@@ -74,9 +74,15 @@ def _shuffle(rng, options, right):
     return [options[i] for i in order], order.index(right)
 
 
+QUIZ_SCOPE = "k108"   # every quiz draws from the 108 Thirukkural (1.2.132); the other scopes name the rooms made before
+
+
 def _scope(scope):
-    """(kind, kurals) of a scope: all, pal1 to pal3, ch1 to ch133; None for anything else."""
+    """(kind, kurals) of a scope: k108 (the 108 Thirukkural), all, pal1 to pal3, ch1 to ch133; None for anything else."""
     kurals = list(K.corpus()["kurals"].values())
+    if scope == QUIZ_SCOPE:
+        numbers = set(K.kural108_numbers())
+        return "k108", [k for k in kurals if k["n"] in numbers]
     if scope == "all":
         return "all", kurals
     m = re.fullmatch(r"pal([123])", scope or "")
@@ -146,7 +152,8 @@ def make_questions(lang, count, scope, rng):
     enough text in that language. The whole Thirukkural: 40% complete the couplet, 30% the chapter,
     15% the section, 15% general knowledge (in English for a language without a set of its own,
     as in the test). One section: 60% complete, 40% the chapter, its options from the same section.
-    One chapter: complete the couplet only. No couplet comes twice.
+    One chapter: complete the couplet only. The 108 Thirukkural (every quiz since 1.2.132): 50% complete, 30% the
+    chapter, 20% the section, no general knowledge. No couplet comes twice.
     """
     found = _scope(scope)
     if found is None or lang not in K.ORIENTATION_LANGS:
@@ -155,6 +162,8 @@ def make_questions(lang, count, scope, rng):
     pal = kurals[0]["pal_num"] if kind == "pal" else None
     if kind == "all":
         shares = [("complete", .40), ("chapter", .30), ("section", .15), ("gk", .15)]
+    elif kind == "k108":
+        shares = [("complete", .50), ("chapter", .30), ("section", .20)]
     elif kind == "pal":
         shares = [("complete", .60), ("chapter", .40)]
     else:
@@ -501,7 +510,7 @@ def host_new():
     if host[0] == "candidate":
         pref = query("SELECT pref_lang FROM applications WHERE id = ?", (host[1],), one=True)["pref_lang"]
         default_lang = pref if pref in codes else default_lang
-    form = {"lang": request.form.get("lang") or default_lang, "scope": request.form.get("scope") or "all",
+    form = {"lang": request.form.get("lang") or default_lang, "scope": QUIZ_SCOPE,   # the 108 Thirukkural, whatever is posted
             "count": request.form.get("count") or "10", "seconds": request.form.get("seconds") or "30"}
     if request.method == "POST":
         try:
@@ -556,6 +565,8 @@ def host_screen(code):
 
 
 def _scope_label(scope):
+    if scope == QUIZ_SCOPE:
+        return t("k108.title")
     lang = corpus_lang()
     m = re.fullmatch(r"(pal|ch)(\d+)", scope)
     if m is None:

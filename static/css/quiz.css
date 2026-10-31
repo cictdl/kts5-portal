@@ -32,6 +32,9 @@ body.quiz-page main { flex: 1; }
 .join-icon { font-size: 3rem; line-height: 1; margin-bottom: 8px; }
 .join-form, .host-form { display: grid; gap: 6px; text-align: start; margin-top: 14px; }
 .join-form label, .host-form label { font-weight: 700; margin-top: 8px; }
+/* the questions come from the 108 Thirukkural (1.2.132): the form says so where the choice of scope stood */
+.host-form .scope-fixed { margin: 0; padding: 12px 14px; border: 1.5px solid var(--border-strong); border-radius: 12px; background: var(--surface); }
+.host-form .scope-note { margin: 6px 0 0; }
 .join-form input, .host-form select { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-strong); border-radius: 12px;
   background: #fff; color: var(--ink); font: inherit; font-size: 1.05rem; }
 .join-form input:focus, .host-form select:focus { outline: 3px solid var(--indigo-soft); border-color: var(--indigo-2); }

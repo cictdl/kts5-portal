@@ -265,7 +265,8 @@ def assessment():
             return redirect(url_for("campus.home"))
         slug = inst["test_slug"] or _new_slug()
         code_ = inst["test_code"] or _new_code()
-        syllabus = "108" if request.form.get("syllabus") == "108" else "all"
+        # the 108 Thirukkural unless the institution chooses the whole book (the default since 1.2.132)
+        syllabus = "all" if request.form.get("syllabus") == "all" else "108"
         execute("UPDATE institutions SET test_on = 1, test_from = ?, test_to = ?, test_slug = ?, test_code = ?, test_syllabus = ?, updated_at = ? "
                 "WHERE id = ?", (a.isoformat(), b.isoformat(), slug, code_, syllabus, now, inst["id"]))
         audit("assessment_on", "institution", inst["id"], detail={"from": a.isoformat(), "to": b.isoformat(), "syllabus": syllabus}, ip=client_ip())

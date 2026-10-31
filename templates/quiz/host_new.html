@@ -24,18 +24,11 @@
         {% for code, label in langs %}<option value="{{ code }}" {{ 'selected' if code == form.lang }}>{{ label }}</option>
         {% endfor %}
       </select>
-      <label for="q-scope">{{ t('quiz.scope') }}</label>
-      <select id="q-scope" name="scope">
-        <option value="all" {{ 'selected' if form.scope == 'all' }}>{{ t('quiz.scope_all') }}</option>
-        <optgroup label="{{ t('common.section') }}">
-          {% for n, label in pals %}<option value="pal{{ n }}" {{ 'selected' if form.scope == 'pal' ~ n }}>{{ label }}</option>
-          {% endfor %}
-        </optgroup>
-        <optgroup label="{{ t('common.chapters') }}">
-          {% for n, label in chapters %}<option value="ch{{ n }}" {{ 'selected' if form.scope == 'ch' ~ n }}>{{ n }}. {{ label }}</option>
-          {% endfor %}
-        </optgroup>
-      </select>
+      {# the questions come from the 108 Thirukkural, for every quiz (1.2.132) #}
+      <label>{{ t('quiz.scope') }}</label>
+      <p class="scope-fixed"><b>{{ t('k108.title') }}</b> · <a href="{{ url_for('public.kural108') }}" target="_blank" rel="noopener">{{ t('k108.read') }} <span aria-hidden="true">↗</span></a></p>
+      <p class="small dim scope-note">{{ t('quiz.k108_note') }}</p>
+      <input type="hidden" name="scope" value="k108">
       <div class="pair">
         <div>
           <label for="q-count">{{ t('quiz.count') }}</label>

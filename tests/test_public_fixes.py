@@ -1051,8 +1051,8 @@ def test_alt_texts_use_keys_that_exist():
     # 1.2.122: the 15 of the dashboard KTS 5.0 by State/UT (dash.*) and the 6 of its blocks of the States/UTs (1.2.124);
     # 1.2.126: the central online test on the Schedule; 1.2.128: the 8 of the video guide to the portal (gv.*);
     # 1.2.129: the 31 of the banner KTS 5.0 in numbers (num.*); 1.2.130: the 6 of its Digital repository group;
-    # 1.2.131: the row of photographs and videos of an event on social media
-    assert len(CATALOG["en"]) == 1213
+    # 1.2.131: the row of photographs and videos of an event on social media; 1.2.132: the quiz on the 108 Thirukkural
+    assert len(CATALOG["en"]) == 1214
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1084,7 +1084,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.131" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.132" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

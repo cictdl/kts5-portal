@@ -140,7 +140,8 @@ def test_the_coordinator_signs_in_with_a_code_and_switches_the_assessment_on():
     page = coord.get("/institution").get_data(as_text=True)
     assert inst["name"] in page and "The steps and the dates" in page and "Switch on" in page
     assert "31 December 2030" in page  # the last day to register the student (reg.end of the tests)
-    r = coord.post("/institution/assessment", data={"_csrf": token, "action": "on", "test_from": "2026-10-16", "test_to": "2026-10-20"},
+    # the whole book, chosen (the 108 Thirukkural are the default since 1.2.132): this bank has no questions on the 108
+    r = coord.post("/institution/assessment", data={"_csrf": token, "action": "on", "test_from": "2026-10-16", "test_to": "2026-10-20", "syllabus": "all"},
                    follow_redirects=True)
     page = r.get_data(as_text=True)
     assert "The online assessment is on" in page and "Access code" in page
@@ -152,7 +153,7 @@ def test_the_coordinator_signs_in_with_a_code_and_switches_the_assessment_on():
     from kts.db import set_setting
     with app.app_context():
         set_setting("camp.to", "2026-10-21")
-    r = coord.post("/institution/assessment", data={"_csrf": token, "action": "on", "test_from": "2026-10-16", "test_to": "2026-10-30"},
+    r = coord.post("/institution/assessment", data={"_csrf": token, "action": "on", "test_from": "2026-10-16", "test_to": "2026-10-30", "syllabus": "all"},
                    follow_redirects=True)
     assert "must fall between" in r.get_data(as_text=True)
     # the console follows it

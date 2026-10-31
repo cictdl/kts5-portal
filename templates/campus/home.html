@@ -52,8 +52,9 @@
           <div class="field"><label for="test_from">First day</label><input type="date" id="test_from" name="test_from" value="{{ inst.test_from or (period[0].isoformat() if period[0] else '') }}" {% if period[0] %}min="{{ period[0].isoformat() }}"{% endif %} {% if period[1] %}max="{{ period[1].isoformat() }}"{% endif %} required></div>
           <div class="field"><label for="test_to">Last day</label><input type="date" id="test_to" name="test_to" value="{{ inst.test_to or (period[1].isoformat() if period[1] else '') }}" {% if period[0] %}min="{{ period[0].isoformat() }}"{% endif %} {% if period[1] %}max="{{ period[1].isoformat() }}"{% endif %} required></div>
           <div class="field"><label for="syllabus">Syllabus</label><select id="syllabus" name="syllabus">
-            <option value="all" {{ 'selected' if inst.test_syllabus != '108' }}>All 1,330 couplets</option>
-            <option value="108" {{ 'selected' if inst.test_syllabus == '108' }}>The 108 Thirukkural only</option></select></div>
+            {# the 108 Thirukkural first and chosen, until the institution switches its assessment on with the whole book (1.2.132) #}
+            <option value="108" {{ 'selected' if inst.test_syllabus == '108' or not inst.test_on }}>The 108 Thirukkural only</option>
+            <option value="all" {{ 'selected' if inst.test_on and inst.test_syllabus != '108' }}>All 1,330 couplets</option></select></div>
           <div class="field"><label>&nbsp;</label><button class="btn sm saffron" name="action" value="on">{{ 'Change the days or the syllabus' if inst.test_on else 'Switch on' }}</button></div>
         </form>
         <p class="small muted" style="margin:8px 0 0">The 108 Thirukkural: one couplet from each of the first 108 chapters, chosen by CICT, with a Tamil commentary (<a href="{{ url_for('public.kural108') }}">read them</a>). With this syllabus every question of the paper is on one of these couplets, and the students are told so on the sign-up page.</p>

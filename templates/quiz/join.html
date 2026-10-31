@@ -8,6 +8,7 @@
     <div class="join-icon" aria-hidden="true">🎯</div>
     <h1>{{ t('quiz.title') }}</h1>
     <p class="dim">{{ t('quiz.tagline') }}</p>
+    <p class="small dim">{{ t('quiz.k108_note') }}</p>
     {% if back %}<a class="alert info back-link" href="{{ url_for('quiz.play') }}">{{ t('quiz.continue') }} · <bdi dir="ltr">{{ back }}</bdi> {{ fwd }}</a>{% endif %}
     {% if closed %}
     <div class="alert warning">{{ t('quiz.off') }}</div>
