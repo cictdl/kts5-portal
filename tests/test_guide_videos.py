@@ -118,4 +118,4 @@ def test_the_player_and_the_policy():
     assert 'document.querySelectorAll("a[data-yt]")' in js and '"https://www.youtube-nocookie.com/embed/" + id + "?autoplay=1&rel=0"' in js
     assert "/^[A-Za-z0-9_-]{11}$/.test(id)" in js and 'f.referrerPolicy = "strict-origin-when-cross-origin"' in js
     page = _page(client, "/?lang=en")
-    assert "/static/js/portal.js?v=20" in page
+    assert "/static/js/portal.js?v=21" in page

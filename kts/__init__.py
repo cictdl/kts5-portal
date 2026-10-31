@@ -240,6 +240,8 @@ def create_app(config_object=Config):
             "social_links": db.social_links,
             "portal_credits": public.portal_credits,
             "guide_videos": public.guide_videos,
+            "portal_figures": public.portal_figures,
+            "in_number": public.in_number,
             "nodal_officers": db.nodal_officers,
             "institute_head": db.institute_head,
             "now_ist": utils.now_ist,

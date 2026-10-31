@@ -296,6 +296,47 @@ def guide_videos():
     return tuple(dict(v, url=f"https://www.youtube.com/watch?v={v['youtube']}") for v in data["videos"])
 
 
+# "KTS 5.0 in numbers" (1.2.129): the banner of the home page. What the portal holds is counted from its own files at each
+# start; the hours of the recordings and the headline figures of CICT's Digital Archives come from data/figures.json
+# (tools/update_figures.py refreshes them from the archives' page).
+@lru_cache(maxsize=1)
+def portal_figures():
+    """The figures of the banner: languages, couplets and their versions, recordings, videos, study books, posters, seminars."""
+    data_dir = current_app.config["DATA_DIR"]
+    static = Path(current_app.static_folder)
+
+    def rows(name):
+        data = json.loads((data_dir / name).read_text(encoding="utf-8"))
+        return data if isinstance(data, list) else next(v for v in data.values() if isinstance(v, list))
+
+    corpus = K.corpus()
+    figures = json.loads((data_dir / "figures.json").read_text(encoding="utf-8"))
+    parts = {"lectures": len(rows("orientation_lectures.json")),
+             "repository": sum(1 for r in rows("resources.json") if r["category"].startswith("video")),
+             "reels": len(rows("reels.json")), "guide": len(guide_videos())}
+    return {"langs": len(i18n.CATALOG), "kurals": len(corpus["kurals"]),
+            "versions": len(next(iter(corpus["kurals"].values()))["tr"]),
+            "audio": sum(1 for _ in (static / "audio").rglob("*.mp3")), "audio_hours": figures["audio_hours"],
+            "videos": sum(parts.values()), "video_parts": parts, "books": len(rows("syllabus.json")),
+            "posters": sum(1 for _ in (static / "posters").glob("*.pdf")), "events": len(cict_events()),
+            "archives": figures["archives"], "as_of": figures["as_of"]}
+
+
+def in_number(n):
+    """1,00,000: a figure in the grouping of India (the last three digits, then twos)."""
+    s = str(int(n))
+    if len(s) <= 3:
+        return s
+    head, tail = s[:-3], s[-3:]
+    groups = []
+    while len(head) > 2:
+        groups.insert(0, head[-2:])
+        head = head[:-2]
+    if head:
+        groups.insert(0, head)
+    return ",".join(groups + [tail])
+
+
 # the kinds of event and of link of the seminars and workshops of CICT (data/cict_events.json, 1.2.83), in this order
 EV_TYPES = ("workshop", "seminar", "conference", "lecture", "training", "internship", "hackathon", "day", "launch",
             "exhibition", "meeting", "other")

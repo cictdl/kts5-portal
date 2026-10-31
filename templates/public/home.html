@@ -80,6 +80,10 @@
 {% from "public/_guide_videos.html" import video_guide, video_part with context %}
 <div class="section gv-home" style="padding:26px 0 6px"><div class="wrap">{{ video_guide() }}</div></div>
 
+{# KTS 5.0 in numbers (1.2.129): what the portal holds and the headline figures of CICT's Digital Archives, each a link #}
+{% from "public/_numbers.html" import numbers_band with context %}
+{{ numbers_band() }}
+
 {# The launch video (1.2.69): once the KTS 5.0 web portal and registration are launched, two minutes on the programme and
    the portal. The poster opens the video in the browser's own player (the templates hold no media elements of their own). #}
 {% set lv = launch_view() %}

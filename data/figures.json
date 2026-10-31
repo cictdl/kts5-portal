@@ -1,0 +1,20 @@
+{
+ "as_of": "2026-10-31",
+ "audio_hours": 7.8,
+ "archives": {
+  "url": "https://www.digitalarchives.cict.in/",
+  "bundles": 865,
+  "leaves": 100000,
+  "texts": 41,
+  "institutions": 15,
+  "editions": 6,
+  "lexical_tools": 17,
+  "lexical_words": 108655,
+  "citations": 275262,
+  "lexicon_entries": 6758,
+  "audio_lexicon_entries": 59170,
+  "audio_lexicon_headwords": 55831,
+  "audio_lexicon_sanskrit": 5547,
+  "gt_specimens": 133
+ }
+}

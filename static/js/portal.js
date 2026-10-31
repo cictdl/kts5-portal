@@ -286,3 +286,39 @@
     });
   });
 })();
+
+// KTS 5.0 in numbers (1.2.129): each figure counts up from nought as its tile comes into view, in the grouping of India
+// (1,00,000); not for a visitor who asks for reduced motion, nor in a browser without the observer: the figure is written
+// in the page already.
+(function () {
+  var els = document.querySelectorAll("[data-count]");
+  if (!els.length) return;
+  var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (still || !("IntersectionObserver" in window) || !window.Intl) {
+    els.forEach(function (el) { var t = el.closest(".num-tile"); if (t) t.classList.add("num-in"); });
+    return;
+  }
+  var fmt = new Intl.NumberFormat("en-IN");
+  function run(el) {
+    var end = parseInt(el.getAttribute("data-count"), 10);
+    if (isNaN(end)) return;
+    var start = null, span = 900 + Math.min(900, end / 100);
+    function step(ts) {
+      if (start === null) start = ts;
+      var p = Math.min(1, (ts - start) / span), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmt.format(Math.round(end * e));
+      if (p < 1) requestAnimationFrame(step); else el.textContent = fmt.format(end);
+    }
+    requestAnimationFrame(step);
+  }
+  var seen = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      seen.unobserve(en.target);
+      var tile = en.target.closest(".num-tile");
+      if (tile) tile.classList.add("num-in");
+      run(en.target);
+    });
+  }, { threshold: 0.35 });
+  els.forEach(function (el) { seen.observe(el); });
+})();

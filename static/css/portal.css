@@ -554,6 +554,51 @@ table.table td.num, table.table th.num { text-align: end; font-variant-numeric: 
 .gv-kicker { margin: 0 0 6px; font-weight: 700; color: var(--dim); font-size: .9rem; }
 .gv-kicker span, .gv-btn span { color: var(--saffron, #E07B1A); }
 .gv-all { margin: 6px 0 0; }
+/* ---- KTS 5.0 in numbers (1.2.129): the banner of figures under the video guide, in both themes a night-blue band ---- */
+.numbers { position: relative; overflow: hidden; margin-top: 22px; padding: 46px 0 34px; color: #f4efe6;
+  background: radial-gradient(900px 420px at 6% -20%, rgba(224, 123, 26, .38), transparent 62%),
+              radial-gradient(760px 400px at 104% 118%, rgba(27, 127, 75, .34), transparent 60%),
+              linear-gradient(135deg, #0e1c33 0%, #1f3a5f 56%, #0e1c33 100%); }
+.num-glow { position: absolute; inset: -40% -20%; pointer-events: none;
+  background: conic-gradient(from 180deg at 50% 50%, transparent 0 70%, rgba(255, 255, 255, .06) 82%, transparent 100%); }
+@media (prefers-reduced-motion: no-preference) { .num-glow { animation: num-turn 28s linear infinite; } }
+@keyframes num-turn { to { transform: rotate(360deg); } }
+.numbers .wrap { position: relative; }
+.num-eyebrow { color: #f0a252; }
+.num-h { margin: 0 0 6px; color: #fff; font-size: clamp(1.6rem, 3vw, 2.2rem); letter-spacing: -.01em; }
+.num-lead { margin: 0 0 18px; max-width: 70ch; color: rgba(244, 239, 230, .82); }
+.num-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 168px), 1fr)); gap: 12px; }
+.num-tile { display: flex; flex-direction: column; gap: 6px; min-width: 0; padding: 18px 16px 16px; border-radius: 16px; color: inherit;
+  background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .14); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  text-decoration: none; transition: transform .18s, background .18s, border-color .18s, box-shadow .18s; }
+a.num-tile:hover, a.num-tile:focus-visible { transform: translateY(-3px); background: rgba(255, 255, 255, .12); border-color: #f0a252;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .28); text-decoration: none; }
+.num-ico { color: #f0a252; line-height: 0; }
+.num-ico svg { width: 26px; height: 26px; }
+.num-fig { display: flex; align-items: baseline; gap: 2px; }
+.num-n { font-size: clamp(1.8rem, 3.2vw, 2.5rem); font-weight: 800; line-height: 1; letter-spacing: -.02em; color: #fff; font-variant-numeric: tabular-nums; }
+.num-plus { font-size: 1.4rem; font-weight: 800; color: #f0a252; }
+.num-l { font-weight: 700; font-size: .95rem; line-height: 1.3; }
+.num-s { font-size: .82rem; color: rgba(244, 239, 230, .72); }
+.num-live .num-ico { color: #6dcf95; }
+.num-da { margin-top: 28px; padding-top: 22px; border-top: 1px solid rgba(255, 255, 255, .16); }
+.num-da-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 18px; margin-bottom: 14px; }
+.num-da-head .num-lead { margin-bottom: 0; }
+.num-h3 { margin: 0 0 4px; color: #fff; font-size: 1.3rem; }
+.num-visit { flex: 0 0 auto; }
+.num-foot { margin: 18px 0 0; color: rgba(244, 239, 230, .72); }
+.num-foot a { color: #f0a252; font-weight: 600; }
+@media (prefers-reduced-motion: no-preference) {
+  .num-tile { opacity: 0; transform: translateY(10px); }
+  .num-tile.num-in { opacity: 1; transform: none; transition: opacity .5s ease-out, transform .5s ease-out, background .18s, border-color .18s, box-shadow .18s; }
+  a.num-tile.num-in:hover { transform: translateY(-3px); }
+}
+@media (max-width: 599px) {
+  .numbers { padding: 34px 0 26px; }
+  .num-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .num-tile { padding: 14px 12px 12px; }
+  .num-n { font-size: 1.7rem; }
+}
 .res-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
 .res-tabs a { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); font-size: .85rem; font-weight: 600; color: var(--ink); }
 .res-tabs a.on { background: var(--indigo); border-color: var(--indigo); color: #fff; }
