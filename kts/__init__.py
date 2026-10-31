@@ -241,6 +241,7 @@ def create_app(config_object=Config):
             "portal_credits": public.portal_credits,
             "guide_videos": public.guide_videos,
             "portal_figures": public.portal_figures,
+            "repository_figures": public.repository_figures,
             "in_number": public.in_number,
             "nodal_officers": db.nodal_officers,
             "institute_head": db.institute_head,

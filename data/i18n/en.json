@@ -1204,5 +1204,11 @@
   "num.citations": "Citations documented",
   "num.lexicon": "Lexicon entries",
   "num.audio_lex": "Tamil Audio Lexicon entries",
-  "num.audio_lex_sub": "{a} headwords · {b} of Sanskrit origin"
+  "num.audio_lex_sub": "{a} headwords · {b} of Sanskrit origin",
+  "num.res_lead": "The learning materials of the repository, by kind, with the lectures, reels and photographs.",
+  "num.res_items": "Items in the repository",
+  "num.res_items_sub": "in {n} categories",
+  "num.lectures": "Orientation lectures",
+  "num.in_langs": "in {n} languages",
+  "num.photos": "Photographs in the gallery"
 }

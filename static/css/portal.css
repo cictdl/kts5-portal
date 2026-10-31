@@ -586,6 +586,8 @@ a.num-tile:hover, a.num-tile:focus-visible { transform: translateY(-3px); backgr
 .num-da-head .num-lead { margin-bottom: 0; }
 .num-h3 { margin: 0 0 4px; color: #fff; font-size: 1.3rem; }
 .num-visit { flex: 0 0 auto; }
+.num-res .num-visit { background: rgba(255, 255, 255, .12); border-color: rgba(255, 255, 255, .3); }
+.num-res .num-visit:hover { background: rgba(255, 255, 255, .2); }
 .num-foot { margin: 18px 0 0; color: rgba(244, 239, 230, .72); }
 .num-foot a { color: #f0a252; font-weight: 600; }
 @media (prefers-reduced-motion: no-preference) {

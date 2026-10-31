@@ -319,7 +319,23 @@ def portal_figures():
             "audio": sum(1 for _ in (static / "audio").rglob("*.mp3")), "audio_hours": figures["audio_hours"],
             "videos": sum(parts.values()), "video_parts": parts, "books": len(rows("syllabus.json")),
             "posters": sum(1 for _ in (static / "posters").glob("*.pdf")), "events": len(cict_events()),
+            "lectures": sum(len(v) for v in orientation_lectures().values()), "lecture_langs": len(orientation_lectures()),
+            "reels": reels()["count"], "reel_langs": len(reels()["langs"]),
             "archives": figures["archives"], "as_of": figures["as_of"]}
+
+
+REPOSITORY_TILES = 6   # the fullest categories of the repository that have a tile of their own on the banner
+
+
+def repository_figures():
+    """
+    The Digital repository as it stands (1.2.130), counted in the database at each view (CICT adds to it in the Console):
+    its items in all and by category (the fullest first), and the photographs of the gallery.
+    """
+    rows = query("SELECT category, COUNT(*) AS n FROM resources WHERE published = 1 GROUP BY category ORDER BY n DESC, category")
+    photos = query("SELECT COUNT(*) AS n FROM gallery_photos WHERE published = 1", one=True)["n"]
+    return {"total": sum(r["n"] for r in rows), "categories": len(rows), "top": [(r["category"], r["n"]) for r in rows[:REPOSITORY_TILES]],
+            "photos": photos}
 
 
 def in_number(n):
