@@ -1210,5 +1210,6 @@
   "num.res_items_sub": "in {n} categories",
   "num.lectures": "Orientation lectures",
   "num.in_langs": "in {n} languages",
-  "num.photos": "Photographs in the gallery"
+  "num.photos": "Photographs in the gallery",
+  "ev.media": "Photos and videos on social media"
 }

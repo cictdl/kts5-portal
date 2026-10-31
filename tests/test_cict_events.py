@@ -133,13 +133,52 @@ def test_long_lists_of_speakers_fold():
     assert item.count("<bdi>") >= len(e["people"])
 
 
+SITES = ("X", "Facebook", "Instagram", "YouTube", "LinkedIn", "Threads", "Telegram")
+
+
 def test_links_are_named_by_their_site():
+    # a post is on social media and names its site; a link to social media is a video, photographs or a post (1.2.128)
+    from kts.public import _ev_site
     for e in EVENTS:
-        kinds = [l["kind"] for l in e.get("links", [])]
-        assert kinds.count("post") <= 2 and kinds.count("video") <= 6, e["id"]
+        urls = [l["url"].rstrip("/") for l in e.get("links", [])]
+        assert len(urls) == len(set(urls)), e["id"]
         for l in e.get("links", []):
             if l["kind"] == "post":
-                assert l.get("label") in ("X", "Facebook", "Instagram", "LinkedIn", "Threads", "Telegram"), (e["id"], l)
+                assert l.get("label") in SITES, (e["id"], l)
+            if _ev_site(l["url"]):
+                assert l["kind"] in ("video", "photos", "post") and l.get("label") in SITES, (e["id"], l)
+
+
+def test_the_photographs_and_videos_of_an_event_stand_apart():
+    # the links to social media in a row of their own, videos first, each named by its kind and site; six are shown and the
+    # others open on a click (1.2.128); CICT's own documents stay buttons
+    from kts.public import _ev_site
+    client = _client()
+    page = _page(client, "/seminars-workshops?lang=en&y=all")
+    many = [e for e in EVENTS if sum(1 for l in e.get("links", []) if _ev_site(l["url"])) > 6]
+    for e in EVENTS:
+        start = page.index(f'<li class="ev" id="{e["id"]}">')
+        item = page[start:page.index("</li>", start)]
+        media = [l for l in e.get("links", []) if _ev_site(l["url"])]
+        docs = [l for l in e.get("links", []) if not _ev_site(l["url"])]
+        assert item.count('class="ev-chip"') == len(media) and item.count('class="btn xs secondary"') == len(docs), e["id"]
+        if media:
+            row = item[item.index('<div class="ev-media small">'):]
+            assert row.startswith('<div class="ev-media small"><b>Photos and videos on social media:</b> ')
+            kinds = [k for k in __import__("re").findall(r'</span> (Video|Photographs|Social media post) · <bdi>', row)]
+            order = {"Video": 0, "Photographs": 1, "Social media post": 2}
+            assert kinds == sorted(kinds, key=order.get), e["id"]
+            assert ("<summary>+" in row) == (len(media) > 6), e["id"]
+        else:
+            assert "ev-media" not in item, e["id"]
+    if many:
+        e = many[0]
+        start = page.index(f'<li class="ev" id="{e["id"]}">')
+        item = page[start:page.index("</li>", start)]
+        n = sum(1 for l in e["links"] if _ev_site(l["url"]))
+        assert f'<details class="ev-more"><summary>+{n - 6}</summary>' in item
+    # in Tamil, the row has its Tamil heading
+    assert "சமூக ஊடகங்களில் புகைப்படங்களும் காணொளிகளும்:" in _page(client, "/seminars-workshops?lang=ta&y=all")
 
 
 def test_the_main_menu_and_the_home_page_lead_to_it():
@@ -228,7 +267,7 @@ def test_the_workshop_and_the_note_added_on_27_october():
     # newest event; the Tamil note on KTS 5.0 of CICT's Tamil list beside the English one
     e = DATA["events"][0]
     assert e["id"] == "2026-10-27-heritage-of-tamil-medicine" and e["serial"] == 144 and e["end"] == "2026-11-05"
-    assert DATA["updated"] == "2026-10-27"
+    assert DATA["updated"] == "2026-10-31"  # the social media pass of 1.2.131
     client = make_app(ADMIN_PASSWORD=None).test_client()
     page = _page(client, "/seminars-workshops?lang=en&y=2026")
     assert page.index("Heritage of Tamil Medicine") < page.index("Seminar Commemorating Tirumular Day")

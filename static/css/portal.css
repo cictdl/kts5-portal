@@ -522,6 +522,13 @@ table.table td.num, table.table th.num { text-align: end; font-variant-numeric: 
 .ev-more summary::-webkit-details-marker { display: none; }
 .ev-more[open] summary { display: none; }
 .ev-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+/* the photographs and videos of an event on social media (1.2.131): small chips after CICT's own documents */
+.ev-media { margin-top: 8px; color: var(--dim); line-height: 2; }
+.ev-media b { margin-inline-end: 4px; }
+.ev-chip { display: inline-block; margin: 0 6px 0 0; padding: 1px 10px; border: 1px solid var(--border); border-radius: 999px;
+  background: var(--surface); color: var(--indigo); font-weight: 600; white-space: nowrap; line-height: 1.7; }
+.ev-chip:hover, .ev-chip:focus-visible { border-color: var(--indigo); text-decoration: none; }
+.ev-media .ev-more summary { margin-inline-end: 6px; }
 /* ---- the video guide to the portal (1.2.128): four posters that open the videos on YouTube ---- */
 .gv-block { margin: 0 0 18px; }
 .gv-h { margin: 0 0 4px; }

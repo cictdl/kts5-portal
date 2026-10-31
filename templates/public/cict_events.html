@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ t('ev.title') }}{% endblock %}
 {% block content %}
+{% macro ev_media(l) %}<a class="ev-chip" href="{{ l.url }}" target="_blank" rel="noopener"><span aria-hidden="true">{{ '▶' if l.kind == 'video' else '📷' if l.kind == 'photos' else '💬' }}</span> {{ t('ev.link_' + l.kind) }} · <bdi>{{ l.site }}</bdi></a>{% endmacro %}
 {# The seminars and workshops of CICT (1.2.83): data/cict_events.json. The titles, places and names are given as CICT
    gave them, in English or Tamil; each event links to CICT's own announcements, invitations, recordings and reports. #}
 <div class="wrap section">
@@ -36,7 +37,9 @@
           {% if e.for %}<span><b>{{ t('ev.for') }}:</b> <bdi>{{ e.for }}</bdi></span>{% endif %}
         </div>{% endif %}
         {% if e.people %}<div class="ev-people small"><b>{{ t('ev.people') }}:</b> {% for p in e.people[:8] %}<bdi>{{ p }}</bdi>{% if not loop.last %}, {% endif %}{% endfor %}{% if e.people|length > 8 %} <details class="ev-more"><summary>+{{ e.people|length - 8 }}</summary>{% for p in e.people[8:] %}<bdi>{{ p }}</bdi>{% if not loop.last %}, {% endif %}{% endfor %}</details>{% endif %}</div>{% endif %}
-        {% if e.links %}<div class="ev-links">{% for l in e.links %}<a class="btn xs secondary" href="{{ l.url }}" target="_blank" rel="noopener">{{ t('ev.link_' + l.kind) }}{% if l.label %} · <bdi>{{ l.label }}</bdi>{% endif %}</a>{% endfor %}</div>{% endif %}
+        {% if e.docs %}<div class="ev-links">{% for l in e.docs %}<a class="btn xs secondary" href="{{ l.url }}" target="_blank" rel="noopener">{{ t('ev.link_' + l.kind) }}{% if l.label %} · <bdi>{{ l.label }}</bdi>{% endif %}</a>{% endfor %}</div>{% endif %}
+        {# the photographs and videos of the event on social media (1.2.131), videos first; the others on a click #}
+        {% if e.media %}<div class="ev-media small"><b>{{ t('ev.media') }}:</b> {% for l in e.media[:6] %}{{ ev_media(l) }}{% endfor %}{% if e.media|length > 6 %} <details class="ev-more"><summary>+{{ e.media|length - 6 }}</summary>{% for l in e.media[6:] %}{{ ev_media(l) }}{% endfor %}</details>{% endif %}</div>{% endif %}
       </li>
       {% endfor %}
     </ol>

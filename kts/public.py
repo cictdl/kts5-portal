@@ -364,6 +364,30 @@ EV_MODES = ("inperson", "online", "hybrid")
 # the first year shown (1.2.87): the events of 2005-2019 stay in data/cict_events.json, and are not shown
 EV_SHOWN_FROM = "2020"
 
+# the links of an event to social media (1.2.131) stand in a row of their own, the photographs and videos of the event, each
+# named by its site; the videos first, then the photographs, then the other posts; so many are shown, the others on a click
+EV_SITES = {"x.com": "X", "twitter.com": "X", "facebook.com": "Facebook", "fb.watch": "Facebook", "instagram.com": "Instagram",
+            "youtube.com": "YouTube", "youtu.be": "YouTube", "threads.net": "Threads", "threads.com": "Threads",
+            "linkedin.com": "LinkedIn", "t.me": "Telegram"}
+EV_MEDIA_ORDER = ("video", "photos", "post")
+EV_MEDIA_SHOWN = 6
+
+
+def _ev_site(url):
+    """X, Facebook, YouTube … for a link to social media; None for any other."""
+    host = urlsplit(url).netloc.lower()
+    for prefix in ("www.", "m.", "mobile.", "web."):
+        host = host.removeprefix(prefix)
+    return EV_SITES.get(host)
+
+
+def _ev_split(e):
+    """The event with its links in two: `docs` (CICT's own and the news) and `media` (social media, with their `site`)."""
+    links = e.get("links") or []
+    media = [dict(l, site=l.get("label") or _ev_site(l["url"])) for l in links if _ev_site(l["url"])]
+    media.sort(key=lambda l: EV_MEDIA_ORDER.index(l["kind"]) if l["kind"] in EV_MEDIA_ORDER else len(EV_MEDIA_ORDER))
+    return dict(e, docs=[l for l in links if not _ev_site(l["url"])], media=media)
+
 
 @lru_cache(maxsize=1)
 def cict_events():
@@ -373,7 +397,7 @@ def cict_events():
     Only those from EV_SHOWN_FROM on.
     """
     data = json.loads((current_app.config["DATA_DIR"] / "cict_events.json").read_text(encoding="utf-8"))
-    shown = [e for e in data["events"] if e["start"][:4] >= EV_SHOWN_FROM]
+    shown = [_ev_split(e) for e in data["events"] if e["start"][:4] >= EV_SHOWN_FROM]
     return tuple(sorted(shown, key=lambda e: (e["start"], e.get("end") or "", e["id"]), reverse=True))
 
 
