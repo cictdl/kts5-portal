@@ -13,12 +13,13 @@ HEIS = json.loads((ROOT / "data" / "nodal_heis.json").read_text(encoding="utf-8"
 def test_the_list_is_the_one_of_the_ministry():
     assert len(HEIS) == 31
     # Annexure-I of the revised D.O. letter (26 October 2026): the number of Participating HEIs to be selected (1.2.110)
-    assert HEIS[0] == {"state": "Andhra Pradesh", "type": "central_university", "name": "Central University of Andhra Pradesh", "allocation": 30}
+    assert HEIS[0] == {"state": "Andhra Pradesh", "type": "central_university", "name": "Central University of Andhra Pradesh", "allocation": 50}
     assert HEIS[22]["name"] == "Central University of Tamil Nadu" and HEIS[25]["name"] == "Banaras Hindu University"
     assert HEIS[30] == {"state": "Puducherry", "type": "central_university", "name": "Pondicherry University", "allocation": 5}
     assert {h["type"] for h in HEIS} == {"central_university", "nit"} and sum(h["allocation"] for h in HEIS) == 1000
-    assert [h["allocation"] for h in HEIS] == [30, 7, 14, 18, 14, 7, 25, 21, 9, 11, 34, 21, 25, 46, 5, 5, 5, 5, 23, 21, 37, 5, 150,
-                                               23, 5, 350, 11, 23, 34, 11, 5]
+    # the D.O. letter of 31 October 2026 (1.2.133): nine States changed, 1,000 in all as before
+    assert [h["allocation"] for h in HEIS] == [50, 7, 14, 18, 14, 7, 50, 21, 9, 11, 49, 21, 40, 71, 5, 5, 5, 5, 48, 21, 37, 5, 50,
+                                               23, 5, 300, 11, 48, 34, 11, 5]
     assert len({h["state"] for h in HEIS}) == 31 and len({h["name"] for h in HEIS}) == 31
 
 

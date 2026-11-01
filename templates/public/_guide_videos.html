@@ -9,6 +9,8 @@
   <{{ h }} class="gv-h" id="{{ id }}-h"><span aria-hidden="true">▶</span> {{ t('gv.title') }}</{{ h }}>
   <p class="dim gv-lead">{{ t('gv.lead') }}</p>
   <div class="gv-grid">{% for v in guide_videos() %}{{ gv_card(v) }}{% endfor %}</div>
+  {# the letter of 31 October 2026 moved some dates after the videos were recorded (1.2.133) #}
+  <p class="small dim gv-note">{{ t('gv.note') }} <a href="{{ url_for('public.schedule') }}">{{ t('nav.schedule') }} →</a></p>
 </section>
 {% endmacro %}
 

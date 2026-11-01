@@ -561,6 +561,7 @@ table.table td.num, table.table th.num { text-align: end; font-variant-numeric: 
 .gv-kicker { margin: 0 0 6px; font-weight: 700; color: var(--dim); font-size: .9rem; }
 .gv-kicker span, .gv-btn span { color: var(--saffron, #E07B1A); }
 .gv-all { margin: 6px 0 0; }
+.gv-note { margin: 10px 0 0; max-width: 78ch; }
 /* ---- KTS 5.0 in numbers (1.2.129): the banner of figures under the video guide, in both themes a night-blue band ---- */
 .numbers { position: relative; overflow: hidden; margin-top: 22px; padding: 46px 0 34px; color: #f4efe6;
   background: radial-gradient(900px 420px at 6% -20%, rgba(224, 123, 26, .38), transparent 62%),

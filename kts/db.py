@@ -654,7 +654,7 @@ DEFAULT_SETTINGS = {
     "orientation.note": "CICT holds language-wise online academic orientation sessions (2 lectures + 20-minute live Q&A), with its multilingual study material and educational videos, before the one-month research and academic engagement begins.",
     # the academic orientation by CICT, with the study material and educational videos: by 10 December 2026 (the revised D.O.
     # letter, Annexure-III D)
-    "orientation.by": "2026-12-10",
+    "orientation.by": "2026-12-14",
     "contact.email": "office@cict.in",
     "contact.phone": "044-22540125",
     # the address that receives a copy of every message of the contact form (empty: none)
@@ -685,9 +685,9 @@ DEFAULT_SETTINGS = {
     # the confirmation letter of the selected students, and the dates of the internship it names
     "letter.on": "1",
     "letter.date": "2026-12-06",
-    "internship.start": "2026-12-12",
-    "papers.due": "2027-01-11",
-    "present.due": "2027-01-11",
+    "internship.start": "2026-12-15",
+    "papers.due": "2027-01-14",
+    "present.due": "2027-01-14",
     # the research papers (kts/papers.py): auto = from internship.start to papers.due, 1 open, 0 closed;
     # a note and a link to the guidelines, shown above the form
     "papers.open": "auto",
@@ -708,12 +708,12 @@ DEFAULT_SETTINGS = {
     "backup.keep": "28",
     # the participating institutions (1.2.41, kts/heis.py)
     "hei.open": "1",
-    "hei.end": "2026-11-10",
+    "hei.end": "2026-11-15",
     "hei.max_per_state": "0",
     # the revised D.O. letter (26 October 2026): the Nodal Institution selects only the number of Participating Institutions
     # that Annexure-I prescribes for its State/UT (data/nodal_heis.json), between the close of registration and this day
     "hei.cap_annexure": "1",
-    "hei.select_end": "2026-11-15",
+    "hei.select_end": "2026-11-17",
     "hei.public": "1",
     # the Nodal Officer of each Nodal HEI, with the contact details given for the account, on the public pages (1.2.70)
     "nodal.officers_public": "1",
@@ -721,13 +721,13 @@ DEFAULT_SETTINGS = {
     "reg.by_institution": "1",
     "camp.on": "1",
     "camp.from": "2026-10-22",
-    "camp.to": "2026-11-20",
+    "camp.to": "2026-11-19",
     "camp.show_score": "1",
     # the reminders to the participating institutions that are behind (1.2.52, kts/progress.py)
     "remind.on": "1",
-    "remind.test_by": "2026-11-16",
-    "remind.select_by": "2026-11-18",
-    "remind.register_by": "2026-11-19",
+    "remind.test_by": "2026-11-18",
+    "remind.select_by": "2026-11-19",
+    "remind.register_by": "2026-11-20",
     # the practice test for students (1.2.54, kts/practice.py)
     "practice.on": "1",
     "practice.questions": "10",
@@ -773,7 +773,7 @@ RETIRED_DEFAULTS = {
     "reg.end": ["2026-11-15", "2026-10-16", "2026-10-21", "2026-10-22", "2026-10-29"],
     "exam.date": ["2026-11-29", "2026-10-19", "2026-10-22"],
     "letter.date": ["2026-10-22", "2026-10-25", "2026-11-01"],
-    "internship.start": ["2026-10-23", "2026-10-26", "2026-11-02"],
+    "internship.start": ["2026-10-23", "2026-10-26", "2026-11-02", "2026-12-12"],
     # the test begins at 11:30 (8 October 2026); the window still closes at 12:00
     "exam.start_time": ["11:00"],
     # the D.O. letter of 9 October 2026 (1.2.43): the institutions register their students by 22 October, the Nodal
@@ -787,20 +787,29 @@ RETIRED_DEFAULTS = {
     # on 22 October 2026 (1.2.95): registration 22-29 October, and every later date a week on
     "launch.at": ["2026-10-14T17:00"],
     "launch.until": ["2026-10-22"],
-    "hei.end": ["2026-10-21", "2026-10-29"],
+    "hei.end": ["2026-10-21", "2026-10-29", "2026-11-10"],
+    "hei.select_end": ["2026-11-15"],
+    "orientation.by": ["2026-12-10"],
     "camp.from": ["2026-10-15"],
-    "camp.to": ["2026-10-21", "2026-10-29"],
-    "remind.test_by": ["2026-10-17", "2026-10-24"],
+    "camp.to": ["2026-10-21", "2026-10-29", "2026-11-20"],
+    "remind.test_by": ["2026-10-17", "2026-10-24", "2026-11-16"],
+    "remind.select_by": ["2026-11-18"],
+    "remind.register_by": ["2026-11-19"],
     "remind.select_by": ["2026-10-20", "2026-10-27"],
     "remind.register_by": ["2026-10-21", "2026-10-28"],
-    "papers.due": ["2026-11-05", "2026-11-12"],
-    "present.due": ["2026-11-15", "2026-11-22"],
+    "papers.due": ["2026-11-05", "2026-11-12", "2027-01-11"],
+    "present.due": ["2026-11-15", "2026-11-22", "2027-01-11"],
 }
 
 # The dates of the revised D.O. letter of the Ministry of Education (26 October 2026, Annexure-III): put in once over the values
 # of each database, also where CICT had set others in the Console; changed in the Console afterwards, they stay so
 REVISED_DO_DATES = ("hei.end", "hei.select_end", "camp.to", "reg.end", "verify.end", "letter.date", "internship.start",
                     "papers.due", "present.due", "remind.test_by", "remind.select_by", "remind.register_by")
+
+# The dates of the D.O. letter of 31 October 2026 (Annexure-III D, 1.2.133): put in once over the values of each database, as
+# those of 26 October were; changed in the Console afterwards, they stay so
+REVISED_DO2_DATES = ("hei.end", "hei.select_end", "camp.to", "internship.start", "papers.due", "present.due",
+                     "remind.test_by", "remind.select_by", "remind.register_by", "orientation.by")
 
 # The days of the central online test (1.2.120): put in once over the values of each database, as the dates of the revised
 # D.O. letter; changed in the Console afterwards, they stay so
@@ -839,11 +848,56 @@ RETIRED_EVENT_DAYS = {
     "present": [("2026-11-15T00:00", None)],
     "printed": [("2026-11-20T00:00", None)],
 }
+# The D.O. letter of the Ministry of Education of 31 October 2026, pinned among the notices and circulars with the letter itself
+# (data/notices/, 1.2.133): the title and the body of the notice, put in once for each database as the circular is
+DO_NOTICE = (
+    "D.O. letter of the Ministry of Education, 31 October 2026: Students' Engagement Programme under KTS 5.0 (revised Annexure-I and timeline)",
+    "\n".join([
+        "D.O. No. 16-2/2026-Skt.(Pt.) of 31 October 2026 from the Additional Secretary, Department of Higher Education, Ministry of "
+        "Education, to the Vice-Chancellors/Directors of the Nodal Higher Educational Institutions, revising the letter of 9 October "
+        "2026 on the nationwide Students' Engagement Programme of Kashi Tamil Sangamam 5.0 (28 November – 12 December 2026). The "
+        "letter with its annexures is attached.",
+        "",
+        "Annexure-I: the State/UT-wise list of the Nodal Higher Educational Institutions and the final number of Participating "
+        "Institutions to be selected by each, 1,000 in all. Registration is open to institutions without any State/UT-wise ceiling; "
+        "registration does not by itself confer selection.",
+        "",
+        "Annexure-III, the revised timeline:",
+        "• Up to 15 November 2026: registration of interested institutions on this portal; wide outreach by the Nodal Institutions.",
+        "• 16–17 November 2026: scrutiny and selection of the Participating Institutions by the Nodal Institutions, as per "
+        "Annexure-I, with a reserve list (SOP at Annexure-V).",
+        "• By 19 November 2026: each selected Participating Institution completes the assessment of its interested students.",
+        "• 20 November 2026: each Participating Institution nominates one student on merit through this portal.",
+        "• 28 November 2026: inaugural function of KTS 5.0; 12 December 2026: valedictory function. All Nodal Institutions, "
+        "Participating Institutions and nominated students join virtually; the link will be communicated separately.",
+        "• By 14 December 2026: academic orientation by CICT and access to the study material and educational videos.",
+        "• 15 December 2026 – 14 January 2027: the one-month research and academic engagement: structured study, an original "
+        "article/research note of four to five pages under a Faculty Supervisor/Guide, and a one-hour presentation at the "
+        "institution, recorded.",
+        "• By 14 January 2027: submission of the article/research note, the activity report and the supporting records.",
+        "",
+        "Each eligible selected student is entitled to a stipend of Rs. 10,000, disbursed through Direct Benefit Transfer after "
+        "verification of the prescribed outputs and validation of the student's bank account details by the Participating "
+        "Institution through this portal.",
+        "",
+        "For any clarification: Dr. R. Bhuvaneshwari, Registrar, Central Institute of Classical Tamil (CICT), Chennai, "
+        "registrar@cict.in.",
+    ]),
+)
+DO_NOTICE_FILE = "notices/KTS5-DO-letter-31-October-2026.pdf"
+
 # the revised D.O. letter of the Ministry (26 October 2026, Annexure-III D): the days of the steps it keeps, as 1.2.95 put them
 for _key, _days in (("assess", ("2026-10-29T00:00", None)), ("selection", ("2026-10-30T00:00", "2026-10-31T00:00")),
                     ("live", ("2026-11-02T00:00", None)), ("internship", ("2026-11-02T00:00", None)),
                     ("papers", ("2026-11-12T00:00", None))):
     RETIRED_EVENT_DAYS[_key].append(_days)
+
+# the D.O. letter of 31 October 2026 (Annexure-III D, 1.2.133): the days of the steps as the letter of 26 October had them
+for _key, _days in (("hei_reg", ("2026-11-10T00:00", None)), ("hei_select", ("2026-11-11T00:00", "2026-11-15T00:00")),
+                    ("assess", ("2026-11-20T00:00", None)), ("live", ("2026-12-10T00:00", None)),
+                    ("internship", ("2026-12-12T00:00", None)), ("research", ("2026-12-12T00:00", "2027-01-11T00:00")),
+                    ("papers", ("2027-01-11T00:00", None))):
+    RETIRED_EVENT_DAYS.setdefault(_key, []).append(_days)
 
 # Steps of the timeline that the revised D.O. letter (26 October 2026) no longer has: (title, starts_at, ends_at) as the
 # portal put them in. Each is taken off the schedule once (published = 0), where it still holds them; nothing is deleted.
@@ -1229,7 +1283,7 @@ def nodal_notice(heis):
     lines = [f"{i}. {h['state']}: {h['name']} ({h['allocation']})" for i, h in enumerate(heis, 1)]
     total = sum(h["allocation"] for h in heis)
     body = "\n".join([
-        "As communicated by the Ministry of Education, Government of India (revised, Annexure-I): the Nodal Higher Educational "
+        "As communicated by the Ministry of Education, Government of India (Annexure-I of the D.O. letter of 31 October 2026): the Nodal Higher Educational "
         "Institution of each State/UT for the Students' Engagement Programme of Kashi Tamil Sangamam 5.0 (Thirukkural "
         "Payilvom). The number in brackets is the number of Participating HEIs to be selected in that State/UT.",
         "",
@@ -1242,9 +1296,10 @@ def nodal_notice(heis):
         "Operating Procedure (Annexure-V). Registration does not by itself confer selection.",
         "",
         "All interested higher educational institutions (Central/State/Private Universities and Colleges) register on this "
-        "portal (Register › Register your institution) up to 10 November 2026. The Nodal Institution of each State/UT "
-        "scrutinises them and selects the prescribed number between 11 and 15 November 2026, with a reserve list; each "
-        "selected Participating Institution assesses its interested students and nominates one on merit by 20 November 2026. "
+        "portal (Register › Register your institution) up to 15 November 2026. The Nodal Institution of each State/UT "
+        "scrutinises them and selects the prescribed number on 16 and 17 November 2026, with a reserve list; each "
+        "selected Participating Institution assesses its interested students by 19 November and nominates one on merit by "
+        "20 November 2026. "
         "The participating institutions accepted so far are listed on the page of the Nodal Institutions.",
     ])
     return "State/UT-wise list of Nodal Higher Educational Institutions", body
@@ -1275,6 +1330,10 @@ def init_db(app):
         for key in REVISED_DO_DATES:
             conn.execute("UPDATE settings SET value = ?, updated_at = ? WHERE key = ?", (DEFAULT_SETTINGS[key], now, key))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", ("migrate.revised_do", "1", now))
+    if not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.revised_do2'").fetchone():
+        for key in REVISED_DO2_DATES:
+            conn.execute("UPDATE settings SET value = ?, updated_at = ? WHERE key = ?", (DEFAULT_SETTINGS[key], now, key))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", ("migrate.revised_do2", "1", now))
     if not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.exam_days'").fetchone():
         for key in EXAM_DAYS:
             conn.execute("UPDATE settings SET value = ?, updated_at = ? WHERE key = ?", (DEFAULT_SETTINGS[key], now, key))
@@ -1399,12 +1458,28 @@ def init_db(app):
         conn.execute("UPDATE notices SET body = ?, updated_at = ? WHERE title = ? AND body LIKE '%allocation is tentative%'",
                      (body, now, title))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", ("migrate.revised_do.notice", "1", now))
+    # the circular with the numbers and the days of 26 October takes those of the D.O. letter of 31 October 2026, once (1.2.133)
+    if seed_path.exists() and not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.revised_do2.notice'").fetchone():
+        title, body = nodal_notice(json.loads(seed_path.read_text(encoding="utf-8")))
+        conn.execute("UPDATE notices SET body = ?, updated_at = ? WHERE title = ? AND body LIKE '%up to 10 November 2026%'",
+                     (body, now, title))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", ("migrate.revised_do2.notice", "1", now))
     mark = "seed.notice.nodal_heis"
     if seed_path.exists() and not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
         title, body = nodal_notice(json.loads(seed_path.read_text(encoding="utf-8")))
         if not conn.execute("SELECT 1 FROM notices WHERE title = ?", (title,)).fetchone():
             conn.execute("INSERT INTO notices(title, body, category, lang, pinned, published, attachment, link, created_at, updated_at) "
                          "VALUES(?,?,'circular','en',1,1,'',?,?,?)", (title, body, NODAL_NOTICE_LINK, now, now))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
+
+    # The D.O. letter of 31 October 2026 (1.2.133), pinned among the notices and circulars with the letter itself, which the
+    # portal carries (data/notices/): put in once for each database, as the circular is; none is added when a notice with the
+    # same title is there already (as when CICT put the letter in itself).
+    mark = "seed.notice.do_31oct"
+    if (app.config["DATA_DIR"] / DO_NOTICE_FILE).is_file() and not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
+        if not conn.execute("SELECT 1 FROM notices WHERE title = ?", (DO_NOTICE[0],)).fetchone():
+            conn.execute("INSERT INTO notices(title, body, category, lang, pinned, published, attachment, link, created_at, updated_at) "
+                         "VALUES(?,?,'circular','en',1,1,?,'/schedule',?,?)", (DO_NOTICE[0], DO_NOTICE[1], DO_NOTICE_FILE, now, now))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
 
     # The launch of 14 October 2026, 5:00 PM was postponed (1.2.69): on a database that has announced it already (its notice

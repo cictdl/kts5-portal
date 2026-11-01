@@ -27,10 +27,10 @@ def test_the_schedule_and_the_home_page_say_onwards(monkeypatch):
     upcoming, _past = _halves(_page(app, "/schedule?lang=en"))
     title = _text("timeline.hei_reg")
     row = upcoming[upcoming.rindex("<tr>", 0, upcoming.index(title)):upcoming.index(title)]
-    assert "10 Nov 2026 onwards" in row
+    assert "15 Nov 2026 onwards" in row
     home = _page(app, "/?lang=en")
     item = home[home.index(title):]
-    assert '<span class="meta">10 Nov 2026 onwards</span>' in item[:item.index("</li>")]
+    assert '<span class="meta">15 Nov 2026 onwards</span>' in item[:item.index("</li>")]
     # in every language, the words of the phrase around the date
     from kts.i18n import CATALOG
     for code, catalogue in CATALOG.items():

@@ -297,12 +297,13 @@ def _sniff(head, ext):
 
 def file_folder(relpath):
     """
-    The folder a stored file is served from: the upload folder, or, for a photograph of the gallery that the portal carries
-    itself (data/gallery/, 1.2.95) and that is not among the uploads, the data folder.
+    The folder a stored file is served from: the upload folder, or, for a photograph of the gallery (data/gallery/, 1.2.95) or
+    a document of a notice (data/notices/, 1.2.133) that the portal carries itself and that is not among the uploads, the data
+    folder.
     """
     folder = Path(current_app.config["UPLOAD_DIR"])
     data = Path(current_app.config["DATA_DIR"])
-    if relpath.startswith("gallery/") and not (folder / relpath).is_file() and (data / relpath).is_file():
+    if relpath.startswith(("gallery/", "notices/")) and not (folder / relpath).is_file() and (data / relpath).is_file():
         return data
     return folder
 

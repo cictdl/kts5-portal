@@ -60,9 +60,9 @@ def test_poster_1_has_the_dates_of_the_settings():
         text = _pdf_text(path)
         for old in OLD:
             assert old not in text, (path.name, old)
-        assert "22 Oct – 20 Nov 2026" in text and "28 Nov – 12 Dec 2026" in text, path.name
+        assert "22 Oct – 19 Nov 2026" in text and "28 Nov – 12 Dec 2026" in text, path.name
     english = _pdf_text(ROOT / "static" / "posters" / "KTS5-poster-1-en.pdf")
-    assert "22 October – 20 November 2026" in english
+    assert "22 October – 19 November 2026" in english
 
 
 def test_the_schedule_has_the_central_online_test(monkeypatch):

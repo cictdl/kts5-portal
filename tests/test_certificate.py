@@ -428,8 +428,8 @@ def test_a_selected_student_has_a_confirmation_letter():
     assert "verified by the Nodal Institution of your State/UT and CICT" in " ".join(page.split())
     assert "nominated on merit by your institution on the basis of its assessment on the Thirukkural," in flat
     assert "online test" not in flat and "held on" not in flat
-    assert "begins on 12 December 2026, under the guidance of your Faculty Supervisor/Guide, Dr. K. Mentor, Assistant Professor of Tamil." in page
-    assert "educational videos, in Hindi;" in page and page.count("on or before 11 January 2027") == 2
+    assert "begins on 15 December 2026, under the guidance of your Faculty Supervisor/Guide, Dr. K. Mentor, Assistant Professor of Tamil." in page
+    assert "educational videos, in Hindi;" in page and page.count("on or before 14 January 2027") == 2
     flat = " ".join(page.split())
     assert "one-month research and academic engagement" in flat and "article or research note of 4&ndash;5 pages" in flat
     assert "subject to the programme guidelines and completion of the prescribed requirements" in flat and "internship" not in flat

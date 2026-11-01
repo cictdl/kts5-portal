@@ -214,7 +214,7 @@ def test_each_state_accepts_at_most_its_number_of_annexure_i():
     from kts.db import execute, query, set_setting, utcnow
     app = _app()
     with app.app_context():
-        assert (HEI.cap_of("Kerala"), HEI.cap_of("Uttar Pradesh"), HEI.cap_of("Tamil Nadu"), HEI.cap_of("Puducherry")) == (21, 350, 150, 5)
+        assert (HEI.cap_of("Kerala"), HEI.cap_of("Uttar Pradesh"), HEI.cap_of("Tamil Nadu"), HEI.cap_of("Puducherry")) == (21, 300, 50, 5)
         assert HEI.cap_of("Ladakh") == 0          # a State/UT without a Nodal Institution: no limit
         for n in range(21):
             execute("INSERT INTO institutions(ref, name, itype, state, district, inst_key, status, created_at, updated_at) "
@@ -247,7 +247,7 @@ def test_the_marks_of_annexure_v_rank_the_institutions_and_the_reserve_list():
         ids = {r["name"]: r["id"] for r in query("SELECT id, name FROM institutions")}
         assert [k for k, *_ in HEI.SOP] == ["readiness", "outreach", "academic", "geography", "diversity", "record"]
         assert sum(m for _k, _c, m, *_ in HEI.SOP) == 100 and HEI.SOP_BENCHMARK == 60
-        assert (HEI.reserve_of("Kerala"), HEI.reserve_of("Uttar Pradesh"), HEI.reserve_of("Puducherry"), HEI.reserve_of("Ladakh")) == (5, 70, 1, 0)
+        assert (HEI.reserve_of("Kerala"), HEI.reserve_of("Uttar Pradesh"), HEI.reserve_of("Puducherry"), HEI.reserve_of("Ladakh")) == (5, 60, 1, 0)
     officer = _nodal(app, "nodal.kerala3@tests.example", ["Kerala"])
     page = officer.get(f"/console/institutions/{ids['College Beta']}/marks").get_data(as_text=True)
     assert "Institutional readiness" in page and "Past record and documentation capacity" in page and 'max="25"' in page

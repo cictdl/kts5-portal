@@ -26,11 +26,12 @@ def test_the_circular_holds_every_state_and_its_nodal_institution():
     heis = json.loads((ROOT / "data" / "nodal_heis.json").read_text(encoding="utf-8"))
     for i, h in enumerate(heis, 1):
         assert f"\n{i}. {h['state']}: {h['name']} ({h['allocation']})\n" in n["body"]
-    assert "1. Andhra Pradesh: Central University of Andhra Pradesh (30)" in n["body"]
-    assert "23. Tamil Nadu: Central University of Tamil Nadu (150)" in n["body"] and "26. Uttar Pradesh: Banaras Hindu University (350)" in n["body"]
+    assert "1. Andhra Pradesh: Central University of Andhra Pradesh (50)" in n["body"]
+    assert "23. Tamil Nadu: Central University of Tamil Nadu (50)" in n["body"] and "26. Uttar Pradesh: Banaras Hindu University (300)" in n["body"]
     assert "Total: 1,000 Participating HEIs." in n["body"]
     assert "Registration does not by itself confer selection." in n["body"] and "tentative" not in n["body"]
-    assert "up to 10 November 2026" in n["body"] and "between 11 and 15 November 2026" in n["body"] and "by 20 November 2026" in n["body"]
+    assert "up to 15 November 2026" in n["body"] and "on 16 and 17 November 2026" in n["body"] and "by 19 November" in n["body"]
+    assert "by 20 November 2026" in n["body"] and "D.O. letter of 31 October 2026" in n["body"]
 
 
 def test_it_is_shown_among_the_notices_and_on_the_home_page():
@@ -94,7 +95,7 @@ def test_the_live_circular_takes_the_numbers_of_the_revised_letter_once():
     names = ("INSTANCE_DIR", "DATABASE", "UPLOAD_DIR")
     again = create_app(type("Again", (Config,), {n: app.config[n] for n in names} | {"ADMIN_PASSWORD": None}))
     body = _notices(again)[0]["body"]
-    assert "(30)" in body and "Total: 1,000 Participating HEIs." in body and "tentative" not in body
+    assert "(50)" in body and "Total: 1,000 Participating HEIs." in body and "tentative" not in body
     conn = sqlite3.connect(str(app.config["DATABASE"]))
     conn.execute("UPDATE notices SET body = 'CICT wrote this; the allocation is tentative.' WHERE title = ?", (TITLE,))
     conn.commit()

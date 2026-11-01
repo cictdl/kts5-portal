@@ -56,8 +56,8 @@ def test_the_figures():
     assert data["states"][0]["state"] == "Andhra Pradesh" and data["states"][-1]["state"] == "Lakshadweep"
     assert len({(r, c) for r, c, _ in GRID.values()}) == 36
     tn = by["Tamil Nadu"]
-    assert (tn["to_select"], tn["inst_reg"], tn["inst_sel"], tn["assessed"], tn["registered"], tn["verified"]) == (150, 3, 3, 2, 2, 1)
-    assert tn["shade"] == "b1" and tn["share"] == 1
+    assert (tn["to_select"], tn["inst_reg"], tn["inst_sel"], tn["assessed"], tn["registered"], tn["verified"]) == (50, 3, 3, 2, 2, 1)
+    assert tn["shade"] == "b1" and tn["share"] == 4
     assert (by["Kerala"]["inst_reg"], by["Kerala"]["inst_sel"], by["Kerala"]["shade"]) == (1, 0, "b0")
     assert by["Goa"]["inst_reg"] == 0 and by["Ladakh"]["to_select"] is None and by["Ladakh"]["shade"] == "nb"
     assert data["total"] == {"to_select": 1000, "inst_reg": 4, "inst_sel": 3, "assessed": 2, "registered": 2, "verified": 1}
@@ -73,15 +73,15 @@ def test_the_page():
     kpis = page[page.index('class="grid grid-3 dash-kpis"'):page.index('class="card dash-map"')]
     assert re.findall(r'<div class="num">([\d,]+)</div>', kpis) == ["1,000", "4", "3", "2", "2", "1"]
     assert "2 of 1,000" in kpis
-    # the squares: Tamil Nadu 2 of 150, Ladakh without a number; each leads to the block of its State/UT
+    # the squares: Tamil Nadu 2 of 50, Ladakh without a number; each leads to the block of its State/UT
     assert page.count('class="dash-tile ') == 36
-    assert ('<a class="dash-tile b1" href="#d-TN">\n          <b dir="ltr">TN</b>\n          <span class="dash-n" dir="ltr">2/150</span>') in page
+    assert ('<a class="dash-tile b1" href="#d-TN">\n          <b dir="ltr">TN</b>\n          <span class="dash-n" dir="ltr">2/50</span>') in page
     assert '<a class="dash-tile nb" href="#d-LA">' in page and "No number in Annexure-I" in page
     # the table: every figure, with the total
     table = page[page.index('class="table dash-table"'):page.index('class="dash-details"')]
     assert table.count("<tr id=\"st-") == 36 and '<th scope="row"><a href="#d-TN">Tamil Nadu</a></th>' in table
     row = table[table.index('<tr id="st-TN">'):table.index("</tr>", table.index('<tr id="st-TN">'))]
-    assert re.findall(r'<td class="num">(\d+|–)', row) == ["150", "3", "3", "2", "2", "1"]
+    assert re.findall(r'<td class="num">(\d+|–)', row) == ["50", "3", "3", "2", "2", "1"]
 
 
 def test_the_block_of_each_state():

@@ -60,6 +60,9 @@ def test_the_home_page_has_all_four_under_the_hero():
     for name in ("Part 1: For Nodal Officers", "Part 2: For Participating Institutions", "Part 3: For Students",
                  "Part 4: The resources of the portal"):
         assert name in block
+    # the letter of 31 October 2026 moved some dates after the videos were recorded (1.2.133)
+    assert ('<p class="small dim gv-note">The videos were recorded before the Ministry&#39;s letter of 31 October 2026, which moved '
+            'some dates; the Schedule has the current ones. <a href="/schedule">Schedule →</a></p>') in block
     # right under the hero, before anything else of the page
     assert page.index('<section class="hero">') < page.index('id="video-guide"') < page.index('<section class="section')
     # nothing of YouTube enters the portal: no player, no pictures of YouTube, no tracking parameter

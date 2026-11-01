@@ -223,8 +223,9 @@ def test_the_dashboard_and_the_settings():
 
 
 def test_the_days_of_the_reminders_lie_within_registration():
-    # registration 22 October - 20 November 2026 (the revised D.O. letter, 1.2.110): the three reminders fall inside it, in
-    # their order, after the selection of the Participating Institutions, and the assessments run from the first day to the last
+    # registration 22 October - 20 November 2026 (the D.O. letter of 31 October, 1.2.133): the three reminders fall inside it, in
+    # their order, after the selection of the Participating Institutions (16-17 November), the last on the last day; the
+    # assessments run from the first day to 19 November
     from kts.db import DEFAULT_SETTINGS as D
-    assert D["reg.start"] < D["hei.select_end"] < D["remind.test_by"] < D["remind.select_by"] < D["remind.register_by"] < D["reg.end"]
-    assert (D["camp.from"], D["camp.to"]) == (D["reg.start"], D["reg.end"]) == ("2026-10-22", "2026-11-20")
+    assert D["reg.start"] < D["hei.select_end"] < D["remind.test_by"] < D["remind.select_by"] < D["remind.register_by"] <= D["reg.end"]
+    assert (D["camp.from"], D["camp.to"]) == ("2026-10-22", "2026-11-19") and (D["reg.start"], D["reg.end"]) == ("2026-10-22", "2026-11-20")

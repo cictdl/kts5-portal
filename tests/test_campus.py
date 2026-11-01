@@ -370,10 +370,10 @@ def test_the_letter_in_the_data_and_the_pages():
     heis = json.loads((ROOT / "data" / "nodal_heis.json").read_text(encoding="utf-8"))
     assert len(heis) == 31 and sum(h["allocation"] for h in heis) == 1000
     by = {h["state"]: h for h in heis}
-    assert by["Tamil Nadu"]["name"] == "Central University of Tamil Nadu" and by["Tamil Nadu"]["allocation"] == 150
+    assert by["Tamil Nadu"]["name"] == "Central University of Tamil Nadu" and by["Tamil Nadu"]["allocation"] == 50
     assert by["Goa"]["name"] == "NIT Goa" and by["Goa"]["type"] == "nit" and by["Assam"]["name"] == "Assam University"
     # the central test of CICT, closed by the letter, open again in its days from 1.2.120 (10 to 20 November 2026)
-    assert DEFAULT_SETTINGS["exam.open"] == "auto" and DEFAULT_SETTINGS["reg.by_institution"] == "1" and DEFAULT_SETTINGS["camp.to"] == "2026-11-20"
+    assert DEFAULT_SETTINGS["exam.open"] == "auto" and DEFAULT_SETTINGS["reg.by_institution"] == "1" and DEFAULT_SETTINGS["camp.to"] == "2026-11-19"
     assert "exam.open" not in RETIRED_DEFAULTS and "2026-10-21" in RETIRED_DEFAULTS["reg.end"] and "50" in RETIRED_DEFAULTS["hei.max_per_state"]
     assert set(RETIRED_EVENT_TITLES) == {"selection", "letters", "live", "assess", "internship", "papers"}
     app = make_app(ADMIN_PASSWORD=None)
