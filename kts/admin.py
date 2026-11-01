@@ -961,6 +961,18 @@ def nodal_access():
     """
     if request.method == "POST":
         action = request.form.get("action")
+        if action == "remind_signin":   # the officers who have never signed in: all of them, or one (1.2.136)
+            uid = safe_int(request.form.get("uid"))
+            targets = query("SELECT * FROM users WHERE role = 'nodal' AND active = 1" + (" AND id = ?" if uid else "") + " ORDER BY id",
+                            (uid,) if uid else ())
+            sent = NODAL.remind_signin(targets)
+            audit("nodal_signin_reminder", "user", uid or None, detail={"mails": sent}, user=_user(), ip=client_ip())
+            if sent:
+                flash(f"A sign-in reminder is queued to {sent} Nodal Officer(s) who have not signed in yet; it goes out with the next "
+                      f"round of the mail queue.", "success")
+            else:
+                flash("No reminder sent: the officer has signed in already, or the account is disabled.", "error")
+            return redirect(url_for("admin.nodal_access"))
         if action == "remind":
             state = request.form.get("state") or ""
             targets = _officers_by_state(active_only=True).get(state, [])
@@ -999,6 +1011,7 @@ def nodal_access():
     settings = all_settings()
     return render_template("console/nodal.html", rows=rows, others=others, total=total, can_create=has_perm(_user(), "users"),
                            allocation={h["state"]: h.get("allocation", 0) for h in heis},
+                           not_signed_in=len(NODAL.not_signed_in()),
                            closes=NODAL.closes_line(), digest_on=settings.get("nodal.digest") == "1",
                            digest_time=settings.get("nodal.digest_time") or "08:00",
                            can_settings=has_perm(_user(), "settings"))

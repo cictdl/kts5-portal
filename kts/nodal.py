@@ -8,6 +8,8 @@ The Nodal Officers of the States/UTs (versions 1.2.38 and 1.2.39): what the port
   (nodal.digest_sent); on the last two days it is a reminder. The sender of the mail queue calls
   daily() at each round (kts/mailq.py).
 * The reminder that CICT sends from Console > Nodal officers (remind()).
+* The sign-in reminder to an officer whose account has never been signed in to (1.2.136): from
+  Console > Nodal officers (remind_signin()), and every third morning with the morning mail.
 
 Only verified students are consolidated by CICT: verify.end is the last day of the consolidation.
 """
@@ -15,7 +17,7 @@ from datetime import date, datetime, timedelta, timezone
 
 from flask import current_app
 
-from .db import get_db, get_setting, query, utcnow
+from .db import execute, get_db, get_setting, query, utcnow
 from .utils import now_ist, send_later
 
 # the applications that a Nodal Officer has verified, whatever happened to them afterwards
@@ -198,10 +200,75 @@ def remind(users, now=None):
     return send_later(messages)
 
 
+# the reminder to a Nodal Officer whose account has never been signed in to (1.2.136)
+SIGNIN_SUBJECT = "KTS 5.0: your Console account awaits your first sign-in"
+SIGNIN_EVERY = 3   # days from the account, or from the last reminder, to the next automatic reminder
+
+
+def not_signed_in(users=None):
+    """The active accounts of Nodal Officers that have never been signed in to (users.last_login_at empty)."""
+    rows = users if users is not None else query("SELECT * FROM users WHERE role = 'nodal' AND active = 1 ORDER BY id")
+    return [u for u in rows if u["role"] == "nodal" and u["active"] and not u["last_login_at"]]
+
+
+def signin_mail(user, now=None):
+    """(subject, body) of the reminder to a Nodal Officer who has not signed in to the Console yet."""
+    from .heis import allocation_of
+    from .public import guide_videos
+    base = current_app.config["BASE_URL"]
+    states = states_of(user)
+    rows = rows_of(states)
+    names = ", ".join(rows)
+    created = _day(user["created_at"])
+    registered = (query(f"SELECT COUNT(*) AS n FROM institutions WHERE status != 'identified' AND state IN ({','.join('?' * len(states))})",
+                        states, one=True)["n"] if states else 0)
+    pending = institutions_pending(states)
+    _per, total = figures(states, now)
+    number = sum(allocation_of(members[0]) for members in rows.values())
+    hei_end, select_end, reg_end, end = (_day(get_setting(k)) for k in ("hei.end", "hei.select_end", "reg.end", "verify.end"))
+    contact = (get_setting("contact.email") or "").strip() or "office@cict.in"
+    guide = next((v["url"] for v in guide_videos() if v["n"] == 1), f"{base}/nodal-institutions")
+    on = f" on {long_date(created)}" if created else ""
+    lines = [f"Dear {user['name']},", "",
+             f"Your account as Nodal Officer for {names} on the KTS 5.0 portal ({base}) was created{on} and the temporary password "
+             f"was mailed to this address; the account has not been signed in to yet. The Students' Engagement Programme of Kashi "
+             f"Tamil Sangamam 5.0 – Thirukkural Payilvom needs the Nodal Institution on the portal now:", "",
+             f"• The institutions of {names} register on the portal" + (f" up to {long_date(hei_end)}" if hei_end else "")
+             + f": {registered} registered so far" + (f", {pending} awaiting your decision" if pending else "") + ".",
+             f"• The Nodal Institution selects the {number} Participating Institutions that Annexure-I prescribes"
+             + (f" by {long_date(select_end)}" if select_end else "") + ", with a reserve list, in the Console (Institutions).",
+             "• Each selected institution nominates one student" + (f" by {long_date(reg_end)}" if reg_end else "")
+             + "; the Nodal Officers verify the nominations" + (f" by {long_date(end)}" if end else "") + "."
+             + (f" {total['awaiting']} application(s) await your verification already." if total["awaiting"] else ""),
+             "",
+             f"Sign in: {base}/console/login",
+             f"E-mail: {user['email']}",
+             f"Password: the temporary password in the mail \"Your KTS 5.0 portal account\"{' of ' + long_date(created) if created else ''}. "
+             f"The portal asks you to set a password of your own at the first sign-in.",
+             f"If that mail cannot be found, write to {contact} and CICT will send a new temporary password.",
+             "",
+             f"The video guide for Nodal Officers (13 minutes): {guide}",
+             f"The Nodal Institutions and the numbers of Annexure-I: {base}/nodal-institutions",
+             "",
+             "Central Institute of Classical Tamil, Chennai"]
+    return f"{SIGNIN_SUBJECT} ({names})", "\n".join(lines)
+
+
+def remind_signin(users, now=None):
+    """The sign-in reminder to those of these Nodal Officers who have not signed in yet, noted on the account; gives the number queued."""
+    due = not_signed_in(users)
+    count = send_later([(u["email"],) + signin_mail(u, now) for u in due])
+    stamp = now.isoformat() if now else utcnow()
+    for u in due:
+        execute("UPDATE users SET signin_reminded_at = ? WHERE id = ?", (stamp, u["id"]))
+    return count
+
+
 def daily(app, now=None):
     """
     The morning mail: once a day after nodal.digest_time, between reg.start and verify.end, to every
-    active Nodal Officer with applications awaiting them. Gives the number of mails queued.
+    active Nodal Officer with applications awaiting them, and every third day the sign-in reminder
+    to an officer who has never signed in (1.2.136). Gives the number of mails queued.
     """
     now = now or now_ist()
     with app.app_context():
@@ -235,7 +302,16 @@ def daily(app, now=None):
             mail = officer_mail(u, reminder=last_days, now=now)
             if mail:
                 messages.append((u["email"],) + mail)
+        # the officers who have never signed in: a sign-in reminder every third day (1.2.136)
+        due = []
+        for u in not_signed_in():
+            since = _day(u["signin_reminded_at"] or u["created_at"])
+            if since and (today - since).days >= SIGNIN_EVERY:
+                due.append(u)
+        messages += [(u["email"],) + signin_mail(u, now) for u in due]
         count = send_later(messages)
+        for u in due:
+            execute("UPDATE users SET signin_reminded_at = ? WHERE id = ?", (now.isoformat(), u["id"]))
         from .db import audit
         audit("nodal_morning_mail", "user", None, detail={"mails": count, "day": today.isoformat()})
         return count
