@@ -48,6 +48,12 @@ def latin_words(text):
     return [w for w in re.findall(r"[A-Za-z]+", text) if w.lower() not in KEEP]
 
 
+def bare(text):
+    """The text without its placeholders and the web paths that hang on them ({name}, {portal}/syllabus): they are not words
+    of any language (the sample letter of the Nodal Institution, 1.2.137)."""
+    return re.sub(r"\{[a-z_]+\}(?:/[\w./-]*)?", " ", text)
+
+
 def check(code, en, folder=None):
     path = Path(folder or I18N) / f"{code}.json"
     errors, warnings = [], []
@@ -74,10 +80,10 @@ def check(code, en, folder=None):
             errors.append(f"{key}: empty")
             continue
         if ranges:
-            ls = letters(value)
+            ls = letters(bare(value))
             own = [ch for ch in ls if in_ranges(ch, ranges)]
-            stray = latin_words(value)
-            source_words = latin_words(source)
+            stray = latin_words(bare(value))
+            source_words = latin_words(bare(source))
             if source_words and ls and not own:
                 errors.append(f"{key}: not translated ({value[:50]!r})")
             elif ls and own and len(own) / len(ls) < 0.5 and len(stray) > 2:

@@ -18,7 +18,8 @@
     <button class="btn sm secondary" name="action" value="remind_signin"{% if not not_signed_in %} disabled{% endif %} data-confirm="Send a sign-in reminder now to every Nodal Officer who has not signed in yet?">✉ Remind the {{ not_signed_in }} officer(s) who have not signed in yet</button></form>
 </div>
 {% macro line(r, n) %}
-<tr><td class="num">{{ n }}</td><td><b>{{ r.label }}</b>{% if r.hei %}<div class="small muted">{{ r.hei }}</div>{% endif %}</td>
+<tr><td class="num">{{ n }}</td><td><b>{{ r.label }}</b>{% if r.hei %}<div class="small muted">{{ r.hei }}</div>
+    <div class="small"><a href="{{ url_for('public.nodal_letter', state=r.state, lang='en') }}">Sample letter to the institutions (Word)</a></div>{% endif %}</td>
   <td>{% for o in r.officers %}<div><a href="{{ url_for('admin.user_form', uid=o.id) }}">{{ o.name }}</a> <span class="small muted">{{ o.email }}</span>
     {% if not o.active %}<span class="pill grey">disabled</span>{% elif o.must_change_password %}<span class="pill saffron">{{ 'not signed in yet' if not o.last_login_at else 'password not yet set' }}</span>{% else %}<span class="small muted">· last sign-in {{ o.last_login_at|datetime if o.last_login_at else 'never' }}</span>{% endif %}
     {% if o.active and not o.last_login_at %}<form method="post" style="display:inline;margin:0"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="uid" value="{{ o.id }}"><button class="btn xs ghost" name="action" value="remind_signin">Remind to sign in</button></form>{% if o.signin_reminded_at %} <span class="small muted">· reminded {{ o.signin_reminded_at|datetime }}</span>{% endif %}{% endif %}</div>

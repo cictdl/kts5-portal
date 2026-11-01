@@ -13,6 +13,19 @@
   </div>
   {% include "public/_nodal_table.html" %}
 
+  {# the sample letter of the Nodal Institution to its Participating Institutions, a Word file in the language chosen (1.2.137) #}
+  <section class="card" id="letter" style="margin-top:28px">
+    <h2 style="margin-top:0">{{ t('nl.page_title') }}</h2>
+    <p class="dim small" style="max-width:84ch">{{ t('nl.page_intro') }}</p>
+    <form method="get" action="{{ url_for('public.nodal_letter') }}" class="btn-row" style="align-items:flex-end;gap:12px">
+      <div class="field"><label for="nl-state">{{ t('nodal.col_state') }}</label>
+        <select id="nl-state" name="state">{% for n in nodal %}<option value="{{ n.state }}">{{ n.label }}</option>{% endfor %}</select></div>
+      <div class="field"><label for="nl-lang">{{ t('nl.choose_lang') }}</label>
+        <select id="nl-lang" name="lang">{% for L in LANGUAGES %}<option value="{{ L.code }}" lang="{{ L.code }}" {{ 'selected' if L.code == lang }}>{{ L.native }}{% if L.native != L.name %} · {{ L.name }}{% endif %}</option>{% endfor %}</select></div>
+      <button class="btn" type="submit">{{ t('nl.download') }}</button>
+    </form>
+  </section>
+
   <h2 style="margin-top:36px">{{ t('nodal.how_title') }}</h2>
   <div class="grid grid-2" style="margin-top:14px">
     {% for n in (1, 2, 3, 4) %}

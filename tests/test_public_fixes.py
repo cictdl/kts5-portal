@@ -662,7 +662,8 @@ def test_templates_print_streams_through_the_filter():
     plain = {value: where for value, where in printed.items() if not value.endswith("|langtag")}
     assert plain == {"lang": {"base.html", "candidate/exam_paper.html", "public/certificate.html", "public/letter.html",
                               "quiz/layout.html"},
-                     "L.code": {"base.html", "public/orientation.html", "quiz/layout.html"}}
+                     "L.code": {"base.html", "public/orientation.html", "quiz/layout.html",
+                                "public/nodal_institutions.html"}}   # the language of the sample letter (1.2.137)
     assert set(printed) - set(plain) == {"stream|langtag", "info.code|langtag", "shown|langtag", "kotd_lang|langtag",
                                          "qlang|langtag", "body_lang|langtag", "v.title_lang|langtag",
                                          "b.lang|langtag", "c|langtag", "p.shown.lang|langtag", "v.lang|langtag",
@@ -1053,7 +1054,8 @@ def test_alt_texts_use_keys_that_exist():
     # 1.2.129: the 31 of the banner KTS 5.0 in numbers (num.*); 1.2.130: the 6 of its Digital repository group;
     # 1.2.131: the row of photographs and videos of an event on social media; 1.2.132: the quiz on the 108 Thirukkural;
     # 1.2.133: the note under the video guide on the letter of 31 October 2026; 1.2.135: the pairs of Annexure-I (three texts)
-    assert len(CATALOG["en"]) == 1218
+    # 1.2.137: the sample letter of the Nodal Institution (81 texts)
+    assert len(CATALOG["en"]) == 1299
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1085,7 +1087,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.136" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.137" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

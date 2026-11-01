@@ -20,10 +20,11 @@ from . import companion as C
 from . import dashboard as D
 from . import heis as HEI
 from . import kural as K
+from . import letters as LETTERS
 from .db import LAUNCH_NOTICE, RETIRED_LAUNCH_NOTICES, all_settings, audit, execute, get_setting, query, utcnow
 from . import i18n
 from . import search as S
-from .i18n import get_lang, t
+from .i18n import get_lang, offered, t
 from .utils import (DOC_EXT, IMAGE_EXT, age_on, check_captcha, client_ip, college_key, csv_bytes,
                     IST, exam_window, file_folder, fmt_date, limiter, make_app_no, new_captcha, now_ist, plain_english,
                     launch_at, qr_data_uri, registration_state, safe_int, save_upload, send_mail, valid_email, valid_mobile,
@@ -1454,6 +1455,22 @@ def nodal_institutions():
     nodal, total = _nodal_table()
     return render_template("public/nodal_institutions.html", nodal=nodal, nodal_total=total,
                            public_list=get_setting("hei.public") == "1", window=HEI.window(all_settings()))
+
+
+@bp.route("/nodal-institutions/letter.docx")
+def nodal_letter():
+    """
+    The sample letter of the Nodal Institution to its Participating Institutions, as a Word file, for a row of Annexure-I in a
+    language of the portal (1.2.137, kts/letters.py); the Nodal Officer as the public pages show them.
+    """
+    state = (request.args.get("state") or "").strip()
+    lang = (request.args.get("lang") or get_lang()).strip()
+    if not offered(lang) or state not in {h["state"] for h in nodal_heis()}:
+        abort(404)
+    officers = _nodal_officers_by_state().get(state) or []
+    data = LETTERS.letter_docx(state, lang, officers[0] if officers else None)
+    return Response(data, mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    headers={"Content-Disposition": f"attachment; filename={LETTERS.filename(state, lang)}", "Cache-Control": "no-store"})
 
 
 @bp.route("/contact", methods=["GET", "POST"])
