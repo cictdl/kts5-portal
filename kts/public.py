@@ -1310,6 +1310,23 @@ def dashboard():
                            details=D.details(_nodal_officers_by_state()))
 
 
+@bp.route("/progress")
+def progress():
+    """The progress of the institutions (1.2.138): an infographic of counts, never a name (kts/dashboard.py pipeline)."""
+    if get_setting("dashboard.public") != "1":
+        abort(404)
+    return render_template("public/progress.html", p=D.pipeline(), now=now_ist().strftime("%H:%M"))
+
+
+@bp.route("/progress.json")
+def progress_json():
+    """The figures of /progress for its script, which asks every minute; the texts in the language of the visitor."""
+    if get_setting("dashboard.public") != "1":
+        abort(404)
+    return Response(json.dumps(D.pipeline_json(t), ensure_ascii=False), mimetype="application/json",
+                    headers={"Cache-Control": "no-store"})
+
+
 @bp.route("/daily-kural")
 def daily_kural():
     stream, stream_dir = _stream(request.args.get("l"))
@@ -1555,7 +1572,7 @@ POLICY_LANGS = ("en", "hi", "ta")
 # the sitemap: (heading, [(endpoint, arguments, label)]), the public pages only
 SITEMAP = [
     ("pol.sm_programme", [("public.home", {}, "nav.home"), ("public.about", {}, "nav.about"),
-                          ("public.programme", {}, "nav.programme"), ("public.dashboard", {}, "dash.title"),
+                          ("public.programme", {}, "nav.programme"), ("public.dashboard", {}, "dash.title"), ("public.progress", {}, "pg.title"),
                           ("public.schedule", {}, "nav.schedule"),
                           ("public.notices", {}, "nav.notices"), ("public.news", {}, "news.title"), ("public.partners", {}, "nav.partners"),
                           ("public.gallery", {}, "nav.gallery"), ("public.contact", {}, "nav.contact")]),

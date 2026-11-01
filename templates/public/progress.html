@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}{{ t('pg.title') }}{% endblock %}
+{% block content %}
+{# The progress of the institutions (1.2.138): an infographic of counts, never a name (kts/dashboard.py pipeline). The rings
+   and the bars grow as the page comes into view and the figures refresh every minute from /progress.json (portal.js); every
+   figure is written in the page already, for those without scripts and for the search engines. #}
+{% macro of(n, total) -%}{{ t('dash.of')|replace('{n}', '{:,}'.format(n))|replace('{total}', '{:,}'.format(total)) }}{%- endmacro %}
+<div class="wrap section prog" data-progress="{{ url_for('public.progress_json') }}">
+  <span class="eyebrow">{{ t('nav.programme') }}</span>
+  <h1>{{ t('pg.title') }}</h1>
+  <p class="dim" style="max-width:80ch">{{ t('pg.intro') }}</p>
+  <p class="small muted prog-time"><span data-k="as_of_text">{{ t('dash.updated')|replace('{time}', now) }}</span> · <span class="prog-live"><i aria-hidden="true"></i>{{ t('pg.live') }}</span></p>
+
+  {# the four rings #}
+  <div class="prog-rings">
+    {% for r in p.rings %}
+    <div class="card prog-ring ring-{{ r.key }}">
+      <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="52"/><circle class="arc" cx="60" cy="60" r="52" data-ring="{{ r.key }}" style="--share:{{ r.share }}"/>
+        <text x="60" y="66" text-anchor="middle" class="pct" data-k="{{ r.key }}_pct">{{ r.pct }}%</text></svg>
+      <div class="num" data-count="{{ r.n }}" data-k="{{ r.key }}">{{ '{:,}'.format(r.n) }}</div>
+      <div class="lbl">{{ t({'participating': 'dash.inst_sel', 'delegates': 'home.stat_apps', 'verified': 'dash.verified', 'testing': 'pg.r_testing'}[r.key]) }}</div>
+      <div class="sub small muted"><bdi data-k="{{ r.key }}_of">{{ of(r.n, r.total) }}</bdi></div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {# the stages, from registration to verification #}
+  <section class="card prog-flow" aria-labelledby="prog-flow-h">
+    <h2 id="prog-flow-h">{{ t('pg.flow_title') }}</h2>
+    <ol class="prog-stages">
+      {% for s in p.stages %}
+      <li class="stage stage-{{ s.key }}">
+        <div class="st-head"><span class="st-n" data-count="{{ s.n }}" data-k="st_{{ s.key }}">{{ '{:,}'.format(s.n) }}</span>
+          <span class="st-lbl">{{ t({'registered': 'dash.inst_reg', 'participating': 'dash.inst_sel', 'testing': 'pg.r_testing', 'selected': 'pg.s_selected', 'app_registered': 'home.stat_apps', 'verified': 'dash.verified'}[s.key]) }}</span>
+          {% if not loop.first %}<span class="st-pct small muted" data-k="st_{{ s.key }}_pct">{{ s.pct }}%</span>{% endif %}</div>
+        <div class="st-bar"><span style="--w:{{ s.width }}%" data-bar="st_{{ s.key }}"></span></div>
+      </li>
+      {% endfor %}
+    </ol>
+    <p class="small muted prog-behind"><bdi data-k="behind" data-tpl="{{ t('pg.behind') }}">{{ t('pg.behind')|replace('{n}', p.counts.not_selected|string) }}</bdi> · <bdi data-k="unregistered" data-tpl="{{ t('pg.unregistered') }}">{{ t('pg.unregistered')|replace('{n}', p.counts.not_registered|string) }}</bdi></p>
+  </section>
+
+  {# the last three weeks, day by day #}
+  <section class="card prog-momentum" aria-labelledby="prog-mom-h">
+    <h2 id="prog-mom-h">{{ t('pg.momentum_title') }}</h2>
+    <div class="prog-sparks">
+      {% for key, label in (('inst', 'pg.m_inst'), ('app', 'pg.m_app')) %}{% set s = p.series[key] %}
+      <div class="spark spark-{{ key }}">
+        <div class="spark-head"><b>{{ t(label) }}</b><span class="small muted"><bdi data-k="{{ key }}_today">{{ t('pg.today')|replace('{n}', s.today|string) }}</bdi> · <bdi data-k="{{ key }}_week">{{ t('pg.week')|replace('{n}', s.week|string) }}</bdi></span></div>
+        <svg viewBox="0 0 300 64" preserveAspectRatio="none" aria-hidden="true"><polygon class="area" data-area="{{ key }}" points="{{ s.area }}"/><polyline class="line" data-line="{{ key }}" points="{{ s.points }}"/></svg>
+        <div class="spark-axis small muted" dir="ltr"><span>{{ p.days[0]|date }}</span><span>{{ p.days[-1]|date }}</span></div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# the rows of Annexure-I furthest ahead #}
+  <section class="card prog-states" aria-labelledby="prog-st-h">
+    <h2 id="prog-st-h">{{ t('pg.states_title') }}</h2>
+    {% if p.states %}
+    <ol class="prog-race">
+      {% for s in p.states %}
+      <li><span class="rc-lbl">{{ nodal_label(s.state) }}</span><span class="rc-bar"><span style="--w:{{ s.share }}%"></span></span><span class="rc-n"><bdi dir="ltr">{{ s.inst_sel }}/{{ s.to_select }}</bdi></span></li>
+      {% endfor %}
+    </ol>
+    {% else %}<p class="small muted">{{ t('dash.no_inst') }}</p>{% endif %}
+    <p style="margin:12px 0 0"><a href="{{ url_for('public.dashboard') }}">{{ t('dash.link') }} →</a></p>
+  </section>
+
+  {# the milestones, today among them #}
+  <section class="card prog-miles" aria-labelledby="prog-ms-h">
+    <h2 id="prog-ms-h">{{ t('pg.miles_title') }}</h2>
+    <ol class="prog-track">
+      {% for m in p.milestones %}
+      <li class="ms-{{ m.status }}"><i class="ms-dot" aria-hidden="true"></i>
+        <div class="ms-when"><bdi dir="ltr">{{ m.starts|date }}{% if m.ends %} – {{ m.ends|date }}{% endif %}</bdi></div>
+        <div class="ms-what">{{ t(m.title_key) if m.title_key else m.title }}</div>
+        {% if m.status == 'next' %}<div class="ms-days">{{ t('pg.days_to')|replace('{n}', m.days|string) }}</div>
+        {% elif m.status == 'current' %}<div class="ms-days">{{ t('pg.now') }}</div>
+        {% elif m.status == 'done' %}<div class="ms-days">{{ t('pg.done') }}</div>{% endif %}</li>
+      {% endfor %}
+    </ol>
+  </section>
+  <p class="small muted" style="max-width:80ch">{{ t('pg.note') }}</p>
+</div>
+{% endblock %}

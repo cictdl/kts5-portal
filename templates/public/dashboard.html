@@ -8,6 +8,7 @@
   <span class="eyebrow">{{ t('nav.programme') }}</span>
   <h1>{{ t('dash.title') }}</h1>
   <p class="dim" style="max-width:80ch">{{ t('dash.intro') }}</p>
+  <p><a class="btn sm secondary" href="{{ url_for('public.progress') }}">📈 {{ t('pg.link') }}</a></p>
   <p class="small muted dash-time">{{ t('dash.updated')|replace('{time}', now) }}</p>
 
   <div class="grid grid-3 dash-kpis">

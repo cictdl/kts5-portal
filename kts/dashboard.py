@@ -16,12 +16,15 @@ The grid is no map: each State/UT is a square, placed roughly as on the map of I
 boundaries of the Survey of India exactly), shaded by its student delegates registered against its number.
 """
 import json
+import time
 from collections import defaultdict
+from datetime import date, datetime, timedelta
 
 from flask import current_app
 
 from .db import get_setting, query
 from .progress import VERIFIED, institutions, nodal_heis
+from .utils import IST, now_ist
 
 # (row, column, short name) of each State/UT in the grid
 GRID = {
@@ -122,3 +125,145 @@ def details(officers):
                 "name": i["name"], "district": i["district"], "status": status,
                 "delegate": i["app_name"] if status == "delegate" else None, "place": i["state"] if i["state"] in paired else None})
     return dict(found)
+
+
+# ---- the progress of the institutions (1.2.138) -----------------------------------------------------------------------------------
+
+_PIPE = {"at": 0.0, "data": None}
+PIPE_TTL = 30   # seconds: the page asks every minute, many visitors may
+
+
+def _ist_day(value):
+    """The day in IST of a UTC time of the database; None when it cannot be read."""
+    try:
+        return datetime.fromisoformat(value).astimezone(IST).date()
+    except (TypeError, ValueError):
+        return None
+
+
+def _spark(values, width=300, height=64):
+    """The points of a sparkline and of the area under it, for an SVG of width x height, the last day at the right."""
+    top = max(values) or 1
+    n = len(values)
+    pts = []
+    for i, v in enumerate(values):
+        x = round(i * width / (n - 1), 1) if n > 1 else width
+        y = round(height - 4 - (height - 10) * v / top, 1)
+        pts.append(f"{x},{y}")
+    line = " ".join(pts)
+    area = f"0,{height} " + line + f" {width},{height}"
+    return {"points": line, "area": area, "max": top}
+
+
+def pipeline(lang=None):
+    """
+    The progress of the institutions for the public page /progress and its JSON (1.2.138), counts only: the stages from
+    registration to verification, four rings against the 1,000 of Annexure-I, the last three weeks day by day, the rows of
+    Annexure-I by their share, the milestones of the programme with today's place among them. Kept for PIPE_TTL seconds.
+    """
+    now = time.monotonic()
+    if _PIPE["data"] is None or now - _PIPE["at"] > PIPE_TTL:
+        _PIPE.update(at=now, data=_pipeline())
+    return _PIPE["data"]
+
+
+def _one(sql, args=()):
+    return query(sql, args, one=True)["n"]
+
+
+def _pipeline():
+    from .i18n import CATALOG
+    from .progress import board
+    today = now_ist().date()
+    tot = board()["total"]
+    counts = {
+        "annexure": tot["allocation"],
+        "registered": _one("SELECT COUNT(*) AS n FROM institutions WHERE status != 'identified'"),
+        "pending": _one("SELECT COUNT(*) AS n FROM institutions WHERE status = 'pending'"),
+        "reserve": _one("SELECT COUNT(*) AS n FROM institutions WHERE status = 'reserve'"),
+        "participating": tot["participating"], "testing": tot["testing"], "signed_up": tot["signed_up"], "tested": tot["tested"],
+        "selected": tot["selected"], "app_registered": tot["registered"], "verified": tot["verified"],
+        "not_selected": tot["not_selected"], "not_registered": tot["not_registered"],
+        "delegates": _one("SELECT COUNT(*) AS n FROM applications WHERE status != 'withdrawn'"),
+        "delegates_verified": _one("SELECT COUNT(*) AS n FROM applications WHERE status IN (%s)" % ",".join("?" * len(VERIFIED)), VERIFIED),
+    }
+
+    def pct(n, total):
+        return min(100, round(100 * n / total)) if total else 0
+
+    # the rings: (key, number, total)
+    rings = [("participating", counts["participating"], counts["annexure"]), ("delegates", counts["delegates"], counts["annexure"]),
+             ("verified", counts["delegates_verified"], counts["delegates"]), ("testing", counts["testing"], counts["participating"])]
+    rings = [{"key": k, "n": n, "total": t, "pct": pct(n, t), "share": round(min(1, n / t), 4) if t else 0} for k, n, t in rings]
+    # the stages, each against the first (the width of its bar) and the one before (the percentage)
+    order = [("registered", counts["registered"]), ("participating", counts["participating"]), ("testing", counts["testing"]),
+             ("selected", counts["selected"]), ("app_registered", counts["app_registered"]), ("verified", counts["verified"])]
+    first = order[0][1] or 1
+    stages = []
+    for i, (k, n) in enumerate(order):
+        prev = order[i - 1][1] if i else n
+        stages.append({"key": k, "n": n, "width": round(100 * n / first, 1) if first else 0, "pct": pct(n, prev) if i else 100})
+    # the last three weeks, day by day, in IST
+    days = [today - timedelta(days=20 - i) for i in range(21)]
+    by_day = {"inst": {d: 0 for d in days}, "app": {d: 0 for d in days}}
+    for r in query("SELECT created_at FROM institutions WHERE status != 'identified'"):
+        d = _ist_day(r["created_at"])
+        if d in by_day["inst"]:
+            by_day["inst"][d] += 1
+    for r in query("SELECT created_at FROM applications WHERE status != 'withdrawn'"):
+        d = _ist_day(r["created_at"])
+        if d in by_day["app"]:
+            by_day["app"][d] += 1
+    series = {}
+    for key, per in by_day.items():
+        values = [per[d] for d in days]
+        series[key] = dict(_spark(values), values=values, today=values[-1], week=sum(values[-7:]))
+    # the rows of Annexure-I by the share of their Participating Institutions, the ten furthest ahead
+    rows = [r for r in figures()["states"] if r["to_select"]]
+    rows.sort(key=lambda r: (-r["inst_sel"] / r["to_select"], -r["registered"], r["state"]))
+    states = [{"state": r["state"], "to_select": r["to_select"], "inst_sel": r["inst_sel"], "registered": r["registered"], "verified": r["verified"],
+               "share": pct(r["inst_sel"], r["to_select"])} for r in rows[:10]]
+    counts["states_active"] = sum(1 for r in figures()["states"] if r["inst_reg"])
+    # the milestones: the days of the programme (data/timeline.json) and of the Sangamam (the settings), with today among them
+    marks = []
+    for row in json.loads((current_app.config["DATA_DIR"] / "timeline.json").read_text(encoding="utf-8")):
+        if row["key"] in ("hei_reg", "hei_select", "assess", "selection", "live", "internship", "papers"):
+            marks.append((row["key"], row["starts"], row.get("ends"), row["title"]))
+    for key, setting, i18n_key in (("inauguration", "kts.start", "timeline.inauguration"), ("valedictory", "kts.end", "timeline.valedictory")):
+        day = (get_setting(setting) or "")[:10]
+        if day:
+            marks.append((key, day, None, i18n_key))
+    milestones = []
+    for key, starts, ends, title in sorted(marks, key=lambda m: m[1]):
+        a, b = date.fromisoformat(starts), date.fromisoformat(ends) if ends else None
+        last = b or a
+        status = "done" if last < today else "current" if a <= today <= last else "upcoming"
+        title_key = f"timeline.{key}" if f"timeline.{key}" in CATALOG["en"] else (title if title.startswith("timeline.") and title in CATALOG["en"] else None)
+        milestones.append({"key": key, "starts": starts, "ends": ends, "status": status, "days": (a - today).days,
+                           "title_key": title_key, "title": title if not title.startswith("timeline.") else CATALOG["en"][title]})
+    nxt = next((m for m in milestones if m["status"] == "upcoming"), None)
+    if nxt:
+        nxt["status"] = "next"
+    return {"counts": counts, "rings": rings, "stages": stages, "series": series, "days": [d.isoformat() for d in days], "states": states,
+            "milestones": milestones, "today": today.isoformat(), "as_of": now_ist().strftime("%H:%M")}
+
+
+def pipeline_json(t):
+    """The figures of the page as its script expects them (portal.js): the texts in the language of the visitor, `t` being i18n.t."""
+    p = pipeline()
+    c = p["counts"]
+    flat = {k: v for k, v in c.items()}
+    flat.update({f"st_{s['key']}": s["n"] for s in p["stages"]})
+    flat.update({f"st_{s['key']}_pct": f"{s['pct']}%" for s in p["stages"][1:]})
+    for r in p["rings"]:
+        flat[r["key"]] = r["n"]
+        flat[f"{r['key']}_pct"] = f"{r['pct']}%"
+        flat[f"{r['key']}_of"] = t("dash.of").replace("{n}", f"{r['n']:,}").replace("{total}", f"{r['total']:,}")
+    flat["behind"] = t("pg.behind").replace("{n}", str(c["not_selected"]))
+    flat["unregistered"] = t("pg.unregistered").replace("{n}", str(c["not_registered"]))
+    for key, s in p["series"].items():
+        flat[f"{key}_today"] = t("pg.today").replace("{n}", str(s["today"]))
+        flat[f"{key}_week"] = t("pg.week").replace("{n}", str(s["week"]))
+    flat["as_of_text"] = t("dash.updated").replace("{time}", p["as_of"])
+    return {"flat": flat, "shares": {r["key"]: r["share"] for r in p["rings"]}, "widths": {f"st_{s['key']}": s["width"] for s in p["stages"]},
+            "series": {k: {"points": s["points"], "area": s["area"]} for k, s in p["series"].items()}, "as_of": p["as_of"]}

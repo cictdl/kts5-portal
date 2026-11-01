@@ -322,3 +322,51 @@
   }, { threshold: 0.35 });
   els.forEach(function (el) { seen.observe(el); });
 })();
+
+
+// The progress of the institutions (1.2.138): the rings and the bars grow once the page is in view, and the figures refresh
+// every minute from /progress.json while the page is shown; every figure is written in the page already.
+(function () {
+  var root = document.querySelector("[data-progress]");
+  if (!root) return;
+  var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function reveal() { root.classList.add("prog-in"); }
+  if (still || !("IntersectionObserver" in window)) {
+    reveal();
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      if (entries.some(function (e) { return e.isIntersecting; })) { reveal(); io.disconnect(); }
+    }, { threshold: 0.05 });
+    io.observe(root);
+    setTimeout(reveal, 1500);
+  }
+  var fmt = window.Intl ? new Intl.NumberFormat("en-IN") : null;
+  function put(key, value) {
+    root.querySelectorAll('[data-k="' + key + '"]').forEach(function (el) {
+      var tpl = el.getAttribute("data-tpl");
+      el.textContent = tpl ? tpl.replace("{n}", value) : (typeof value === "number" && fmt ? fmt.format(value) : value);
+    });
+  }
+  function apply(d) {
+    Object.keys(d.flat || {}).forEach(function (k) { put(k, d.flat[k]); });
+    Object.keys(d.shares || {}).forEach(function (k) {
+      root.querySelectorAll('[data-ring="' + k + '"]').forEach(function (el) { el.style.setProperty("--share", d.shares[k]); });
+    });
+    Object.keys(d.widths || {}).forEach(function (k) {
+      root.querySelectorAll('[data-bar="' + k + '"]').forEach(function (el) { el.style.setProperty("--w", d.widths[k] + "%"); });
+    });
+    Object.keys(d.series || {}).forEach(function (k) {
+      var line = root.querySelector('[data-line="' + k + '"]'), area = root.querySelector('[data-area="' + k + '"]');
+      if (line) line.setAttribute("points", d.series[k].points);
+      if (area) area.setAttribute("points", d.series[k].area);
+    });
+  }
+  function refresh() {
+    if (document.hidden || !window.fetch) return;
+    fetch(root.getAttribute("data-progress"), { cache: "no-store", credentials: "same-origin" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { if (d) apply(d); })
+      .catch(function () {});
+  }
+  setInterval(refresh, 60000);
+})();
