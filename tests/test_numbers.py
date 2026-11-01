@@ -40,7 +40,7 @@ def test_the_figures_are_counted_from_the_portal_itself():
     assert f["langs"] == 23 and f["kurals"] == 1330 and f["versions"] == 29
     assert f["audio"] == 1330 + 29 and f["audio_hours"] == FIGURES["audio_hours"] > 7
     # the orientation lectures, the videos of the repository, the reels and shorts and the video guide
-    assert f["videos"] >= 28 + 138 + 47 + 4 and f["video_parts"] == {"lectures": 28, "repository": 138, "reels": 47, "guide": 4}
+    assert f["videos"] >= 41 + 138 + 48 + 4 and f["video_parts"] == {"lectures": 41, "repository": 138, "reels": 48, "guide": 4}
     assert f["books"] == 11 and f["posters"] == 92 and f["events"] >= 253
     assert f["archives"] == FIGURES["archives"]
     assert FIGURES["archives"]["bundles"] == 865 and FIGURES["archives"]["gt_specimens"] == 133
@@ -68,7 +68,7 @@ def test_the_banner_on_the_home_page():
                            "Lexicon entries", "Tamil Audio Lexicon entries"]
     numbers = [int(t[1]) for t in tiles]
     assert numbers[:7] == [23, 1330, 1359, numbers[3], 11, 92, numbers[6]] and numbers[3] >= 217 and numbers[6] >= 253
-    assert numbers[8:18] == [156, 57, 44, 22, 15, 7, 6, 28, 47, 9]
+    assert numbers[8:18] == [156, 57, 44, 22, 15, 7, 6, 41, 48, 9]
     assert numbers[18:] == [865, 100000, 41, 15, 133, 17, 108655, 275262, 6758, 59170]
     hrefs = [t[0] for t in tiles]
     assert hrefs[:8] == ["/about", "/thirukkural", "/thirukkural", "/resources", "/syllabus", "/posters",
@@ -77,7 +77,7 @@ def test_the_banner_on_the_home_page():
                            "/resources?cat=video_pmevidya", "/resources?cat=app", "/resources?cat=music", "/orientation",
                            "/programme#reels", "/gallery"]
     assert all(h.startswith("https://www.digitalarchives.cict.in/") for h in hrefs[18:]) and len(set(hrefs[18:])) >= 4
-    assert "in 9 categories" in band and "in 14 languages" in band and "in 27 languages" in band
+    assert "in 9 categories" in band and "in 21 languages" in band and "in 27 languages" in band
     assert '<h3 class="num-h3" id="numbers-res-h">Digital repository</h3>' in band
     assert band.index('id="numbers-res-h"') < band.index('id="numbers-da-h"')
     # the sub-lines

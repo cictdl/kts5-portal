@@ -118,13 +118,14 @@ def test_the_results_line_and_the_limits():
 
 
 def test_one_result_and_one_event_are_singular():
+    # "chittori": the one reel of Vijay Chittori (1.2.117); "malto" gives two since the second Malto reel of 1.2.134
     from kts.i18n import CATALOG
     client = _client()
     for code, catalogue in CATALOG.items():
-        page = _page(client, f"/search?lang={code}&q=malto")
-        assert f'<p class="search-summary"><bdi>{escape(catalogue["search.result_one"].replace("{q}", "malto"))}</bdi></p>' in page, code
+        page = _page(client, f"/search?lang={code}&q=chittori")
+        assert f'<p class="search-summary"><bdi>{escape(catalogue["search.result_one"].replace("{q}", "chittori"))}</bdi></p>' in page, code
         events = _page(client, f"/seminars-workshops?lang={code}&k=hackathon")
         assert f'<p class="ev-summary small muted">{escape(catalogue["ev.count_one"])}</p>' in events, code
         assert f'<span class="muted ev-n">{escape(catalogue["ev.count_one"])}</span>' in events, code
-    assert "1 results" not in _page(client, "/search?lang=en&q=malto")
-    assert "1 result for “malto”" in _page(client, "/search?lang=en&q=malto")
+    assert "1 results" not in _page(client, "/search?lang=en&q=chittori")
+    assert "1 result for “chittori”" in _page(client, "/search?lang=en&q=chittori")

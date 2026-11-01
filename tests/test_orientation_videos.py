@@ -14,7 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 LECTURES = json.loads((ROOT / "data" / "orientation_lectures.json").read_text(encoding="utf-8"))
 CARD = {"en": ">English</bdi>", "ta": ">தமிழ்</bdi>", "hi": ">हिन्दी</bdi>", "ml": ">മലയാളം</bdi>", "kn": ">ಕನ್ನಡ</bdi>",
         "sa": ">संस्कृतम्</bdi>", "mr": ">मराठी</bdi>", "te": ">తెలుగు</bdi>", "ne": ">नेपाली</bdi>", "ur": ">اُردُو</bdi>",
-        "kok": ">ಕೊಂಕಣಿ</bdi>", "as": ">অসমীয়া</bdi>", "bn": ">বাংলা</bdi>", "mni": ">মৈতৈলোন্</bdi>"}
+        "kok": ">ಕೊಂಕಣಿ</bdi>", "as": ">অসমীয়া</bdi>", "bn": ">বাংলা</bdi>", "mni": ">মৈতৈলোন্</bdi>",
+        # 1 November (1.2.134)
+        "mai": ">मैथिली</bdi>", "doi": ">डोगरी</bdi>", "gu": ">ગુજરાતી</bdi>", "pa": ">ਪੰਜਾਬੀ</bdi>", "sat": ">ᱥᱟᱱᱛᱟᱲᱤ</bdi>", "or": ">ଓଡ଼ିଆ</bdi>", "sd": ">सिन्धी</bdi>"}
 
 
 def test_the_list_of_lectures():
@@ -28,8 +30,14 @@ def test_the_list_of_lectures():
         ("mr", 1, "DbHlmaVJTGo"), ("mr", 2, "-d6t_U9H8ok"), ("te", 1, "5XVI2_IPTh8"), ("te", 2, "esFy7zlzcAw"),
         ("ne", 1, "bcxdaQUzIpw"), ("ne", 2, "PIZsaQ-eLiU"), ("ur", 1, "0xFPlQM7xIw"), ("ur", 2, "5fCWISksGdI"),
         ("kok", 1, "GhRFpS3-O0g"), ("kok", 2, "MJ-Uv6M7ZBE"), ("as", 1, "QZT4lrKO0NQ"), ("as", 2, "eRpYMAHBNmI"),
-        ("bn", 1, "PFDRJxvvahE"), ("bn", 2, "06ReFAfIz_M"), ("mni", 1, "xAMAWU53XL8"), ("mni", 2, "F1YEcxOSPJI")]
-    assert len({r["youtube"] for r in LECTURES}) == 28 and len({r["lang"] for r in LECTURES}) == 14
+        ("bn", 1, "PFDRJxvvahE"), ("bn", 2, "06ReFAfIz_M"), ("mni", 1, "1c78-AyG790"), ("mni", 2, "F1YEcxOSPJI"),
+        # 1 November (1.2.134): thirteen more, and the Manipuri session 1 put up again by CICT (xAMAWU53XL8 before)
+        ("mai", 1, "jgsx1xO1DrA"), ("mai", 2, "-m-eQ_hFbz0"), ("doi", 1, "8gsv4Nvd-wM"), ("doi", 2, "LytuiBhl4J0"),
+        ("gu", 1, "8pvsooC75C0"), ("gu", 2, "6WkyzSJ34yo"), ("pa", 1, "nPpVYeKzBP4"), ("pa", 2, "htxlKleIIkM"),
+        ("sat", 1, "j7thl1widis"), ("sat", 2, "vT6SUoS3SbA"), ("or", 1, "351WmVjnBWk"), ("or", 2, "-xYX5_HNsk4"),
+        ("sd", 1, "kf5bDo1KQi8")]
+    # by 1 November (1.2.134): Maithili, Dogri, Gujarati, Punjabi, Santali and Odia 1 and 2, Sindhi 1 = 41 videos, 21 languages
+    assert len({r["youtube"] for r in LECTURES}) == 41 and len({r["lang"] for r in LECTURES}) == 21
     # the earlier addresses, removed from the channel, are gone from the page
     old = {"GF6HH7H9zlk", "2w6mgosRYAE", "Z3fGrbHLFr8", "tL9j8Dz7LLw", "FP8bmjuvpuk", "ptuQ7RaWf34", "q-8j2uP_lAA", "HUH2ZriU-0A",
            "U6hypuFpDRA", "BRczoN6wNa0", "A8qPl1T916Y", "_BSi16KkrXw", "g9qHDwL2i04", "oLDi_Yn7MU0"}

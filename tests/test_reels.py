@@ -78,12 +78,11 @@ def test_the_shorts_added_on_21_october():
         {"id": "EAvMVUp50-s", "lang": "Malto", "native": "माल्तो", "presenter": "R. George Edward"}]
     app = make_app(ADMIN_PASSWORD=None)
     page = app.test_client().get("/programme?lang=en").get_data(as_text=True)
-    assert "47 short videos in 27 languages" in page
+    assert "48 short videos in 27 languages" in page
     kurukh = page.split("कुँड़ुख़")[1].split('<div class="card reel">')[0]
     assert kurukh.count("youtube.com/shorts/") == 3
-    for native in ("माल्तो",):
-        card = page.split(f"<bdi>{native}</bdi>")[1].split('<div class="card reel">')[0]
-        assert card.count("youtube.com/shorts/") == 1, native
+    malto = page.split("<bdi>माल्तो</bdi>")[1].split('<div class="card reel">')[0]
+    assert malto.count("youtube.com/shorts/") == 2 and "Bijay Malto" in malto   # a second Malto short since 1.2.134
 
 
 def test_the_shorts_added_on_26_october():
@@ -117,8 +116,9 @@ def test_the_shorts_added_on_29_october():
     # a second recording of Dr. Laxman Kishan in Kisan
     assert REELS[45:] == [
         {"id": "_3tLAQMZ_eQ", "lang": "Hindi", "native": "हिन्दी", "presenter": "Vijay Chittori"},
-        {"id": "Kd5sxY9ltOY", "lang": "Kisan", "native": "किसान", "presenter": "Dr. Laxman Kishan"}]
-    assert len(REELS) == 47 and len({r["lang"] for r in REELS}) == 27
+        {"id": "Kd5sxY9ltOY", "lang": "Kisan", "native": "किसान", "presenter": "Dr. Laxman Kishan"},
+        {"id": "9-_RZeGA0pU", "lang": "Malto", "native": "माल्तो", "presenter": "Bijay Malto"}]   # 31 October, 1.2.134
+    assert len(REELS) == 48 and len({r["lang"] for r in REELS}) == 27   # the second Malto reel, by Bijay Malto (1.2.134)
     page = make_app(ADMIN_PASSWORD=None).test_client().get("/programme?lang=en").get_data(as_text=True)
     hindi = page.split("<bdi>हिन्दी</bdi>")[1].split('<div class="card reel">')[0]
     assert hindi.rindex("Vijay Chittori") > hindi.index("Dr. Gajadan Charan")
