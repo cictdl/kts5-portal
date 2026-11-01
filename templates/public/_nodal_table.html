@@ -1,4 +1,5 @@
-{# The Nodal Institutions of Annexure-I of the D.O. letter of 9 October 2026, with the number of Participating HEIs to be selected (1.2.45; the revised D.O. letter, 1.2.110)
+{# The Nodal Institutions of Annexure-I of the D.O. letter of 9 October 2026, with the number of Participating HEIs to be selected (1.2.45; the revised D.O. letter, 1.2.110;
+   the row named as the letter of 31 October 2026 names it, with the Union Territory paired with a State, 1.2.135)
    and the Nodal Officer of each State/UT with the contact details of the account (1.2.70) #}
 {% set alloc = t('nodal.col_alloc') %}
 {% set show_officers = nodal|selectattr('officers')|list %}
@@ -7,7 +8,7 @@
     <th class="num" style="white-space:normal;min-width:9em">{% if '(' in alloc %}{{ alloc.split('(', 1)[0] }}<div class="small" style="text-transform:none;letter-spacing:0;font-weight:400">({{ alloc.split('(', 1)[1] }}</div>{% else %}{{ alloc }}{% endif %}</th>
     <th class="num" style="white-space:normal;min-width:7em">{{ t('nodal.col_now') }}</th></tr></thead>
   <tbody>{% for n in nodal %}
-  <tr><td class="num">{{ loop.index }}</td><td>{{ place(n.state) }}</td><td lang="en" dir="ltr">{{ n.name }}</td>
+  <tr><td class="num">{{ loop.index }}</td><td>{{ n.label }}</td><td lang="en" dir="ltr">{{ n.name }}</td>
     {% if show_officers %}<td class="officer" lang="en" dir="ltr">{% for o in n.officers %}<div{% if not loop.first %} style="margin-top:8px"{% endif %}><b>{{ o.name }}</b>{% if o.designation %}<br><span class="small dim">{{ o.designation }}</span>{% endif %}{% if o.email %}<br><a href="mailto:{{ o.email }}">{{ o.email }}</a>{% endif %}{% if o.phone %}<br><a href="tel:{{ o.phone|replace(' ', '') }}">{{ o.phone }}</a>{% endif %}</div>{% else %}–{% endfor %}</td>{% endif %}
     <td class="num"><b>{{ n.allocation }}</b></td>
     <td class="num">{% if n.now and public_list %}<a href="{{ url_for('public.institutions') }}#{{ n.anchor }}">{{ n.now }}</a>{% else %}{{ n.now }}{% endif %}</td></tr>

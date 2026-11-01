@@ -38,7 +38,9 @@ def test_the_page_shows_them_in_the_language_of_the_reader():
     assert "How the programme reaches the institutions" in page and "nominates one student on merit with one Faculty Supervisor/Guide" in page
     # the names of the States follow the language of the page; the names of the institutions stay in English
     tamil = client.get("/partners?lang=ta").get_data(as_text=True)
-    assert "<td>தமிழ்நாடு</td>" in tamil and '<td lang="en" dir="ltr">Central University of Tamil Nadu</td>' in tamil
+    # the row as Annexure-I of 31 October 2026 names it: Tamil Nadu with the Andaman and Nicobar Islands (1.2.135)
+    assert "<td>தமிழ்நாடு மற்றும் அந்தமான் நிக்கோபார் தீவுகள்</td>" in tamil and "<td>கேரளா மற்றும் லட்சத்தீவு</td>" in tamil
+    assert '<td lang="en" dir="ltr">Central University of Tamil Nadu</td>' in tamil
     # the heading in Tamil, once the texts are translated
     from kts.i18n import CATALOG
     assert CATALOG["ta"]["nodal.title"] in tamil and "State/UT-wise list" not in tamil

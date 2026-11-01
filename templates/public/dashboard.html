@@ -28,10 +28,21 @@
         <a class="dash-tile {{ r.shade }}" href="#d-{{ r.grid[2] }}">
           <b dir="ltr">{{ r.grid[2] }}</b>
           <span class="dash-n" dir="ltr">{{ r.registered }}{% if r.to_select %}/{{ r.to_select }}{% endif %}</span>
-          <span class="dash-tip" role="tooltip"><b>{{ place(r.state) }}</b>
+          <span class="dash-tip" role="tooltip"><b>{{ nodal_label(r.state) }}</b>
             <span>{{ t('home.stat_apps') }}: <bdi>{% if r.to_select %}{{ of(r.registered, r.to_select) }}{% else %}{{ r.registered }} · {{ t('dash.no_number') }}{% endif %}</bdi></span>
             <span>{{ t('dash.inst_sel') }}: <bdi>{{ r.inst_sel }}</bdi></span>
             <span>{{ t('dash.verified') }}: <bdi>{{ r.verified }}</bdi></span></span>
+        </a>
+      </li>
+      {% endfor %}
+      {# a Union Territory paired with a State in Annexure-I (1.2.135): its square points to the State's block #}
+      {% for c in covered %}
+      <li style="grid-row:{{ c.grid[0] + 1 }};grid-column:{{ c.grid[1] + 1 }}">
+        <a class="dash-tile cv" href="#d-{{ c.code }}">
+          <b dir="ltr">{{ c.grid[2] }}</b>
+          <span class="dash-n" dir="ltr">→ {{ c.code }}</span>
+          <span class="dash-tip" role="tooltip"><b>{{ place(c.state) }}</b>
+            <span>{{ t('dash.with')|replace('{state}', place(c.with)) }}</span></span>
         </a>
       </li>
       {% endfor %}
@@ -42,7 +53,7 @@
       <li><i class="dash-sw b2"></i><bdi dir="ltr">≤ 50%</bdi></li>
       <li><i class="dash-sw b3"></i><bdi dir="ltr">≤ 75%</bdi></li>
       <li><i class="dash-sw b4"></i><bdi dir="ltr">&gt; 75%</bdi></li>
-      <li><i class="dash-sw nb"></i>{{ t('dash.no_number') }}</li>
+      <li><i class="dash-sw cv"></i>{{ t('dash.paired') }}</li>
     </ul>
   </section>
 
@@ -56,7 +67,7 @@
       <tbody>
         {% for r in states %}
         <tr{% if r.grid %} id="st-{{ r.grid[2] }}"{% endif %}>
-          <th scope="row">{% if r.grid %}<a href="#d-{{ r.grid[2] }}">{{ place(r.state) }}</a>{% else %}{{ place(r.state) }}{% endif %}</th>
+          <th scope="row">{% if r.grid %}<a href="#d-{{ r.grid[2] }}">{{ nodal_label(r.state) }}</a>{% else %}{{ nodal_label(r.state) }}{% endif %}</th>
           <td class="num">{{ r.to_select if r.to_select else '–' }}</td>
           <td class="num">{{ r.inst_reg }}</td><td class="num">{{ r.inst_sel }}</td><td class="num">{{ r.assessed }}</td>
           <td class="num">{{ r.registered }}{% if r.share is not none %}<span class="dash-meter" aria-hidden="true"><span style="width:{{ r.share }}%"></span></span>{% endif %}</td>
@@ -78,7 +89,7 @@
     {% for r in states %}{% set d = details.get(r.state) %}
     {% if d and (r.to_select or d.institutions) %}
     <details class="card dash-state"{% if r.grid %} id="d-{{ r.grid[2] }}"{% endif %}>
-      <summary><b>{{ place(r.state) }}</b> <span class="small muted">· {{ t('dash.inst_sel') }}: {{ r.inst_sel }} · {{ t('home.stat_apps') }}: {{ r.registered }}{% if r.to_select %} · {{ t('dash.to_select') }}: {{ r.to_select }}{% endif %}</span></summary>
+      <summary><b>{{ nodal_label(r.state) }}</b> <span class="small muted">· {{ t('dash.inst_sel') }}: {{ r.inst_sel }} · {{ t('home.stat_apps') }}: {{ r.registered }}{% if r.to_select %} · {{ t('dash.to_select') }}: {{ r.to_select }}{% endif %}</span></summary>
       <div class="dash-state-body">
         {% if d.nodal %}<p class="small"><b>{{ t('nodal.col_hei') }}:</b> <span lang="en" dir="ltr">{{ d.nodal }}</span></p>{% endif %}
         {% if d.officers %}
@@ -90,7 +101,7 @@
         {% if d.institutions %}
         <ol class="dash-insts">
           {% for i in d.institutions %}
-          <li><span lang="en" dir="ltr">{{ i.name }}</span>{% if i.district %} <span class="small muted" lang="en" dir="ltr">· {{ i.district }}</span>{% endif %}
+          <li><span lang="en" dir="ltr">{{ i.name }}</span>{% if i.district %} <span class="small muted" lang="en" dir="ltr">· {{ i.district }}</span>{% endif %}{% if i.place %} <span class="small muted">· {{ place(i.place) }}</span>{% endif %}
             <div class="small dash-st {{ i.status }}">{% if i.status == 'delegate' %}✓ <bdi>{{ t('dash.delegate')|replace('{name}', i.delegate) }}</bdi>{% elif i.status == 'verified' %}✓ {{ t('dash.verified') }}{% elif i.status == 'awaiting' %}{{ t('dash.awaiting') }}{% else %}{{ t('dash.no_student') }}{% endif %}</div></li>
           {% endfor %}
         </ol>

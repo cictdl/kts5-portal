@@ -102,9 +102,10 @@ def _app_filters():
     if f["status"]:
         sql += " AND a.status = ?"
         args.append(f["status"])
-    if f["state"]:
-        sql += " AND a.college_state = ?"
-        args.append(f["state"])
+    if f["state"]:   # a State with the Union Territory Annexure-I pairs with it (1.2.135)
+        group = HEI.with_covered([f["state"]])
+        sql += f" AND a.college_state IN ({','.join('?' * len(group))})"
+        args += group
     if f["lang"]:
         sql += " AND a.pref_lang = ?"
         args.append(f["lang"])
@@ -949,6 +950,7 @@ def _officers_by_state(active_only=False):
     return officers
 
 
+
 @bp.route("/nodal", methods=["GET", "POST"])
 @login_required("nodal.manage")
 def nodal_access():
@@ -975,20 +977,22 @@ def nodal_access():
             flash("No reminder sent: no applications await these officers, or the State/UT has no active account.", "error")
         return redirect(url_for("admin.nodal_access"))
     heis = _nodal_heis()
+    # by the row of Annexure-I: a paired Union Territory counts with its State (1.2.135)
     counts = {}
     for r in query("SELECT college_state AS s, status, COUNT(*) AS n FROM applications GROUP BY college_state, status"):
-        counts.setdefault(r["s"], {})[r["status"]] = r["n"]
+        c = counts.setdefault(HEI.nodal_state_of(r["s"]), {})
+        c[r["status"]] = c.get(r["status"], 0) + r["n"]
     officers = _officers_by_state()
     figures, total = NODAL.figures(_states())
-    covered = {h["state"] for h in heis}
+    covered = {s for h in heis for s in HEI.group_of(h["state"])}
     inst = {}
     for r in query("SELECT state, status, COUNT(*) AS n FROM institutions GROUP BY state, status"):
-        inst.setdefault(r["state"], {})[r["status"]] = r["n"]
+        c = inst.setdefault(HEI.nodal_state_of(r["state"]), {})
+        c[r["status"]] = c.get(r["status"], 0) + r["n"]
 
     def row(state, hei):
-        return {"state": state, "hei": hei, "officers": officers.get(state, []), "total": sum(counts.get(state, {}).values()),
-                "f": figures.get(state) or {"awaiting": 0, "verified": 0, "rejected": 0, "waiting_days": None, "new": 0},
-                "inst": inst.get(state, {})}
+        return {"state": state, "label": HEI.label_of(state, "en"), "hei": hei, "officers": officers.get(state, []),
+                "total": sum(counts.get(state, {}).values()), "f": NODAL.fold(figures, HEI.group_of(state)), "inst": inst.get(state, {})}
     rows = [row(h["state"], h["name"]) for h in heis]
     # the States/UTs without a Nodal Institution: their applications are verified by CICT, or by an officer given them
     others = [row(s, "") for s in _states() if s not in covered]
@@ -1073,9 +1077,10 @@ def _inst_filters(scope):
     if scope is not None:
         sql += f" AND i.state IN ({','.join('?' * len(scope))})" if scope else " AND 0"
         args += scope
-    if f["state"]:
-        sql += " AND i.state = ?"
-        args.append(f["state"])
+    if f["state"]:   # a State with the Union Territory Annexure-I pairs with it (1.2.135)
+        group = HEI.with_covered([f["state"]])
+        sql += f" AND i.state IN ({','.join('?' * len(group))})"
+        args += group
     if f["status"]:
         sql += " AND i.status = ?"
         args.append(f["status"])
@@ -1110,10 +1115,11 @@ def institutions():
         note = (request.form.get("note") or "").strip()[:500]
         if action == "accept":
             cap = HEI.cap_of(row["state"])
-            taken = query("SELECT COUNT(*) AS n FROM institutions WHERE state = ? AND status = 'accepted' AND id != ?",
-                          (row["state"], row["id"]), one=True)["n"]
+            group = HEI.group_of(row["state"])   # a paired Union Territory and its State share the number (1.2.135)
+            taken = query(f"SELECT COUNT(*) AS n FROM institutions WHERE state IN ({','.join('?' * len(group))}) "
+                          f"AND status = 'accepted' AND id != ?", (*group, row["id"]), one=True)["n"]
             if cap and taken >= cap:
-                flash(f"{row['state']} has {taken} accepted institutions: that is the number Annexure-I prescribes for it "
+                flash(f"{HEI.label_of(row['state'], 'en')} has {taken} accepted institutions: that is the number Annexure-I prescribes for it "
                       f"(Settings › Participating institutions).", "error")
                 return redirect(back)
             status = "accepted"
@@ -1151,7 +1157,7 @@ def institutions():
                  + " LIMIT ?", args + [INST_ROWS_SHOWN + 1])
     # in the order of the marks of Annexure-V (1.2.111), best first, when asked
     if request.args.get("order") == "marks":
-        rows = sorted(rows, key=lambda r: (r["state"], HEI.sop_order(r)))
+        rows = sorted(rows, key=lambda r: (HEI.nodal_state_of(r["state"]), HEI.sop_order(r)))
     # the States/UTs: identified, pending, accepted, declined, assessing, winners selected and registered
     summary = {}
     s_sql, s_args = " FROM institutions WHERE 1=1", []
@@ -1160,18 +1166,23 @@ def institutions():
         s_args += scope
     for r in query("SELECT state, status, COUNT(*) AS n, SUM(test_on) AS testing, SUM(winner_id IS NOT NULL) AS winners, "
                    "SUM(application_id IS NOT NULL) AS registered" + s_sql + " GROUP BY state, status", s_args):
-        c = summary.setdefault(r["state"], {"testing": 0, "winners": 0, "registered": 0})
-        c[r["status"]] = r["n"]
+        # by the row of Annexure-I: a paired Union Territory counts with its State (1.2.135)
+        c = summary.setdefault(HEI.nodal_state_of(r["state"]), {"testing": 0, "winners": 0, "registered": 0})
+        c[r["status"]] = c.get(r["status"], 0) + r["n"]
         if r["status"] == "accepted":
-            c.update(testing=r["testing"] or 0, winners=r["winners"] or 0, registered=r["registered"] or 0)
+            c["testing"] += r["testing"] or 0
+            c["winners"] += r["winners"] or 0
+            c["registered"] += r["registered"] or 0
     states = scope if scope is not None else _states()
+    units = list(dict.fromkeys(HEI.nodal_state_of(s) for s in states))
     allocation = {h["state"]: h.get("allocation", 0) for h in _nodal_heis()}
     settings = all_settings()
     return render_template("console/institutions.html", rows=rows[:INST_ROWS_SHOWN], more=len(rows) > INST_ROWS_SHOWN, f=f,
-                           states=states, summary=summary, allocation=allocation, scope=scope,
+                           states=states, units=units, labels={u: HEI.label_of(u, "en") for u in units},
+                           summary=summary, allocation=allocation, scope=scope,
                            can_decide=has_perm(user, "hei.decide"), window=HEI.window(settings),
                            reg_end=settings.get("reg.end"), assess_to=settings.get("camp.to"), hei_end=settings.get("hei.end"),
-                           select_end=settings.get("hei.select_end"), reserve={s: HEI.reserve_of(s) for s in states},
+                           select_end=settings.get("hei.select_end"), reserve={s: HEI.reserve_of(s) for s in units},
                            sop_max=sum(m for _k, _c, m, *_ in HEI.SOP), benchmark=HEI.SOP_BENCHMARK,
                            marks={r["id"]: HEI.sop_marks(r) for r in rows[:INST_ROWS_SHOWN]}, order=request.args.get("order", ""))
 
@@ -1227,19 +1238,20 @@ def institutions_evaluation():
         sql += " AND state = ?"
         args.append(request.args["state"])
     rows = query(sql, args)
-    nodal = {h["state"]: h["name"] for h in _nodal_heis()}
+    nodal = {s: h["name"] for h in _nodal_heis() for s in HEI.group_of(h["state"])}   # a paired Union Territory: its State's (1.2.135)
     headers = (["State/UT", "Nodal HEI", "Number to be selected (Annexure-I)", "Reserve list (up to 20%)", "Rank", "Name of Institution",
                 "Reference", "District/City", "Type", "AISHE/Institution Code", "Registered on"]
                + [f"{criterion} (max {most})" for _k, criterion, most, *_ in HEI.SOP]
                + ["Total (100)", f"Benchmark {HEI.SOP_BENCHMARK}", "Status", "Remarks of the committee"])
     data, ranks = [], {}
-    for r in sorted(rows, key=lambda r: (r["state"], HEI.sop_order(r))):
+    for r in sorted(rows, key=lambda r: (HEI.nodal_state_of(r["state"]), HEI.sop_order(r))):
         marks = HEI.sop_marks(r)
-        ranks[r["state"]] = ranks.get(r["state"], 0) + 1
+        unit = HEI.nodal_state_of(r["state"])   # a paired Union Territory is ranked with its State (1.2.135)
+        ranks[unit] = ranks.get(unit, 0) + 1
         scored = r["sop_total"] is not None
         status = {"accepted": "selected", "reserve": "reserve list"}.get(r["status"], r["status"])
         data.append((r["state"], nodal.get(r["state"], ""), HEI.allocation_of(r["state"]) or "", HEI.reserve_of(r["state"]) or "",
-                     ranks[r["state"]] if scored else "", r["name"], r["ref"], r["district"], r["itype"], r["aishe_code"],
+                     ranks[unit] if scored else "", r["name"], r["ref"], r["district"], r["itype"], r["aishe_code"],
                      (r["created_at"] or "")[:10])
                     + tuple(marks.get(k, "") for k, *_ in HEI.SOP)
                     + (r["sop_total"] if scored else "", ("yes" if r["sop_total"] >= HEI.SOP_BENCHMARK else "no") if scored else "",
@@ -1429,7 +1441,7 @@ def institutions_export():
                  + sql.replace(" FROM institutions i WHERE", " FROM institutions i LEFT JOIN applications a ON a.id = i.application_id "
                                                              "LEFT JOIN campus_students w ON w.id = i.winner_id WHERE")
                  + " ORDER BY i.state, i.name COLLATE NOCASE", args)
-    nodal = {h["state"]: h["name"] for h in _nodal_heis()}
+    nodal = {s: h["name"] for h in _nodal_heis() for s in HEI.group_of(h["state"])}   # a paired Union Territory: its State's (1.2.135)
     headers = ["State/UT", "Name of Nodal HEI"] + ANNEXURE_II + ["Status", "Reference", "Head of the Institution", "Designation",
                "Head: e-mail", "Head: phone", "Coordinator: designation", "Faculty Supervisor/Guide", "Guide: designation",
                "Guide: e-mail", "Guide: mobile", "Online assessment", "Students assessed", "Selected student", "Registered (application)",
@@ -1501,7 +1513,7 @@ def nodal_sheet():
     """The sheet to fill in: every State/UT with its Nodal Institution and the accounts that exist."""
     heis = _nodal_heis()
     officers = _officers_by_state()
-    covered = {h["state"] for h in heis}
+    covered = {s for h in heis for s in HEI.group_of(h["state"])}   # a paired Union Territory has its State's row (1.2.135)
     rows = []
     for state, hei in [(h["state"], h["name"]) for h in heis] + [(s, "") for s in _states() if s not in covered]:
         people = officers.get(state) or [None]
@@ -1598,7 +1610,7 @@ def nodal_import():
             _create_account(email, a["name"], "nodal", a["phone"], a["states"], designation=a["designation"])
         for email, states in more.items():
             u = query("SELECT id, states FROM users WHERE lower(email) = ? AND role = 'nodal'", (email,), one=True)
-            merged = NODAL.states_of(u) + [s for s in states if s not in NODAL.states_of(u)]
+            merged = NODAL.own_states(u) + [s for s in states if s not in NODAL.own_states(u)]
             execute("UPDATE users SET states = ? WHERE id = ?", ("|".join(merged), u["id"]))
             audit("user_updated", "user", u["id"], detail={"states": merged}, user=_user(), ip=client_ip())
         audit("nodal_accounts_imported", "user", None, detail={"created": len(new), "states_added": len(more)}, user=_user(), ip=client_ip())

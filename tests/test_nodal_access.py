@@ -54,7 +54,8 @@ def test_a_nodal_officer_sees_and_verifies_the_applications_of_their_state_only(
     kerala = _nodal(app, "nodal.kerala@tests.example", ["Kerala"])
     page = kerala.get("/console/applications").get_data(as_text=True)
     assert "Student 1" in page and "Student 2" in page and "Student 3" not in page and "Student 4" not in page
-    assert "You see the applications of the students of the institutions of" in page and "<b>Kerala</b>" in page
+    # the scope by the rows of Annexure-I: Kerala with Lakshadweep (1.2.135)
+    assert "You see the applications of the students of the institutions of" in page and "<b>Kerala and Lakshadweep</b>" in page
     # asking for another state does not widen it
     assert "Student 3" not in kerala.get("/console/applications?state=Assam").get_data(as_text=True)
     # an application of another state does not exist for them, nor its files

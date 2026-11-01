@@ -675,8 +675,9 @@ def result(slug):
 @bp.app_context_processor
 def _names():
     """nodal_of(state): the Nodal Institution of the State/UT, for the institution's page."""
-    from .heis import nodal_heis
+    from .heis import row_of
 
     def nodal_of(state):
-        return next((h["name"] for h in nodal_heis() if h["state"] == state), "")
+        h = row_of(state)   # a paired Union Territory has the Nodal Institution of its State (1.2.135)
+        return h["name"] if h else ""
     return {"nodal_of": nodal_of}

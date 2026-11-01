@@ -62,10 +62,12 @@ PERMS = {
 def state_scope(user):
     """
     The States/UTs whose applications a Nodal Officer works on (users.states, '|' between them),
-    as the applications name the State/UT of the institution; None for every other role, who see all.
+    as the applications name the State/UT of the institution, with the Union Territories that Annexure-I pairs with their
+    States (1.2.135); None for every other role, who see all.
     """
     if user and user["role"] == "nodal":
-        return [s for s in (user["states"] or "").split("|") if s]
+        from .heis import with_covered
+        return with_covered([s for s in (user["states"] or "").split("|") if s])
     return None
 
 

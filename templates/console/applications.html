@@ -2,7 +2,7 @@
 {% block title %}Applications{% endblock %}
 {% block content %}
 {% if scope is not none %}<div class="alert info">You see the applications of the students of the institutions of
-  <b>{{ scope|join(', ') if scope else 'no State/UT yet: ask CICT to give your account its State/UT' }}</b>. Open an application to see its
+  <b>{{ scope_label(scope) if scope else 'no State/UT yet: ask CICT to give your account its State/UT' }}</b>. Open an application to see its
   photograph, ID proof and signed nomination form, and verify it; or tick several and verify them together.
   {% if closes %}<b>{{ closes }}</b>{% endif %}</div>{% endif %}
 <form method="get" class="filters">

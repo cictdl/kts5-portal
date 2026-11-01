@@ -816,6 +816,7 @@ footer.site .bottom .wrap { display: flex; justify-content: space-between; gap: 
 .dash .b3 { background: #1c5cab; color: #fff; }
 .dash .b4 { background: #0d366b; color: #fff; }
 .dash .nb { background: #f0efec; color: #52514e; }
+.dash .cv { background: repeating-linear-gradient(135deg, #f3f2ef 0 5px, #e2e0d9 5px 10px); color: #52514e; }   /* paired with a State (1.2.135) */
 .dash .dash-tip { display: none; position: absolute; z-index: 5; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%);
   width: max-content; max-width: 240px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface);
   color: var(--ink); box-shadow: var(--shadow); font-size: .8rem; line-height: 1.4; text-align: start; }

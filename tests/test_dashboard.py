@@ -51,15 +51,19 @@ def test_the_figures():
     with app.app_context():
         data = figures()
     by = {r["state"]: r for r in data["states"]}
-    # the 36 States/UTs, those of Annexure-I first; each has its square
-    assert len(data["states"]) == 36 and len(GRID) == 36 and all(r["grid"] for r in data["states"])
-    assert data["states"][0]["state"] == "Andhra Pradesh" and data["states"][-1]["state"] == "Lakshadweep"
+    # the 31 rows of Annexure-I (the five Union Territories it pairs with a State count with it, 1.2.135); each has its square,
+    # and each paired Union Territory a square that points to its State's
+    assert len(data["states"]) == 31 and len(GRID) == 36 and all(r["grid"] for r in data["states"])
+    assert data["states"][0]["state"] == "Andhra Pradesh" and data["states"][-1]["state"] == "Puducherry"
+    assert [(c["state"], c["with"], c["code"]) for c in data["covered"]] == [
+        ("Dadra and Nagar Haveli and Daman and Diu", "Gujarat", "GJ"), ("Lakshadweep", "Kerala", "KL"), ("Chandigarh", "Punjab", "PB"),
+        ("Andaman and Nicobar Islands", "Tamil Nadu", "TN"), ("Ladakh", "Jammu and Kashmir", "JK")]
     assert len({(r, c) for r, c, _ in GRID.values()}) == 36
     tn = by["Tamil Nadu"]
     assert (tn["to_select"], tn["inst_reg"], tn["inst_sel"], tn["assessed"], tn["registered"], tn["verified"]) == (50, 3, 3, 2, 2, 1)
     assert tn["shade"] == "b1" and tn["share"] == 4
     assert (by["Kerala"]["inst_reg"], by["Kerala"]["inst_sel"], by["Kerala"]["shade"]) == (1, 0, "b0")
-    assert by["Goa"]["inst_reg"] == 0 and by["Ladakh"]["to_select"] is None and by["Ladakh"]["shade"] == "nb"
+    assert by["Goa"]["inst_reg"] == 0 and "Ladakh" not in by and by["Jammu and Kashmir"]["to_select"] == 11
     assert data["total"] == {"to_select": 1000, "inst_reg": 4, "inst_sel": 3, "assessed": 2, "registered": 2, "verified": 1}
     assert [shade(n, 100) for n in (0, 1, 25, 26, 50, 51, 75, 76, 140)] == ["b0", "b1", "b1", "b2", "b2", "b3", "b3", "b4", "b4"]
     assert shade(3, None) == "nb"
@@ -73,13 +77,15 @@ def test_the_page():
     kpis = page[page.index('class="grid grid-3 dash-kpis"'):page.index('class="card dash-map"')]
     assert re.findall(r'<div class="num">([\d,]+)</div>', kpis) == ["1,000", "4", "3", "2", "2", "1"]
     assert "2 of 1,000" in kpis
-    # the squares: Tamil Nadu 2 of 50, Ladakh without a number; each leads to the block of its State/UT
+    # the squares: Tamil Nadu 2 of 50; Ladakh paired with Jammu and Kashmir (1.2.135); each leads to the block of its State/UT
     assert page.count('class="dash-tile ') == 36
     assert ('<a class="dash-tile b1" href="#d-TN">\n          <b dir="ltr">TN</b>\n          <span class="dash-n" dir="ltr">2/50</span>') in page
-    assert '<a class="dash-tile nb" href="#d-LA">' in page and "No number in Annexure-I" in page
+    assert ('<a class="dash-tile cv" href="#d-JK">\n          <b dir="ltr">LA</b>\n          <span class="dash-n" dir="ltr">→ JK</span>') in page
+    assert "Counted with Jammu and Kashmir, as paired in Annexure-I" in page and "Union Territory paired with a State in Annexure-I" in page
+    assert "No number in Annexure-I" not in page
     # the table: every figure, with the total
     table = page[page.index('class="table dash-table"'):page.index('class="dash-details"')]
-    assert table.count("<tr id=\"st-") == 36 and '<th scope="row"><a href="#d-TN">Tamil Nadu</a></th>' in table
+    assert table.count("<tr id=\"st-") == 31 and '<th scope="row"><a href="#d-TN">Tamil Nadu and Andaman and Nicobar Islands</a></th>' in table
     row = table[table.index('<tr id="st-TN">'):table.index("</tr>", table.index('<tr id="st-TN">'))]
     assert re.findall(r'<td class="num">(\d+|–)', row) == ["50", "3", "3", "2", "2", "1"]
 
@@ -117,13 +123,16 @@ def test_the_block_of_each_state():
 
 
 def test_in_every_language_and_where_it_is_found():
-    from kts.i18n import CATALOG, place
+    from kts.heis import label_of
+    from kts.i18n import CATALOG
     app = make_app(ADMIN_PASSWORD=None)
     client = app.test_client()
     for code, catalogue in CATALOG.items():
         page = client.get(f"/dashboard?lang={code}").get_data(as_text=True)
         assert f"<h1>{escape(catalogue['dash.title'])}</h1>" in page, code
-        assert f'<a href="#d-TN">{escape(place("Tamil Nadu", code))}</a>' in page, code
+        with app.app_context():   # the row as Annexure-I names it, in the language of the page (1.2.135)
+            label = label_of("Tamil Nadu", code)
+        assert f'<a href="#d-TN">{escape(label)}</a>' in page, code
         assert str(escape(catalogue["dash.details_title"])) in page, code
         home = client.get(f"/?lang={code}").get_data(as_text=True)
         # a bold saffron button with an icon beside At a glance (1.2.123)

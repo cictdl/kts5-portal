@@ -5,7 +5,7 @@
 {% set pills = {'none': 'kumkum', 'testing': 'saffron', 'selected': 'saffron', 'registered': 'grey', 'verified': 'green'} %}
 <p class="dim" style="max-width:90ch">Each participating institution assesses its students on or before <b>{{ settings['camp.to']|date }}</b> (from {{ settings['camp.from']|date }}),
   selects one on merit, and that student registers on or before <b>{{ settings['reg.end']|date }}</b>; the Nodal Officer verifies the application by <b>{{ settings['verify.end']|date }}</b>.
-  Today is {{ today.strftime('%d %b %Y') }}.{% if scope is not none %} You see the institutions of <b>{{ scope|join(', ') }}</b>.{% endif %}</p>
+  Today is {{ today.strftime('%d %b %Y') }}.{% if scope is not none %} You see the institutions of <b>{{ scope_label(scope) }}</b>.{% endif %}</p>
 
 <div class="kpis">
   <div class="kpi"><div class="lbl">Participating</div><div class="num">{{ '{:,}'.format(tot.participating) }}</div><div class="sub">of {{ '{:,}'.format(tot.allocation) }} in Annexure-I</div></div>
@@ -20,7 +20,7 @@
   <thead><tr><th style="padding:8px">State/UT</th><th class="num" style="white-space:normal;padding:8px">Annexure-I</th><th class="num" style="white-space:normal;padding:8px">Participating</th><th class="num" style="white-space:normal;padding:8px">Assessing online</th><th class="num" style="white-space:normal;padding:8px">Signed up</th>
     <th class="num" style="white-space:normal;padding:8px">Tested</th><th class="num" style="white-space:normal;padding:8px">Selected</th><th class="num" style="white-space:normal;padding:8px">Registered</th><th class="num" style="white-space:normal;padding:8px">Verified</th><th class="num" style="white-space:normal;padding:8px">Not yet selected</th><th class="num" style="white-space:normal;padding:8px">Selected, not registered</th></tr></thead>
   <tbody>{% for s in board.states %}
-  <tr><td><a href="{{ url_for('admin.progress', state=s.state) }}">{{ s.state }}</a></td><td class="num muted">{{ s.allocation or '–' }}</td>
+  <tr><td><a href="{{ url_for('admin.progress', state=s.state) }}">{{ s.label }}</a></td><td class="num muted">{{ s.allocation or '–' }}</td>
     <td class="num"><b>{{ s.participating }}</b></td><td class="num">{{ s.testing }}</td><td class="num">{{ s.signed_up }}</td><td class="num">{{ s.tested }}</td>
     <td class="num">{{ s.selected }}</td><td class="num">{{ s.registered }}</td><td class="num">{{ s.verified }}</td>
     <td class="num">{% if s.not_selected %}<a href="{{ url_for('admin.progress', state=s.state, stage='behind') }}"><b>{{ s.not_selected }}</b></a>{% else %}0{% endif %}</td>

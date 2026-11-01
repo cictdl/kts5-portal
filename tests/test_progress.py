@@ -92,14 +92,16 @@ def test_the_stage_of_each_institution_and_the_figures_of_each_state():
         assert {r["id"]: r["stage"] for r in rows} == {ids[k]: ("none" if k == "tn" else k) for k in ids}
         b = progress.board()
     kerala = next(s for s in b["states"] if s["state"] == "Kerala")
-    assert kerala == {"state": "Kerala", "allocation": 21, "participating": 5, "testing": 2, "signed_up": 6, "tested": 3,
+    assert kerala == {"state": "Kerala", "label": "Kerala and Lakshadweep", "allocation": 21, "participating": 5, "testing": 2, "signed_up": 6, "tested": 3,
                       "selected": 3, "registered": 2, "verified": 1, "not_selected": 2, "not_registered": 1}
     # the States/UTs of Annexure-I in its order, each one even without institutions yet
     assert b["states"][0]["state"] == "Andhra Pradesh" and b["states"][0]["participating"] == 0 and len(b["states"]) == 31
     assert b["total"]["participating"] == 6 and b["total"]["allocation"] == 1000 and b["total"]["not_selected"] == 3
     with app.app_context():
         assert [s["state"] for s in progress.board(["Kerala"])["states"]] == ["Kerala"]
-        assert progress.board(["Ladakh"])["states"] == [{"state": "Ladakh", "allocation": None, **progress._empty()}]
+        # a Nodal Officer given Ladakh alone sees the row of Annexure-I that Ladakh belongs to (1.2.135)
+        assert progress.board(["Ladakh"])["states"] == [{"state": "Jammu and Kashmir", "label": "Jammu and Kashmir and Ladakh",
+                                                         "allocation": 11, **progress._empty()}]
 
 
 def test_which_reminder_is_due():
@@ -184,7 +186,7 @@ def test_the_page_for_cict_and_for_the_nodal_officer(monkeypatch):
     assert "Testing College" in admin.get("/console/progress?stage=testing").get_data(as_text=True)
     officer = _nodal(app, "nodal.kerala.progress@tests.example", ["Kerala"])
     mine = officer.get("/console/progress").get_data(as_text=True)
-    assert "Idle College" in mine and "Madurai College" not in mine and "You see the institutions of <b>Kerala</b>" in mine
+    assert "Idle College" in mine and "Madurai College" not in mine and "You see the institutions of <b>Kerala and Lakshadweep</b>" in mine
     from kts.utils import xlsx_rows
     sheet = xlsx_rows(officer.get("/console/progress.xlsx").data)
     assert sheet[0][:5] == ["State/UT", "Reference", "Institution", "District/City", "Stage"]

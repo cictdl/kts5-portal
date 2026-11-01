@@ -7,6 +7,13 @@ Institution of each State/UT scrutinises them and selects the number of Particip
 reserve list (status 'reserve'); each selected institution nominates one student and one Faculty Supervisor/Guide, endorsed by
 the Head of the Institution.
 
+Annexure-I of the D.O. letter of 31 October 2026 (1.2.135) pairs five Union Territories with a State under one Nodal
+Institution and one number: Gujarat and Dadra and Nagar Haveli and Daman and Diu; Kerala and Lakshadweep; Punjab and
+Chandigarh; Tamil Nadu and Andaman and Nicobar Islands; Jammu and Kashmir and Ladakh ("covers" in data/nodal_heis.json). An
+institution and a student keep their own State/UT; the Nodal Institution, the number and the reserve list, the scope of the
+Nodal Officers and the figures State/UT by State/UT are those of the row of Annexure-I (row_of, nodal_state_of, group_of,
+with_covered, label_of, unit_name).
+
 * An institution applies on the website (/institutions/register) while hei.open is on and up to
   hei.end: its name, type, State/UT, district, AISHE code, its Head and a coordinator/Faculty
   Supervisor. The Head and the coordinator get a mail with the reference; so do the Nodal Officers
@@ -133,12 +140,64 @@ def nodal_heis():
     return json.loads((current_app.config["DATA_DIR"] / "nodal_heis.json").read_text(encoding="utf-8"))
 
 
-def allocation_of(state):
-    """The number of Participating Institutions to be selected in the State/UT (Annexure-I of the revised D.O. letter), or 0."""
+def row_of(state):
+    """The row of Annexure-I that covers the State/UT: its own, or the State it is paired with (1.2.135); None without one."""
     for h in nodal_heis():
-        if h["state"] == state:
-            return int(h.get("allocation") or 0)
-    return 0
+        if state == h["state"] or state in h.get("covers", ()):
+            return h
+    return None
+
+
+def nodal_state_of(state):
+    """The State/UT of Annexure-I that this one belongs to: Lakshadweep gives Kerala; a State/UT of no row gives itself."""
+    h = row_of(state)
+    return h["state"] if h else state
+
+
+def group_of(state):
+    """The States/UTs of the row of Annexure-I that covers this one, the State first: Kerala or Lakshadweep gives both."""
+    h = row_of(state)
+    return [h["state"], *h.get("covers", [])] if h else [state]
+
+
+def with_covered(states):
+    """
+    These States/UTs with the Union Territories that Annexure-I pairs with them, each after its State: ['Kerala'] gives
+    ['Kerala', 'Lakshadweep'], ['Lakshadweep'] stays as it is (the scope of a Nodal Officer, a filter of the Console).
+    """
+    out = []
+    for s in states:
+        h = row_of(s)
+        for x in [s] + (list(h.get("covers", [])) if h and h["state"] == s else []):
+            if x not in out:
+                out.append(x)
+    return out
+
+
+def label_of(state, lang=None):
+    """The row of Annexure-I that covers the State/UT, as the letter names it, in the language of the reader: Kerala and Lakshadweep."""
+    from .i18n import place, t
+    names = [place(s, lang) for s in group_of(state)]
+    label = names[0]
+    for name in names[1:]:
+        label = t("nodal.pair", lang).replace("{a}", label).replace("{b}", name)
+    return label
+
+
+def scope_label(states):
+    """A Nodal Officer's States/UTs by the rows of Annexure-I: Kerala and Lakshadweep, Tamil Nadu and Andaman and Nicobar Islands."""
+    return ", ".join(dict.fromkeys(label_of(s, "en") for s in states))
+
+
+def unit_name(state):
+    """The State/UT as a mail names it: itself, or, for a Union Territory paired in Annexure-I, the row (Kerala and Lakshadweep)."""
+    return state if nodal_state_of(state) == state else label_of(state, "en")
+
+
+def allocation_of(state):
+    """The number of Participating Institutions to be selected in the State/UT (Annexure-I), or 0; a paired Union Territory shares its State's."""
+    h = row_of(state)
+    return int(h.get("allocation") or 0) if h else 0
 
 
 def mail_invited(row):
@@ -152,7 +211,7 @@ def mail_invited(row):
         by = "the date shown on the portal"
     for address in [a for a in dict.fromkeys([row["coord_email"], row["head_email"]]) if a]:
         send_mail(address, f"KTS 5.0: {row['name']} is identified as a participating institution",
-                  f"Dear Sir/Madam,\n\nThe Nodal Institution of {row['state']} has identified {row['name']} as a participating "
+                  f"Dear Sir/Madam,\n\nThe Nodal Institution of {unit_name(row['state'])} has identified {row['name']} as a participating "
                   f"institution of Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom, the nationwide Students' Engagement "
                   f"Programme of the Ministry of Education (the Sangamam at Varanasi: {_by(get_setting('kts.start'))} – "
                   f"{_by(get_setting('kts.end'))}).\n\n"
@@ -212,11 +271,11 @@ def mail_received(row):
         send_mail(address, f"KTS 5.0: application of {row['name']} received ({row['ref']})",
                   f"Dear Sir/Madam,\n\nThe application of your institution to take part in Kashi Tamil Sangamam 5.0 – "
                   f"Thirukkural Payilvom has been received.\n\nReference: {row['ref']}\n{_details(row)}\n"
-                  f"The Nodal Officer of {row['state']} reviews it; you will receive another mail with the decision. "
+                  f"The Nodal Officer of {unit_name(row['state'])} reviews it; you will receive another mail with the decision. "
                   f"Once accepted, the institution is listed at {base}/institutions and its nominated student can choose it "
                   f"when registering at {base}/register.\n\nCentral Institute of Classical Tamil, Chennai")
     officers = [u for u in query("SELECT * FROM users WHERE role = 'nodal' AND active = 1")
-                if row["state"] in (u["states"] or "").split("|")]
+                if row["state"] in with_covered([s for s in (u["states"] or "").split("|") if s])]
     send_later([(u["email"], f"KTS 5.0: {row['name']} applies to participate ({row['state']})",
                  f"Dear {u['name']},\n\nAn institution of {row['state']} has applied to take part in KTS 5.0.\n\n"
                  f"Reference: {row['ref']}\n{_details(row)}\n"
@@ -228,14 +287,14 @@ def mail_decision(row):
     base = current_app.config["BASE_URL"]
     if row["status"] == "reserve":
         subject = f"KTS 5.0: {row['name']} is in the reserve list"
-        body = (f"Dear Sir/Madam,\n\nThe Nodal Institution of {row['state']} has placed your institution in the reserve list of the "
+        body = (f"Dear Sir/Madam,\n\nThe Nodal Institution of {unit_name(row['state'])} has placed your institution in the reserve list of the "
                 f"Participating Institutions of Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom, in accordance with the Standard "
                 f"Operating Procedure. If a selected institution withdraws, does not respond or does not nominate its student, the "
                 f"next institution of the reserve list may be included; you will then receive another mail.\n\nReference: {row['ref']}\n"
                 f"\nFor any question, please write to the Nodal Officer of your State/UT or to CICT.\n\nCentral Institute of Classical Tamil, Chennai")
     elif row["status"] == "accepted":
         subject = f"KTS 5.0: {row['name']} is a Participating Institution"
-        body = (f"Dear Sir/Madam,\n\nThe Nodal Institution of {row['state']} has selected your institution as a Participating "
+        body = (f"Dear Sir/Madam,\n\nThe Nodal Institution of {unit_name(row['state'])} has selected your institution as a Participating "
                 f"Institution of Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom.\n\nReference: {row['ref']}\n{_details(row)}\n"
                 f"Please assess your interested students on the Thirukkural and nominate one eligible student on merit, with one "
                 f"Faculty Supervisor/Guide, by {_by(get_setting('reg.end'))}. The nomination form, signed by the Head of "
@@ -244,7 +303,7 @@ def mail_decision(row):
                 f"The participating institutions are listed at {base}/institutions\n\nCentral Institute of Classical Tamil, Chennai")
     else:
         subject = f"KTS 5.0: application of {row['name']} ({row['ref']})"
-        body = (f"Dear Sir/Madam,\n\nThe Nodal Institution of {row['state']} could not select your institution as a Participating "
+        body = (f"Dear Sir/Madam,\n\nThe Nodal Institution of {unit_name(row['state'])} could not select your institution as a Participating "
                 f"Institution of KTS 5.0. Registration does not by itself confer selection.\n\nReference: {row['ref']}\n"
                 + (f"Remark: {row['decision_note']}\n" if row["decision_note"] else "")
                 + "\nFor any question, please write to the Nodal Officer of your State/UT or to CICT.\n\n"

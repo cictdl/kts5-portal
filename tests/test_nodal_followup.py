@@ -35,10 +35,10 @@ def test_the_accounts_from_a_spreadsheet():
     r = admin.get("/console/nodal/sheet.xlsx")
     assert r.status_code == 200 and "spreadsheetml" in r.mimetype
     rows = xlsx_rows(r.data)
-    assert rows[0] == HEAD and len(rows) == 1 + 36
+    assert rows[0] == HEAD and len(rows) == 1 + 31   # the rows of Annexure-I; a paired Union Territory has its State's (1.2.135)
     assert ["Kerala", "Central University of Kerala", "", "", "", ""] in rows
     assert next(row for row in rows if row[0] == "Assam")[4] == "assam.old@tests.example"
-    assert next(row for row in rows if row[0] == "Ladakh")[1] == ""
+    assert not [row for row in rows if row[0] == "Ladakh"]
     filled = [("Kerala", "Central University of Kerala", "Dr.  K. Nair", "Registrar", "K.Nair@ker.example", "9876543210"),
               ("tamil  nadu", "", "Dr. K. Nair", "Registrar", "k.nair@ker.example", ""),          # the same officer, a second State/UT
               ("Delhi", "", "Dr. Delhi", "", "verifier@tests.example", ""),             # the e-mail of another role
@@ -64,7 +64,9 @@ def test_the_accounts_from_a_spreadsheet():
         assert query("SELECT role, states FROM users WHERE email = 'verifier@tests.example'", one=True)["role"] == "verifier"
         assert query("SELECT id FROM users WHERE email = 'x@x.example'", one=True) is None
         mail = query("SELECT body FROM outbox WHERE to_addr = 'k.nair@ker.example'", one=True)["body"]
-    assert "As Nodal Officer for Kerala, Tamil Nadu" in mail and "Verification closes on 5 December 2026." in mail
+    # the rows of Annexure-I, with the Union Territories paired with the two States (1.2.135)
+    assert "As Nodal Officer for Kerala and Lakshadweep, Tamil Nadu and Andaman and Nicobar Islands" in mail
+    assert "Verification closes on 5 December 2026." in mail
     assert "Temporary password: Kts5-" in mail
     # the same sheet again: nothing more to do
     page = _upload(admin, xlsx_bytes(HEAD, filled, "Nodal officers", text_cols=(4, 5)), "officers.xlsx").get_data(as_text=True)
@@ -144,7 +146,7 @@ def test_the_morning_mail():
     sent = mails()
     assert set(sent) == {"kerala@tests.example", "two@tests.example"} and sent["kerala@tests.example"]["priority"] == 1
     kerala = sent["kerala@tests.example"]
-    assert kerala["subject"] == "KTS 5.0: 2 applications await your verification (Kerala)"
+    assert kerala["subject"] == "KTS 5.0: 2 applications await your verification (Kerala and Lakshadweep)"
     assert "Awaiting your verification: 2" in kerala["body"] and "Waiting longest: " in kerala["body"]
     assert "Verification closes on 21 October 2026 (end of the day, IST). Only verified students are consolidated" in kerala["body"]
     assert "/console/applications?status=submitted" in kerala["body"] and "on 16 October 2026 at 8:05 AM IST" in kerala["body"]
@@ -177,7 +179,7 @@ def test_cict_reminds_the_officers():
     assert "Morning mail to the officers with applications awaiting them:" in page and "<b>on</b>, at 08:00 IST" in page
     kerala = page.split("Central University of Kerala")[1].split("</tr>")[0]
     assert 'value="remind"' in kerala and "today" in kerala
-    punjab = page.split("<b>Punjab</b>")[1].split("</tr>")[0]
+    punjab = page.split("<b>Punjab and Chandigarh</b>")[1].split("</tr>")[0]   # the row of Annexure-I (1.2.135)
     assert 'value="remind"' not in punjab
     r = admin.post("/console/nodal", data={"_csrf": _token(admin), "action": "remind", "state": "Kerala"}, follow_redirects=True)
     assert "Reminder queued to 1 Nodal Officer(s)" in r.get_data(as_text=True)

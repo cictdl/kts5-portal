@@ -21,6 +21,7 @@ from datetime import date
 from flask import current_app
 
 from .db import get_db, get_setting, query, utcnow
+from .heis import label_of, nodal_state_of, row_of, unit_name, with_covered
 from .utils import now_ist, send_later
 
 STAGES = ("none", "testing", "selected", "registered", "verified")
@@ -66,9 +67,10 @@ def _scope_sql(scope, column="i.state"):
 def institutions(scope=None, state=None, ids=None):
     """The accepted institutions (of these States/UTs), each with its figures, its stage and its reminders."""
     sql, args = _scope_sql(scope)
-    if state:
-        sql += " AND i.state = ?"
-        args.append(state)
+    if state:   # a State with the Union Territory Annexure-I pairs with it (1.2.135)
+        group = with_covered([state])
+        sql += f" AND i.state IN ({','.join('?' * len(group))})"
+        args += group
     if ids is not None:
         sql += f" AND i.id IN ({','.join('?' * len(ids))})" if ids else " AND 0"
         args += list(ids)
@@ -106,7 +108,7 @@ def board(scope=None):
     """
     per = {}
     for r in institutions(scope):
-        c = per.setdefault(r["state"], _empty())
+        c = per.setdefault(nodal_state_of(r["state"]), _empty())   # a paired Union Territory counts with its State (1.2.135)
         c["participating"] += 1
         c["testing"] += 1 if r["test_on"] else 0
         c["signed_up"] += r["signed_up"]
@@ -120,12 +122,13 @@ def board(scope=None):
     allocation = {h["state"]: h["allocation"] for h in nodal_heis()}
     order = [h["state"] for h in nodal_heis()] + sorted(s for s in per if s not in allocation)
     if scope is not None:
-        order = [s for s in order if s in scope] + [s for s in scope if s not in order]
+        units = list(dict.fromkeys(nodal_state_of(s) for s in scope))
+        order = [s for s in order if s in units] + [s for s in units if s not in order]
     states = []
     for s in order:
         if s not in per and scope is None and s not in allocation:
             continue
-        states.append({"state": s, "allocation": allocation.get(s), **per.get(s, _empty())})
+        states.append({"state": s, "label": label_of(s, "en"), "allocation": allocation.get(s), **per.get(s, _empty())})
     total = _empty()
     for row in states:
         for k in total:
@@ -156,8 +159,8 @@ def _contact():
 
 
 def _nodal_line(inst):
-    hei = next((h for h in nodal_heis() if h["state"] == inst["state"]), None)
-    return f"The Nodal Institution of {inst['state']}, {hei['name']}, coordinates the programme in your State/UT.\n\n" if hei else ""
+    hei = row_of(inst["state"])   # a paired Union Territory: the Nodal Institution of its State (1.2.135)
+    return f"The Nodal Institution of {unit_name(inst['state'])}, {hei['name']}, coordinates the programme in your State/UT.\n\n" if hei else ""
 
 
 def mails_for(inst, kind, reminder=True):

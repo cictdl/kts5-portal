@@ -13,7 +13,7 @@
     <button class="btn sm secondary" name="action" value="remind_all" data-confirm="Send a reminder now to every Nodal Officer with applications awaiting them?">✉ Remind every officer with applications awaiting</button></form>
 </div>
 {% macro line(r, n) %}
-<tr><td class="num">{{ n }}</td><td><b>{{ r.state }}</b>{% if r.hei %}<div class="small muted">{{ r.hei }}</div>{% endif %}</td>
+<tr><td class="num">{{ n }}</td><td><b>{{ r.label }}</b>{% if r.hei %}<div class="small muted">{{ r.hei }}</div>{% endif %}</td>
   <td>{% for o in r.officers %}<div><a href="{{ url_for('admin.user_form', uid=o.id) }}">{{ o.name }}</a> <span class="small muted">{{ o.email }}</span>
     {% if not o.active %}<span class="pill grey">disabled</span>{% elif o.must_change_password %}<span class="pill saffron">not signed in yet</span>{% else %}<span class="small muted">· last sign-in {{ o.last_login_at|datetime if o.last_login_at else 'never' }}</span>{% endif %}</div>
     {% else %}<span class="muted">{% if r.hei %}no account{% else %}verified by CICT{% endif %}</span>{% endfor %}
@@ -25,7 +25,7 @@
   <td class="num">{{ r.f.verified }}</td>
   <td class="num">{{ r.f.rejected }}</td>
   <td>{% if r.f.awaiting and r.officers %}<form method="post" style="margin:0"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="state" value="{{ r.state }}">
-    <button class="btn xs ghost" name="action" value="remind" data-confirm="Send a reminder now to the Nodal Officer of {{ r.state }}?">Remind</button></form>{% endif %}</td></tr>
+    <button class="btn xs ghost" name="action" value="remind" data-confirm="Send a reminder now to the Nodal Officer of {{ r.label }}?">Remind</button></form>{% endif %}</td></tr>
 {% endmacro %}
 {% set heads %}<thead><tr><th class="num">#</th><th>State/UT · Nodal HEI</th><th>Nodal Officer</th><th class="num">Institutions <span class="small muted">accepted / Annexure-I</span></th><th class="num">Applications</th><th class="num">Awaiting</th><th class="num">Waiting longest</th><th class="num">Verified</th><th class="num">Rejected</th><th></th></tr></thead>{% endset %}
 <div class="table-wrap"><table class="table nodal-officers">

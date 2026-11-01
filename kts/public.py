@@ -689,7 +689,7 @@ def institutions():
         abort(404)
     ref = _states()
     groups = HEI.accepted_by_state(ref["all_states"])
-    nodal = {n["state"]: n["name"] for n in nodal_heis()}
+    nodal = {s: n["name"] for n in nodal_heis() for s in HEI.group_of(n["state"])}   # a paired Union Territory: its State's (1.2.135)
     return render_template("public/institutions.html", groups=groups, nodal=nodal, ref=ref, state_anchor=state_anchor,
                            total=sum(len(items) for _state, items in groups), window=HEI.window(settings),
                            settings=settings, most=HEI.max_per_state())
@@ -1304,7 +1304,8 @@ def dashboard():
     if get_setting("dashboard.public") != "1":
         abort(404)
     data = D.figures()
-    return render_template("public/dashboard.html", states=data["states"], total=data["total"], now=now_ist().strftime("%H:%M"),
+    return render_template("public/dashboard.html", states=data["states"], covered=data["covered"], total=data["total"],
+                           now=now_ist().strftime("%H:%M"),
                            details=D.details(_nodal_officers_by_state()))
 
 
@@ -1393,16 +1394,27 @@ def nodal_heis():
     return tuple(json.loads((current_app.config["DATA_DIR"] / "nodal_heis.json").read_text(encoding="utf-8")))
 
 
+def _officers_of(officers, states):
+    """The Nodal Officers of these States/UTs (one row of Annexure-I), each once."""
+    out = []
+    for s in states:
+        out += [o for o in officers.get(s, []) if o not in out]
+    return out
+
+
 def _nodal_table():
     """
-    The Nodal Institutions of Annexure-I with the tentative allocation of each State/UT and the
-    participating institutions accepted so far; the total of both (1.2.45).
+    The Nodal Institutions of Annexure-I with the allocation of each State/UT and the participating institutions accepted so
+    far; the total of both (1.2.45). A row is named as the letter names it, with the Union Territory it pairs with a State,
+    whose institutions count with the State's (1.2.135).
     """
     heis = nodal_heis()
-    now = {r["state"]: r["n"] for r in query("SELECT state, COUNT(*) AS n FROM institutions WHERE status = 'accepted' GROUP BY state")}
+    now = {}
+    for r in query("SELECT state, COUNT(*) AS n FROM institutions WHERE status = 'accepted' GROUP BY state"):
+        now[HEI.nodal_state_of(r["state"])] = now.get(HEI.nodal_state_of(r["state"]), 0) + r["n"]
     officers = _nodal_officers_by_state()
-    rows = [dict(h, now=now.get(h["state"], 0), anchor=state_anchor(h["state"]), officers=officers.get(h["state"], []))
-            for h in heis]
+    rows = [dict(h, label=HEI.label_of(h["state"]), now=now.get(h["state"], 0), anchor=state_anchor(h["state"]),
+                 officers=_officers_of(officers, HEI.group_of(h["state"]))) for h in heis]
     return rows, {"allocation": sum(int(h.get("allocation") or 0) for h in heis), "now": sum(r["now"] for r in rows)}
 
 

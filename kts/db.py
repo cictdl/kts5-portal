@@ -1280,7 +1280,12 @@ NODAL_NOTICE_LINK = "/nodal-institutions"
 
 def nodal_notice(heis):
     """(title, body) of the circular with the State/UT-wise list of the Nodal Higher Educational Institutions."""
-    lines = [f"{i}. {h['state']}: {h['name']} ({h['allocation']})" for i, h in enumerate(heis, 1)]
+    # the row as the letter of 31 October 2026 names it: with the Union Territory paired with a State (1.2.135)
+    lines = [f"{i}. {' and '.join([h['state'], *h.get('covers', [])])}: {h['name']} ({h['allocation']})" for i, h in enumerate(heis, 1)]
+    pairs = [(c, h["state"]) for h in heis for c in h.get("covers", [])]
+    pairs_text = ("Annexure-I pairs " + "; ".join(f"{c} with {s}" for c, s in pairs) + ". The institutions of these Union Territories "
+                  "register with their own Union Territory and are selected by the Nodal Institution of the State, within the number "
+                  "prescribed for the two together.")
     total = sum(h["allocation"] for h in heis)
     body = "\n".join([
         "As communicated by the Ministry of Education, Government of India (Annexure-I of the D.O. letter of 31 October 2026): the Nodal Higher Educational "
@@ -1294,6 +1299,7 @@ def nodal_notice(heis):
         "Registration is open to institutions without any State/UT-wise ceiling. The figures above indicate the final number of "
         "Participating Institutions to be selected by the respective Nodal Institution in accordance with the Standard "
         "Operating Procedure (Annexure-V). Registration does not by itself confer selection.",
+        *(["", pairs_text] if pairs else []),
         "",
         "All interested higher educational institutions (Central/State/Private Universities and Colleges) register on this "
         "portal (Register › Register your institution) up to 15 November 2026. The Nodal Institution of each State/UT "
@@ -1464,6 +1470,13 @@ def init_db(app):
         conn.execute("UPDATE notices SET body = ?, updated_at = ? WHERE title = ? AND body LIKE '%up to 10 November 2026%'",
                      (body, now, title))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", ("migrate.revised_do2.notice", "1", now))
+    # the pairs of Annexure-I of 31 October 2026 (1.2.135): the circular names each row as the letter does, once; a circular
+    # CICT has rewritten is left alone
+    if seed_path.exists() and not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.annex1_pairs.notice'").fetchone():
+        title, body = nodal_notice(json.loads(seed_path.read_text(encoding="utf-8")))
+        conn.execute("UPDATE notices SET body = ?, updated_at = ? WHERE title = ? AND body LIKE '%7. Gujarat: Central University of Gujarat (50)%'",
+                     (body, now, title))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", ("migrate.annex1_pairs.notice", "1", now))
     mark = "seed.notice.nodal_heis"
     if seed_path.exists() and not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
         title, body = nodal_notice(json.loads(seed_path.read_text(encoding="utf-8")))

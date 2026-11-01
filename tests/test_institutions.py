@@ -150,7 +150,7 @@ def test_the_morning_mail_names_the_institutions_awaiting():
     assert nodal.daily(app, datetime(2026, 10, 10, 8, 30, tzinfo=IST)) == 1
     with app.app_context():
         mail = query("SELECT * FROM outbox WHERE to_addr = 'nodal.kerala@tests.example' ORDER BY id DESC LIMIT 1", one=True)
-    assert mail["subject"] == "KTS 5.0: 1 institution awaits your decision (Kerala)"
+    assert mail["subject"] == "KTS 5.0: 1 institution awaits your decision (Kerala and Lakshadweep)"   # the row of Annexure-I (1.2.135)
     assert "Institutions awaiting your decision: 1." in mail["body"]
 
 
@@ -215,7 +215,8 @@ def test_each_state_accepts_at_most_its_number_of_annexure_i():
     app = _app()
     with app.app_context():
         assert (HEI.cap_of("Kerala"), HEI.cap_of("Uttar Pradesh"), HEI.cap_of("Tamil Nadu"), HEI.cap_of("Puducherry")) == (21, 300, 50, 5)
-        assert HEI.cap_of("Ladakh") == 0          # a State/UT without a Nodal Institution: no limit
+        assert HEI.cap_of("Ladakh") == 11         # paired with Jammu and Kashmir in Annexure-I (1.2.135)
+        assert HEI.cap_of("Atlantis") == 0        # a name of no row of Annexure-I: no limit
         for n in range(21):
             execute("INSERT INTO institutions(ref, name, itype, state, district, inst_key, status, created_at, updated_at) "
                     "VALUES(?, ?, 'Government college', 'Kerala', 'Thrissur', ?, 'accepted', ?, ?)",
@@ -225,7 +226,7 @@ def test_each_state_accepts_at_most_its_number_of_annexure_i():
         rid = query("SELECT id FROM institutions WHERE name = 'College Twenty-two'", one=True)["id"]
     officer = _nodal(app, "nodal.kerala2@tests.example", ["Kerala"])
     r = officer.post("/console/institutions", data={"_csrf": _token(officer), "id": rid, "action": "accept"}, follow_redirects=True)
-    assert "Kerala has 21 accepted institutions: that is the number Annexure-I prescribes for it" in r.get_data(as_text=True)
+    assert "Kerala and Lakshadweep has 21 accepted institutions: that is the number Annexure-I prescribes for it" in r.get_data(as_text=True)
     with app.app_context():
         assert query("SELECT status FROM institutions WHERE id = ?", (rid,), one=True)["status"] == "pending"
         set_setting("hei.cap_annexure", "0")      # switched off in Settings: no limit (hei.max_per_state is 0)
@@ -247,7 +248,7 @@ def test_the_marks_of_annexure_v_rank_the_institutions_and_the_reserve_list():
         ids = {r["name"]: r["id"] for r in query("SELECT id, name FROM institutions")}
         assert [k for k, *_ in HEI.SOP] == ["readiness", "outreach", "academic", "geography", "diversity", "record"]
         assert sum(m for _k, _c, m, *_ in HEI.SOP) == 100 and HEI.SOP_BENCHMARK == 60
-        assert (HEI.reserve_of("Kerala"), HEI.reserve_of("Uttar Pradesh"), HEI.reserve_of("Puducherry"), HEI.reserve_of("Ladakh")) == (5, 60, 1, 0)
+        assert (HEI.reserve_of("Kerala"), HEI.reserve_of("Uttar Pradesh"), HEI.reserve_of("Puducherry"), HEI.reserve_of("Ladakh")) == (5, 60, 1, 3)
     officer = _nodal(app, "nodal.kerala3@tests.example", ["Kerala"])
     page = officer.get(f"/console/institutions/{ids['College Beta']}/marks").get_data(as_text=True)
     assert "Institutional readiness" in page and "Past record and documentation capacity" in page and 'max="25"' in page

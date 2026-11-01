@@ -22,8 +22,38 @@ from .utils import now_ist, send_later
 DONE = ("verified", "selected", "waitlisted", "not_selected")
 
 
-def states_of(user):
+def own_states(user):
+    """The States/UTs given to the account (users.states), as they are."""
     return [s for s in (user["states"] or "").split("|") if s]
+
+
+def states_of(user):
+    """The States/UTs a Nodal Officer works on: those of the account, with the Union Territories Annexure-I pairs with them (1.2.135)."""
+    from .heis import with_covered
+    return with_covered(own_states(user))
+
+
+def rows_of(states):
+    """The rows of Annexure-I these States/UTs belong to, each with its members: {'Kerala and Lakshadweep': ['Kerala', 'Lakshadweep']}."""
+    from .heis import label_of
+    rows = {}
+    for s in states:
+        rows.setdefault(label_of(s, "en"), []).append(s)
+    return rows
+
+
+def fold(per, states):
+    """The figures of these States/UTs together: the counts added, the longest wait (1.2.135)."""
+    f = {"awaiting": 0, "new": 0, "verified": 0, "rejected": 0, "waiting_days": None}
+    for s in states:
+        g = per.get(s)
+        if not g:
+            continue
+        for k in ("awaiting", "new", "verified", "rejected"):
+            f[k] += g[k]
+        if g["waiting_days"] is not None and (f["waiting_days"] is None or g["waiting_days"] > f["waiting_days"]):
+            f["waiting_days"] = g["waiting_days"]
+    return f
 
 
 def _day(value):
@@ -86,7 +116,9 @@ def figures(states, now=None):
 
 def account_paragraph(states):
     """The part of the mail of a new account that a Nodal Officer reads."""
-    text = (f"As Nodal Officer for {', '.join(states)}, you see the applications of the students of the institutions "
+    from .heis import with_covered
+    names = ", ".join(rows_of(with_covered(list(states))))   # the row of Annexure-I: Kerala and Lakshadweep (1.2.135)
+    text = (f"As Nodal Officer for {names}, you see the applications of the students of the institutions "
             f"of your State/UT, with their photograph, ID proof and signed nomination form, and you verify them: "
             f"Console > Verification queue. Only verified students are consolidated by CICT into the list of the selected students.")
     end = verify_end()
@@ -110,6 +142,8 @@ def officer_mail(user, reminder=False, now=None):
     pending = institutions_pending(states)
     if not total["awaiting"] and not pending:
         return None
+    rows = rows_of(states)   # by the row of Annexure-I (1.2.135): a State and the Union Territory paired with it as one
+    names = ", ".join(rows)
     base = current_app.config["BASE_URL"]
     stamp = (now or now_ist()).astimezone(now_ist().tzinfo)
     n = total["awaiting"]
@@ -119,13 +153,13 @@ def officer_mail(user, reminder=False, now=None):
     if pending:
         parts.append(f"{pending} institution{'s' if pending != 1 else ''} await{'s' if pending == 1 else ''} your decision")
     what = "; ".join(parts)
-    subject = f"KTS 5.0: {what} ({', '.join(states)})"
+    subject = f"KTS 5.0: {what} ({names})"
     end = verify_end()
     if reminder:
         subject = "Reminder – " + subject + (f"; verification closes on {long_date(end)}" if end else "")
     lines = [f"Dear {user['name']},", "",
              (f"This is a reminder from CICT. " if reminder else "")
-             + f"The applications of the students of the institutions of {', '.join(states)}, "
+             + f"The applications of the students of the institutions of {names}, "
              f"on {long_date(stamp.date())} at {stamp.strftime('%I:%M %p').lstrip('0')} IST:", ""]
 
     def block(f):
@@ -135,11 +169,11 @@ def officer_mail(user, reminder=False, now=None):
         out += [f"  Verified: {f['verified']}", f"  Rejected: {f['rejected']}"]
         return out
 
-    if len(states) == 1:
+    if len(rows) == 1:
         lines += block(total)
     else:
-        for s in states:
-            lines += [s] + block(per[s]) + [""]
+        for name, members in rows.items():
+            lines += [name] + block(fold(per, members)) + [""]
         lines += [f"All together: {total['awaiting']} awaiting, {total['verified']} verified, {total['rejected']} rejected."]
     if pending:
         lines += ["", f"Institutions awaiting your decision: {pending}. Accept or decline them: {base}/console/institutions?status=pending"]

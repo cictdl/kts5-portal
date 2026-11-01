@@ -54,6 +54,14 @@ def _by_state(sql, args=()):
     return {r["st"]: r["n"] for r in query(sql, args) if r["st"]}
 
 
+def _fold(by, paired):
+    """The counts by State/UT with those of a paired Union Territory added to its State's (1.2.135)."""
+    out = {}
+    for s, n in by.items():
+        out[paired.get(s, s)] = out.get(paired.get(s, s), 0) + n
+    return out
+
+
 def figures():
     """{"states": [one dict per State/UT, those of Annexure-I first in its order], "total": dict}."""
     states_file = json.loads((current_app.config["DATA_DIR"] / "states.json").read_text(encoding="utf-8"))
@@ -68,8 +76,12 @@ def figures():
         "verified": _by_state("SELECT COALESCE(NULLIF(college_state, ''), state) AS st, COUNT(*) AS n FROM applications "
                               "WHERE status IN (%s) GROUP BY st" % ",".join("?" * len(VERIFIED)), VERIFIED),
     }
+    # by the row of Annexure-I (1.2.135): a Union Territory paired with a State counts with it; its square points to the State's
+    paired = {c: h["state"] for h in nodal_heis() for c in h.get("covers", [])}
+    for name, by in counts.items():
+        counts[name] = _fold(by, paired)
     order = [h["state"] for h in nodal_heis()]
-    order += [s for s in states_file["states"] + states_file["union_territories"] if s not in order]
+    order += [s for s in states_file["states"] + states_file["union_territories"] if s not in order and s not in paired]
     # a name the lists do not have (written by hand in an earlier version): a row of its own, no square
     order += sorted({s for c in counts.values() for s in c} - set(order))
     states = []
@@ -81,27 +93,32 @@ def figures():
         states.append(row)
     total = {f: sum(r[f] for r in states) for f in FIELDS}
     total["to_select"] = sum(r["to_select"] or 0 for r in states)
-    return {"states": states, "total": total}
+    covered = [{"state": c, "with": s, "grid": GRID[c], "code": GRID[s][2]} for c, s in paired.items() if c in GRID and s in GRID]
+    return {"states": states, "covered": covered, "total": total}
 
 
 def details(officers):
     """
     {State/UT: {"nodal": name of the Nodal HEI, "officers": [...], "institutions": [...]}} for the blocks of the page; each
-    institution {"name", "district", "status", "delegate"}, status one of delegate (verified, the name shown), verified
-    (verified, names switched off), awaiting (registered, not yet verified), none. `officers` as the public pages have them.
+    institution {"name", "district", "status", "delegate", "place"}, status one of delegate (verified, the name shown), verified
+    (verified, names switched off), awaiting (registered, not yet verified), none; place: its Union Territory when Annexure-I
+    pairs that with the State of the block (1.2.135). `officers` as the public pages have them.
     """
     names = get_setting("dashboard.names") == "1"
     found = defaultdict(lambda: {"nodal": "", "officers": [], "institutions": []})
+    paired = {c: h["state"] for h in nodal_heis() for c in h.get("covers", [])}
     for h in nodal_heis():
         found[h["state"]]["nodal"] = h["name"]
     for state, people in officers.items():
-        found[state]["officers"] = people
+        block = found[paired.get(state, state)]
+        block["officers"] += [p for p in people if p not in block["officers"]]
     if get_setting("hei.public") == "1":
         for i in institutions():
             if i["stage"] == "verified":
                 status = "delegate" if names else "verified"
             else:
                 status = "awaiting" if i["stage"] == "registered" else "none"
-            found[i["state"]]["institutions"].append({"name": i["name"], "district": i["district"], "status": status,
-                                                      "delegate": i["app_name"] if status == "delegate" else None})
+            found[paired.get(i["state"], i["state"])]["institutions"].append({
+                "name": i["name"], "district": i["district"], "status": status,
+                "delegate": i["app_name"] if status == "delegate" else None, "place": i["state"] if i["state"] in paired else None})
     return dict(found)

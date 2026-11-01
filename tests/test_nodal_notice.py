@@ -24,10 +24,10 @@ def test_the_circular_holds_every_state_and_its_nodal_institution():
     n = rows[0]
     assert (n["category"], n["pinned"], n["published"], n["lang"], n["link"]) == ("circular", 1, 1, "en", "/nodal-institutions")
     heis = json.loads((ROOT / "data" / "nodal_heis.json").read_text(encoding="utf-8"))
-    for i, h in enumerate(heis, 1):
-        assert f"\n{i}. {h['state']}: {h['name']} ({h['allocation']})\n" in n["body"]
+    for i, h in enumerate(heis, 1):   # the row as the letter of 31 October 2026 names it (1.2.135)
+        assert f"\n{i}. {' and '.join([h['state'], *h.get('covers', [])])}: {h['name']} ({h['allocation']})\n" in n["body"]
     assert "1. Andhra Pradesh: Central University of Andhra Pradesh (50)" in n["body"]
-    assert "23. Tamil Nadu: Central University of Tamil Nadu (50)" in n["body"] and "26. Uttar Pradesh: Banaras Hindu University (300)" in n["body"]
+    assert "23. Tamil Nadu and Andaman and Nicobar Islands: Central University of Tamil Nadu (50)" in n["body"] and "26. Uttar Pradesh: Banaras Hindu University (300)" in n["body"]
     assert "Total: 1,000 Participating HEIs." in n["body"]
     assert "Registration does not by itself confer selection." in n["body"] and "tentative" not in n["body"]
     assert "up to 15 November 2026" in n["body"] and "on 16 and 17 November 2026" in n["body"] and "by 19 November" in n["body"]
