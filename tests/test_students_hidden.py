@@ -100,3 +100,16 @@ def test_at_a_glance_counts_the_institutions():
         set_setting("reg.public", "1")
     home = _get(app.test_client(), "/?lang=en")
     assert "Student delegates registered" in home and "Institutions registered</div>" not in home
+
+
+def test_the_tiles_of_the_assessment_page():
+    # 3 Nov 2026 (1.2.150), the user: "remove 📅 Institution-level assessments 19 Nov 2026" - and the students' registration's
+    # tile hidden with it (reg.public)
+    page = _get(_app().test_client(), "/examination?lang=en")
+    tiles = page[page.index('<div class="grid grid-2"'):]
+    tiles = tiles[:tiles.index("</div>\n        </div>") if "</div>\n        </div>" in tiles else 1500]
+    assert "📅" not in page and "Institution-level assessments</div>" not in tiles
+    assert "📝" not in page and "Last date to apply" not in tiles
+    assert "💻" in tiles and "⏳" in tiles
+    shown = _get(_app("1").test_client(), "/examination?lang=en")
+    assert "📝 Last date to apply" in shown and "📅" not in shown

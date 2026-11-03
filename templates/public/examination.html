@@ -12,8 +12,8 @@
         <h2>{{ t('exam.notice') }}</h2>
         <p class="dim">{{ t('site.name') }} · {{ t('site.theme') }}. {{ t('exam.intro') }}</p>
         <div class="grid grid-2" style="margin:12px 0">
-          <div class="date-tile"><div class="lbl">📅 {{ t('home.exam_date') }}</div><div class="val">{{ dates.assess_to|date }}</div></div>
-          <div class="date-tile"><div class="lbl">📝 {{ t('reg.closes_on') }}</div><div class="val">{{ dates.reg_end|date }}</div></div>
+          {# no tile of the day of the assessments (1.2.150); the students' registration only while shown (reg.public, 1.2.147) #}
+          {% if students_public() %}<div class="date-tile"><div class="lbl">📝 {{ t('reg.closes_on') }}</div><div class="val">{{ dates.reg_end|date }}</div></div>{% endif %}
           <div class="date-tile"><div class="lbl">💻 {{ t('exam.mode') }}</div><div class="val">{{ t('exam.online') }}</div></div>
           <div class="date-tile"><div class="lbl">⏳ {{ t('exam.duration') }}</div><div class="val">{{ settings['exam.duration_min'] }} {{ t('exam.minutes') }}</div></div>
         </div>
