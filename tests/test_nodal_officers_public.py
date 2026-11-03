@@ -36,9 +36,9 @@ def test_the_nodal_officers_on_the_public_pages():
     for text in ("<b>Dr. A. Arasu</b>", "Professor, Nodal Officer for KTS 5.0", '<a href="mailto:nodal.tn@example.org">nodal.tn@example.org</a>',
                  '<a href="tel:044-22540125">044-2254 0125</a>'):
         assert text in tn, text
-    # one officer for two States/UTs: in both rows; a State/UT without an officer shows a dash
+    # one officer for two States/UTs: in both rows; a State/UT without an officer says so (1.2.139; a dash before)
     assert "Dr. B. Bhaskar" in _row(page, "Andhra Pradesh") and "Dr. B. Bhaskar" in _row(page, "Telangana")
-    assert ">–</td>" in _row(page, "Goa")
+    assert '<i class="no-dot off" aria-hidden="true"></i>Yet to be nominated</span></td>' in _row(page, "Goa") and ">–</td>" not in _row(page, "Goa")
     # never an account that is switched off, nor another role
     assert "Dr. C. Gone" not in page and "A Staff Member" not in page and "9000000000" not in page
     # the heading in the language of the page, and the Partners page with the same table

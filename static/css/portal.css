@@ -919,3 +919,19 @@ footer.site .bottom .wrap { display: flex; justify-content: space-between; gap: 
   .prog .prog-ring .arc, .prog .st-bar > span, .prog .rc-bar > span { transition: none; }
   .prog .prog-live i { animation: none; }
 }
+
+
+/* The Nodal Officers on the portal (1.2.139): three rings, the four steps, the dots of the table */
+.no-status { margin: 0 0 22px; }
+.no-status .prog-rings { grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 10px 0 14px; }
+.no-steps-h { margin: 6px 0 0; font-size: 1rem; }
+.no-steps { list-style: none; counter-reset: no; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.no-steps li { counter-increment: no; position: relative; padding: 12px 12px 12px 46px; border-radius: 12px; background: var(--bg2); display: flex; flex-direction: column; gap: 4px; }
+.no-steps li::before { content: counter(no); position: absolute; left: 12px; top: 12px; width: 24px; height: 24px; border-radius: 50%; background: var(--saffron); color: #fff; font-weight: 800; font-size: .8rem; text-align: center; line-height: 24px; }
+.no-steps li:last-child::before { background: var(--green); }
+[dir="rtl"] .no-steps li { padding: 12px 46px 12px 12px; } [dir="rtl"] .no-steps li::before { left: auto; right: 12px; }
+.no-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin: 0 5px 1px 0; vertical-align: middle; }
+.no-dot.on { background: var(--green); } .no-dot.off { border: 2px solid var(--kumkum); box-sizing: border-box; }
+.no-pending { color: var(--kumkum); white-space: nowrap; }
+@media (max-width: 760px) { .no-steps { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 520px) { .no-status .prog-rings { grid-template-columns: 1fr; } .no-steps { grid-template-columns: 1fr; } }

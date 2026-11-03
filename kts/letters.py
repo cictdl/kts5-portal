@@ -20,6 +20,7 @@ from flask import current_app
 from . import heis as HEI
 from .db import DEFAULT_SETTINGS, get_setting
 from .i18n import LANG_INFO, offered, text
+from .utils import now_ist
 
 PORTAL = "kts.cict.in"
 EMU_CM, TW_CM = 360000, 567
@@ -121,13 +122,13 @@ class _Doc:
             pr.append("<w:pageBreakBefore/>")
         if keep:
             pr.append("<w:keepNext/>")
+        if tabs:   # the order of the schema: tabs, bidi, spacing, ind, jc
+            pr.append("<w:tabs>" + "".join(f'<w:tab w:val="left" w:pos="{int(t * TW_CM)}"/>' for t in tabs) + "</w:tabs>")
         if self.rtl:
             pr.append("<w:bidi/>")
         pr.append(f'<w:spacing w:before="{int(before * 20)}" w:after="{int(after * 20)}" w:line="{line}" w:lineRule="auto"/>')
         if indent or hanging:
             pr.append(f'<w:ind w:left="{int(indent * TW_CM)}"' + (f' w:hanging="{int(hanging * TW_CM)}"' if hanging else "") + "/>")
-        if tabs:
-            pr.append("<w:tabs>" + "".join(f'<w:tab w:val="left" w:pos="{int(t * TW_CM)}"/>' for t in tabs) + "</w:tabs>")
         if align:
             pr.append(f'<w:jc w:val="{align}"/>')
         self.parts.append(f"<w:p><w:pPr>{''.join(pr)}</w:pPr>{''.join(runs)}</w:p>")
@@ -149,27 +150,47 @@ class _Doc:
                 f'<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="{cx}" cy="{cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr>'
                 f'</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>')
 
-    def table(self, rows, widths_cm, borders=True, header=False):
+    def table(self, rows, widths_cm, borders=True, header=False, fills=None):
+        """A table; `borders` True (grey lines), False (none) or a colour (lines of that colour); `fills` the shading of each cell."""
         grid = "".join(f'<w:gridCol w:w="{int(w * TW_CM)}"/>' for w in widths_cm)
-        b = ("<w:tblBorders>" + "".join(f'<w:{side} w:val="single" w:sz="4" w:space="0" w:color="BBBBBB"/>'
-                                        for side in ("top", "left", "bottom", "right", "insideH", "insideV")) + "</w:tblBorders>"
-             if borders else "<w:tblBorders>" + "".join(f'<w:{side} w:val="nil"/>' for side in ("top", "left", "bottom", "right", "insideH", "insideV")) + "</w:tblBorders>")
-        pr = (f'<w:tblPr><w:tblW w:w="{int(sum(widths_cm) * TW_CM)}" w:type="dxa"/>' + ("<w:bidiVisual/>" if self.rtl else "") + b
-              + '<w:tblCellMar><w:left w:w="80" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr>')
+        sides = ("top", "left", "bottom", "right", "insideH", "insideV")
+        if borders is False:
+            b = "<w:tblBorders>" + "".join(f'<w:{side} w:val="nil"/>' for side in sides) + "</w:tblBorders>"
+        else:
+            colour, size = ("BBBBBB", 4) if borders is True else (borders, 12)
+            b = "<w:tblBorders>" + "".join(f'<w:{side} w:val="single" w:sz="{size}" w:space="0" w:color="{colour}"/>' for side in sides) + "</w:tblBorders>"
+        pr = ("<w:tblPr>" + ("<w:bidiVisual/>" if self.rtl else "") + f'<w:tblW w:w="{int(sum(widths_cm) * TW_CM)}" w:type="dxa"/>' + b
+              + '<w:tblLayout w:type="fixed"/><w:tblCellMar><w:left w:w="80" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr>')
         body = []
         for i, cells in enumerate(rows):
             tcs = []
-            for w, cell in zip(widths_cm, cells):
+            for j, (w, cell) in enumerate(zip(widths_cm, cells)):
                 # a cell holds a list of paragraphs, each a list of runs, or ready XML
                 content = cell if isinstance(cell, str) else "".join(
                     f"<w:p><w:pPr>{'<w:bidi/>' if self.rtl else ''}<w:spacing w:before=\"0\" w:after=\"0\"/></w:pPr>{''.join(runs)}</w:p>" for runs in cell)
-                tcs.append(f'<w:tc><w:tcPr><w:tcW w:w="{int(w * TW_CM)}" w:type="dxa"/></w:tcPr>{content}</w:tc>')
+                fill = fills[i][j] if fills and fills[i][j] else None
+                tcs.append(f'<w:tc><w:tcPr><w:tcW w:w="{int(w * TW_CM)}" w:type="dxa"/>'
+                           + (f'<w:shd w:val="clear" w:color="auto" w:fill="{fill}"/>' if fill else "") + f"</w:tcPr>{content}</w:tc>")
             body.append("<w:tr>" + ("<w:trPr><w:tblHeader/></w:trPr>" if header and i == 0 else "") + "".join(tcs) + "</w:tr>")
         self.parts.append(f"<w:tbl>{pr}<w:tblGrid>{grid}</w:tblGrid>{''.join(body)}</w:tbl>")
 
-    def cell(self, runs, align=None, after=0):
-        """A paragraph for a table cell, as XML."""
-        return (f"<w:p><w:pPr>{'<w:bidi/>' if self.rtl else ''}<w:spacing w:before=\"0\" w:after=\"{int(after * 20)}\"/>"
+    def bar(self, share, colour, width_cm):
+        """A bar of `share` (0 to 1) in the colour on a grey track: a one-row table of two cells, for a cell of another table."""
+        w1 = round(width_cm * max(0.03, min(1, share)), 2)
+        w2 = round(width_cm - w1, 2)
+        parts = [(w1, colour)] + ([(w2, "E9E6DF")] if w2 > 0.05 else [])
+        tcs = "".join(f'<w:tc><w:tcPr><w:tcW w:w="{int(w * TW_CM)}" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="{fill}"/></w:tcPr>'
+                      '<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="120" w:lineRule="exact"/></w:pPr></w:p></w:tc>' for w, fill in parts)
+        return ("<w:tbl><w:tblPr>" + ("<w:bidiVisual/>" if self.rtl else "") + f'<w:tblW w:w="{int(sum(w for w, _f in parts) * TW_CM)}" w:type="dxa"/>'
+                + "<w:tblBorders>" + "".join(f'<w:{s} w:val="nil"/>' for s in ("top", "left", "bottom", "right", "insideH", "insideV")) + "</w:tblBorders>"
+                + '<w:tblLayout w:type="fixed"/><w:tblCellMar><w:left w:w="0" w:type="dxa"/><w:right w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPr>'
+                + "<w:tblGrid>" + "".join(f'<w:gridCol w:w="{int(w * TW_CM)}"/>' for w, _f in parts) + "</w:tblGrid>"
+                + f'<w:tr><w:trPr><w:trHeight w:val="120" w:hRule="exact"/></w:trPr>{tcs}</w:tr></w:tbl>')
+
+    def cell(self, runs, align=None, after=0, before=0, tab_right=None):
+        """A paragraph for a table cell, as XML; `tab_right`: a right tab stop that many cm in, for a second column of text."""
+        tabs = f'<w:tabs><w:tab w:val="right" w:pos="{int(tab_right * TW_CM)}"/></w:tabs>' if tab_right else ""
+        return (f"<w:p><w:pPr>{tabs}{'<w:bidi/>' if self.rtl else ''}<w:spacing w:before=\"{int(before * 20)}\" w:after=\"{int(after * 20)}\"/>"
                 + (f'<w:jc w:val="{align}"/>' if align else "") + f"</w:pPr>{''.join(runs)}</w:p>")
 
     def bytes(self):
@@ -318,3 +339,92 @@ def filename(state, lang):
     while "--" in slug:
         slug = slug.replace("--", "-")
     return f"KTS5-letter-{slug}-{lang}.docx"
+
+
+# ---- the Nodal Officers on the portal, as a one-page report (1.2.139) ----------------------------------------------------------------
+
+def officers_status(rows):
+    """The rows of Annexure-I with a Nodal Officer on the portal, those yet to nominate, the Participating Institutions they cover."""
+    added = [r for r in rows if r["officers"]]
+    return {"rows": len(rows), "added": len(added), "pending": len(rows) - len(added),
+            "covered": sum(int(r.get("allocation") or 0) for r in added), "total": sum(int(r.get("allocation") or 0) for r in rows),
+            "officers": sum(len(r["officers"]) for r in rows)}
+
+
+def officers_report_docx(rows, lang):
+    """
+    One page in Word: the three figures of the Nodal Officers on the portal with a bar each, the four steps by which an officer
+    is added, and the rows of Annexure-I in two columns - a filled dot and the officer where the account exists, a hollow dot
+    and 'yet to be nominated' where not; `rows` as the page of the Nodal Institutions has them (label, name, allocation,
+    officers).
+    """
+    lang = lang if offered(lang) else "en"
+    d = _Doc(lang)
+    tt = lambda key: text(key, lang)  # noqa: E731
+    status = officers_status(rows)
+    now = now_ist()
+    sub = tt("no.sub").replace("{date}", day_text(now.date(), lang)).replace("{time}", now.strftime("%H:%M"))
+    # the band
+    left = (d.cell([d.run("Kashi Tamil Sangamam 5.0 · Thirukkural Payilvom", bold=True, size=30, colour="FFFFFF")], after=0, before=4)
+            + d.cell([d.run(tt("no.report_title"), size=19, colour="F4EFE6")], after=0)
+            + d.cell([d.run(sub, size=16, colour="DDE3F0")], after=4))
+    right = "<w:p/>"
+    try:
+        with open(f"{current_app.static_folder}/img/kts5-lockup.png", "rb") as f:
+            data = f.read()
+        w, h = _png_size(data)
+        right = d.cell([d.picture(data, 4.4, 4.4 * h / w, "lockup.png")], align="right")
+    except OSError:
+        pass
+    d.table([[left, right]], [13.2, 5.0], borders=False, fills=[[INDIGO, "FFFFFF"]])
+
+    # the three figures
+    def figure(label, n, total, colour):
+        share = n / total if total else 0
+        return (d.cell([d.run(f"{n:,}", bold=True, size=52, colour=colour)], after=0, before=4)
+                + d.cell([d.run(label, bold=True, size=18)], after=0)
+                + d.cell([d.run(tt("dash.of").replace("{n}", f"{n:,}").replace("{total}", f"{total:,}") + f" · {round(100 * share)}%", size=16, colour=DIM)], after=3)
+                + d.bar(share, colour, 5.3) + "<w:p><w:pPr><w:spacing w:before=\"0\" w:after=\"40\"/></w:pPr></w:p>")
+    d.p([d.run("")], after=0, line=120)
+    d.table([[figure(tt("no.k_added"), status["added"], status["rows"], "1B7F3B"),
+              figure(tt("no.k_pending"), status["pending"], status["rows"], "B3261E"),
+              figure(tt("no.k_covered"), status["covered"], status["total"], INDIGO)]], [6.0, 6.0, 6.2], borders=False,
+            fills=[["F3F1EC", "F3F1EC", "F3F1EC"]])
+
+    # the four steps
+    d.p([d.run(tt("no.steps_title"), bold=True, size=22, colour=INDIGO)], before=8, after=3, keep=True)
+    steps = [d.cell([d.run(f"{i}   ", bold=True, size=22, colour="E07B0F" if i < 4 else "1B7F3B"), d.run(tt(f"no.s{i}_t"), bold=True, size=18, colour=INDIGO)], after=2, before=3)
+             + d.cell([d.run(tt(f"no.s{i}"), size=15)], after=3) for i in (1, 2, 3, 4)]
+    d.table([steps[:2], steps[2:]], [9.1, 9.1], borders="FFFFFF", fills=[["F3F1EC", "F3F1EC"], ["F3F1EC", "F3F1EC"]])
+
+    # the rows of Annexure-I
+    d.p([d.run(tt("no.title") + "   ", bold=True, size=22, colour=INDIGO), d.run("● ", size=16, colour="1B7F3B"), d.run(tt("no.added") + "   ", size=16, colour=DIM),
+          d.run("○ ", size=16, colour="B3261E"), d.run(tt("no.pending"), size=16, colour=DIM)], before=8, after=3, keep=True)
+    ordered = sorted(rows, key=lambda r: (not r["officers"], r["label"]))
+
+    def cell_of(r):
+        annex = tt("no.annex").replace("{n}", str(r["allocation"]))
+        if r["officers"]:
+            right = "; ".join(o["name"] for o in r["officers"])
+            desig = (r["officers"][0].get("designation") or "").split(",")[0].strip()
+            desig = desig[:29].rstrip() + "…" if len(desig) > 30 else desig
+            dot, colour, fill, small = "● ", "1B7F3B", "F3F1EC", (desig + " · " if desig else "") + annex
+        else:
+            right, dot, colour, fill, small = tt("no.pending"), "○ ", "B3261E", "FBF6F5", annex
+        if len(r["label"]) + len(right) <= 50:
+            first = [d.run(dot, size=17, colour=colour), d.run(r["label"], bold=True, size=16), d.run("	"), d.run(right, bold=True, size=15, colour=colour)]
+            second = [d.run(r["name"], size=13, colour=DIM), d.run("	"), d.run(small, size=13, colour=DIM)]
+        else:   # a long name of the row (Gujarat and Dadra and Nagar Haveli and Daman and Diu): the officer or the words go below it
+            first = [d.run(dot, size=17, colour=colour), d.run(r["label"], bold=True, size=16)]
+            second = [d.run(r["name"] + " · " + annex, size=13, colour=DIM), d.run("	"), d.run(right, bold=True, size=14, colour=colour)]
+        return d.cell(first, after=0, before=2, tab_right=8.7) + d.cell(second, after=2, tab_right=8.7), fill
+    half = (len(ordered) + 1) // 2
+    table, fills = [], []
+    for i in range(half):
+        a, fa = cell_of(ordered[i])
+        b, fb = cell_of(ordered[i + half]) if i + half < len(ordered) else ("<w:p/>", "FFFFFF")
+        table.append([a, b])
+        fills.append([fa, fb])
+    d.table(table, [9.1, 9.1], borders="FFFFFF", fills=fills)
+    d.p([d.run(tt("no.note"), size=14, colour=DIM)], before=6, after=0)
+    return d.bytes()

@@ -1470,8 +1470,12 @@ def partners():
 def nodal_institutions():
     """The State/UT-wise list of Nodal Higher Educational Institutions (Annexure-I of the D.O. letter of 9 October 2026)."""
     nodal, total = _nodal_table()
+    now = now_ist()
     return render_template("public/nodal_institutions.html", nodal=nodal, nodal_total=total,
-                           public_list=get_setting("hei.public") == "1", window=HEI.window(all_settings()))
+                           public_list=get_setting("hei.public") == "1", window=HEI.window(all_settings()),
+                           # the Nodal Officers on the portal (1.2.139), while CICT shows the officers on the public pages
+                           status=LETTERS.officers_status(nodal) if get_setting("nodal.officers_public") == "1" else None,
+                           now_date=LETTERS.day_text(now.date(), get_lang()), now_time=now.strftime("%H:%M"))
 
 
 @bp.route("/nodal-institutions/letter.docx")
@@ -1488,6 +1492,19 @@ def nodal_letter():
     data = LETTERS.letter_docx(state, lang, officers[0] if officers else None)
     return Response(data, mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     headers={"Content-Disposition": f"attachment; filename={LETTERS.filename(state, lang)}", "Cache-Control": "no-store"})
+
+
+@bp.route("/nodal-institutions/officers-report.docx")
+def nodal_officers_report():
+    """The Nodal Officers on the portal as a one-page report in Word (1.2.139), while CICT shows the officers on the public pages."""
+    if get_setting("nodal.officers_public") != "1":
+        abort(404)
+    lang = (request.args.get("lang") or get_lang()).strip()
+    if not offered(lang):
+        abort(404)
+    nodal, _total = _nodal_table()
+    return Response(LETTERS.officers_report_docx(nodal, lang), mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    headers={"Content-Disposition": f"attachment; filename=KTS5-nodal-officers-{lang}.docx", "Cache-Control": "no-store"})
 
 
 @bp.route("/contact", methods=["GET", "POST"])

@@ -9,6 +9,8 @@
   <p class="small muted" style="margin:0 0 10px">Morning mail to the officers with applications awaiting them:
     {% if digest_on %}<b>on</b>, at {{ digest_time }} IST{% else %}<b>off</b>{% endif %}{% if can_settings %} · <a href="{{ url_for('admin.settings_page') }}">Settings › Verification by the Nodal Officers</a>{% endif %}.
     Awaiting verification in all States/UTs: <b>{{ total.awaiting }}</b>.</p>
+  <p class="small muted" style="margin:0 0 10px">On the public page: <a href="{{ url_for('public.nodal_institutions') }}#officers">the Nodal Officers on the portal</a>
+    (added, and yet to nominate) · <a href="{{ url_for('public.nodal_officers_report', lang='en') }}">one-page report (Word)</a>.</p>
   <form method="post" style="margin:0"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
     <button class="btn sm secondary" name="action" value="remind_all" data-confirm="Send a reminder now to every Nodal Officer with applications awaiting them?">✉ Remind every officer with applications awaiting</button></form>
   {# the accounts never signed in to (1.2.136): a sign-in reminder now, and every third morning with the morning mail #}

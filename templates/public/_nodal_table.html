@@ -9,7 +9,7 @@
     <th class="num" style="white-space:normal;min-width:7em">{{ t('nodal.col_now') }}</th></tr></thead>
   <tbody>{% for n in nodal %}
   <tr><td class="num">{{ loop.index }}</td><td>{{ n.label }}</td><td lang="en" dir="ltr">{{ n.name }}</td>
-    {% if show_officers %}<td class="officer" lang="en" dir="ltr">{% for o in n.officers %}<div{% if not loop.first %} style="margin-top:8px"{% endif %}><b>{{ o.name }}</b>{% if o.designation %}<br><span class="small dim">{{ o.designation }}</span>{% endif %}{% if o.email %}<br><a href="mailto:{{ o.email }}">{{ o.email }}</a>{% endif %}{% if o.phone %}<br><a href="tel:{{ o.phone|replace(' ', '') }}">{{ o.phone }}</a>{% endif %}</div>{% else %}–{% endfor %}</td>{% endif %}
+    {% if show_officers %}<td class="officer" lang="en" dir="ltr">{% if not n.officers %}<span class="small no-pending"><i class="no-dot off" aria-hidden="true"></i>{{ t('no.pending') }}</span>{% endif %}{% for o in n.officers %}<div{% if not loop.first %} style="margin-top:8px"{% endif %}>{% if loop.first %}<i class="no-dot on" aria-hidden="true"></i>{% endif %}<b>{{ o.name }}</b>{% if o.designation %}<br><span class="small dim">{{ o.designation }}</span>{% endif %}{% if o.email %}<br><a href="mailto:{{ o.email }}">{{ o.email }}</a>{% endif %}{% if o.phone %}<br><a href="tel:{{ o.phone|replace(' ', '') }}">{{ o.phone }}</a>{% endif %}</div>{% endfor %}</td>{% endif %}
     <td class="num"><b>{{ n.allocation }}</b></td>
     <td class="num">{% if n.now and public_list %}<a href="{{ url_for('public.institutions') }}#{{ n.anchor }}">{{ n.now }}</a>{% else %}{{ n.now }}{% endif %}</td></tr>
   {% endfor %}</tbody>

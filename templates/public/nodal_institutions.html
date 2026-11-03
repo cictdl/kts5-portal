@@ -11,6 +11,30 @@
     {% if window == 'open' %}<a class="btn saffron" href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a>{% endif %}
     <a class="btn ghost" href="{{ url_for('campus.login') }}">{{ t('camp.login_title') }}</a>
   </div>
+  {# the Nodal Officers on the portal (1.2.139): how many rows of Annexure-I have one, how an officer is added, a one-page report #}
+  {% if status %}
+  <section class="card prog prog-in no-status" id="officers" aria-labelledby="no-h">
+    <h2 id="no-h" style="margin-top:0">{{ t('no.title') }}</h2>
+    <p class="dim small" style="max-width:88ch">{{ t('no.sub')|replace('{date}', now_date)|replace('{time}', now_time) }}</p>
+    <div class="prog-rings no-rings">
+      {% for key, n, total, cls in (('k_added', status.added, status.rows, 'ring-verified'), ('k_pending', status.pending, status.rows, 'ring-testing'), ('k_covered', status.covered, status.total, 'ring-participating')) %}
+      <div class="card prog-ring {{ cls }}">
+        <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="52"/><circle class="arc" cx="60" cy="60" r="52" style="--share:{{ '%.4f'|format(n / total) if total else 0 }}"/>
+          <text x="60" y="66" text-anchor="middle" class="pct">{{ (100 * n / total)|round|int if total else 0 }}%</text></svg>
+        <div class="num">{{ '{:,}'.format(n) }}</div>
+        <div class="lbl">{{ t('no.' ~ key) }}</div>
+        <div class="sub small muted"><bdi>{{ t('dash.of')|replace('{n}', '{:,}'.format(n))|replace('{total}', '{:,}'.format(total)) }}</bdi></div>
+      </div>
+      {% endfor %}
+    </div>
+    <h3 class="no-steps-h">{{ t('no.steps_title') }}</h3>
+    <ol class="no-steps">
+      {% for i in (1, 2, 3, 4) %}<li><b>{{ t('no.s%d_t' % i) }}</b><span class="small dim">{{ t('no.s%d' % i) }}</span></li>{% endfor %}
+    </ol>
+    <p class="btn-row" style="margin:12px 0 0"><a class="btn sm" href="{{ url_for('public.nodal_officers_report', lang=lang) }}">{{ t('no.download') }}</a>
+      <span class="small muted"><i class="no-dot on" aria-hidden="true"></i>{{ t('no.added') }} · <i class="no-dot off" aria-hidden="true"></i>{{ t('no.pending') }}</span></p>
+  </section>
+  {% endif %}
   {% include "public/_nodal_table.html" %}
 
   {# the sample letter of the Nodal Institution to its Participating Institutions, a Word file in the language chosen (1.2.137) #}
