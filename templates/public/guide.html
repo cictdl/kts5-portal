@@ -51,6 +51,8 @@
     </div>
   </section>
   {% endfor %}
+  {# the four videos of the guide (on the home page until 1.2.144) #}
+  {% if not only %}<div style="margin-top:26px">{{ video_guide() }}</div>{% endif %}
   <p class="small" style="margin-top:18px">{{ g('guide.help') }}{% if only %} · <bdi dir="ltr">{{ base_url }}{{ url_for('public.guide') }}</bdi>{% endif %}</p>
 </div>
 {% endblock %}

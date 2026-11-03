@@ -222,6 +222,19 @@ def _notice_filter(settings):
     return " AND title NOT IN (%s)" % ", ".join("?" * len(titles)), titles
 
 
+# CICT's banner of KTS 5.0 on the home page, before the Kural of the day (1.2.145): in the visitor's language when CICT gives
+# one, else the Tamil one; the text of the banner, in its language, as its description
+HOME_BANNERS = {
+    "ta": {"files": ("img/banner/kts5-banner-ta-720.jpg", "img/banner/kts5-banner-ta-1080.jpg"), "lang": "ta",
+           "alt": "காசி தமிழ் சங்கமம் – திருக்குறள் பயில்வோம்: உயர்கல்வி மாணவர்களுக்கு 1000 பயிற்சி பணி வாய்ப்புகள், 1000 உயர்கல்வி நிறுவனங்கள் வாயிலாக; ஒவ்வொரு பயிற்சிப் பணிக்கும் ₹10,000 உதவித்தொகை. மேலும் விவரங்களுக்கும் உயர்கல்வி நிறுவனங்களின் பதிவுக்கும்: kts.cict.in"},
+}
+
+
+def home_banner(lang):
+    """The banner of the home page for a language: its own, else the Tamil one."""
+    return HOME_BANNERS.get(lang) or HOME_BANNERS["ta"]
+
+
 @bp.route("/")
 def home():
     settings = all_settings()
@@ -244,6 +257,7 @@ def home():
     ev_years = (min(e["start"][:4] for e in seminars), max(e["start"][:4] for e in seminars)) if seminars else None
     return render_template("public/home.html", settings=settings, dates=_key_dates(settings), uz=home_uzbek(),
                            hub=FINDER.hub(settings, lang),   # "Find your next step" (1.2.140)
+                           kts_banner=home_banner(lang), hei_open=HEI.window(settings) == "open",   # the banner (1.2.145)
                            ev_total=len(seminars), ev_years=ev_years,
                            notices=notices, events=events, agencies=agencies, stats=stats,
                            kotd=k, kotd_lines=K.lines(k, kotd_lang), kotd_lang=kotd_lang, kotd_dir=kotd_dir,

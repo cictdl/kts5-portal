@@ -58,12 +58,17 @@
       <div class="actions">
         {% if dates.reg_state == 'open' %}<a class="btn saffron" href="{{ url_for('public.register') }}">{{ t('home.cta_register') }}</a>{% endif %}
         <a class="btn" href="{{ url_for('public.guide') }}">{{ t('guide.title') }}</a>
-        <a class="btn gv-btn" href="#video-guide"><span aria-hidden="true">▶</span> {{ t('gv.short') }}</a>
         <a class="btn secondary" href="{{ url_for('public.programme') }}">{{ t('home.cta_programme') }}</a>
         <a class="btn secondary" href="{{ url_for('public.status') }}">{{ t('home.cta_status') }}</a>
       </div>
     </div>
     {% from "public/_listen.html" import listen, slower, voice_note with context %}
+    <div class="hero-side">
+    {# CICT's banner of KTS 5.0, before the Kural of the day (1.2.145): it leads to the registration of institutions while that is
+       open, else to itself #}
+    <a class="home-banner no-print" href="{{ url_for('public.hei_register') if hei_open else url_for('static', filename=kts_banner.files[1]) }}"><img
+       src="{{ url_for('static', filename=kts_banner.files[1]) }}" srcset="{{ url_for('static', filename=kts_banner.files[0]) }} 720w, {{ url_for('static', filename=kts_banner.files[1]) }} 1080w"
+       sizes="(max-width: 899px) 92vw, 470px" width="1080" height="1080" alt="{{ kts_banner.alt }}" lang="{{ kts_banner.lang|langtag }}"></a>
     <aside class="kural-card">
       {# the portrait beside the label, so that the couplet has the whole width of the card (1.2.58) #}
       <div class="kc-head"><div class="label">{{ t('home.kotd') }} · {{ now_ist()|date }}</div>
@@ -73,16 +78,13 @@
       {% if kotd_lang != 'ta' and kotd_lines %}<div class="trans" dir="{{ kotd_dir }}" lang="{{ kotd_lang|langtag }}">{{ kotd_lines|join(' ') }}</div>{% endif %}
       <div class="meta"><span>{{ t('common.verse') }} {{ kotd.n }} · <span class="ta" lang="ta">{{ kotd.chapter_name }}</span>{% if lang == 'en' %} · {{ kotd.chapter_name_en }}{% endif %}</span><a href="{{ url_for('public.kural_single', n=kotd.n) }}">{{ t('home.kotd_more') }} {{ fwd }}</a></div>
     </aside>
+    </div>
   </div>
 </section>
 
 {# "Find your next step" (1.2.140): a tab for each audience, rising over the foot of the hero (kts/finder.py) #}
 {% from "public/_hub.html" import hub_card with context %}
 <section class="hub-section" aria-labelledby="hub-title"><div class="wrap">{{ hub_card(hub) }}</div></section>
-
-{# the video guide to the portal (1.2.128): its four parts, right under the hero #}
-{% from "public/_guide_videos.html" import video_guide, video_part with context %}
-<div class="section gv-home" style="padding:26px 0 6px"><div class="wrap">{{ video_guide() }}</div></div>
 
 {# KTS 5.0 in numbers (1.2.129): what the portal holds and the headline figures of CICT's Digital Archives, each a link #}
 {% from "public/_numbers.html" import numbers_band with context %}

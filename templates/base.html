@@ -21,7 +21,7 @@
 {% endblock %}
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=42">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=43">
 {% block head %}{% endblock %}
 </head>
 <body>
@@ -62,7 +62,8 @@
     </div>
     <img class="gov-logo moe" src="{{ url_for('static', filename='img/logos/moe.png') }}" alt="{{ t('site.ministry') }}" height="46">
     <img class="logo" src="{{ url_for('static', filename='img/cict-logo.png') }}" alt="{{ t('site.organiser') }}" width="58" height="58">
-    <a class="btn saffron cta" href="{{ url_for('public.register') }}">{{ t('home.cta_register') }}</a>
+    {# "Apply now" leads to "Register your institution" while the registration of institutions is open (1.2.145) #}
+    <a class="btn saffron cta" href="{{ url_for('public.hei_register') if hei_window() == 'open' else url_for('public.register') }}">{{ t('home.cta_register') }}</a>
   </div>
 </header>
 <nav class="nav" aria-label="{{ t('nav.menu') }}">

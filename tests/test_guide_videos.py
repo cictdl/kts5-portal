@@ -1,6 +1,7 @@
 """
 The video guide to the portal (version 1.2.128): four videos on CICT's YouTube channel, each shown by a poster kept on the
-portal and played in the page, in YouTube's no-cookie player, when pressed (or opened on YouTube); all four under the hero of the home page and in the Digital repository, each part where its
+portal and played in the page, in YouTube's no-cookie player, when pressed (or opened on YouTube); all four at the foot of "How to
+take part" (under the hero of the home page until 1.2.144) and in the Digital repository, each part where its
 readers are (Nodal Officers, institutions, students).
 
     python -m pytest tests -q
@@ -44,11 +45,13 @@ def test_the_four_videos_and_their_posters():
             assert im.format == "JPEG" and im.size == (640, 360), path
 
 
-def test_the_home_page_has_all_four_under_the_hero():
+def test_the_guide_page_has_all_four_at_its_foot():
+    # 3 Nov 2026 (1.2.145), the user: "hide ▶ Video guide to the KTS 5.0 portal" - off the home page (the section and the hero's
+    # button), all four at the foot of "How to take part"
     client = make_app(ADMIN_PASSWORD=None).test_client()
-    page = _page(client, "/?lang=en")
-    hero = page[page.index('<section class="hero">'):page.index('<section class="hero">') + page[page.index('<section class="hero">'):].index("</section>")]
-    assert '<a class="btn gv-btn" href="#video-guide"><span aria-hidden="true">▶</span> Video guide</a>' in hero
+    home = _page(client, "/?lang=en")
+    assert 'id="video-guide"' not in home and "gv-btn" not in home and "Video guide to the KTS 5.0 portal" not in home
+    page = _page(client, "/how-to-take-part?lang=en")
     block = page[page.index('id="video-guide"'):]
     block = block[:block.index("</section>")]
     assert '<h2 class="gv-h" id="video-guide-h"><span aria-hidden="true">▶</span> Video guide to the KTS 5.0 portal</h2>' in block
@@ -63,8 +66,9 @@ def test_the_home_page_has_all_four_under_the_hero():
     # the letter of 31 October 2026 moved some dates after the videos were recorded (1.2.133)
     assert ('<p class="small dim gv-note">The videos were recorded before the Ministry&#39;s letter of 31 October 2026, which moved '
             'some dates; the Schedule has the current ones. <a href="/schedule">Schedule →</a></p>') in block
-    # right under the hero, before anything else of the page
-    assert page.index('<section class="hero">') < page.index('id="video-guide"') < page.index('<section class="section')
+    # after the three parts, before the help line
+    assert page.index('<section id="nodal"') < page.index('id="video-guide"') < page.index("Questions? Write to")
+    assert 'id="video-guide"' not in _page(client, "/how-to-take-part/institutions?lang=en")
     # nothing of YouTube enters the portal: no player, no pictures of YouTube, no tracking parameter
     # nothing of YouTube loads with the page: no player before a poster is pressed, no pictures of YouTube
     assert "youtube.com/embed" not in page and "ytimg" not in page and "<iframe" not in page
@@ -79,7 +83,7 @@ def test_every_language_has_the_guide():
         assert all(catalogue.get(k) for k in keys), code
         if code != "en":
             assert all(catalogue[k] != CATALOG["en"][k] for k in keys if k not in ("gv.short",)), code
-        page = _page(client, f"/?lang={code}")
+        page = _page(client, f"/how-to-take-part?lang={code}")
         assert str(__import__("markupsafe").escape(catalogue["gv.title"])) in page, code
         assert _parts(page[page.index('id="video-guide"'):])[:4] == [1, 2, 3, 4], code
 
@@ -91,7 +95,7 @@ def test_each_part_where_its_readers_are():
         start = guide.index(f'<section id="{part}"')
         section = guide[start:guide.index("</section>", start)]
         assert _parts(section) == [n], part
-        assert '<a href="/#video-guide">All four videos →</a>' in section
+        assert '<a href="/how-to-take-part#video-guide">All four videos →</a>' in section
     assert _parts(_page(client, "/how-to-take-part/institutions?lang=en")) == [2]
     assert _parts(_page(client, "/register?lang=en")) == [3]
     assert _parts(_page(client, "/institutions/register?lang=en")) == [2]

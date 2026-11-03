@@ -80,8 +80,8 @@ def test_the_hub_of_the_home_page(monkeypatch):
     app = _portal()
     _at(app, date(2026, 11, 3), monkeypatch)
     page = app.test_client().get("/?lang=en").get_data(as_text=True)
-    hub = page[page.index('<section class="hub-section"'):page.index("{# the video guide") if "{# the video guide" in page else page.index('class="section gv-home"')]
-    assert page.index('class="hero"') < page.index('class="hub-section"') < page.index('class="section gv-home"')
+    hub = page[page.index('<section class="hub-section"'):page.index('<section class="numbers"')]
+    assert page.index('class="hero"') < page.index('class="hub-section"') < page.index('<section class="numbers"')
     assert '<h2 id="hub-title">Find your next step</h2>' in hub and hub.count('role="tab"') == 3 and hub.count('role="tabpanel"') == 3
     assert '<button type="button" class="hub-tab" role="tab" id="hub-tab-student" aria-controls="hub-student" aria-selected="true"' in hub
     # the student: the days left to the assessment, the search, the message to the Principal (hidden until nothing is found)
@@ -110,7 +110,7 @@ def test_the_hub_after_the_registration_of_the_institutions(monkeypatch):
     app = _portal()
     _at(app, date(2026, 11, 18), monkeypatch)
     page = app.test_client().get("/?lang=en").get_data(as_text=True)
-    hub = page[page.index('<section class="hub-section"'):page.index('class="section gv-home"')]
+    hub = page[page.index('<section class="hub-section"'):page.index('<section class="numbers"')]
     # registration of institutions ended (by the clock of the window, hei.end): the panel of the Participating Institutions
     from kts import heis
     assert heis.window({"hei.open": "1", "hei.end": "2026-11-15"}) in ("ended", "open")

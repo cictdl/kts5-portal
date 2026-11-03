@@ -1063,3 +1063,8 @@ footer.site .bottom .wrap { display: flex; justify-content: space-between; gap: 
   .skip { display: none !important; }
   .join-poster { border: 0; max-width: none; min-height: 262mm; justify-content: space-between; padding: 0; box-shadow: none; }
 }
+/* the home page (1.2.145): CICT's banner above the Kural of the day, in the right column of the hero */
+.hero .hero-side { display: flex; flex-direction: column; gap: 26px; min-width: 0; }
+.hero .home-banner { display: block; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow); background: #fff; }
+.hero .home-banner img { display: block; width: 100%; height: auto; }
+.hero .home-banner:hover, .hero .home-banner:focus-visible { border-color: var(--saffron); }

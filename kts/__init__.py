@@ -248,6 +248,8 @@ def create_app(config_object=Config):
             "scope_label": heis.scope_label,
             "institute_head": db.institute_head,
             "now_ist": utils.now_ist,
+            # the registration of institutions: 'open', 'off' or 'ended' - "Apply now" at the top leads to it while open (1.2.145)
+            "hei_window": lambda: heis.window(db.all_settings()),
         }
 
     # ---- errors ---------------------------------------------------------

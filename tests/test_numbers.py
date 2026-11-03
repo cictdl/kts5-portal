@@ -51,9 +51,9 @@ def test_the_banner_on_the_home_page():
     client = make_app(ADMIN_PASSWORD=None).test_client()
     page = _page(client, "/?lang=en")
     band = _band(page)
-    # under the video guide, before the rest of the page
-    assert page.index('id="video-guide"') < page.index('<section class="numbers"') < page.index("launch-video") if "launch-video" in page \
-        else page.index('id="video-guide"') < page.index('<section class="numbers"')
+    # under the hub (the video guide, above it until 1.2.144, left the home page), before the rest of the page
+    assert page.index('class="hub-section"') < page.index('<section class="numbers"') < page.index("launch-video") if "launch-video" in page \
+        else page.index('class="hub-section"') < page.index('<section class="numbers"')
     assert '<h2 class="num-h" id="numbers-h">KTS 5.0 in numbers</h2>' in band
     tiles = _tiles(band)
     labels = [t[2] for t in tiles]
