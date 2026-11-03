@@ -252,6 +252,8 @@ def create_app(config_object=Config):
             "hei_window": lambda: heis.window(db.all_settings()),
             # the students' registration shown on the public pages (1.2.147: hidden by default)
             "students_public": lambda: db.get_setting("reg.public") == "1",
+            # the seminars and workshops of CICT shown on the public pages (1.2.151: hidden by default)
+            "events_public": lambda: db.get_setting("events.public") == "1",
         }
 
     # ---- errors ---------------------------------------------------------

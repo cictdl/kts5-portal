@@ -11,7 +11,16 @@ from pathlib import Path
 
 from markupsafe import escape
 
-from conftest import make_app
+from conftest import make_app as _make_app
+
+
+def make_app(**settings):
+    """The application with the seminars and workshops of CICT shown (hidden by default since 1.2.151: events.public)."""
+    app = _make_app(**settings)
+    with app.app_context():
+        from kts.db import set_setting
+        set_setting("events.public", "1")
+    return app
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = json.loads((ROOT / "data" / "cict_events.json").read_text(encoding="utf-8"))

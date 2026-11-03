@@ -1674,6 +1674,7 @@ SETTING_GROUPS = [
               ("home.hub", "Show “Find your next step” on the home page (a tab for each audience: what to do now, the days left, ‘Is your college taking part?’)", "bool"),
               ("home.launch_video", "Show the video of the launch of the web portal and registration (22 October 2026) on the home page", "bool"),
               ("reg.public", "Show the students' registration on the public pages: the menu, buttons and dates of the registration and of the application status, and the counts of student delegates registered (the pages /register and /status work either way)", "bool"),
+              ("events.public", "Show the seminars and workshops of CICT on the public pages: the menu, the cards on the home page and in the Digital repository, the figure in “KTS 5.0 in numbers”, the search and the sitemap (the page /seminars-workshops works either way)", "bool"),
               ("dashboard.public", "Public dashboard KTS 5.0 by State/UT (/dashboard): the live counts of each State/UT, its Nodal Officers and its Participating Institutions", "bool"),
               ("dashboard.names", "The dashboard names the student delegate of each Participating Institution once the Nodal Officer has verified the student (name and institution only, as the students agreed on registering)", "bool"),
               ("site.visitors", "Show the count of visitors in the footer of every page", "bool"),

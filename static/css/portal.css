@@ -609,6 +609,12 @@ a.num-tile:hover, a.num-tile:focus-visible { transform: translateY(-3px); backgr
   .num-tile { padding: 14px 12px 12px; }
   .num-n { font-size: 1.7rem; }
 }
+/* six figures, and the live count of visitors as a bar under them, while the seminars and workshops are hidden (1.2.151) */
+.num-grid-six { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.num-grid-six > .num-live { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 4px 14px; padding: 14px 18px; }
+.num-grid-six > .num-live .num-n { font-size: 1.8rem; }
+@media (max-width: 1099px) { .num-grid-six { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 599px) { .num-grid-six { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .res-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
 .res-tabs a { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); font-size: .85rem; font-weight: 600; color: var(--ink); }
 .res-tabs a.on { background: var(--indigo); border-color: var(--indigo); color: #fff; }

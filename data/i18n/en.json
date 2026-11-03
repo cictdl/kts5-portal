@@ -1393,5 +1393,6 @@
   "join.done": "Colleges and universities near you can still register until {date}. Send them the page of {state}:",
   "join.assess": "{testing} of {n} Participating Institutions of {state} have opened the online test; {selected} have selected their student.",
   "pi.districts": "Districts reached",
-  "pi.states_title": "Each row of Annexure-I: the Participating Institutions selected and the institutions registered, against the number to be selected"
+  "pi.states_title": "Each row of Annexure-I: the Participating Institutions selected and the institutions registered, against the number to be selected",
+  "search.hint_noev": "Notices, the Digital repository, the Thirukkural, lectures, reels and the pages of the portal: in your language, in English or in Tamil. A number from 1 to 1330 opens that couplet."
 }

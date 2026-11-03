@@ -51,14 +51,15 @@
       <h2 class="num-h" id="numbers-h">{{ t('num.title') }}</h2>
       <p class="num-lead">{{ t('num.lead') }}</p>
     </div>
-    <div class="num-grid">
+    {# without the seminars and workshops (events.public, 1.2.151): six figures, the live count of visitors as a bar under them #}
+    <div class="num-grid{{ '' if events_public() else ' num-grid-six' }}">
       {{ tile(url_for('public.about'), f.langs, t('num.langs'), '', 'globe') }}
       {{ tile(url_for('public.kural_browser'), f.kurals, t('num.kurals'), t('num.kurals_sub')|replace('{n}', f.versions), 'book') }}
       {{ tile(url_for('public.kural_browser'), f.audio, t('num.audio'), t('num.audio_sub')|replace('{h}', f.audio_hours), 'audio') }}
       {{ tile(url_for('public.resources'), f.videos, t('num.videos'), t('num.videos_sub'), 'video') }}
       {{ tile(url_for('public.syllabus'), f.books, t('num.books'), '', 'study') }}
       {{ tile(url_for('public.posters'), f.posters, t('num.posters'), t('num.posters_sub'), 'poster') }}
-      {{ tile(url_for('public.cict_events_page'), f.events, t('num.events'), t('num.events_sub'), 'calendar') }}
+      {% if events_public() %}{{ tile(url_for('public.cict_events_page'), f.events, t('num.events'), t('num.events_sub'), 'calendar') }}{% endif %}
       {{ tile(url_for('public.dashboard') if get_setting('dashboard.public') == '1' else '', vf.total, t('num.visitors'), t('num.visitors_sub')|replace('{today}', in_number(vf.today)), 'users', 'num-live') }}
     </div>
     {# the Digital repository (1.2.130): its items as they stand, by category, with the lectures, the reels and the gallery #}

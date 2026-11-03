@@ -8,10 +8,12 @@
     <div class="field grow"><label for="sq">{{ t('search.label') }}</label><input type="search" id="sq" name="q" value="{{ q }}" dir="auto" maxlength="80"></div>
     <div class="field"><button class="btn" type="submit">{{ t('common.search') }}</button></div>
   </form>
+  {# the hint names the seminars and workshops while they are shown (events.public, 1.2.151) #}
+  {% set hint = t('search.hint') if events_public() else t('search.hint_noev') %}
   {% if not q %}
-  <p class="dim" style="max-width:78ch">{{ t('search.hint') }}</p>
+  <p class="dim" style="max-width:78ch">{{ hint }}</p>
   {% elif not total %}
-  <div class="card"><p style="margin:0"><bdi>{{ t('search.none')|replace('{q}', q) }}</bdi></p><p class="small muted" style="margin:8px 0 0">{{ t('search.hint') }}</p></div>
+  <div class="card"><p style="margin:0"><bdi>{{ t('search.none')|replace('{q}', q) }}</bdi></p><p class="small muted" style="margin:8px 0 0">{{ hint }}</p></div>
   {% else %}
   <p class="search-summary"><bdi>{{ (t('search.result_one') if total == 1 else t('search.results'))|replace('{n}', total)|replace('{q}', q) }}</bdi></p>
   {% for g in groups %}

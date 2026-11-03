@@ -1128,9 +1128,12 @@ def cict_events_page():
             months.append({"key": e["start"][:7], "num": int(e["start"][5:7]) if len(e["start"]) >= 7 else 0, "items": []})
         months[-1]["items"].append((e, _ev_when(e, numeric)))
         groups[-1]["count"] += 1
-    return render_template("public/cict_events.html", groups=groups, total=sum(g["count"] for g in groups),
-                           years=sorted(years.items(), reverse=True), kinds=[k for k in EV_TYPES if kinds.get(k)],
-                           kind_counts=kinds, year=year, kind=kind, q=q, all_count=len(events))
+    resp = make_response(render_template("public/cict_events.html", groups=groups, total=sum(g["count"] for g in groups),
+                                         years=sorted(years.items(), reverse=True), kinds=[k for k in EV_TYPES if kinds.get(k)],
+                                         kind_counts=kinds, year=year, kind=kind, q=q, all_count=len(events)))
+    if get_setting("events.public") != "1":   # hidden from the public pages (1.2.151): out of the search engines too
+        resp.headers["X-Robots-Tag"] = "noindex"
+    return resp
 
 
 # ---- the search of the portal (1.2.90) ------------------------------------------------------------------------------
@@ -1214,10 +1217,10 @@ def search():
         hits += [_kural_hit(kurals[n], stream, words) for n, text in _kural_index(stream)
                  if n != number and S.matches(text, words)]
         groups.append(_search_group("kural", t("nav.kural"), hits))
-        # the seminars and workshops of CICT
+        # the seminars and workshops of CICT, while shown (events.public, hidden since 1.2.151)
         numeric = lang != "en"
         hits = []
-        for e in cict_events():
+        for e in cict_events() if get_setting("events.public") == "1" else []:
             text = " ".join([e.get("title") or "", e.get("title_ta") or "", e.get("venue") or "", e.get("with") or "",
                              e.get("dept") or "", " ".join(e.get("people") or [])])
             if S.matches(S.norm(text), words):
@@ -1826,10 +1829,16 @@ STUDENT_PAGES = ("public.register", "public.status")
 
 
 def _sitemap():
-    """SITEMAP without the students' registration and status while they are hidden (reg.public, 1.2.147)."""
-    if get_setting("reg.public") == "1":
+    """SITEMAP without the students' registration and status while they are hidden (reg.public, 1.2.147), and without the
+    seminars and workshops of CICT while they are hidden (events.public, 1.2.151)."""
+    hidden = set()
+    if get_setting("reg.public") != "1":
+        hidden.update(STUDENT_PAGES)
+    if get_setting("events.public") != "1":
+        hidden.add("public.cict_events_page")
+    if not hidden:
         return SITEMAP
-    return [(heading, [link for link in links if link[0] not in STUDENT_PAGES]) for heading, links in SITEMAP]
+    return [(heading, [link for link in links if link[0] not in hidden]) for heading, links in SITEMAP]
 
 
 @bp.route("/sitemap.xml")
