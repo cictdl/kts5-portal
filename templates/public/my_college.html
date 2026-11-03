@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ t('hub.page_title') }}{% endblock %}
+{% block content %}
+{# "Is your college taking part?" (1.2.140): the hub of the home page on a page of its own, with the results of the search for
+   those without the script, and as the address that a student can share #}
+{% from "public/_hub.html" import hub_card with context %}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('site.name') }}</span>
+  <h1>{{ t('hub.page_title') }}</h1>
+  {{ hub_card(h, results, q, start='student') }}
+</div>
+{% endblock %}

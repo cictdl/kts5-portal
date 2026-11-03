@@ -935,3 +935,74 @@ footer.site .bottom .wrap { display: flex; justify-content: space-between; gap: 
 .no-pending { color: var(--kumkum); white-space: nowrap; }
 @media (max-width: 760px) { .no-steps { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 520px) { .no-status .prog-rings { grid-template-columns: 1fr; } .no-steps { grid-template-columns: 1fr; } }
+
+
+/* "Find your next step" (1.2.140): a card that rises over the foot of the hero - a tab for each audience, the days left, the
+   search of the Participating Institutions and the message to the Principal. Without the script the panels stand one under
+   the other and the tabs are hidden. */
+.hub-section { position: relative; z-index: 3; margin-top: -30px; padding: 0 0 8px; }
+.hub-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 22px 24px 20px;
+  box-shadow: 0 22px 48px -26px rgba(31, 58, 95, .5), var(--shadow); }
+.hub-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 14px 20px; flex-wrap: wrap; }
+.hub-head h2 { margin: 0; font-size: 1.4rem; letter-spacing: -.01em; }
+.hub-head p { margin: 2px 0 0; }
+.hub-tabs { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--bg2); border: 1px solid var(--border); }
+.hub-card:not(.hub-js) .hub-tabs { display: none; }
+.hub-tab { border: 0; background: transparent; padding: 9px 16px; border-radius: 999px; font: inherit; font-weight: 700; font-size: .92rem;
+  color: var(--dim); cursor: pointer; white-space: nowrap; transition: background .2s, color .2s, box-shadow .2s; }
+.hub-tab:hover { color: var(--ink); }
+.hub-tab[aria-selected="true"] { background: var(--indigo); color: var(--surface); box-shadow: 0 6px 14px -6px rgba(31, 58, 95, .7); }
+.hub-tab:focus-visible { outline: 2px solid var(--saffron); outline-offset: 2px; }
+.hub-panel { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+.hub-js .hub-panel { display: none; }
+.hub-js .hub-panel.on { display: block; animation: hub-in .25s ease-out; }
+@keyframes hub-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.hub-title-row { display: flex; align-items: center; gap: 10px 12px; flex-wrap: wrap; }
+.hub-title-row h3 { margin: 0; font-size: 1.15rem; }
+.hub-panel > p { max-width: 86ch; }
+.hub-note { margin: 6px 0 0; }
+.hub-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 11px; border-radius: 999px; font-size: .78rem; font-weight: 800; white-space: nowrap; }
+.hub-chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.hub-chip.ok { background: var(--green-soft); color: var(--green); }
+.hub-chip.soon { background: var(--saffron-soft); color: var(--amber); }
+.hub-chip.now { background: var(--kumkum-soft); color: var(--kumkum); }
+.hub-chip.now::before { animation: hub-blink 1.2s infinite; }
+.hub-chip.shut { background: var(--bg2); color: var(--mute); }
+@keyframes hub-blink { 50% { opacity: .2; } }
+.hub-find { position: relative; display: flex; gap: 8px; margin: 12px 0 4px; }
+.hub-find input { flex: 1; min-width: 0; font: inherit; font-size: 1.05rem; padding: 13px 16px 13px 46px; border-radius: 14px;
+  border: 2px solid var(--border-strong); background: var(--surface); color: var(--ink); transition: border-color .15s, box-shadow .15s; }
+.hub-find input:focus { border-color: var(--saffron); outline: none; box-shadow: 0 0 0 4px var(--saffron-soft); }
+.hub-find-ico { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; color: var(--mute); pointer-events: none; }
+.hub-find-ico svg { width: 100%; height: 100%; display: block; }
+[dir="rtl"] .hub-find input { padding: 13px 46px 13px 16px; }
+[dir="rtl"] .hub-find-ico { left: auto; right: 15px; }
+.hub-find .btn { border-radius: 14px; padding-inline: 22px; }
+.hub-count { margin: 4px 0 0; }
+.hub-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; }
+.hub-list li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-radius: 12px;
+  background: var(--green-soft); border: 1px solid rgba(27, 127, 75, .18); }
+.hub-list a { display: flex; flex-direction: column; min-width: 0; color: var(--ink); text-decoration: none; }
+.hub-list a:hover b { text-decoration: underline; }
+.hub-yes { flex: none; font-size: .78rem; font-weight: 800; color: var(--green); white-space: nowrap; }
+.hub-none { margin: 10px 0 4px; font-weight: 700; color: var(--kumkum); }
+.hub-invite { margin-top: 10px; padding: 14px 16px; border-radius: 14px; background: var(--saffron-soft); border: 1px dashed rgba(224, 123, 26, .55); }
+.hub-invite p { margin: 0; }
+.hub-msg { margin: 8px 0 12px; padding: 10px 14px; border-inline-start: 4px solid var(--saffron); background: var(--surface); border-radius: 8px;
+  font-size: .92rem; line-height: 1.5; color: var(--ink); }
+.hub-wa { display: inline-flex; align-items: center; gap: 8px; background: #1fa855; border-color: #1fa855; color: #fff; }
+.hub-wa:hover { background: #178a45; border-color: #178a45; color: #fff; }
+.hub-wa svg { width: 18px; height: 18px; }
+.hub-prep { margin: 14px 0 0; }
+.hub-proof { margin: 0 0 10px; color: var(--green); }
+@media (max-width: 760px) {
+  .hub-section { margin-top: -18px; }
+  .hub-card { padding: 18px 16px 16px; border-radius: 16px; }
+  .hub-tabs { width: 100%; }
+  .hub-tab { flex: 1 1 0; padding: 9px 6px; font-size: .84rem; white-space: normal; line-height: 1.2; }
+  .hub-find .btn { padding-inline: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hub-js .hub-panel.on { animation: none; }
+  .hub-chip.now::before { animation: none; }
+}

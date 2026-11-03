@@ -18,6 +18,7 @@ from flask import (Blueprint, Response, abort, current_app, flash, g, make_respo
 from . import campus as CAMP
 from . import companion as C
 from . import dashboard as D
+from . import finder as FINDER
 from . import heis as HEI
 from . import kural as K
 from . import letters as LETTERS
@@ -241,11 +242,39 @@ def home():
     seminars = cict_events()
     ev_years = (min(e["start"][:4] for e in seminars), max(e["start"][:4] for e in seminars)) if seminars else None
     return render_template("public/home.html", settings=settings, dates=_key_dates(settings), uz=home_uzbek(),
+                           hub=FINDER.hub(settings, lang),   # "Find your next step" (1.2.140)
                            ev_total=len(seminars), ev_years=ev_years,
                            notices=notices, events=events, agencies=agencies, stats=stats,
                            kotd=k, kotd_lines=K.lines(k, kotd_lang), kotd_lang=kotd_lang, kotd_dir=kotd_dir,
                            featured=query("SELECT * FROM resources WHERE published = 1 AND featured = 1 "
                                           "ORDER BY sort_order, created_at DESC LIMIT 6"))
+
+
+@bp.route("/my-college")
+def my_college():
+    """
+    "Is your college taking part?" (1.2.140): the hub of the home page on a page of its own, with the results of the search for
+    those without the script; while the Participating Institutions are public (hei.public).
+    """
+    settings = all_settings()
+    if settings.get("hei.public") != "1":
+        abort(404)
+    lang = get_lang()
+    q = (request.args.get("q") or "").strip()[:120]
+    results = FINDER.search(q, lang) if len(q) >= 3 else None
+    return render_template("public/my_college.html", h=FINDER.hub(settings, lang), results=results, q=q)
+
+
+@bp.route("/my-college.json")
+def my_college_json():
+    """The search of the Participating Institutions as the student types (portal.js): the name, district and State/UT of each."""
+    if get_setting("hei.public") != "1":
+        abort(404)
+    if not limiter.allow("finder", client_ip(), current_app.config["RATE_FINDER_PER_MIN"], 60):
+        return Response(json.dumps({"error": "rate"}), status=429, mimetype="application/json")
+    q = (request.args.get("q") or "").strip()[:120]
+    data = FINDER.search(q, get_lang()) if len(q) >= 3 else {"total": 0, "results": [], "searched": None}
+    return Response(json.dumps(data, ensure_ascii=False), mimetype="application/json", headers={"Cache-Control": "no-store"})
 
 
 @bp.route("/about")
@@ -1593,7 +1622,7 @@ SITEMAP = [
                           ("public.schedule", {}, "nav.schedule"),
                           ("public.notices", {}, "nav.notices"), ("public.news", {}, "news.title"), ("public.partners", {}, "nav.partners"),
                           ("public.gallery", {}, "nav.gallery"), ("public.contact", {}, "nav.contact")]),
-    ("pol.sm_students", [("public.guide", {}, "guide.title"), ("practice.home", {}, "prac.title"), ("public.kural108", {}, "k108.title"),
+    ("pol.sm_students", [("public.my_college", {}, "hub.page_title"), ("public.guide", {}, "guide.title"), ("practice.home", {}, "prac.title"), ("public.kural108", {}, "k108.title"),
                          ("public.syllabus", {}, "syl.title"), ("public.posters", {}, "res.cat_poster"),
                          ("public.register", {}, "nav.register"), ("public.status", {}, "nav.status"),
                          ("public.examination", {}, "nav.exam"), ("public.merit", {}, "nav.merit"),

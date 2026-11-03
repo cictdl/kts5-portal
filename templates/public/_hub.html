@@ -1,0 +1,89 @@
+{# "Find your next step" (1.2.140, kts/finder.py): a tab for each audience with what to do now and the days left; for the students,
+   "Is your college taking part?" - a search of the Participating Institutions that ends, when the college is not among them, in a
+   message to the Principal. Without the script every panel shows, one under the other, and the search is a form (/my-college). #}
+{% macro chip(c) -%}{% if c %}<span class="hub-chip {{ c[0] }}">{{ c[1] }}</span>{%- endif %}{%- endmacro %}
+{% macro hub_card(h, results=None, q='', start=None) %}
+<div class="hub-card" data-hub{% if start %} data-hub-start="{{ start }}"{% endif %}>
+  <div class="hub-head">
+    <div><h2 id="hub-title">{{ t('hub.title') }}</h2><p class="dim small">{{ t('hub.intro') }}</p></div>
+    <div class="hub-tabs" role="tablist" aria-labelledby="hub-title">
+      {% for key, label, icon in (('student', 'hub.tab_student', '🎓'), ('inst', 'hub.tab_inst', '🏛️'), ('nodal', 'hub.tab_nodal', '🧭')) %}
+      <button type="button" class="hub-tab" role="tab" id="hub-tab-{{ key }}" aria-controls="hub-{{ key }}" aria-selected="{{ 'true' if loop.first else 'false' }}" data-hub-tab="{{ key }}"><span aria-hidden="true">{{ icon }}</span> {{ t(label) }}</button>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# the student: is the college taking part? #}
+  <section class="hub-panel" id="hub-student" role="tabpanel" aria-labelledby="hub-tab-student" data-hub-panel="student">
+    <div class="hub-title-row"><h3>{{ t('hub.s_title') }}</h3>{{ chip(h.chips.student) }}</div>
+    <p class="small dim hub-note">{{ t('hub.s_note')|replace('{camp_to}', h.words.camp_to) }}</p>
+    {% if h.public %}
+    <form class="hub-find" method="get" action="{{ url_for('public.my_college') }}" role="search" data-hub-find="{{ url_for('public.my_college_json', lang=lang) }}">
+      <label for="hub-q" class="visually-hidden">{{ t('hub.s_label') }}</label>
+      <span class="hub-find-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>
+      <input id="hub-q" name="q" type="search" value="{{ q }}" autocomplete="off" maxlength="120" placeholder="{{ t('hub.s_ph') }}" aria-describedby="hub-count">
+      <button class="btn" type="submit">{{ t('hub.s_btn') }}</button>
+    </form>
+    <p class="small muted hub-count" id="hub-count">{{ t('hub.s_count')|replace('{n}', '{:,}'.format(h.searched)) }}</p>
+    <div class="hub-results" data-hub-results aria-live="polite" data-found="{{ t('hub.s_found') }}" data-none="{{ t('hub.s_none') }}" data-more="{{ t('hub.s_more') }}">
+      {% if results is not none %}
+      {% if results.results %}
+      <ul class="hub-list">{% for r in results.results %}<li><a href="{{ r.url }}"><b lang="en" dir="ltr">{{ r.name }}</b><span class="small muted">{% if r.district %}<span lang="en" dir="ltr">{{ r.district }}</span> · {% endif %}{{ r.state }}</span></a><span class="hub-yes">✓ {{ t('hub.s_found') }}</span></li>{% endfor %}</ul>
+      {% if results.total > results.results|length %}<p class="small muted">{{ t('hub.s_more')|replace('{n}', (results.total - results.results|length)|string) }}</p>{% endif %}
+      {% else %}<p class="hub-none">{{ t('hub.s_none') }}</p>{% endif %}
+      {% endif %}
+    </div>
+    {# the message to the Principal: shown by the script when the college is not found; without it, under an empty search #}
+    <div class="hub-invite" data-hub-invite{% if results is none or results.results %} hidden{% endif %}>
+      {% if h.open %}
+      <p><b>{{ t('hub.s_open')|replace('{date}', h.words.hei_end) }}</b></p>
+      <blockquote class="hub-msg" data-hub-msg>{{ h.invite.text }}</blockquote>
+      <div class="btn-row">
+        <a class="btn hub-wa" href="{{ h.invite.wa }}" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-.7-.3-1.4-.7-2-1.2-.5-.5-1-1.1-1.3-1.7-.1-.2 0-.4.1-.5l.4-.5.2-.4v-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.6.6-.9 1.4-.9 2.2.1 1 .5 1.9 1.1 2.7 1.1 1.6 2.5 2.9 4.2 3.7 1.6.7 2.2.7 3 .6.6-.1 1.4-.6 1.7-1.2.2-.5.2-1 .1-1.1l-.5-.3z"/></svg>{{ t('hub.share_wa') }}</a>
+        <a class="btn secondary" href="{{ h.invite.mail }}">✉ {{ t('hub.share_mail') }}</a>
+        <button class="btn secondary" type="button" data-hub-copy data-done="{{ t('hub.copied') }}" hidden>⧉ {{ t('hub.share_copy') }}</button>
+      </div>
+      {% else %}
+      <p class="small">{{ t('hub.s_shut')|replace('{date}', h.words.hei_end) }}</p>
+      {% endif %}
+    </div>
+    {% endif %}
+    <p class="small hub-prep"><span class="muted">{{ t('hub.s_prep') }}</span>
+      <a href="{{ url_for('public.kural108') }}">{{ t('k108.title') }}</a> · <a href="{{ url_for('practice.home') }}">{{ t('prac.title') }}</a> ·
+      {% if get_setting('companion.on') == '1' %}<a href="{{ url_for('public.companion') }}">{{ t('comp.title') }}</a> · {% endif %}<a href="{{ url_for('public.status') }}">{{ t('nav.status') }}</a></p>
+  </section>
+
+  {# the college or university #}
+  <section class="hub-panel" id="hub-inst" role="tabpanel" aria-labelledby="hub-tab-inst" data-hub-panel="inst">
+    {% if h.open %}
+    <div class="hub-title-row"><h3>{{ t('hub.i_open_t')|replace('{date}', h.words.hei_end) }}</h3>{{ chip(h.chips.inst) }}</div>
+    <p class="dim">{{ t('hub.i_open')|replace('{select}', h.words.select)|replace('{camp_to}', h.words.camp_to)|replace('{reg_end}', h.words.reg_end) }}</p>
+    {% if h.registered %}<p class="small hub-proof"><b>{{ t('hub.i_count')|replace('{n}', '{:,}'.format(h.registered)) }}</b></p>{% endif %}
+    <div class="btn-row"><a class="btn saffron" href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a>
+      <a class="btn secondary" href="{{ url_for('campus.login') }}">{{ t('camp.login_title') }}</a>
+      <a class="btn ghost" href="#video-guide">▶ {{ t('gv.p2') }}</a></div>
+    {% else %}
+    <div class="hub-title-row"><h3>{{ t('hub.i_shut_t')|replace('{camp_to}', h.words.camp_to)|replace('{reg_end}', h.words.reg_end) }}</h3>{{ chip(h.chips.inst) }}</div>
+    <p class="dim">{{ t('hub.i_shut') }}</p>
+    <div class="btn-row"><a class="btn saffron" href="{{ url_for('campus.login') }}">{{ t('camp.login_title') }}</a>
+      <a class="btn secondary" href="{{ url_for('public.guide_institutions') }}">{{ t('guide.title') }}</a>
+      <a class="btn ghost" href="#video-guide">▶ {{ t('gv.p2') }}</a></div>
+    {% endif %}
+  </section>
+
+  {# the Nodal Officer #}
+  <section class="hub-panel" id="hub-nodal" role="tabpanel" aria-labelledby="hub-tab-nodal" data-hub-panel="nodal">
+    {% if h.nodal_selecting %}
+    <div class="hub-title-row"><h3>{{ t('hub.n_sel_t')|replace('{date}', h.words.select_end) }}</h3>{{ chip(h.chips.nodal) }}</div>
+    <p class="dim">{{ t('hub.n_sel')|replace('{verify_end}', h.words.verify_end) }}</p>
+    {% else %}
+    <div class="hub-title-row"><h3>{{ t('hub.n_ver_t')|replace('{date}', h.words.verify_end) }}</h3>{{ chip(h.chips.nodal) }}</div>
+    <p class="dim">{{ t('hub.n_ver') }}</p>
+    {% endif %}
+    <div class="btn-row"><a class="btn saffron" href="{{ url_for('auth.login') }}">{{ t('hub.console') }}</a>
+      <a class="btn secondary" href="{{ url_for('public.nodal_institutions') }}#officers">{{ t('nav.nodal') }}</a>
+      <a class="btn secondary" href="{{ url_for('public.nodal_institutions') }}#letter">{{ t('nl.page_title') }}</a>
+      {% if get_setting('dashboard.public') == '1' %}<a class="btn ghost" href="{{ url_for('public.progress') }}">📈 {{ t('pg.link') }}</a>{% endif %}</div>
+  </section>
+</div>
+{% endmacro %}

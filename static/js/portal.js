@@ -370,3 +370,101 @@
   }
   setInterval(refresh, 60000);
 })();
+
+
+// "Find your next step" (1.2.140): the tabs of the hub of the home page (the last one chosen is remembered in this browser, a
+// #hub-inst or #hub-nodal in the address opens that one), the search of the Participating Institutions as the student types,
+// and the copy of the message to the Principal. Without the script the panels stand one under the other and the search is a form.
+(function () {
+  var root = document.querySelector("[data-hub]");
+  if (!root) return;
+  root.classList.add("hub-js");
+  var tabs = Array.prototype.slice.call(root.querySelectorAll("[data-hub-tab]"));
+  var panels = root.querySelectorAll("[data-hub-panel]");
+  var keys = tabs.map(function (t) { return t.getAttribute("data-hub-tab"); });
+  function show(key, focus, remember) {
+    tabs.forEach(function (t) {
+      var on = t.getAttribute("data-hub-tab") === key;
+      t.setAttribute("aria-selected", on ? "true" : "false");
+      t.tabIndex = on ? 0 : -1;
+      if (on && focus) t.focus();
+    });
+    panels.forEach(function (p) { p.classList.toggle("on", p.getAttribute("data-hub-panel") === key); });
+    if (remember) { try { localStorage.setItem("kts.hub", key); } catch (e) {} }
+  }
+  var start = root.getAttribute("data-hub-start");
+  var fromHash = (location.hash || "").replace("#hub-", "");
+  if (!start && keys.indexOf(fromHash) >= 0) start = fromHash;
+  if (!start) { try { start = localStorage.getItem("kts.hub"); } catch (e) {} }
+  show(keys.indexOf(start) >= 0 ? start : keys[0], false, false);
+  tabs.forEach(function (t, i) {
+    t.addEventListener("click", function () { show(t.getAttribute("data-hub-tab"), false, true); });
+    t.addEventListener("keydown", function (ev) {
+      var step = ev.key === "ArrowRight" ? 1 : ev.key === "ArrowLeft" ? -1 : 0;
+      if (!step) return;
+      if (document.documentElement.dir === "rtl") step = -step;
+      ev.preventDefault();
+      show(keys[(i + step + keys.length) % keys.length], true, true);
+    });
+  });
+
+  // the search of the Participating Institutions
+  var form = root.querySelector("[data-hub-find]");
+  var out = root.querySelector("[data-hub-results]");
+  var invite = root.querySelector("[data-hub-invite]");
+  if (form && out && window.fetch) {
+    var input = form.querySelector("input[name=q]");
+    var url = form.getAttribute("data-hub-find");
+    var timer = null, asked = 0;
+    function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+    function render(d, q) {
+      out.textContent = "";
+      if (q.length < 3) { if (invite) invite.hidden = true; return; }
+      if (d.results && d.results.length) {
+        var ul = el("ul", "hub-list");
+        d.results.forEach(function (r) {
+          var li = el("li"), a = el("a"), name = el("b", null, r.name), where = el("span", "small muted", (r.district ? r.district + " · " : "") + r.state);
+          name.setAttribute("lang", "en"); name.setAttribute("dir", "ltr");
+          a.href = r.url; a.appendChild(name); a.appendChild(where);
+          li.appendChild(a); li.appendChild(el("span", "hub-yes", "✓ " + out.getAttribute("data-found")));
+          ul.appendChild(li);
+        });
+        out.appendChild(ul);
+        if (d.total > d.results.length) out.appendChild(el("p", "small muted", out.getAttribute("data-more").replace("{n}", d.total - d.results.length)));
+        if (invite) invite.hidden = true;
+      } else {
+        out.appendChild(el("p", "hub-none", out.getAttribute("data-none")));
+        if (invite) invite.hidden = false;
+      }
+    }
+    function ask(q) {
+      var n = ++asked;
+      if (q.length < 3) { render({}, q); return; }
+      fetch(url + (url.indexOf("?") >= 0 ? "&" : "?") + "q=" + encodeURIComponent(q), { credentials: "same-origin" })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) { if (d && n === asked) render(d, q); })
+        .catch(function () {});
+    }
+    input.addEventListener("input", function () {
+      clearTimeout(timer);
+      var q = input.value.trim();
+      timer = setTimeout(function () { ask(q); }, 250);
+    });
+    form.addEventListener("submit", function (ev) { ev.preventDefault(); clearTimeout(timer); ask(input.value.trim()); });
+    if (input.value.trim().length >= 3) ask(input.value.trim());
+  }
+
+  // the copy of the message to the Principal
+  var copy = root.querySelector("[data-hub-copy]");
+  var msg = root.querySelector("[data-hub-msg]");
+  if (copy && msg && navigator.clipboard) {
+    copy.hidden = false;
+    var label = copy.textContent;
+    copy.addEventListener("click", function () {
+      navigator.clipboard.writeText(msg.textContent.trim()).then(function () {
+        copy.textContent = "✓ " + copy.getAttribute("data-done");
+        setTimeout(function () { copy.textContent = label; }, 2200);
+      }).catch(function () {});
+    });
+  }
+})();

@@ -718,6 +718,7 @@ missing key.
 | `KTS_RATE_REGISTER_PER_HOUR` | `100` | Registrations from one address in an hour |
 | `KTS_RATE_CONTACT_PER_HOUR` | `10` | Messages of the contact form from one address in an hour |
 | `KTS_RATE_HEI_PER_HOUR` | `20` | Applications of institutions (*Register your institution*) from one address in an hour |
+| `KTS_RATE_FINDER_PER_MIN` | `240` | Searches of *Is your college taking part?* (the hub of the home page) from one address in a minute |
 | `KTS_RATE_PRACTICE_PER_HOUR` | `300` | Practice tests begun from one address in an hour (`/practice`; a whole campus may practise through one address) |
 | `KTS_RATE_STATUS_FAILS` | `300` | Failed status checks from one address in 15 minutes |
 | `KTS_K108_SEED` | `1` | At the first start on a database, 150 questions on the 108 Thirukkural are made for each of the 23 languages, as *Console › Question bank › Generate* makes them with *Only on the 108 Thirukkural* ticked (none that the bank asks already); `0` leaves the bank alone |

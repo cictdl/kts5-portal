@@ -76,6 +76,10 @@
   </div>
 </section>
 
+{# "Find your next step" (1.2.140): a tab for each audience, rising over the foot of the hero (kts/finder.py) #}
+{% from "public/_hub.html" import hub_card with context %}
+<section class="hub-section" aria-labelledby="hub-title"><div class="wrap">{{ hub_card(hub) }}</div></section>
+
 {# the video guide to the portal (1.2.128): its four parts, right under the hero #}
 {% from "public/_guide_videos.html" import video_guide, video_part with context %}
 <div class="section gv-home" style="padding:26px 0 6px"><div class="wrap">{{ video_guide() }}</div></div>
