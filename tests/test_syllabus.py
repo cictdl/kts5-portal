@@ -1,7 +1,8 @@
 """
 The syllabus of the institution-level assessment (version 1.2.98): CICT's study book "Thirukkural Payilvom – Let's Learn
 Thirukkural" in Tamil and in translation, one PDF per language under static/syllabus, listed in data/syllabus.json, on the
-page /syllabus with the visitor's language first, and linked from the assessment, the 108 Thirukkural, the menu, the
+page /syllabus in the order CICT asked for (Hindi, Sanskrit, Gujarati, Bengali, Kannada, Telugu, the others, English and Tamil
+last; 1.2.143), the visitor's own book framed, and linked from the assessment, the 108 Thirukkural, the menu, the
 repository, the sitemap and the search.
 
     python -m pytest tests -q
@@ -24,8 +25,8 @@ def _page(client, path):
 def test_each_book_has_its_pdf_and_cover():
     from kts import kural as K
     # Tamil, English, Hindi, Kannada and Marathi in 1.2.98; Bengali, Maithili and Odia in 1.2.114 (with the new editions of
-    # the Hindi and the Marathi book); Gujarati, Santali and Telugu in 1.2.120
-    assert [b["lang"] for b in BOOKS] == ["ta", "en", "bn", "gu", "hi", "kn", "mai", "mr", "or", "sat", "te"]
+    # the Hindi and the Marathi book); Gujarati, Santali and Telugu in 1.2.120; in the order CICT asked for since 1.2.143
+    assert [b["lang"] for b in BOOKS] == ["hi", "gu", "bn", "kn", "te", "mai", "mr", "or", "sat", "en", "ta"]
     for b in BOOKS:
         assert b["lang"] in K.ORIENTATION_LANGS and b["pages"] > 40
         name = f"KTS5-Thirukkural-Payilvom-{b['lang']}"
@@ -36,25 +37,44 @@ def test_each_book_has_its_pdf_and_cover():
         assert bool(b["translator"]) == (b["lang"] != "ta"), b["lang"]
 
 
-def test_the_page_offers_the_visitors_language_first():
+def test_the_page_offers_the_books_in_cicts_order():
+    # 3 Nov 2026 (1.2.143), CICT: "Hindi, Sanskrit, Gujarati, Bengali, Kannada, Telugu, at last English and Tamil" - for every
+    # visitor; the visitor's own book framed where it stands, with a link to it at the top
+    from kts import kural as K
+    assert K.SYLLABUS_FIRST == ["hi", "sa", "gu", "bn", "kn", "te"] and K.SYLLABUS_LAST == ["en", "ta"]
+    ranks = sorted(K.ORIENTATION_LANGS, key=K.syllabus_rank)
+    assert ranks[:6] == ["hi", "sa", "gu", "bn", "kn", "te"] and ranks[-2:] == ["en", "ta"] and len(ranks) == 23
     client = make_app(ADMIN_PASSWORD=None).test_client()
     page = _page(client, "/syllabus?lang=en")
     assert "Syllabus for the institution-level assessment" in page and "Let&#39;s Learn Thirukkural" in page
     books = page[page.index('id="books"'):]
     assert books.count('class="card syl-book"') == len(BOOKS) and books.count("⬇ Download (PDF)") == len(BOOKS)
-    assert books.index("KTS5-Thirukkural-Payilvom-en.pdf") < books.index("KTS5-Thirukkural-Payilvom-ta.pdf")
+    shown = [b["lang"] for b in BOOKS]
+    assert [books.index(f"KTS5-Thirukkural-Payilvom-{c}.pdf") for c in shown] == sorted(books.index(f"KTS5-Thirukkural-Payilvom-{c}.pdf") for c in shown)
+    assert shown[0] == "hi" and shown[-2:] == ["en", "ta"]
+    assert '<div class="card syl-book" id="book-en" lang="en" style="border:2px solid var(--saffron)">' in books
+    assert books.count("border:2px solid var(--saffron)") == 1 and '<a href="#book-en">⬇ In your language: <span lang="en">English</span></a>' in page
     assert "In your language" in books and "Translator: <bdi>Dr. Sripada Divya</bdi>" in books
     assert "The original, in Tamil" in books and "61 pages · PDF" in books
     assert 'href="/static/syllabus/KTS5-Thirukkural-Payilvom-hi.pdf" download' in books
     assert "The study book is not yet available in your language" not in page
-    # a language without its book yet (Malayalam since 1.2.120, Telugu before): told so, and the books as the file lists
-    # them, Tamil first
-    malayalam = _page(client, "/syllabus?lang=ml")
+    # a language without its book yet (Punjabi): told so, the books in the same order, none framed, no link
+    punjabi = _page(client, "/syllabus?lang=pa")
     from kts.i18n import CATALOG
-    assert str(escape(CATALOG["ml"]["syl.not_yet"])) in malayalam
-    m_books = malayalam[malayalam.index('id="books"'):]
-    assert m_books.index("Payilvom-ta.pdf") < m_books.index("Payilvom-en.pdf") < m_books.index("Payilvom-mr.pdf")
-    assert str(escape(CATALOG["ml"]["syl.yours"])) not in m_books
+    assert str(escape(CATALOG["pa"]["syl.not_yet"])) in punjabi
+    p_books = punjabi[punjabi.index('id="books"'):]
+    assert p_books.index("Payilvom-hi.pdf") < p_books.index("Payilvom-gu.pdf") < p_books.index("Payilvom-mr.pdf") < p_books.index("Payilvom-en.pdf") < p_books.index("Payilvom-ta.pdf")
+    assert 'href="#book-' not in punjabi and str(escape(CATALOG["pa"]["syl.yours"])) not in p_books and "border:2px solid var(--saffron)" not in p_books
+    # in Hindi, the Hindi book first and framed
+    hindi = _page(client, "/syllabus?lang=hi")
+    h_books = hindi[hindi.index('id="books"'):]
+    assert h_books.index("Payilvom-hi.pdf") < h_books.index("Payilvom-gu.pdf") and '<div class="card syl-book" id="book-hi" lang="hi" style="border:2px solid var(--saffron)">' in h_books
+    # the assessment page lists the languages in the same order
+    exam = _page(client, "/examination?lang=en")
+    langs = exam[exam.index('class="exam-syllabus"'):]
+    langs = langs[:langs.index("</p>")]
+    import re
+    assert [tag.split("-")[0] for tag in re.findall(r'<span lang="([^"]+)">', langs)] == shown
 
 
 def test_the_syllabus_is_reached_from_where_students_look():

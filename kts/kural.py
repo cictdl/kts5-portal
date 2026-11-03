@@ -41,6 +41,21 @@ LANG_TAGS = {
 # English and the 22 scheduled languages, Tamil among them: 23 in all.
 ORIENTATION_LANGS = ["en"] + SCHEDULED
 
+# the order of the study books, the syllabus of the institution-level assessment (3 Nov 2026, CICT: "Hindi, Sanskrit, Gujarati,
+# Bengali, Kannada, Telugu, at last English and Tamil"): these first, in this order; every other language after them, in the
+# order of SCHEDULED; English and Tamil last
+SYLLABUS_FIRST = ["hi", "sa", "gu", "bn", "kn", "te"]
+SYLLABUS_LAST = ["en", "ta"]
+
+
+def syllabus_rank(code):
+    """The place of the study book in a language: sort the books with it."""
+    if code in SYLLABUS_FIRST:
+        return (0, SYLLABUS_FIRST.index(code))
+    if code in SYLLABUS_LAST:
+        return (2, SYLLABUS_LAST.index(code))
+    return (1, SCHEDULED.index(code) if code in SCHEDULED else len(SCHEDULED))
+
 PAL_NAMES = {
     1: ("அறத்துப்பால்", "Virtue", "अरत्तुप्पाल (धर्म)"),
     2: ("பொருட்பால்", "Wealth", "पोरुट्पाल (अर्थ)"),

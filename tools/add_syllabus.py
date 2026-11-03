@@ -15,7 +15,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
-from kts.kural import ORIENTATION_LANGS  # noqa: E402
+from kts.kural import ORIENTATION_LANGS, syllabus_rank  # noqa: E402
 
 lang, src, translator = sys.argv[1], Path(sys.argv[2]), (sys.argv[3] if len(sys.argv) > 3 else "")
 assert lang in ORIENTATION_LANGS, f"{lang} is not a language of the portal"
@@ -30,7 +30,6 @@ Image.frombytes("RGB", (pix.width, pix.height), pix.samples).save(folder / "thum
 data_file = ROOT / "data" / "syllabus.json"
 rows = [r for r in json.loads(data_file.read_text(encoding="utf-8")) if r["lang"] != lang]
 rows.append({"lang": lang, "pages": len(doc), "translator": translator})
-order = {**{code: i for i, code in enumerate(ORIENTATION_LANGS)}, "ta": -1}  # the Tamil original first
-rows.sort(key=lambda r: order[r["lang"]])
+rows.sort(key=lambda r: syllabus_rank(r["lang"]))  # the order CICT asked for (3 Nov 2026), as the page shows them
 data_file.write_text("[\n" + ",\n".join("  " + json.dumps(r, ensure_ascii=False) for r in rows) + "\n]\n", encoding="utf-8")
 print(name, len(doc), "pages,", (folder / f"{name}.pdf").stat().st_size // 1024, "KB")

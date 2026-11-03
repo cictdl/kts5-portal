@@ -668,6 +668,7 @@ def test_templates_print_streams_through_the_filter():
                                          "qlang|langtag", "body_lang|langtag", "v.title_lang|langtag",
                                          "b.lang|langtag", "c|langtag", "p.shown.lang|langtag", "v.lang|langtag",
                                          "p.quote_lang|langtag",   # the posts on social media on the news page (1.2.141)
+                                         "yours|langtag",   # the link to the visitor's own study book (1.2.143)
                                          "lang|langtag"}  # the video guide on the institution sign-in (1.2.128)
 
 
@@ -1090,7 +1091,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.142" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.143" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

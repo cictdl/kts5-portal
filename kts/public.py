@@ -1253,8 +1253,10 @@ def news():
 # Thirukkural" in Tamil and in translation, static/syllabus/KTS5-Thirukkural-Payilvom-<lang>.pdf, as data/syllabus.json lists
 # them (tools/add_syllabus.py adds a language)
 def syllabus_books():
-    """The books of data/syllabus.json whose PDF is there: [{lang, pages, translator, file, thumb, kb}], in its order."""
-    rows = json.loads((current_app.config["DATA_DIR"] / "syllabus.json").read_text(encoding="utf-8"))
+    """The books of data/syllabus.json whose PDF is there: [{lang, pages, translator, file, thumb, kb}], in the order CICT
+    asked for (kural.syllabus_rank, 3 Nov 2026): Hindi, Sanskrit, Gujarati, Bengali, Kannada, Telugu, the others, English, Tamil."""
+    rows = sorted(json.loads((current_app.config["DATA_DIR"] / "syllabus.json").read_text(encoding="utf-8")),
+                  key=lambda r: K.syllabus_rank(r["lang"]))
     folder = Path(current_app.static_folder) / "syllabus"
     books = []
     for r in rows:
@@ -1268,12 +1270,12 @@ def syllabus_books():
 
 @bp.route("/syllabus")
 def syllabus():
-    """The syllabus of the institution-level assessment: the study book in each language it has, the visitor's first."""
+    """The syllabus of the institution-level assessment: the study book in each language it has, in the order CICT asked for
+    (3 Nov 2026) for every visitor; the visitor's own book framed, with a link to it at the top."""
     books = syllabus_books()
     lang = get_lang()
-    mine = [b for b in books if b["lang"] == lang]
-    return render_template("public/syllabus.html", books=mine + [b for b in books if b["lang"] != lang], mine=bool(mine),
-                           settings=all_settings())
+    mine = any(b["lang"] == lang for b in books)
+    return render_template("public/syllabus.html", books=books, mine=mine, yours=lang if mine else None, settings=all_settings())
 
 
 # the posters and charts (1.2.67): four A3 PDFs in each language of the portal, static/posters/KTS5-poster-<n>-<lang>.pdf,
