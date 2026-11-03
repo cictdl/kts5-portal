@@ -25,8 +25,9 @@ def _page(client, path):
 def test_each_book_has_its_pdf_and_cover():
     from kts import kural as K
     # Tamil, English, Hindi, Kannada and Marathi in 1.2.98; Bengali, Maithili and Odia in 1.2.114 (with the new editions of
-    # the Hindi and the Marathi book); Gujarati, Santali and Telugu in 1.2.120; in the order CICT asked for since 1.2.143
-    assert [b["lang"] for b in BOOKS] == ["hi", "gu", "bn", "kn", "te", "mai", "mr", "or", "sat", "en", "ta"]
+    # the Hindi and the Marathi book); Gujarati, Santali and Telugu in 1.2.120; in the order CICT asked for since 1.2.143;
+    # Assamese, Konkani, Malayalam, Manipuri, Nepali, Sindhi and Urdu in 1.2.144
+    assert [b["lang"] for b in BOOKS] == ["hi", "gu", "bn", "kn", "te", "as", "kok", "mai", "ml", "mni", "mr", "ne", "or", "sat", "sd", "ur", "en", "ta"]
     for b in BOOKS:
         assert b["lang"] in K.ORIENTATION_LANGS and b["pages"] > 40
         name = f"KTS5-Thirukkural-Payilvom-{b['lang']}"
@@ -117,3 +118,34 @@ def test_the_books_added_on_30_october():
     for lang in ("gu", "sat", "te"):
         page = _page(client, f"/syllabus?lang={lang}")
         assert page.index(f"KTS5-Thirukkural-Payilvom-{lang}.pdf") < page.index("KTS5-Thirukkural-Payilvom-ta.pdf"), lang
+
+
+def test_the_books_added_on_3_november():
+    # CICT's Drive folder of 3 November 2026, "18 Languages - completed & updated" (1.2.144): seven new languages and a new
+    # edition of the Marathi book (its Chapter 5 introduction in Marathi instead of Tamil); every one read page by page - all
+    # 108 couplets of the Garland in each; the slips found went to CICT
+    import fitz
+    by_lang = {b["lang"]: b for b in BOOKS}
+    assert len(BOOKS) == 18
+    assert {k: (by_lang[k]["pages"], by_lang[k]["translator"]) for k in ("as", "kok", "ml", "mni", "ne", "sd", "ur", "mr")} == {
+        "as": (92, "Dr. B. Vijayakumar"), "kok": (82, "Shwetha Pai"), "ml": (85, "Dr. N. Manoharan"), "mni": (91, "Dr. Soibam Rebika Devi"),
+        "ne": (77, "Dr. Sunita dahal"), "sd": (78, "Dr. M. L. Nathani"), "ur": (82, "پروفیسر ڈاکٹر امان اللہ ایم بی"),
+        "mr": (71, "Mrs Padma Sridha")}
+    for lang, name in (("as", "(Assamese)"), ("kok", "(Konkani)"), ("ml", "(Malayalam)"), ("mni", "(Manipuri)"), ("ne", "(Nepali)"),
+                       ("sd", "(Sindhi)"), ("ur", "(URDU)"), ("mr", "(Marathi)")):
+        cover = fitz.open(ROOT / "static" / "syllabus" / f"KTS5-Thirukkural-Payilvom-{lang}.pdf")
+        assert name in cover[0].get_text() and "Translator" in cover[0].get_text(), lang
+    marathi = fitz.open(ROOT / "static" / "syllabus" / "KTS5-Thirukkural-Payilvom-mr.pdf")
+    assert marathi.metadata["creationDate"].startswith("D:20261103")
+    # the Konkani book is in Kannada script, as the portal names the language: Konkani (Kannada script)
+    client = make_app(ADMIN_PASSWORD=None).test_client()
+    konkani = _page(client, "/syllabus?lang=kok")
+    card = konkani[konkani.index('id="book-kok"'):]
+    card = card[:card.index('class="btn-row"')]
+    assert "Konkani (Kannada script)" in card and "Shwetha Pai" in card
+    assert 'style="border:2px solid var(--saffron)"' in konkani[konkani.index('id="book-kok"') - 60:konkani.index('id="book-kok"') + 120]
+    for lang in ("as", "ml", "mni", "ne", "sd", "ur"):
+        page = _page(client, f"/syllabus?lang={lang}")
+        assert f'<a href="#book-{lang}">' in page and f'href="/static/syllabus/KTS5-Thirukkural-Payilvom-{lang}.pdf" download' in page, lang
+    urdu = _page(client, "/syllabus?lang=ur")
+    assert "<bdi>پروفیسر ڈاکٹر امان اللہ ایم بی</bdi>" in urdu
