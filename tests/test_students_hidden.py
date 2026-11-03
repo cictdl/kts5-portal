@@ -1,0 +1,71 @@
+"""
+The students' registration hidden (version 1.2.147; the user: "hide any Student registration ... We try to select students from
+Institutions directly", "dont delete student registration only hide"): setting reg.public, '0' by default; every way into the
+students' registration and the application status, the dates of its window and every count of student delegates off the
+public pages; /register, /status and the candidate portal working; '1' shows it all again.
+
+    python -m pytest tests -q
+"""
+import json
+
+from conftest import make_app
+
+
+def _get(client, path):
+    r = client.get(path)
+    assert r.status_code == 200, path
+    return r.get_data(as_text=True)
+
+
+def _app(shown="0"):
+    from kts.db import set_setting
+    app = make_app(ADMIN_PASSWORD=None)
+    with app.app_context():
+        for key, value in (("hei.open", "1"), ("hei.end", "2099-12-31"), ("dashboard.public", "1"), ("stats.public", "1"), ("reg.public", shown)):
+            set_setting(key, value)
+    return app
+
+
+def test_the_setting():
+    from kts.admin import SETTING_GROUPS
+    from kts.db import DEFAULT_SETTINGS
+    assert DEFAULT_SETTINGS["reg.public"] == "0"
+    assert [k for k, _label, kind in dict(SETTING_GROUPS)["Site"] if k == "reg.public" and kind == "bool"] == ["reg.public"]
+
+
+def test_hidden_on_the_public_pages():
+    client = _app().test_client()
+    home = _get(client, "/?lang=en")
+    menu = home.split('id="primary-menu"')[1].split('class="has-sub"')[1].split("</ul></li>")[0]
+    assert menu.startswith('><a href="/institutions/register"') and "Student registration" not in menu
+    footer = home[home.index("<footer"):]
+    assert '<a href="/institutions/register">Register your institution</a>' in footer
+    for page in (home, _get(client, "/about?lang=en"), _get(client, "/programme?lang=en"), _get(client, "/schedule?lang=en"),
+                 _get(client, "/how-to-take-part?lang=en"), _get(client, "/contact?lang=en"), _get(client, "/stipend?lang=en"),
+                 _get(client, "/sitemap?lang=en")):
+        assert 'href="/register"' not in page and 'href="/status"' not in page
+        assert "Registration window" not in page and "Student registration" not in page
+    assert "Check application status" not in home and "Student delegates registered" not in home
+    xml = _get(client, "/sitemap.xml")
+    assert "8905/register</loc>" not in xml and "8905/status</loc>" not in xml and "8905/institutions/register</loc>" in xml
+    # the dashboard counts the institutions; the progress page has no ring, stage or line of the student delegates
+    dash = _get(client, "/dashboard?lang=en")
+    assert "Student delegates registered" not in dash and "Verified by the Nodal Officers" not in dash
+    assert '<h2 id="dash-grid-h">Institutions registered · To be selected</h2>' in dash
+    prog = _get(client, "/progress?lang=en")
+    assert "Student delegates registered" not in prog and 'data-k="unregistered"' not in prog and 'data-line="app"' not in prog
+    data = json.loads(_get(client, "/progress.json?lang=en"))
+    assert not [k for k in data["flat"] if "delegates" in k or "verified" in k or k.startswith("app_")] and "app" not in data["series"]
+    # nothing deleted: the pages themselves still answer
+    for path in ("/register?lang=en", "/status?lang=en", "/candidate/login?lang=en"):
+        assert client.get(path).status_code == 200, path
+
+
+def test_shown_again():
+    client = _app("1").test_client()
+    home = _get(client, "/?lang=en")
+    menu = home.split('id="primary-menu"')[1].split('class="has-sub"')[1].split("</ul></li>")[0]
+    assert menu.startswith('><a href="/register"') and '<a href="/register">Student registration</a>' in menu
+    assert 'href="/status"' in home and "Registration window" in home
+    assert "Student delegates registered" in _get(client, "/dashboard?lang=en") and "Student delegates registered" in _get(client, "/progress?lang=en")
+    assert "8905/register</loc>" in _get(client, "/sitemap.xml")

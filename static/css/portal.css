@@ -1068,3 +1068,6 @@ footer.site .bottom .wrap { display: flex; justify-content: space-between; gap: 
 .hero .home-banner { display: block; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow); background: #fff; }
 .hero .home-banner img { display: block; width: 100%; height: auto; }
 .hero .home-banner:hover, .hero .home-banner:focus-visible { border-color: var(--saffron); }
+/* the strip at the top (1.2.147): the link to the registration of institutions after its sentence */
+.banner .banner-go { color: var(--kumkum); font-weight: 700; text-decoration: underline; margin-inline-start: 6px; }
+.banner.launch .banner-go { color: #fff; }

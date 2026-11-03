@@ -250,6 +250,8 @@ def create_app(config_object=Config):
             "now_ist": utils.now_ist,
             # the registration of institutions: 'open', 'off' or 'ended' - "Apply now" at the top leads to it while open (1.2.145)
             "hei_window": lambda: heis.window(db.all_settings()),
+            # the students' registration shown on the public pages (1.2.147: hidden by default)
+            "students_public": lambda: db.get_setting("reg.public") == "1",
         }
 
     # ---- errors ---------------------------------------------------------

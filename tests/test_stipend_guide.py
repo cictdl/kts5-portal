@@ -49,7 +49,8 @@ def test_the_page_gives_the_steps_in_order():
     assert places == sorted(places)
     # the title of the form, as the student will find it, follows the step that names it
     assert page.index(_text("stip.s3")) < page.index("<b>" + _text("bank.title") + "</b>") < page.index(_text("stip.s4_t"))
-    assert 'href="/candidate/login"' in page and 'href="/merit-list"' in page and 'href="/status"' in page and 'href="/contact"' in page
+    assert 'href="/candidate/login"' in page and 'href="/merit-list"' in page and 'href="/contact"' in page
+    assert 'href="/status"' not in page   # the application status hidden with the students' registration (1.2.147)
     assert "₹10,000" in page
 
 

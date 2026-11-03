@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block title %}{{ t('pg.title') }}{% endblock %}
 {% block content %}
+{# while the students' registration is hidden (reg.public, 1.2.147): no ring, stage or line of the student delegates #}
+{% set sp = students_public() %}
 {# The progress of the institutions (1.2.138): an infographic of counts, never a name (kts/dashboard.py pipeline). The rings
    and the bars grow as the page comes into view and the figures refresh every minute from /progress.json (portal.js); every
    figure is written in the page already, for those without scripts and for the search engines. #}
@@ -13,7 +15,7 @@
 
   {# the four rings #}
   <div class="prog-rings">
-    {% for r in p.rings %}
+    {% for r in p.rings if sp or r.key not in ('delegates', 'verified') %}
     <div class="card prog-ring ring-{{ r.key }}">
       <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="52"/><circle class="arc" cx="60" cy="60" r="52" data-ring="{{ r.key }}" style="--share:{{ r.share }}"/>
         <text x="60" y="66" text-anchor="middle" class="pct" data-k="{{ r.key }}_pct">{{ r.pct }}%</text></svg>
@@ -28,7 +30,7 @@
   <section class="card prog-flow" aria-labelledby="prog-flow-h">
     <h2 id="prog-flow-h">{{ t('pg.flow_title') }}</h2>
     <ol class="prog-stages">
-      {% for s in p.stages %}
+      {% for s in p.stages if sp or s.key not in ('app_registered', 'verified') %}
       <li class="stage stage-{{ s.key }}">
         <div class="st-head"><span class="st-n" data-count="{{ s.n }}" data-k="st_{{ s.key }}">{{ '{:,}'.format(s.n) }}</span>
           <span class="st-lbl">{{ t({'registered': 'dash.inst_reg', 'participating': 'dash.inst_sel', 'testing': 'pg.r_testing', 'selected': 'pg.s_selected', 'app_registered': 'home.stat_apps', 'verified': 'dash.verified'}[s.key]) }}</span>
@@ -37,14 +39,14 @@
       </li>
       {% endfor %}
     </ol>
-    <p class="small muted prog-behind"><bdi data-k="behind" data-tpl="{{ t('pg.behind') }}">{{ t('pg.behind')|replace('{n}', p.counts.not_selected|string) }}</bdi> · <bdi data-k="unregistered" data-tpl="{{ t('pg.unregistered') }}">{{ t('pg.unregistered')|replace('{n}', p.counts.not_registered|string) }}</bdi></p>
+    <p class="small muted prog-behind"><bdi data-k="behind" data-tpl="{{ t('pg.behind') }}">{{ t('pg.behind')|replace('{n}', p.counts.not_selected|string) }}</bdi>{% if sp %} · <bdi data-k="unregistered" data-tpl="{{ t('pg.unregistered') }}">{{ t('pg.unregistered')|replace('{n}', p.counts.not_registered|string) }}</bdi>{% endif %}</p>
   </section>
 
   {# the last three weeks, day by day #}
   <section class="card prog-momentum" aria-labelledby="prog-mom-h">
     <h2 id="prog-mom-h">{{ t('pg.momentum_title') }}</h2>
     <div class="prog-sparks">
-      {% for key, label in (('inst', 'pg.m_inst'), ('app', 'pg.m_app')) %}{% set s = p.series[key] %}
+      {% for key, label in (('inst', 'pg.m_inst'), ('app', 'pg.m_app')) if sp or key != 'app' %}{% set s = p.series[key] %}
       <div class="spark spark-{{ key }}">
         <div class="spark-head"><b>{{ t(label) }}</b><span class="small muted"><bdi data-k="{{ key }}_today">{{ t('pg.today')|replace('{n}', s.today|string) }}</bdi> · <bdi data-k="{{ key }}_week">{{ t('pg.week')|replace('{n}', s.week|string) }}</bdi></span></div>
         <svg viewBox="0 0 300 64" preserveAspectRatio="none" aria-hidden="true"><polygon class="area" data-area="{{ key }}" points="{{ s.area }}"/><polyline class="line" data-line="{{ key }}" points="{{ s.points }}"/></svg>

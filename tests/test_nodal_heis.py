@@ -68,7 +68,8 @@ def test_the_list_has_a_page_of_its_own_with_the_allocation():
     # in the menu of Register, which is lit on the page; in the footer and the sitemap
     home = client.get("/?lang=en").get_data(as_text=True)
     assert '<a href="/nodal-institutions">Nodal Institutions</a>' in home.split('class="has-sub"')[1].split("</ul></li>")[0]
-    assert '<a href="/register" class="active" aria-haspopup="true">' in page
+    # Register opens the registration of institutions while the students' registration is hidden (1.2.147)
+    assert '<a href="/institutions/register" class="active" aria-haspopup="true">' in page
     assert "/nodal-institutions" in client.get("/sitemap?lang=en").get_data(as_text=True)
     # the partners page shows the same table
     partners = client.get("/partners?lang=en").get_data(as_text=True)

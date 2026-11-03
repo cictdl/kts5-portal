@@ -71,14 +71,17 @@ def test_the_help_page_gives_the_dates_of_the_settings(app):
 
 def test_the_sitemap_lists_the_public_pages(app):
     html = app.test_client().get("/sitemap?lang=en").get_data(as_text=True)
-    for href in ("/", "/register", "/examination", "/resources", "/quiz/", "/privacy-policy", "/help"):
+    for href in ("/", "/examination", "/resources", "/quiz/", "/privacy-policy", "/help"):
         assert f'<a href="{href}">' in html, href
+    # the students' registration and status hidden (1.2.147)
+    assert '<a href="/register">' not in html and '<a href="/status">' not in html
     assert "/console" not in html.split("<main")[1].split("</main>")[0]
     xml = app.test_client().get("/sitemap.xml")
     assert xml.status_code == 200 and xml.mimetype == "application/xml"
     body = xml.get_data(as_text=True)
     base = app.config["BASE_URL"].rstrip("/")
-    assert body.startswith('<?xml version="1.0" encoding="UTF-8"?>') and f"<loc>{base}/register</loc>" in body
+    assert body.startswith('<?xml version="1.0" encoding="UTF-8"?>') and f"<loc>{base}/institutions/register</loc>" in body
+    assert f"<loc>{base}/register</loc>" not in body and f"<loc>{base}/status</loc>" not in body   # hidden (1.2.147)
     assert body.count("<url>") == len(set(re.findall(r"<loc>(.*?)</loc>", body))) >= 25
 
 

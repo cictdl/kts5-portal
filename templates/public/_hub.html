@@ -50,7 +50,7 @@
     {% endif %}
     <p class="small hub-prep"><span class="muted">{{ t('hub.s_prep') }}</span>
       <a href="{{ url_for('public.kural108') }}">{{ t('k108.title') }}</a> · <a href="{{ url_for('practice.home') }}">{{ t('prac.title') }}</a> ·
-      {% if get_setting('companion.on') == '1' %}<a href="{{ url_for('public.companion') }}">{{ t('comp.title') }}</a> · {% endif %}<a href="{{ url_for('public.status') }}">{{ t('nav.status') }}</a></p>
+      {% if get_setting('companion.on') == '1' %}<a href="{{ url_for('public.companion') }}">{{ t('comp.title') }}</a> · {% endif %}{% if students_public() %}<a href="{{ url_for('public.status') }}">{{ t('nav.status') }}</a>{% endif %}</p>
   </section>
 
   {# the college or university #}

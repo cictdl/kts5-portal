@@ -64,8 +64,12 @@ def test_apply_now_leads_to_the_registration_of_institutions():
         page = _page(client, path)
         assert '<a class="btn saffron cta" href="/institutions/register">' in page, path
     assert '<a class="btn saffron cta" href="/institutions/register">Apply now</a>' in _page(client, "/?lang=en")
-    # while it is not open: the students' registration, as before
+    # while it is not open: nothing, the students' registration being hidden (1.2.147); shown, the students' registration
     for app in (_app(hei_open="0"), _app(hei_end="2020-01-01")):
+        assert 'class="btn saffron cta"' not in _page(app.test_client(), "/?lang=en")
+    with app.app_context():   # the students' registration shown (hidden by default since 1.2.147)
+        from kts.db import set_setting as _set
+        _set("reg.public", "1")
         assert '<a class="btn saffron cta" href="/register">Apply now</a>' in _page(app.test_client(), "/?lang=en")
 
 

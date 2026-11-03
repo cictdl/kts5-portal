@@ -752,6 +752,9 @@ DEFAULT_SETTINGS = {
     # hidden; '1' shows them again
     "home.hub": "0",
     "home.launch_video": "0",
+    # the students' registration on the public pages (1.2.147): hidden - the students are selected through the institutions;
+    # /register and /status work either way (for the links sent to the students selected); '1' shows it all again
+    "reg.public": "0",
     # the public dashboard KTS 5.0 by State/UT (1.2.122, kts/dashboard.py)
     "dashboard.public": "1",
     # its student delegates by name, once verified (1.2.124)

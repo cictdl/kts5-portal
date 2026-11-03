@@ -7,7 +7,7 @@
   <p class="dim" style="max-width:70ch">{{ t('schedule.intro') }}</p>
   {% if settings['schedule.tentative'] == '1' %}<p><span class="pill saffron">{{ t('schedule.tentative') }}</span></p>{% endif %}
   <div class="dates" style="margin-bottom:24px">
-    <div class="date-tile"><div class="lbl">{{ t('home.reg_window') }}</div><div class="val">{% if dates.reg_after_launch %}{{ t('reg.after_launch') }}{% else %}<bdi>{{ dates.reg_start|date }} – {{ dates.reg_end|date }}</bdi>{% endif %}</div></div>
+    {% if students_public() %}<div class="date-tile"><div class="lbl">{{ t('home.reg_window') }}</div><div class="val">{% if dates.reg_after_launch %}{{ t('reg.after_launch') }}{% else %}<bdi>{{ dates.reg_start|date }} – {{ dates.reg_end|date }}</bdi>{% endif %}</div></div>{% endif %}
     {# the revised D.O. letter (1.2.111): the assessment by each selected Participating Institution in a mode of its choice, the
        selected students after the verification, the academic orientation by its day #}
     <div class="date-tile"><div class="lbl">{{ t('home.exam_date') }}</div><div class="val">{{ dates.assess_to|date }}</div><div class="sub">{{ t('home.assess_sub') }}</div></div>

@@ -158,6 +158,9 @@ def test_register_leads_to_the_institutions():
     """Version 1.2.42: Register opens a short menu, and the registration pages offer the institutions."""
     from kts.db import set_setting
     app = _app()
+    with app.app_context():   # the students' registration shown (hidden by default since 1.2.147)
+        from kts.db import set_setting as _set
+        _set("reg.public", "1")
     client = app.test_client()
     page = client.get("/?lang=en").get_data(as_text=True)
     sub = page.split('id="primary-menu"')[1].split('class="has-sub"')[1].split("</ul></li>")[0]

@@ -34,9 +34,9 @@
       <a class="btn sm secondary" href="{{ url_for('public.institutions') }}">{{ t('nav.institutions') }}</a>
       <a class="btn sm secondary" href="{{ url_for('public.examination') }}">{{ t('nav.exam') }}</a>
       {% if settings['practice.on'] == '1' %}<a class="btn sm" href="{{ url_for('practice.home') }}">{{ t('prac.cta') }}</a>{% endif %}
-      <a class="btn sm secondary" href="{{ url_for('public.register') }}">{{ t('reg.title') }}</a>
+      {% if students_public() %}<a class="btn sm secondary" href="{{ url_for('public.register') }}">{{ t('reg.title') }}</a>{% endif %}
       <a class="btn sm secondary" href="{{ url_for('static', filename='KTS5-nomination-form.pdf') }}" download>{{ t('reg.nomination_download') }}</a>
-      <a class="btn sm secondary" href="{{ url_for('public.status') }}">{{ t('nav.status') }}</a>
+      {% if students_public() %}<a class="btn sm secondary" href="{{ url_for('public.status') }}">{{ t('nav.status') }}</a>{% endif %}
       <a class="btn sm ghost" href="{{ url_for('public.stipend_guide') }}">{{ t('stip.title') }}</a>
       <a class="btn sm ghost" href="{{ url_for('public.schedule') }}">{{ t('nav.schedule') }}</a>
       {% elif part == 'institutions' %}

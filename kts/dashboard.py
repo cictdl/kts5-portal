@@ -92,6 +92,8 @@ def figures():
         row = {"state": s, "to_select": allocation.get(s), **{f: counts[f].get(s, 0) for f in FIELDS}}
         row["grid"] = GRID.get(s)
         row["shade"] = shade(row["registered"], row["to_select"])
+        # the institutions registered against the number, for the squares while the students' registration is hidden (1.2.147)
+        row["inst_shade"] = shade(row["inst_reg"], row["to_select"])
         row["share"] = min(100, round(100 * row["registered"] / row["to_select"])) if row["to_select"] else None
         states.append(row)
     total = {f: sum(r[f] for r in states) for f in FIELDS}

@@ -14,6 +14,8 @@
     {% elif dates.reg_after_launch %}
       {# switched off with the postponed launch, before its last day: it opens after the launch (1.2.76) #}
       <h2>{{ t('reg.after_launch_note') }}</h2>
+      {# the registration of institutions, while open (1.2.147) #}
+      {% if hei_window() == 'open' %}<p style="margin:0 0 14px"><a class="btn saffron" href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a></p>{% endif %}
     {% else %}
       <h2>{{ t('reg.closed') }}</h2>
       {# the day it closed, only once it has passed: not while registration is switched off before it opened (1.2.69) #}

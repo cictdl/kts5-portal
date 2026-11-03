@@ -45,10 +45,12 @@ def test_the_three_parts_with_their_dates_and_links(site):
     assert "50 questions in 30 minutes" in page
     assert "<b>Verify the registered students by 05 Dec 2026</b>" in page
     assert not any(p in page for p in PLACEHOLDERS)
-    for href in ('href="/institutions"', 'href="/institutions/register"', 'href="/institution/login"', 'href="/register"',
-                 'href="/status"', 'href="/nodal-institutions"', 'href="/console/login"', 'href="/how-to-take-part/institutions"',
+    for href in ('href="/institutions"', 'href="/institutions/register"', 'href="/institution/login"',
+                 'href="/nodal-institutions"', 'href="/console/login"', 'href="/how-to-take-part/institutions"',
                  "KTS5-nomination-form.pdf"):
         assert href in page, href
+    # the students' registration and status hidden (1.2.147)
+    assert 'href="/register"' not in page and 'href="/status"' not in page
     assert 'href="#students"' in page and 'id="institutions"' in page and 'id="nodal"' in page
 
 

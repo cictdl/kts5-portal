@@ -73,6 +73,9 @@ def test_the_count_on_the_home_page_in_every_language():
     from kts.db import execute
     from kts.i18n import CATALOG
     app = make_app(ADMIN_PASSWORD=None)
+    with app.app_context():   # the students' registration shown (hidden by default since 1.2.147)
+        from kts.db import set_setting as _set
+        _set("reg.public", "1")
     students = add_candidates(app, 3)
     with app.app_context():
         execute("UPDATE applications SET status = 'withdrawn' WHERE app_no = ?", (students[2]["app_no"],))

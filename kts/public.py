@@ -248,7 +248,8 @@ def home():
     events = _timeline(settings)[0][:4]
     agencies = query("SELECT * FROM agencies WHERE active = 1 ORDER BY sort_order, name")
     stats = None
-    if settings.get("stats.public") == "1":
+    # the counts of the students' registration, while it is shown (reg.public, 1.2.147)
+    if settings.get("stats.public") == "1" and settings.get("reg.public") == "1":
         row = query("SELECT COUNT(*) AS n, COUNT(DISTINCT college_key) AS c, COUNT(DISTINCT state) AS s "
                     "FROM applications WHERE status != 'withdrawn'", one=True)
         stats = {"apps": row["n"], "colleges": row["c"], "states": row["s"]}
@@ -1134,7 +1135,7 @@ def search():
     if words or number:
         # the pages of the portal: their names in the language of the page and in English
         pages, seen = [], set()
-        for _heading, items in SITEMAP:
+        for _heading, items in _sitemap():
             for endpoint, args, label in items:
                 url = url_for(endpoint, **args)
                 if url in seen:
@@ -1447,7 +1448,13 @@ def progress_json():
     """The figures of /progress for its script, which asks every minute; the texts in the language of the visitor."""
     if get_setting("dashboard.public") != "1":
         abort(404)
-    return Response(json.dumps(D.pipeline_json(t), ensure_ascii=False), mimetype="application/json",
+    data = D.pipeline_json(t)
+    if get_setting("reg.public") != "1":   # the students' registration hidden (1.2.147)
+        hidden = ("delegates", "verified", "app_registered", "unregistered", "not_registered", "app_today", "app_week")
+        data["flat"] = {k: v for k, v in data["flat"].items() if not any(h in k for h in hidden)}
+        for part in ("shares", "widths", "series"):
+            data[part] = {k: v for k, v in data[part].items() if not any(h in k for h in hidden) and k != "app"}
+    return Response(json.dumps(data, ensure_ascii=False), mimetype="application/json",
                     headers={"Cache-Control": "no-store"})
 
 
@@ -1757,7 +1764,7 @@ def site_updated():
 
 def policy(page):
     if page == "sitemap":
-        groups = [(heading, [(url_for(ep, **args), label) for ep, args, label in links]) for heading, links in SITEMAP]
+        groups = [(heading, [(url_for(ep, **args), label) for ep, args, label in links]) for heading, links in _sitemap()]
         return render_template("public/sitemap.html", page=page, groups=groups, updated=site_updated())
     lang = get_lang()
     return render_template("public/policy.html", page=page, body_lang=lang if lang in POLICY_LANGS else "en",
@@ -1768,12 +1775,22 @@ for _page, _path in POLICY_PAGES.items():
     bp.add_url_rule(_path, "policy", policy, defaults={"page": _page})
 
 
+STUDENT_PAGES = ("public.register", "public.status")
+
+
+def _sitemap():
+    """SITEMAP without the students' registration and status while they are hidden (reg.public, 1.2.147)."""
+    if get_setting("reg.public") == "1":
+        return SITEMAP
+    return [(heading, [link for link in links if link[0] not in STUDENT_PAGES]) for heading, links in SITEMAP]
+
+
 @bp.route("/sitemap.xml")
 def sitemap_xml():
     """The public pages for search engines; each page carries all the languages (?lang=)."""
     base = current_app.config["BASE_URL"].rstrip("/")
     day = site_updated()
-    paths = [url_for(ep, **args) for _heading, links in SITEMAP for ep, args, _label in links]
+    paths = [url_for(ep, **args) for _heading, links in _sitemap() for ep, args, _label in links]
     paths.append(url_for("public.policy", page="sitemap"))
     if get_setting("join.on") == "1":   # the 31 State/UT pages (1.2.142)
         paths += [url_for("public.join_state", code=r["code"]) for r in DRIVE.table().values() if r["code"]]

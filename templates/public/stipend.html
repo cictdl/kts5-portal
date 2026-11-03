@@ -22,7 +22,7 @@
 
   {% call step(1, 'stip.s1_t') %}
       <p>{{ t('stip.s1') }}</p>
-      <p><a class="btn sm secondary" href="{{ url_for('public.merit') }}">{{ t('nav.merit') }}</a> <a class="btn sm secondary" href="{{ url_for('public.status') }}">{{ t('nav.status') }}</a></p>
+      <p><a class="btn sm secondary" href="{{ url_for('public.merit') }}">{{ t('nav.merit') }}</a>{% if students_public() %} <a class="btn sm secondary" href="{{ url_for('public.status') }}">{{ t('nav.status') }}</a>{% endif %}</p>
   {% endcall %}
   {% call step(2, 'stip.s2_t') %}
       <p>{{ t('stip.s2') }}</p>

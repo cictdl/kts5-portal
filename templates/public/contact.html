@@ -54,7 +54,7 @@
       <div class="card" style="margin-top:14px">
         <h3>{{ t('nav.status') }}</h3>
         <p class="small dim">{{ t('contact.check_first') }}</p>
-        <a class="btn sm secondary" href="{{ url_for('public.status') }}">{{ t('status.check') }}</a>
+        {% if students_public() %}<a class="btn sm secondary" href="{{ url_for('public.status') }}">{{ t('status.check') }}</a>{% endif %}
       </div>
     </div>
   </div>

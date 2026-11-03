@@ -11,7 +11,7 @@ from markupsafe import escape
 from test_launch import _app, _at, _clock
 
 AFTER = "Opens after the launch of the portal"
-NOTE = "Registration will open after the launch of the portal. The date is yet to be announced."
+NOTE = "Registration is now open for Participating Institutions."   # since 1.2.147 ("Registration will open after the launch of the portal. The date is yet to be announced." before)
 
 
 def _tile(page):
@@ -21,6 +21,9 @@ def _tile(page):
 
 def test_registration_opens_after_the_launch(monkeypatch):
     app = _app(**{"launch.on": "0"})
+    with app.app_context():   # the students' registration shown (hidden by default since 1.2.147)
+        from kts.db import set_setting as _set
+        _set("reg.public", "1")
     with app.app_context():
         from kts.db import set_setting
         set_setting("reg.open", "0")
@@ -51,6 +54,9 @@ def test_registration_opens_after_the_launch(monkeypatch):
 
 def test_the_dates_while_registration_is_open_or_after_the_launch(monkeypatch):
     app = _app(**{"launch.on": "0"})
+    with app.app_context():   # the students' registration shown (hidden by default since 1.2.147)
+        from kts.db import set_setting as _set
+        _set("reg.public", "1")
     _clock(monkeypatch, _at(23, 10))
     home = app.test_client().get("/?lang=en").get_data(as_text=True)
     tile = _tile(home)
