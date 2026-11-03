@@ -1,5 +1,5 @@
 """
-"KTS 5.0 in numbers" (version 1.2.129): the banner of figures on the home page, under the video guide: what the portal
+"KTS 5.0 in numbers" (version 1.2.129): the banner of figures on the home page, after "The journey so far" (1.2.146): what the portal
 holds (counted from its own files at each start) and the headline figures of CICT's Digital Archives (data/figures.json,
 tools/update_figures.py), each figure a link, the figures counting up as they come into view.
 
@@ -51,9 +51,11 @@ def test_the_banner_on_the_home_page():
     client = make_app(ADMIN_PASSWORD=None).test_client()
     page = _page(client, "/?lang=en")
     band = _band(page)
-    # under the hub (the video guide, above it until 1.2.144, left the home page), before the rest of the page
-    assert page.index('class="hub-section"') < page.index('<section class="numbers"') < page.index("launch-video") if "launch-video" in page \
-        else page.index('class="hub-section"') < page.index('<section class="numbers"')
+    # after "The journey so far" (KTS 1.0-4.0), before the participating agencies (1.2.146; under the hub before)
+    assert page.index('class="hero"') < page.index("<h2>The journey so far</h2>") < page.index('<section class="numbers"') \
+        < page.index("<h2>Participating agencies</h2>")
+    if "launch-video" in page:
+        assert page.index("launch-video") < page.index('<section class="numbers"')
     assert '<h2 class="num-h" id="numbers-h">KTS 5.0 in numbers</h2>' in band
     tiles = _tiles(band)
     labels = [t[2] for t in tiles]

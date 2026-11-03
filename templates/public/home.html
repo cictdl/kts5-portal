@@ -68,7 +68,7 @@
        open, else to itself #}
     <a class="home-banner no-print" href="{{ url_for('public.hei_register') if hei_open else url_for('static', filename=kts_banner.files[1]) }}"><img
        src="{{ url_for('static', filename=kts_banner.files[1]) }}" srcset="{{ url_for('static', filename=kts_banner.files[0]) }} 720w, {{ url_for('static', filename=kts_banner.files[1]) }} 1080w"
-       sizes="(max-width: 899px) 92vw, 470px" width="1080" height="1080" alt="{{ kts_banner.alt }}" lang="{{ kts_banner.lang|langtag }}"></a>
+       sizes="(max-width: 899px) 92vw, 470px" width="{{ kts_banner.size[0] }}" height="{{ kts_banner.size[1] }}" alt="{{ kts_banner.alt }}" lang="{{ kts_banner.lang|langtag }}"></a>
     <aside class="kural-card">
       {# the portrait beside the label, so that the couplet has the whole width of the card (1.2.58) #}
       <div class="kc-head"><div class="label">{{ t('home.kotd') }} · {{ now_ist()|date }}</div>
@@ -84,16 +84,13 @@
 
 {# "Find your next step" (1.2.140): a tab for each audience, rising over the foot of the hero (kts/finder.py) #}
 {% from "public/_hub.html" import hub_card with context %}
-<section class="hub-section" aria-labelledby="hub-title"><div class="wrap">{{ hub_card(hub) }}</div></section>
-
-{# KTS 5.0 in numbers (1.2.129): what the portal holds and the headline figures of CICT's Digital Archives, each a link #}
-{% from "public/_numbers.html" import numbers_band with context %}
-{{ numbers_band() }}
+{% if hub %}<section class="hub-section" aria-labelledby="hub-title"><div class="wrap">{{ hub_card(hub) }}</div></section>{% endif %}
 
 {# The launch video (1.2.69): once the KTS 5.0 web portal and registration are launched, two minutes on the programme and
    the portal. The poster opens the video in the browser's own player (the templates hold no media elements of their own). #}
 {% set lv = launch_view() %}
-{% if lv.at and lv.phase != 'before' %}
+{# hidden since 1.2.146 unless the setting home.launch_video is '1' #}
+{% if lv.at and lv.phase != 'before' and settings.get('home.launch_video') == '1' %}
 <section class="section launch-video" style="padding:28px 0 4px" aria-labelledby="launch-video-title">
   <div class="wrap">
     <h2 id="launch-video-title" style="margin:0 0 12px">{{ t('launch.title') }}</h2>
@@ -267,6 +264,11 @@
     </div>
   </div>
 </section>
+
+{# KTS 5.0 in numbers (1.2.129): what the portal holds and the headline figures of CICT's Digital Archives, each a link;
+   after "The journey so far" since 1.2.146 (under the hub before) #}
+{% from "public/_numbers.html" import numbers_band with context %}
+{{ numbers_band() }}
 
 <section class="section">
   <div class="wrap">

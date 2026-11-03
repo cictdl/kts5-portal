@@ -223,16 +223,19 @@ def _notice_filter(settings):
 
 
 # CICT's banner of KTS 5.0 on the home page, before the Kural of the day (1.2.145): in the visitor's language when CICT gives
-# one, else the Tamil one; the text of the banner, in its language, as its description
+# one, else the English one (1.2.146; the Tamil one before); the text of the banner, in its language, as its description; the
+# size of the 1080-px file
 HOME_BANNERS = {
-    "ta": {"files": ("img/banner/kts5-banner-ta-720.jpg", "img/banner/kts5-banner-ta-1080.jpg"), "lang": "ta",
+    "en": {"files": ("img/banner/kts5-banner-en-720.jpg", "img/banner/kts5-banner-en-1080.jpg"), "lang": "en", "size": (1080, 1146),
+           "alt": "Kashi Tamil Sangamam – Thirukkural Payilvom: to study Thirukkural, the classical Tamil text of enduring ethical, social and philosophical significance, in your language. 1000 internships for students of higher education, through 1000 Higher Educational Institutions (HEIs); each internship is of ₹10,000. Each selected HEI will select one student for internship as per schedule. Thirukkural is available in 22 Indian languages of the 8th Schedule and in English. For more details and registration by HEIs, visit kts.cict.in"},
+    "ta": {"files": ("img/banner/kts5-banner-ta-720.jpg", "img/banner/kts5-banner-ta-1080.jpg"), "lang": "ta", "size": (1080, 1080),
            "alt": "காசி தமிழ் சங்கமம் – திருக்குறள் பயில்வோம்: உயர்கல்வி மாணவர்களுக்கு 1000 பயிற்சி பணி வாய்ப்புகள், 1000 உயர்கல்வி நிறுவனங்கள் வாயிலாக; ஒவ்வொரு பயிற்சிப் பணிக்கும் ₹10,000 உதவித்தொகை. மேலும் விவரங்களுக்கும் உயர்கல்வி நிறுவனங்களின் பதிவுக்கும்: kts.cict.in"},
 }
 
 
 def home_banner(lang):
-    """The banner of the home page for a language: its own, else the Tamil one."""
-    return HOME_BANNERS.get(lang) or HOME_BANNERS["ta"]
+    """The banner of the home page for a language: its own, else the English one."""
+    return HOME_BANNERS.get(lang) or HOME_BANNERS["en"]
 
 
 @bp.route("/")
@@ -256,7 +259,8 @@ def home():
     seminars = cict_events()
     ev_years = (min(e["start"][:4] for e in seminars), max(e["start"][:4] for e in seminars)) if seminars else None
     return render_template("public/home.html", settings=settings, dates=_key_dates(settings), uz=home_uzbek(),
-                           hub=FINDER.hub(settings, lang),   # "Find your next step" (1.2.140)
+                           # "Find your next step" (1.2.140), while shown (home.hub, hidden since 1.2.146)
+                           hub=FINDER.hub(settings, lang) if settings.get("home.hub") == "1" else None,
                            kts_banner=home_banner(lang), hei_open=HEI.window(settings) == "open",   # the banner (1.2.145)
                            ev_total=len(seminars), ev_years=ev_years,
                            notices=notices, events=events, agencies=agencies, stats=stats,

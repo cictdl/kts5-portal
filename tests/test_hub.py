@@ -37,6 +37,7 @@ def _portal():
                                                     f"name:{name.lower()}|{state.lower()}", status, utcnow(), utcnow()))
         set_setting("hei.open", "1")
         set_setting("hei.public", "1")
+        set_setting("home.hub", "1")   # hidden on the home page by default since 1.2.146
         for key, value in (("hei.end", "2026-11-15"), ("hei.select_end", "2026-11-17"), ("camp.to", "2026-11-19"),
                            ("reg.end", "2026-11-20"), ("verify.end", "2026-12-05")):
             set_setting(key, value)
@@ -80,7 +81,7 @@ def test_the_hub_of_the_home_page(monkeypatch):
     app = _portal()
     _at(app, date(2026, 11, 3), monkeypatch)
     page = app.test_client().get("/?lang=en").get_data(as_text=True)
-    hub = page[page.index('<section class="hub-section"'):page.index('<section class="numbers"')]
+    hub = page[page.index('<section class="hub-section"'):page.index('<section class="section', page.index('<section class="hub-section"'))]
     assert page.index('class="hero"') < page.index('class="hub-section"') < page.index('<section class="numbers"')
     assert '<h2 id="hub-title">Find your next step</h2>' in hub and hub.count('role="tab"') == 3 and hub.count('role="tabpanel"') == 3
     assert '<button type="button" class="hub-tab" role="tab" id="hub-tab-student" aria-controls="hub-student" aria-selected="true"' in hub
@@ -110,7 +111,7 @@ def test_the_hub_after_the_registration_of_the_institutions(monkeypatch):
     app = _portal()
     _at(app, date(2026, 11, 18), monkeypatch)
     page = app.test_client().get("/?lang=en").get_data(as_text=True)
-    hub = page[page.index('<section class="hub-section"'):page.index('<section class="numbers"')]
+    hub = page[page.index('<section class="hub-section"'):page.index('<section class="section', page.index('<section class="hub-section"'))]
     # registration of institutions ended (by the clock of the window, hei.end): the panel of the Participating Institutions
     from kts import heis
     assert heis.window({"hei.open": "1", "hei.end": "2026-11-15"}) in ("ended", "open")

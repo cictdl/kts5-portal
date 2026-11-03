@@ -37,7 +37,8 @@ def _portal():
             execute("INSERT INTO institutions(ref, name, itype, state, district, inst_key, status, created_at, updated_at) VALUES(?,?,?,?,?,?,?,?,?)",
                     (f"KTS5-HEI-{n:05d}", name, "Government college", state, "District", f"name:{name.lower()}|{state.lower()}", status, utcnow(), utcnow()))
         for key, value in (("hei.open", "1"), ("hei.end", "2026-11-15"), ("hei.select_end", "2026-11-17"), ("camp.to", "2026-11-19"),
-                           ("reg.end", "2026-11-20"), ("verify.end", "2026-12-05"), ("join.on", "1")):
+                           ("reg.end", "2026-11-20"), ("verify.end", "2026-12-05"), ("join.on", "1"),
+                           ("home.hub", "1")):   # the hub, with its link to /join, hidden by default since 1.2.146
             set_setting(key, value)
     drive.clear()
     return app

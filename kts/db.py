@@ -748,6 +748,10 @@ DEFAULT_SETTINGS = {
     "site.visitors": "1",
     "quiz.max_players": "200",
     "stats.public": "1",
+    # the home page (1.2.146): "Find your next step" (the hub of 1.2.140) and the video of the launch of the portal (1.2.69),
+    # hidden; '1' shows them again
+    "home.hub": "0",
+    "home.launch_video": "0",
     # the public dashboard KTS 5.0 by State/UT (1.2.122, kts/dashboard.py)
     "dashboard.public": "1",
     # its student delegates by name, once verified (1.2.124)

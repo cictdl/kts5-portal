@@ -187,6 +187,9 @@ def test_the_postponement_switches_the_launch_off_once():
 
 def test_the_launch_video_on_the_home_page(monkeypatch):
     app = _app()
+    with app.app_context():   # hidden on the home page by default since 1.2.146: shown here to test it
+        from kts.db import set_setting
+        set_setting("home.launch_video", "1")
     _clock(monkeypatch, _at(22, 11, 30))
     assert "kts5-launch.mp4" not in app.test_client().get("/?lang=en").get_data(as_text=True)
     # from the hour: two minutes on the programme and the portal; the poster opens it in the browser's own player
