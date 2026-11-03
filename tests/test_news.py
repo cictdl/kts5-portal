@@ -48,7 +48,8 @@ def test_the_page_day_by_day():
     day22 = page[page.index("22 Oct 2026"):]
     assert "Kashi Tamil Sangamam 5.0 to be organised from Nov 28 to Dec 12, 2026" in day22
     assert "Union Minister for Education, Shri Pralhad Joshi, launches Registration Portal for KTS 5.0" in day22
-    assert "Read it in:" in day22 and day22.count('target="_blank" rel="noopener" lang=') == 11
+    # the 11 of PIB and, since 1.2.141, the English and Hindi of Akashvani News and of DD News
+    assert "Read it in:" in day22 and day22.count('target="_blank" rel="noopener" lang=') == 15
     assert '<a href="https://www.pib.gov.in/PressReleasePage.aspx?PRID=2326724" target="_blank" rel="noopener" lang="ta">தமிழ்</a>' in day22
     # in Tamil, the Tamil headline; in Telugu, which PIB did not publish, the English one
     tamil = _page(client, "/in-the-news?lang=ta")
@@ -83,13 +84,11 @@ def test_the_reports_of_the_web():
     # a news report is one version, in the language of its outlet, linked to the outlet's own page (1.2.100); DD News,
     # Dinamalar, Daily Thanthi and Akashvani News (1.2.101); Careers360, Akashvani News, DD India, Punjab Kesari (IANS),
     # ETV Bharat and Akashvani News again (1.2.112); Awaz-The Voice, REVOI, The New Indian Express, The Indian Express, DT Next,
-    # Education Post, Hindustan Times, Organiser, Jagran Josh and Hindu Tamil Thisai (1.2.127); the file in the order of the days and the hours
+    # Education Post, Hindustan Times, Organiser, Jagran Josh and Hindu Tamil Thisai (1.2.127); 23 more of 22-26 October and the
+    # Hindi of Akashvani News and DD News as versions in Hindi, on the same sites (1.2.141); the file in the order of the days and the hours
     reports = [n for n in NEWS if n["kind"] == "article"]
-    assert [n["source"] for n in reports] == ["Careers360", "Akashvani News", "DD News", "DD India", "Awaz-The Voice",
-                                              "Punjab Kesari", "REVOI", "ETV Bharat", "Dinamalar", "The New Indian Express",
-                                              "The Indian Express", "Daily Thanthi", "NDTV Education", "DT Next", "Education Post",
-                                              "Hindustan Times", "Organiser", "Jagran Josh", "Akashvani News", "Akashvani News", "Hindu Tamil Thisai"]
-    hosts = {"DD News": "https://ddnews.gov.in/en/", "Dinamalar": "https://www.dinamalar.com/",
+    assert [n["source"] for n in reports] == ["Dainik Bhaskar", "Akashvani News", "Akashvani News", "Bhaskar Hindi", "ThePrint", "Careers360", "Akashvani News", "DD News", "DD India", "ThePrint Hindi", "Awaz-The Voice", "Punjab Kesari", "REVOI", "EdexLive", "ETV Bharat", "Hindu Tamil Thisai", "Dinamalar", "Dinamalar", "The Hindu", "The New Indian Express", "Public TV", "Dinamalar TV", "Dainik Jagran", "The Indian Express", "Daily Thanthi", "Dinamani", "NDTV Education", "DT Next", "Hindu Tamil Thisai", "Education Post", "Hindustan Times", "News18", "Organiser", "CNBCTV18", "Jagran Josh", "Times Now Tamil", "Dinamalar Kalvimalar", "Eenadu", "Akashvani News", "Akashvani News", "Akashvani News", "Prabhat Khabar", "Amar Ujala", "Hindu Tamil Thisai"]
+    hosts = {"DD News": "https://ddnews.gov.in/", "Dinamalar": "https://www.dinamalar.com/",
              "Daily Thanthi": "https://www.dailythanthi.com/", "NDTV Education": "https://www.ndtv.com/",
              "Akashvani News": "https://newsonair.gov.in/", "Careers360": "https://news.careers360.com/",
              "DD India": "https://ddindia.co.in/", "Punjab Kesari": "https://english.punjabkesari.com/",
@@ -98,11 +97,20 @@ def test_the_reports_of_the_web():
              "Education Post": "https://educationpost.in/", "Organiser": "https://organiser.org/",
              "Hindu Tamil Thisai": "https://www.hindutamil.in/", "Hindustan Times": "https://www.hindustantimes.com/",
              "The Indian Express": "https://indianexpress.com/", "DT Next": "https://www.dtnext.in/",
-             "Jagran Josh": "https://www.jagranjosh.com/"}
+             "Jagran Josh": "https://www.jagranjosh.com/",
+             # 1.2.141
+             "Dainik Bhaskar": "https://www.bhaskar.com/", "Bhaskar Hindi": "https://www.bhaskarhindi.com/", "ThePrint": "https://theprint.in/",
+             "ThePrint Hindi": "https://hindi.theprint.in/", "EdexLive": "https://www.edexlive.com/", "The Hindu": "https://www.thehindu.com/",
+             "Public TV": "https://publictv.in/", "Dinamalar TV": "https://www.dinamalar.com/dinamalartv/", "Dainik Jagran": "https://www.jagran.com/",
+             "Dinamani": "https://www.dinamani.com/", "News18": "https://www.news18.com/", "CNBCTV18": "https://www.cnbctv18.com/",
+             "Times Now Tamil": "https://tamil.timesnownews.com/", "Dinamalar Kalvimalar": "https://www.dinamalar.com/news/kalvimalar-news-en/",
+             "Eenadu": "https://www.eenadu.net/", "Prabhat Khabar": "https://www.prabhatkhabar.com/", "Amar Ujala": "https://www.amarujala.com/"}
     for n in reports:
-        assert len(n["versions"]) == 1 and n["versions"][0]["url"].startswith(hosts[n["source"]])
-        assert "translate.goog" not in n["versions"][0]["url"] and n["versions"][0]["time"]
-        assert "?" not in n["versions"][0]["url"] and "fbclid" not in n["versions"][0]["url"]
+        assert len({v["lang"] for v in n["versions"]}) == len(n["versions"]) <= 2, n["key"]
+        for v in n["versions"]:
+            assert v["url"].startswith(hosts[n["source"]]) and "translate.goog" not in v["url"] and v["time"]
+            assert "?" not in v["url"] and "fbclid" not in v["url"]
+    assert [n["key"] for n in reports if len(n["versions"]) == 2] == ["air-2026-10-22-kts5-portal", "ddnews-2026-10-22-kts5", "air-2026-10-25-kts5"]
     assert [n["date"] for n in NEWS] == sorted(n["date"] for n in NEWS)
     assert len({n["key"] for n in NEWS}) == len(NEWS)
 
@@ -210,11 +218,11 @@ def test_the_news_added_on_27_october():
     page = _page(client, "/in-the-news?lang=en")
     assert page.index("25 Oct 2026") < page.index("24 Oct 2026") < page.index("23 Oct 2026") < page.index("22 Oct 2026")
     day24 = page[page.index("24 Oct 2026"):page.index("23 Oct 2026")]
-    assert day24.count('<div class="card news-article"') == 1 and "1:02 PM" in day24 and "newsonair.gov.in ↗" in day24
+    assert day24.count('<div class="card news-article"') == 3 and "1:02 PM" in day24 and "newsonair.gov.in ↗" in day24   # 3 since 1.2.141
     assert ('<a href="https://newsonair.gov.in/registration-opens-for-fifth-edition-of-kashi-tamil-sangamam/" target="_blank"'
             ' rel="noopener">Registration Opens for Fifth Edition of Kashi Tamil Sangamam</a>') in day24
     day22 = page[page.index("22 Oct 2026"):]
-    assert day22.count('<div class="card news-article"') == 10 and day22.count('<div class="card news-press"') == 1
+    assert day22.count('<div class="card news-article"') == 23 and day22.count('<div class="card news-press"') == 1   # 23 since 1.2.141
     marks = ["Press release", "Careers360", "4:10 PM", "DD News", "DD India", "Punjab Kesari", "ETV Bharat", "Dinamalar"]
     assert [day22.index(m) for m in marks] == sorted(day22.index(m) for m in marks)
     assert "<bdi>Soumi Roy</bdi> · 3:59 PM" in day22 and "<bdi>IANS</bdi> · 5:11 PM" in day22
@@ -233,7 +241,7 @@ def test_the_news_added_on_30_october():
     client = make_app(ADMIN_PASSWORD=None).test_client()
     page = _page(client, "/in-the-news?lang=en")
     assert page.index("30 Oct 2026") < page.index("25 Oct 2026")
-    day30 = page[page.index("30 Oct 2026"):page.index("25 Oct 2026")]
+    day30 = page[page.index("30 Oct 2026"):page.index("29 Oct 2026")]
     assert day30.count('<div class="card news-article"') == 1 and "hindutamil.in ↗" in day30
     assert ('<h3 style="margin:0;line-height:1.4" lang="ta" dir="auto"><a href="https://www.hindutamil.in/news/india/'
             'thirukkural-in-23-languages-at-kashi-tamil-sangamam-50-event"') in day30
@@ -254,3 +262,41 @@ def test_the_news_added_on_30_october():
     assert '<h3 style="margin:0;line-height:1.4" lang="hi" dir="auto"><a href="https://hindi.revoi.in/' in day22
     assert "<bdi>Express News Service</bdi> · 8:51 PM" in day22 and "newindianexpress.com ↗" in day22
 
+
+
+def test_the_news_added_on_3_november():
+    # 1.2.141: the posts of the official accounts on social media (the Ministry of Education, the Minister, PIB, CICT and Kashi
+    # Tamil Sangamam), one card per announcement with a button for each network, each at its hour among the reports of the day
+    # (the hour of a post on X read from its id); the Hindi reports of Akashvani News and DD News, in Hindi, as versions
+    social = [n for n in NEWS if n["kind"] == "social"]
+    assert len(social) == 21 and sum(len(n["links"]) for n in social) == 39
+    assert {n["source"] for n in social} == {"CICT", "Kashi Tamil Sangamam", "Ministry of Education", "Press Information Bureau",
+                                             "Shri Pralhad Joshi, Union Minister of Education", "PIB Chennai"}
+    assert all(n["gov"] for n in social if n["source"] not in ("CICT", "Kashi Tamil Sangamam")) and \
+        not any(n.get("gov") for n in social if n["source"] in ("CICT", "Kashi Tamil Sangamam"))
+    for n in social:
+        assert all(l["url"].startswith(("https://x.com/", "https://www.facebook.com/", "https://www.instagram.com/", "https://t.me/",
+                                        "https://www.threads.com/")) for l in n["links"])
+        assert len(n["quote"]) <= 182 and n["versions"][0]["url"] == n["links"][0]["url"]
+    client = make_app(ADMIN_PASSWORD=None).test_client()
+    page = _page(client, "/in-the-news?lang=en")
+    day22 = page[page.index("22 Oct 2026"):page.index("15 Oct 2026")]
+    at = day22.index("The Ministry of Education: the Union Minister of Education launches the registration portal")
+    moe = day22[day22.rindex('<div class="card news-social"', 0, at):][:1600]
+    assert '<span class="pill saffron">Ministry of Education</span> <span lang="en" dir="ltr">@EduMinOfIndia</span> · 3:24 PM' in moe
+    assert '<a class="btn sm secondary" lang="en" dir="ltr" title="@EduMinOfIndia" href="https://x.com/EduMinOfIndia/status/2113207438438744542"' in moe
+    assert 'rel="noopener">X <span aria-hidden="true">↗</span></a>' in moe and "“Union Education Minister, Shri @JoshiPralhad launches registration portal" in moe
+    # in the order of the hours: the Minister at 12:26 PM, PIB's release at 2:24 PM, PIB India at 3:04 PM, the Ministry at 3:24 PM
+    marks = ["@JoshiPralhad</span> · 12:26 PM", "Press release", "@PIB_India</span> · 3:04 PM", "@EduMinOfIndia</span> · 3:24 PM",
+             "@EduMinOfIndia</span> · 6:45 PM", "@PIBChennai</span> · 7:08 PM"]
+    assert [day22.index(m) for m in marks] == sorted(day22.index(m) for m in marks)
+    # a card with five networks
+    nov2 = page[page.index("2 Nov 2026"):page.index("1 Nov 2026")]
+    assert all(f'>{site} <span aria-hidden="true">↗</span></a>' in nov2 for site in ("X", "Facebook", "Instagram", "Threads", "Telegram"))
+    assert "@cict_chennai" in nov2 and "@Classicaltamil" in nov2
+    assert '<p class="reel-quote" style="margin:6px 0 0" lang="ta" dir="auto">“5-வது காசி தமிழ்ச் சங்கமம் (KTS 5.0)' in day22
+    assert "platform.twitter.com" not in page and "connect.facebook.net" not in page and "<iframe" not in page
+    # in Hindi, the Hindi headline of Akashvani News and of DD News
+    hindi = _page(client, "/in-the-news?lang=hi")
+    assert "शिक्षा मंत्री प्रल्हाद जोशी ने काशी तमिल संगमम् के पांचवें संस्करण के लिए पंजीकरण पोर्टल का शुभारंभ किया" in hindi
+    assert "काशी तमिल संगमम 5.0 का रजिस्ट्रेशन पोर्टल लॉन्च, 28 नवंबर से 12 दिसंबर तक होगा आयोजन" in hindi

@@ -35,9 +35,12 @@ def test_the_list_of_lectures():
         ("mai", 1, "jgsx1xO1DrA"), ("mai", 2, "-m-eQ_hFbz0"), ("doi", 1, "8gsv4Nvd-wM"), ("doi", 2, "LytuiBhl4J0"),
         ("gu", 1, "8pvsooC75C0"), ("gu", 2, "6WkyzSJ34yo"), ("pa", 1, "nPpVYeKzBP4"), ("pa", 2, "htxlKleIIkM"),
         ("sat", 1, "j7thl1widis"), ("sat", 2, "vT6SUoS3SbA"), ("or", 1, "351WmVjnBWk"), ("or", 2, "-xYX5_HNsk4"),
-        ("sd", 1, "kf5bDo1KQi8")]
+        ("sd", 1, "kf5bDo1KQi8"),
+        # 3 November (1.2.141)
+        ("sd", 2, "YSMh6xfSabs")]
     # by 1 November (1.2.134): Maithili, Dogri, Gujarati, Punjabi, Santali and Odia 1 and 2, Sindhi 1 = 41 videos, 21 languages
-    assert len({r["youtube"] for r in LECTURES}) == 41 and len({r["lang"] for r in LECTURES}) == 21
+    # and Sindhi 2 by 3 November (1.2.141) = 42 videos
+    assert len({r["youtube"] for r in LECTURES}) == 42 and len({r["lang"] for r in LECTURES}) == 21
     # the earlier addresses, removed from the channel, are gone from the page
     old = {"GF6HH7H9zlk", "2w6mgosRYAE", "Z3fGrbHLFr8", "tL9j8Dz7LLw", "FP8bmjuvpuk", "ptuQ7RaWf34", "q-8j2uP_lAA", "HUH2ZriU-0A",
            "U6hypuFpDRA", "BRczoN6wNa0", "A8qPl1T916Y", "_BSi16KkrXw", "g9qHDwL2i04", "oLDi_Yn7MU0"}

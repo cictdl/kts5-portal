@@ -58,6 +58,61 @@
     ]
   },
   {
+    "key": "bhaskar-2026-10-22-kts5",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "Dainik Bhaskar",
+    "versions": [
+      {
+        "lang": "hi",
+        "title": "काशी तमिल संगमम का पांचवां संस्करण 28 नवंबर से होगा: बीएचयू में तैयारियां शुरू, आईआईटी मद्रास करेगा मेजबानी",
+        "time": "11:34 AM",
+        "url": "https://www.bhaskar.com/g/local/uttar-pradesh/varanasi/news/kashi-tamil-sangamam-varanasi-culture-art-south-north-india-event-139451474.html"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-10-22-01",
+    "date": "2026-10-22",
+    "kind": "social",
+    "source": "Shri Pralhad Joshi, Union Minister of Education",
+    "gov": true,
+    "title": "The Union Minister of Education launches the portal of KTS 5.0",
+    "quote": "Today, launched the portal for Kashi Tamil Sangamam 5.0",
+    "quote_lang": "en",
+    "links": [
+      {
+        "site": "X",
+        "account": "JoshiPralhad",
+        "date": "2026-10-22",
+        "kind": "photos",
+        "url": "https://x.com/JoshiPralhad/status/2113162620102660586"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "The Union Minister of Education launches the portal of KTS 5.0",
+        "url": "https://x.com/JoshiPralhad/status/2113162620102660586",
+        "time": "12:26 PM"
+      }
+    ]
+  },
+  {
+    "key": "air-hi-2026-10-22-kts5-1341",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "Akashvani News",
+    "versions": [
+      {
+        "lang": "hi",
+        "title": "इस वर्ष 28 नवंबर को आयोजित किया जाएगा काशी तमिल संगमम का पांचवां संस्करण",
+        "time": "1:41 PM",
+        "url": "https://newsonair.gov.in/hi/the-fifth-edition-of-kashi-tamil-sangamam-will-be-held-on-november-28-this-year/"
+      }
+    ]
+  },
+  {
     "key": "pib-2026-10-22-kts5-portal",
     "date": "2026-10-22",
     "kind": "press",
@@ -165,6 +220,136 @@
     ]
   },
   {
+    "key": "air-hi-2026-10-22-kts5-1431",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "Akashvani News",
+    "versions": [
+      {
+        "lang": "hi",
+        "title": "शिक्षा मंत्री प्रल्हाद जोशी ने काशी तमिल संगमम के पांचवें संस्करण के लिए पोर्टल का शुभारंभ किया",
+        "time": "2:31 PM",
+        "url": "https://newsonair.gov.in/hi/education-minister-pralhad-joshi-launched-the-portal-for-the-fifth-edition-of-kashi-tamil-sangamam/"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-10-22-08",
+    "date": "2026-10-22",
+    "kind": "social",
+    "source": "Kashi Tamil Sangamam",
+    "title": "Kashi Tamil Sangamam 5.0 returns to the wisdom of the Thirukkural: registration is open",
+    "quote": "This year, we return to the wisdom of the Thirukkural - learning not just to know, but to live what we learn.",
+    "quote_lang": "en",
+    "links": [
+      {
+        "site": "X",
+        "account": "KTSangamam",
+        "date": "2026-10-22",
+        "kind": "video",
+        "url": "https://x.com/KTSangamam/status/2113197888495104508"
+      },
+      {
+        "site": "Instagram",
+        "account": "ktsangamam",
+        "date": "2026-10-22",
+        "kind": "reel",
+        "url": "https://www.instagram.com/reel/DeyjoNHgdZl/"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "Kashi Tamil Sangamam 5.0 returns to the wisdom of the Thirukkural: registration is open",
+        "url": "https://x.com/KTSangamam/status/2113197888495104508",
+        "time": "2:46 PM"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-10-22-06",
+    "date": "2026-10-22",
+    "kind": "social",
+    "source": "Press Information Bureau",
+    "gov": true,
+    "title": "PIB: the Union Minister of Education launches the registration portal for the fifth Kashi Tamil Sangamam",
+    "quote": "today launched the registration portal for the fifth edition of #KashiTamilSangamam (#KTS5.0)",
+    "quote_lang": "en",
+    "links": [
+      {
+        "site": "X",
+        "account": "PIB_India",
+        "date": "2026-10-22",
+        "kind": "post",
+        "url": "https://x.com/PIB_India/status/2113202434340442528"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "PIB: the Union Minister of Education launches the registration portal for the fifth Kashi Tamil Sangamam",
+        "url": "https://x.com/PIB_India/status/2113202434340442528",
+        "time": "3:04 PM"
+      }
+    ]
+  },
+  {
+    "key": "bhaskarhindi-2026-10-22-kts5",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "Bhaskar Hindi",
+    "versions": [
+      {
+        "lang": "hi",
+        "title": "काशी तमिल संगमम 5.0, तमिलनाडु और काशी की सांस्कृतिक विरासत का संगम",
+        "time": "3:15 PM",
+        "url": "https://www.bhaskarhindi.com/other/kashi-tamil-sangamam-5-0-tamilnadu-aur-kashi-ki-sanskritik-virasat-ka-sangam-1380369"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-10-22-02",
+    "date": "2026-10-22",
+    "kind": "social",
+    "source": "Ministry of Education",
+    "gov": true,
+    "title": "The Ministry of Education: the Union Minister of Education launches the registration portal of KTS 5.0",
+    "quote": "Union Education Minister, Shri @JoshiPralhad launches registration portal for Kashi Tamil Sangamam 5.0",
+    "quote_lang": "en",
+    "links": [
+      {
+        "site": "X",
+        "account": "EduMinOfIndia",
+        "date": "2026-10-22",
+        "kind": "photos",
+        "url": "https://x.com/EduMinOfIndia/status/2113207438438744542"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "The Ministry of Education: the Union Minister of Education launches the registration portal of KTS 5.0",
+        "url": "https://x.com/EduMinOfIndia/status/2113207438438744542",
+        "time": "3:24 PM"
+      }
+    ]
+  },
+  {
+    "key": "theprint-2026-10-22-kts5",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "ThePrint",
+    "versions": [
+      {
+        "lang": "en",
+        "byline": "PTI",
+        "title": "Kashi Tamil Sangamam’s fifth edition to be held from Nov 28-Dec 12: Pralhad Joshi",
+        "time": "3:49 PM",
+        "url": "https://theprint.in/india/kashi-tamil-sangamams-fifth-edition-to-be-held-from-nov-28-dec-12-pralhad-joshi/3078708/"
+      }
+    ]
+  },
+  {
     "key": "careers360-2026-10-22-kts5",
     "date": "2026-10-22",
     "kind": "article",
@@ -190,6 +375,12 @@
         "title": "Education Minister Pralhad Joshi launches registration portal for fifth Kashi Tamil Sangamam",
         "time": "4:10 PM",
         "url": "https://newsonair.gov.in/education-minister-pralhad-joshi-launches-registration-portal-for-fifth-kashi-tamil-sangamam/"
+      },
+      {
+        "lang": "hi",
+        "title": "शिक्षा मंत्री प्रल्हाद जोशी ने काशी तमिल संगमम् के पांचवें संस्करण के लिए पंजीकरण पोर्टल का शुभारंभ किया",
+        "time": "4:44 PM",
+        "url": "https://newsonair.gov.in/hi/education-minister-pralhad-joshi-launched-the-registration-portal-for-the-fifth-edition-of-kashi-tamil-sangamam/"
       }
     ]
   },
@@ -204,6 +395,12 @@
         "title": "Kashi Tamil Sangamam 5.0 to Be Held from November 28 to December 12",
         "time": "4:14 PM",
         "url": "https://ddnews.gov.in/en/kashi-tamil-sangamam-5-0-to-be-held-from-november-28-to-december-12/"
+      },
+      {
+        "lang": "hi",
+        "title": "काशी तमिल संगमम 5.0 का रजिस्ट्रेशन पोर्टल लॉन्च, 28 नवंबर से 12 दिसंबर तक होगा आयोजन",
+        "time": "4:04 PM",
+        "url": "https://ddnews.gov.in/registration-portal-for-kashi-tamil-sangamam-5-0-launched-event-to-be-held-from-november-28-to-december-12/"
       }
     ]
   },
@@ -218,6 +415,60 @@
         "title": "Kashi Tamil Sangamam 5.0 to Be Held from November 28 to December 12",
         "time": "4:17 PM",
         "url": "https://ddindia.co.in/2026/10/kashi-tamil-sangamam-5-0-to-be-held-from-november-28-to-december-12/"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-10-22-09",
+    "date": "2026-10-22",
+    "kind": "social",
+    "source": "Kashi Tamil Sangamam",
+    "title": "The launch of Kashi Tamil Sangamam 5.0, graced by the Union Minister of Education",
+    "quote": "The launch, graced by Shri Prahlad Joshi ji, marks the beginning of a journey",
+    "quote_lang": "en",
+    "links": [
+      {
+        "site": "X",
+        "account": "KTSangamam",
+        "date": "2026-10-22",
+        "kind": "photos",
+        "url": "https://x.com/KTSangamam/status/2113222876350550103"
+      },
+      {
+        "site": "X",
+        "account": "KTSangamam",
+        "date": "2026-10-22",
+        "kind": "video",
+        "url": "https://x.com/KTSangamam/status/2113295232108552237"
+      },
+      {
+        "site": "X",
+        "account": "KTSangamam",
+        "date": "2026-10-22",
+        "kind": "post",
+        "url": "https://x.com/KTSangamam/status/2113210067055157493"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "The launch of Kashi Tamil Sangamam 5.0, graced by the Union Minister of Education",
+        "url": "https://x.com/KTSangamam/status/2113222876350550103",
+        "time": "4:26 PM"
+      }
+    ]
+  },
+  {
+    "key": "theprint-hi-2026-10-22-kts5",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "ThePrint Hindi",
+    "versions": [
+      {
+        "lang": "hi",
+        "title": "‘काशी तमिल संगमम’ का पांचवां संस्करण 28 नवंबर से 12 दिसंबर तक आयोजित होगा: प्रह्लाद जोशी",
+        "time": "4:35 PM",
+        "url": "https://hindi.theprint.in/india/the-fifth-edition-of-kashi-tamil-sangamam-will-be-held-from-november-28-to-december-12-prahlad-joshi/1047702/"
       }
     ]
   },
@@ -266,6 +517,21 @@
     ]
   },
   {
+    "key": "edexlive-2026-10-22-kts5",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "EdexLive",
+    "versions": [
+      {
+        "lang": "en",
+        "byline": "IANS",
+        "title": "Education Minister Pralhad Joshi launches Kashi Tamil Sangamam 5.0 portal",
+        "time": "5:40 PM",
+        "url": "https://www.edexlive.com/news/education-minister-pralhad-joshi-launches-kashi-tamil-sangamam-50-portal-2"
+      }
+    ]
+  },
+  {
     "key": "etvbharat-2026-10-22-kts5",
     "date": "2026-10-22",
     "kind": "article",
@@ -276,6 +542,141 @@
         "title": "நவ.28-இல் தொடங்கும் 'காசி தமிழ் சங்கமம் 5.0': சென்னை ஐஐடி போட்டியில் பங்கேற்க ஆன்லைனில் விண்ணப்பிக்கலாம்",
         "time": "6:15 PM",
         "url": "https://www.etvbharat.com/ta/state/madras-iit-kasi-tamil-sangamam-competion-online-application-open-tns26102203730"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-10-22-03",
+    "date": "2026-10-22",
+    "kind": "social",
+    "source": "Ministry of Education",
+    "gov": true,
+    "title": "The Ministry of Education: the highlights of the launch of KTS 5.0",
+    "quote": "Watch the highlights of the launch as Kashi Tamil Sangamam returns to celebrate the shared cultural heritage",
+    "quote_lang": "en",
+    "links": [
+      {
+        "site": "X",
+        "account": "EduMinOfIndia",
+        "date": "2026-10-22",
+        "kind": "video",
+        "url": "https://x.com/EduMinOfIndia/status/2113257937183613071"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "The Ministry of Education: the highlights of the launch of KTS 5.0",
+        "url": "https://x.com/EduMinOfIndia/status/2113257937183613071",
+        "time": "6:45 PM"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-10-22-04",
+    "date": "2026-10-22",
+    "kind": "social",
+    "source": "CICT",
+    "title": "CICT on the launch of the registration portal of KTS 5.0 by the Union Minister of Education",
+    "quote": "Honorable Union Minister Shri Pralhad Joshi launched the registration portal for Kashi Tamil Sangamam 5.0 on 22 October 2026.",
+    "quote_lang": "en",
+    "links": [
+      {
+        "site": "X",
+        "account": "CICTOfficial",
+        "date": "2026-10-22",
+        "kind": "post",
+        "url": "https://x.com/CICTOfficial/status/2113258005693440175"
+      },
+      {
+        "site": "Telegram",
+        "account": "Classicaltamil",
+        "date": "2026-10-22",
+        "kind": "post",
+        "url": "https://t.me/Classicaltamil/1865"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "CICT on the launch of the registration portal of KTS 5.0 by the Union Minister of Education",
+        "url": "https://x.com/CICTOfficial/status/2113258005693440175",
+        "time": "6:45 PM"
+      }
+    ]
+  },
+  {
+    "key": "hindutamil-2026-10-22-kts5",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "Hindu Tamil Thisai",
+    "versions": [
+      {
+        "lang": "ta",
+        "byline": "மோகன் கணபதி",
+        "title": "நவ.28 முதல் டிச.12 வரை காசி தமிழ் சங்கமம் 5.0 நிகழ்வு",
+        "time": "6:56 PM",
+        "url": "https://www.hindutamil.in/news/india/kashi-tamil-sangamam-50-to-be-organised-from-nov-28-to-dec-12-2026"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-10-22-10",
+    "date": "2026-10-22",
+    "kind": "social",
+    "source": "Kashi Tamil Sangamam",
+    "title": "Where Kashi and Tamil Nadu meet again: Kashi Tamil Sangamam 5.0, 28 November – 12 December 2026",
+    "quote": "At Kashi Tamil Sangamam 5.0, these civilisations meet once again through the wisdom of the Thirukkural",
+    "quote_lang": "en",
+    "links": [
+      {
+        "site": "X",
+        "account": "KTSangamam",
+        "date": "2026-10-22",
+        "kind": "post",
+        "url": "https://x.com/KTSangamam/status/2113262605196501405"
+      },
+      {
+        "site": "Instagram",
+        "account": "ktsangamam",
+        "date": "2026-10-22",
+        "kind": "post",
+        "url": "https://www.instagram.com/p/DezF_voAa8j/"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "Where Kashi and Tamil Nadu meet again: Kashi Tamil Sangamam 5.0, 28 November – 12 December 2026",
+        "url": "https://x.com/KTSangamam/status/2113262605196501405",
+        "time": "7:04 PM"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-10-22-07",
+    "date": "2026-10-22",
+    "kind": "social",
+    "source": "PIB Chennai",
+    "gov": true,
+    "title": "PIB Chennai: the fifth Kashi Tamil Sangamam from 28 November to 12 December 2026",
+    "quote": "5-வது காசி தமிழ்ச் சங்கமம் (KTS 5.0) 2026 நவம்பர் 28 முதல் டிசம்பர் 12 வரை வாரணாசி, பிரயாக்ராஜ், அயோத்தியில் நடைபெற உள்ளது.",
+    "quote_lang": "ta",
+    "links": [
+      {
+        "site": "X",
+        "account": "PIBChennai",
+        "date": "2026-10-22",
+        "kind": "post",
+        "url": "https://x.com/PIBChennai/status/2113263811151155492"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "PIB Chennai: the fifth Kashi Tamil Sangamam from 28 November to 12 December 2026",
+        "url": "https://x.com/PIBChennai/status/2113263811151155492",
+        "time": "7:08 PM"
       }
     ]
   },
@@ -294,6 +695,35 @@
     ]
   },
   {
+    "key": "dinamalar-2026-10-22-kts5-delhi",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "Dinamalar",
+    "versions": [
+      {
+        "lang": "ta",
+        "title": "காசி தமிழ் சங்கமம் நவ., 28ல் துவக்கம்",
+        "time": "8:11 PM",
+        "url": "https://www.dinamalar.com/news/india-tamil-news/kasi-tamil-sangamam-to-be-inaugurated-on-nov-28/4356465"
+      }
+    ]
+  },
+  {
+    "key": "thehindu-2026-10-22-kts5",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "The Hindu",
+    "versions": [
+      {
+        "lang": "en",
+        "byline": "The Hindu Bureau",
+        "title": "Kashi Tamil Sangamam’s fifth edition will be a tribute to Thirukkural: Education Minister",
+        "time": "8:13 PM",
+        "url": "https://www.thehindu.com/news/national/kashi-tamil-sangamams-fifth-edition-will-be-a-tribute-to-thirukkural-education-minister/article71611686.ece"
+      }
+    ]
+  },
+  {
     "key": "tnie-2026-10-22-kts5",
     "date": "2026-10-22",
     "kind": "article",
@@ -305,6 +735,74 @@
         "title": "Registration begins for Kashi Tamil Sangamam 5.0",
         "time": "8:51 PM",
         "url": "https://www.newindianexpress.com/india/2026/Oct/22/registration-begins-for-kashi-tamil-sangamam-50"
+      }
+    ]
+  },
+  {
+    "key": "publictv-2026-10-22-kts5",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "Public TV",
+    "versions": [
+      {
+        "lang": "kn",
+        "title": "ಕಾಶಿ- ತಮಿಳು ಸಂಗಮ 5.0 ನೋಂದಣಿ ಪೋರ್ಟಲ್ ಲೋಕಾರ್ಪಣೆ; ಜೋಶಿ ಉದ್ಘಾಟನೆ",
+        "time": "9:50 PM",
+        "url": "https://publictv.in/pralhad-joshi-inaugurated-kashi-tamil-sangam-5-0-registration-portal/"
+      }
+    ]
+  },
+  {
+    "key": "dinamalartv-2026-10-22-kts5",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "Dinamalar TV",
+    "versions": [
+      {
+        "lang": "ta",
+        "title": "காசி தமிழ் சங்கமம் 5.0 - கதாநாயகனான திருக்குறள் |Kasi Tamil Sangamam |Cultural Exchange Program",
+        "time": "10:33 PM",
+        "url": "https://www.dinamalar.com/dinamalartv/31/349362"
+      }
+    ]
+  },
+  {
+    "key": "jagran-2026-10-22-kts5",
+    "date": "2026-10-22",
+    "kind": "article",
+    "source": "Dainik Jagran",
+    "versions": [
+      {
+        "lang": "hi",
+        "byline": "Anshika Agarwal",
+        "title": "28 नवंबर से 12 दिसंबर तक होगा पांचवां काशी तमिल संगमम् : प्रल्हाद जोशी",
+        "time": "11:29 PM",
+        "url": "https://www.jagran.com/news/national-5th-kashi-tamil-sangamam-pralhad-joshi-announces-nov-28dec-12-40413437.html"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-10-22-05",
+    "date": "2026-10-22",
+    "kind": "social",
+    "source": "CICT",
+    "title": "CICT: the nationwide Students' Engagement Programme of KTS 5.0, through 1,000 higher educational institutions",
+    "quote": "As part of KTS 5.0, a nationwide Students’ Engagement Programme will be conducted across 1,000 higher education institutions",
+    "quote_lang": "ta+en",
+    "links": [
+      {
+        "site": "Telegram",
+        "account": "Classicaltamil",
+        "date": "2026-10-22",
+        "kind": "post",
+        "url": "https://t.me/Classicaltamil/1869"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "CICT: the nationwide Students' Engagement Programme of KTS 5.0, through 1,000 higher educational institutions",
+        "url": "https://t.me/Classicaltamil/1869"
       }
     ]
   },
@@ -334,6 +832,20 @@
         "title": "காசி தமிழ் சங்கமத்தின் 5-ம் ஆண்டு விழா - இணையதள முன்பதிவு தொடக்கம்",
         "time": "3:46 AM",
         "url": "https://www.dailythanthi.com/news/india/5th-anniversary-of-kashi-tamil-sangam-online-bookings-start"
+      }
+    ]
+  },
+  {
+    "key": "dinamani-2026-10-23-kts5",
+    "date": "2026-10-23",
+    "kind": "article",
+    "source": "Dinamani",
+    "versions": [
+      {
+        "lang": "ta",
+        "title": "5-ஆவது காசி தமிழ் சங்கமம் விழா: நவ. 28-இல் தொடக்கம்",
+        "time": "4:34 AM",
+        "url": "https://www.dinamani.com/india/2026/Oct/22/5th-kashi-tamil-sangamam-festival-starts-on-nov-28"
       }
     ]
   },
@@ -369,6 +881,21 @@
     ]
   },
   {
+    "key": "hindutamil-2026-10-23-kts5",
+    "date": "2026-10-23",
+    "kind": "article",
+    "source": "Hindu Tamil Thisai",
+    "versions": [
+      {
+        "lang": "ta",
+        "byline": "ஆர்.ஷபிமுன்னா",
+        "title": "நவம்பர் 28-ல் காசி தமிழ் சங்கமம் இணையதள முன்பதிவு தொடக்கம்",
+        "time": "8:12 AM",
+        "url": "https://www.hindutamil.in/news/india/kashi-tamil-sangamam-website-bookings-begin-on-november-28th"
+      }
+    ]
+  },
+  {
     "key": "educationpost-2026-10-23-kts5",
     "date": "2026-10-23",
     "kind": "article",
@@ -399,6 +926,21 @@
     ]
   },
   {
+    "key": "news18-2026-10-23-kts5",
+    "date": "2026-10-23",
+    "kind": "article",
+    "source": "News18",
+    "versions": [
+      {
+        "lang": "en",
+        "byline": "Sukanya Nandy",
+        "title": "Kashi Tamil Sangamam 5.0 Registration Begins: Students To Explore Tamil Literature, Indian Heritage",
+        "time": "10:34 AM",
+        "url": "https://www.news18.com/education-career/kashi-tamil-sangamam-5-0-registration-begins-students-to-explore-tamil-literature-indian-heritage-10393945.htm"
+      }
+    ]
+  },
+  {
     "key": "organiser-2026-10-23-kts5",
     "date": "2026-10-23",
     "kind": "article",
@@ -409,6 +951,20 @@
         "title": "Kashi Tamil Sangamam 2026 to promote Thirukkural among youth",
         "time": "11:00 AM",
         "url": "https://organiser.org/2026/10/23/419528/bharat/kashi-tamil-sangamam-5-0-to-celebrate-civilisational-bonds-between-tamil-nadu-and-kashi-from-november-28-to-december-12/"
+      }
+    ]
+  },
+  {
+    "key": "cnbctv18-2026-10-23-kts5",
+    "date": "2026-10-23",
+    "kind": "article",
+    "source": "CNBCTV18",
+    "versions": [
+      {
+        "lang": "en",
+        "title": "Kashi Tamil Sangamam 5.0: How to register, dates, theme and other details",
+        "time": "11:46 AM",
+        "url": "https://www.cnbctv18.com/india/kashi-tamil-sangamam-5-0-how-to-register-dates-theme-other-details-20017793.htm"
       }
     ]
   },
@@ -428,6 +984,108 @@
     ]
   },
   {
+    "key": "social-2026-10-23-11",
+    "date": "2026-10-23",
+    "kind": "social",
+    "source": "CICT",
+    "title": "KTS 5.0 in the newspapers, as CICT shared it",
+    "quote": "“திருக்குறள் பயில்வோம்” – நவம்பர் 28 முதல் காசி தமிழ் சங்கமம் 5.0 தொடக்கம்!",
+    "quote_lang": "ta",
+    "links": [
+      {
+        "site": "X",
+        "account": "CICTOfficial",
+        "date": "2026-10-23",
+        "kind": "post",
+        "url": "https://x.com/CICTOfficial/status/2113526206503305646"
+      },
+      {
+        "site": "Telegram",
+        "account": "Classicaltamil",
+        "date": "2026-10-23",
+        "kind": "post",
+        "url": "https://t.me/Classicaltamil/1875"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "KTS 5.0 in the newspapers, as CICT shared it",
+        "url": "https://x.com/CICTOfficial/status/2113526206503305646",
+        "time": "12:31 PM"
+      }
+    ]
+  },
+  {
+    "key": "timesnowtamil-2026-10-23-kts5",
+    "date": "2026-10-23",
+    "kind": "article",
+    "source": "Times Now Tamil",
+    "versions": [
+      {
+        "lang": "ta",
+        "byline": "Kannan V",
+        "title": "காசி தமிழ்ச் சங்கமம் 5.0 பதிவு தொடக்கம்.. நவம்பர் 13 கடைசி நாள்.. முழு விவரம் | Kashi Tamil Sangamam",
+        "time": "2:41 PM",
+        "url": "https://tamil.timesnownews.com/news/kashi-tamil-sangamam-5-registration-2026-last-date-november-13-article-156390440"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-10-23-12",
+    "date": "2026-10-23",
+    "kind": "social",
+    "source": "Kashi Tamil Sangamam",
+    "title": "The Thirukkural and its 1,330 couplets at the centre of Kashi Tamil Sangamam 5.0",
+    "quote": "The Thirukkural, with its 1,330 couplets on the values that shape our lives, takes centre stage at Kashi Tamil Sangamam 5.0.",
+    "quote_lang": "en",
+    "links": [
+      {
+        "site": "X",
+        "account": "KTSangamam",
+        "date": "2026-10-23",
+        "kind": "post",
+        "url": "https://x.com/KTSangamam/status/2113564119991513211"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "The Thirukkural and its 1,330 couplets at the centre of Kashi Tamil Sangamam 5.0",
+        "url": "https://x.com/KTSangamam/status/2113564119991513211",
+        "time": "3:02 PM"
+      }
+    ]
+  },
+  {
+    "key": "kalvimalar-2026-10-23-kts5",
+    "date": "2026-10-23",
+    "kind": "article",
+    "source": "Dinamalar Kalvimalar",
+    "versions": [
+      {
+        "lang": "en",
+        "title": "Kashi Tamil Sangamams fifth edition to be held from Nov 28-Dec 12: Pralhad Joshi",
+        "time": "6:30 PM",
+        "url": "https://www.dinamalar.com/news/kalvimalar-news-en/kashi-tamil-sangamam39s-fifth-edition-to-be-held-from-nov-28-dec-12-pralhad-joshi/62124"
+      }
+    ]
+  },
+  {
+    "key": "eenadu-2026-10-24-kts5",
+    "date": "2026-10-24",
+    "kind": "article",
+    "source": "Eenadu",
+    "versions": [
+      {
+        "lang": "te",
+        "title": "నవంబరు 28 నుంచి కాశీ తమిళ సంగమం 5.0",
+        "time": "5:31 AM",
+        "url": "https://www.eenadu.net/telugu-news/india/kashi-tamil-sangamam-from-november-28/0799/126192767"
+      }
+    ]
+  },
+  {
     "key": "air-2026-10-24-kts5-registration",
     "date": "2026-10-24",
     "kind": "article",
@@ -442,6 +1100,53 @@
     ]
   },
   {
+    "key": "air-hi-2026-10-24-kts5",
+    "date": "2026-10-24",
+    "kind": "article",
+    "source": "Akashvani News",
+    "versions": [
+      {
+        "lang": "hi",
+        "title": "काशी तमिल संगमम का पांचवां संस्करण 28 नवम्बर से 12 दिसंबर तक आयोजित किया जाएगा",
+        "time": "1:41 PM",
+        "url": "https://newsonair.gov.in/hi/the-fifth-edition-of-kashi-tamil-sangamam-will-be-held-from-november-28-to-december-12/"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-10-24-13",
+    "date": "2026-10-24",
+    "kind": "social",
+    "source": "CICT",
+    "title": "CICT: registration opens for the nationwide Students' Engagement Programme",
+    "quote": "राष्ट्रव्यापी छात्र सहभागिता कार्यक्रम के लिए पंजीकरण प्रारंभ!",
+    "quote_lang": "hi",
+    "links": [
+      {
+        "site": "X",
+        "account": "CICTOfficial",
+        "date": "2026-10-24",
+        "kind": "post",
+        "url": "https://x.com/CICTOfficial/status/2114014938264109442"
+      },
+      {
+        "site": "Telegram",
+        "account": "Classicaltamil",
+        "date": "2026-10-24",
+        "kind": "post",
+        "url": "https://t.me/Classicaltamil/1882"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "CICT: registration opens for the nationwide Students' Engagement Programme",
+        "url": "https://x.com/CICTOfficial/status/2114014938264109442",
+        "time": "8:53 PM"
+      }
+    ]
+  },
+  {
     "key": "air-2026-10-25-kts5",
     "date": "2026-10-25",
     "kind": "article",
@@ -452,6 +1157,131 @@
         "title": "5th edition of Kashi Tamil Sangamam to be held from 28th November to 12th December this year",
         "time": "8:55 AM",
         "url": "https://newsonair.gov.in/5th-edition-of-kashi-tamil-sangamam-to-be-held-from-28th-november-to-12th-december-this-year/"
+      },
+      {
+        "lang": "hi",
+        "title": "काशी तमिल संगमम का पांचवां संस्करण 28 नवंबर से 12 दिसंबर तक आयोजित किया जाएगा",
+        "time": "9:05 AM",
+        "url": "https://newsonair.gov.in/hi/the-fifth-edition-of-kashi-tamil-sangamam-will-be-held-from-november-28-to-december-12-2/"
+      }
+    ]
+  },
+  {
+    "key": "prabhatkhabar-2026-10-26-kts5",
+    "date": "2026-10-26",
+    "kind": "article",
+    "source": "Prabhat Khabar",
+    "versions": [
+      {
+        "lang": "hi",
+        "byline": "नटवर कुमार",
+        "title": "काशी तमिल संगमम में छात्रों को 10 हजार स्टाइपेंड पर इंटर्नशिप का मौका, जानें आवेदन की आखिरी तारीख",
+        "time": "9:50 AM",
+        "url": "https://www.prabhatkhabar.com/state/uttar-pradesh/up-news-kashi-tamil-sangamam-5-internship-10000-stipend-last-date"
+      }
+    ]
+  },
+  {
+    "key": "amarujala-2026-10-26-kts5",
+    "date": "2026-10-26",
+    "kind": "article",
+    "source": "Amar Ujala",
+    "versions": [
+      {
+        "lang": "hi",
+        "byline": "Pragati Chand",
+        "title": "वाराणसी: काशी तमिल संगमम में 10 हजार स्टाइपेंड पर इंटर्नशिप का मौका, 22 नवंबर तक करा सकते हैं पंजीकरण",
+        "time": "4:05 PM",
+        "url": "https://www.amarujala.com/uttar-pradesh/varanasi/opportunity-for-an-internship-with-stipend-of-10-000-at-kashi-tamil-sangamam-2026-10-26"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-10-27-14",
+    "date": "2026-10-27",
+    "kind": "social",
+    "source": "CICT",
+    "title": "CICT: one million views on X for its KTS 5.0 post",
+    "quote": "1 MILLION VIEWS ON X! – A MILESTONE FOR CICT",
+    "quote_lang": "en",
+    "links": [
+      {
+        "site": "Facebook",
+        "account": "chennaicict",
+        "date": "2026-10-27",
+        "kind": "post",
+        "url": "https://www.facebook.com/chennaicict/posts/pfbid0Rzs5GSXcJwRUeB5q9JDk5Yr34Cpsqqagx2zv9MKoamxL26VapYCeSegTBC4G2QXal"
+      },
+      {
+        "site": "Instagram",
+        "account": "cict_chennai",
+        "date": "2026-10-27",
+        "kind": "reel",
+        "url": "https://www.instagram.com/reel/De_hRflhvSH/"
+      },
+      {
+        "site": "Telegram",
+        "account": "Classicaltamil",
+        "date": "2026-10-27",
+        "kind": "post",
+        "url": "https://t.me/Classicaltamil/1896"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "CICT: one million views on X for its KTS 5.0 post",
+        "url": "https://www.facebook.com/chennaicict/posts/pfbid0Rzs5GSXcJwRUeB5q9JDk5Yr34Cpsqqagx2zv9MKoamxL26VapYCeSegTBC4G2QXal"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-10-28-15",
+    "date": "2026-10-28",
+    "kind": "social",
+    "source": "Kashi Tamil Sangamam",
+    "title": "Explore the bond of Kashi and Tamil Nadu through Kashi Tamil Sangamam 5.0",
+    "quote": "Explore this enduring bond through Kashi Tamil Sangamam 5.0 and its theme, “Thirukkural Payilvom.”",
+    "quote_lang": "en",
+    "links": [
+      {
+        "site": "Instagram",
+        "account": "ktsangamam",
+        "date": "2026-10-28",
+        "kind": "reel",
+        "url": "https://www.instagram.com/reel/DfCseaJAq8j/"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "Explore the bond of Kashi and Tamil Nadu through Kashi Tamil Sangamam 5.0",
+        "url": "https://www.instagram.com/reel/DfCseaJAq8j/"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-10-29-16",
+    "date": "2026-10-29",
+    "kind": "social",
+    "source": "Kashi Tamil Sangamam",
+    "title": "How to register for Kashi Tamil Sangamam 5.0, step by step",
+    "quote": "Here’s a step-by-step guide to help you register for the fifth edition",
+    "quote_lang": "en",
+    "links": [
+      {
+        "site": "Instagram",
+        "account": "ktsangamam",
+        "date": "2026-10-29",
+        "kind": "reel",
+        "url": "https://www.instagram.com/reel/DfFMpDwg5-S/"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "How to register for Kashi Tamil Sangamam 5.0, step by step",
+        "url": "https://www.instagram.com/reel/DfFMpDwg5-S/"
       }
     ]
   },
@@ -467,6 +1297,198 @@
         "title": "காசி தமிழ் சங்கமம் 5.0 நிகழ்வில் 23 மொழிகளில் திருக்குறள்: 1,000 கல்லூரி மாணவர்களுக்கு கற்றல் பயிற்சி",
         "time": "10:18 AM",
         "url": "https://www.hindutamil.in/news/india/thirukkural-in-23-languages-at-kashi-tamil-sangamam-50-event"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-10-30-17",
+    "date": "2026-10-30",
+    "kind": "social",
+    "source": "CICT",
+    "title": "CICT: the Thirukkural in 23 languages, a nationwide learning initiative under KTS 5.0",
+    "quote": "Thirukkural in 23 Languages – A Nationwide Learning Initiative under Kashi Tamil Sangamam 5.0!",
+    "quote_lang": "ta+en",
+    "links": [
+      {
+        "site": "Facebook",
+        "account": "chennaicict",
+        "date": "2026-10-30",
+        "kind": "post",
+        "url": "https://www.facebook.com/chennaicict/posts/pfbid02PsZicQXtkUhhoQNhHTYYPymEdZ6VRYNjuYwUG75dCJBheKrNwpUZ2ND8cJRD4jsyl"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "CICT: the Thirukkural in 23 languages, a nationwide learning initiative under KTS 5.0",
+        "url": "https://www.facebook.com/chennaicict/posts/pfbid02PsZicQXtkUhhoQNhHTYYPymEdZ6VRYNjuYwUG75dCJBheKrNwpUZ2ND8cJRD4jsyl"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-11-01-18",
+    "date": "2026-11-01",
+    "kind": "social",
+    "source": "CICT",
+    "title": "CICT: Dinamani on the learning of the Thirukkural in 23 languages by 1,000 students",
+    "quote": "“திருக்குறள் பயில்வோம்” – நவம்பர் 28 முதல் காசி தமிழ் சங்கமம் 5.0 தொடக்கம்!",
+    "quote_lang": "ta",
+    "links": [
+      {
+        "site": "X",
+        "account": "CICTOfficial",
+        "date": "2026-11-01",
+        "kind": "post",
+        "url": "https://x.com/CICTOfficial/status/2116741209708540386"
+      },
+      {
+        "site": "Facebook",
+        "account": "chennaicict",
+        "date": "2026-11-01",
+        "kind": "post",
+        "url": "https://www.facebook.com/chennaicict/posts/pfbid031tRhWqMBg1yDSbG5Ruc4p1jkdfxi3kjrSw8UBNXnh8onC3xVCwtomApGCEqTfk3Wl"
+      },
+      {
+        "site": "Telegram",
+        "account": "Classicaltamil",
+        "date": "2026-11-01",
+        "kind": "post",
+        "url": "https://t.me/Classicaltamil/1914"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "CICT: Dinamani on the learning of the Thirukkural in 23 languages by 1,000 students",
+        "url": "https://x.com/CICTOfficial/status/2116741209708540386",
+        "time": "9:26 AM"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-11-01-19",
+    "date": "2026-11-01",
+    "kind": "social",
+    "source": "Kashi Tamil Sangamam",
+    "title": "How to apply for Kashi Tamil Sangamam 5.0, step by step (in Tamil)",
+    "quote": "தெளிவாக மற்றும் சரியாக விண்ணப்பிக்க உதவும் இந்தக் காணொளியை கண்டு பயனடைந்திடுங்கள்.",
+    "quote_lang": "ta",
+    "links": [
+      {
+        "site": "Instagram",
+        "account": "ktsangamam",
+        "date": "2026-11-01",
+        "kind": "reel",
+        "url": "https://www.instagram.com/reel/DfL7iK6sVd1/"
+      },
+      {
+        "site": "X",
+        "account": "KTSangamam",
+        "date": "2026-11-01",
+        "kind": "video",
+        "url": "https://x.com/KTSangamam/status/2116760611401212164"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "How to apply for Kashi Tamil Sangamam 5.0, step by step (in Tamil)",
+        "url": "https://www.instagram.com/reel/DfL7iK6sVd1/",
+        "time": "10:43 AM"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-11-01-20",
+    "date": "2026-11-01",
+    "kind": "social",
+    "source": "Kashi Tamil Sangamam",
+    "title": "Be part of Kashi Tamil Sangamam 5.0 and discover the wisdom of the Thirukkural",
+    "quote": "Be part of Kashi Tamil Sangamam 5.0 and discover the timeless wisdom of the Thirukkural. Registrations are now open.",
+    "quote_lang": "en",
+    "links": [
+      {
+        "site": "X",
+        "account": "KTSangamam",
+        "date": "2026-11-01",
+        "kind": "video",
+        "url": "https://x.com/KTSangamam/status/2116902870775722083"
+      },
+      {
+        "site": "Instagram",
+        "account": "ktsangamam",
+        "date": "2026-11-01",
+        "kind": "reel",
+        "url": "https://www.instagram.com/reel/DfM8-AoB3pY/"
+      },
+      {
+        "site": "Facebook",
+        "account": "KashiTamilSangamam",
+        "date": "2026-11-01",
+        "kind": "reel",
+        "url": "https://www.facebook.com/reel/1052000454559114"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "Be part of Kashi Tamil Sangamam 5.0 and discover the wisdom of the Thirukkural",
+        "url": "https://x.com/KTSangamam/status/2116902870775722083",
+        "time": "8:09 PM"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-11-02-21",
+    "date": "2026-11-02",
+    "kind": "social",
+    "source": "CICT",
+    "title": "CICT: learn the Thirukkural in your language; 1,000 students of 1,000 institutions, ₹10,000 each",
+    "quote": "🎓 1,000 உயர்கல்வி நிறுவனங்கள் மூலம் 1,000 மாணவர்களுக்கு உள்ளகப் பயிற்சி வாய்ப்பு!",
+    "quote_lang": "ta+en",
+    "links": [
+      {
+        "site": "X",
+        "account": "CICTOfficial",
+        "date": "2026-11-02",
+        "kind": "post",
+        "url": "https://x.com/CICTOfficial/status/2117278450298110185"
+      },
+      {
+        "site": "Facebook",
+        "account": "chennaicict",
+        "date": "2026-11-02",
+        "kind": "post",
+        "url": "https://www.facebook.com/chennaicict/posts/pfbid02b3j7ZEtJdDSHUdh9PSjEgQhbwwgMSGZWH7wBFRKDAz16ooqqSnyck9zZFa3dfdFpl"
+      },
+      {
+        "site": "Instagram",
+        "account": "cict_chennai",
+        "date": "2026-11-02",
+        "kind": "post",
+        "url": "https://www.instagram.com/p/DfO6GP0mY_2/"
+      },
+      {
+        "site": "Threads",
+        "account": "cict_chennai",
+        "date": "2026-11-02",
+        "kind": "post",
+        "url": "https://www.threads.com/@cict_chennai/post/DfO6Q_FH1jd"
+      },
+      {
+        "site": "Telegram",
+        "account": "Classicaltamil",
+        "date": "2026-11-02",
+        "kind": "post",
+        "url": "https://t.me/Classicaltamil/1918"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "CICT: learn the Thirukkural in your language; 1,000 students of 1,000 institutions, ₹10,000 each",
+        "url": "https://x.com/CICTOfficial/status/2117278450298110185",
+        "time": "9:01 PM"
       }
     ]
   }

@@ -110,12 +110,14 @@ def test_the_photographs_of_the_launch():
     # photographs, carried in data/gallery/ and put in the gallery of every installation once (1.2.95)
     import json
     seeds = [s for s in json.loads((ROOT / "data" / "gallery.json").read_text(encoding="utf-8")) if s["key"].startswith("launch-")]
-    assert len(seeds) == 4 and {s["taken_on"] for s in seeds} == {"2026-10-22"}
+    # and two more (1.2.141): the second photograph of the PIB release and the fourth of the Ministry's post on X
+    assert len(seeds) == 6 and {s["taken_on"] for s in seeds} == {"2026-10-22"}
     assert {s["album"] for s in seeds} == {"Launch of the KTS 5.0 web portal and registration"}
     app = make_app(ADMIN_PASSWORD=None)
     client = app.test_client()
     page = client.get("/gallery?lang=en&album=Launch+of+the+KTS+5.0+web+portal+and+registration").get_data(as_text=True)
-    assert page.count('<figure class="photo">') == 4 and "4 photographs" in page and "22 Oct 2026" in page
+    assert page.count('<figure class="photo">') == 6 and "6 photographs" in page and "22 Oct 2026" in page
+    assert "(Photograph: PIB)" in page and "(Photograph: Ministry of Education)" in page
     assert "<bdi>Launch of the KTS 5.0 web portal and registration</bdi> <span" in page
     assert "Shri Pralhad Joshi, Hon&#39;ble Union Minister of Education, launches the KTS 5.0 web portal" in page
     rows = [r for r in _rows(app) if r["file_path"].startswith("gallery/kts5-launch-")]
@@ -149,7 +151,7 @@ def test_kts5_in_the_news():
         assert data[:3] == b"\xff\xd8\xff" and len(data) < 400_000 and b"Exif" not in data[:200]
     client = make_app(ADMIN_PASSWORD=None).test_client()
     page = client.get("/gallery?lang=en").get_data(as_text=True)
-    assert page.count('<figure class="photo">') == 9 and "9 photographs" in page
+    assert page.count('<figure class="photo">') == 11 and "11 photographs" in page   # 11 since 1.2.141
     assert page.index("<bdi>KTS 5.0 in the news</bdi>") < page.index("<bdi>Launch of the KTS 5.0 web portal and registration</bdi>")
     news = client.get("/gallery?lang=en&album=KTS+5.0+in+the+news").get_data(as_text=True)
     assert news.count('<figure class="photo">') == 5 and "Classical text Thirukkural to take centre stage" in news
