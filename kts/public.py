@@ -810,7 +810,48 @@ def institutions():
     nodal = {s: n["name"] for n in nodal_heis() for s in HEI.group_of(n["state"])}   # a paired Union Territory: its State's (1.2.135)
     return render_template("public/institutions.html", groups=groups, nodal=nodal, ref=ref, state_anchor=state_anchor,
                            total=sum(len(items) for _state, items in groups), window=HEI.window(settings),
-                           settings=settings, most=HEI.max_per_state())
+                           settings=settings, most=HEI.max_per_state(), pi=_institutions_at_a_glance(groups, ref))
+
+
+def _institutions_at_a_glance(groups, ref):
+    """
+    The Participating Institutions at a glance (1.2.149), over their list: the figures of the dashboard (kts/dashboard.py) -
+    the Participating Institutions against the number of Annexure-I, the institutions registered, the rows of Annexure-I and the
+    districts reached, the types of institution, the registrations day by day, and every row of Annexure-I as a bar.
+    """
+    fig = D.figures()
+    series = D.pipeline()
+    annex = [r for r in fig["states"] if r["to_select"]]
+    listed = {state for state, _items in groups}
+    accepted = [(state, h) for state, items in groups for h in items]
+    types = {}
+    for _state, h in accepted:
+        kind = h["itype"] or "Other"
+        types[kind] = types.get(kind, 0) + 1
+    total_types = sum(types.values()) or 1
+    ordered = sorted(types.items(), key=lambda kv: (-kv[1], kv[0]))
+    if len(ordered) > 8:   # eight colours: the seven commonest, then the rest together as "Other"
+        head = [kv for kv in ordered if kv[0] != "Other"][:7]
+        ordered = head + [("Other", total_types - sum(c for _k, c in head))]
+    type_rows = [{"n": ref["college_types"].index(k) + 1 if k in ref["college_types"] else 0, "name": k, "count": c,
+                  "pct": round(100 * c / total_types)} for k, c in ordered]
+    rows = []
+    for r in annex:
+        rows.append({"state": r["state"], "to_select": r["to_select"], "selected": r["inst_sel"], "registered": r["inst_reg"],
+                     "share": min(100, round(100 * r["inst_sel"] / r["to_select"])),
+                     "reg_share": min(100, round(100 * r["inst_reg"] / r["to_select"])),
+                     # a paired row (1.2.135): the list of its State, else of its Union Territory
+                     "anchor": next((state_anchor(s) for s in HEI.group_of(r["state"]) if s in listed), None),
+                     "code": DRIVE.code_of(r["state"])})
+    rows.sort(key=lambda r: (-r["selected"] / r["to_select"], -r["registered"] / r["to_select"], -r["to_select"]))
+    selected, to_select = fig["total"]["inst_sel"], fig["total"]["to_select"]
+    share = min(1, selected / to_select) if to_select else 0
+    inst = series["series"]["inst"]
+    return {"selected": selected, "registered": fig["total"]["inst_reg"], "to_select": to_select,
+            "share": round(share, 4), "pct": round(100 * share), "offset": round(326.73 * (1 - share), 2),
+            "rows_with": sum(1 for r in annex if r["inst_sel"]), "rows": len(annex),
+            "districts": len({(state, (h["district"] or "").strip().lower()) for state, h in accepted if (h["district"] or "").strip()}),
+            "types": type_rows, "spark": inst, "days": series["days"], "states": rows, "now": now_ist().strftime("%H:%M")}
 
 
 @bp.route("/institutions/register", methods=["GET", "POST"])

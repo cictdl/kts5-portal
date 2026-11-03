@@ -1391,5 +1391,7 @@
   "join.board_note": "Each row of Annexure-I, with the institutions registered against the number to be selected. Open a State/UT for its page, its link and its poster.",
   "join.page": "State/UT page",
   "join.done": "Colleges and universities near you can still register until {date}. Send them the page of {state}:",
-  "join.assess": "{testing} of {n} Participating Institutions of {state} have opened the online test; {selected} have selected their student."
+  "join.assess": "{testing} of {n} Participating Institutions of {state} have opened the online test; {selected} have selected their student.",
+  "pi.districts": "Districts reached",
+  "pi.states_title": "Each row of Annexure-I: the Participating Institutions selected and the institutions registered, against the number to be selected"
 }
