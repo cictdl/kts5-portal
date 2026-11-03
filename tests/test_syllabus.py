@@ -47,7 +47,7 @@ def test_the_page_offers_the_books_in_cicts_order():
     assert ranks[:6] == ["hi", "sa", "gu", "bn", "kn", "te"] and ranks[-2:] == ["en", "ta"] and len(ranks) == 23
     client = make_app(ADMIN_PASSWORD=None).test_client()
     page = _page(client, "/syllabus?lang=en")
-    assert "Syllabus for the institution-level assessment" in page and "Let&#39;s Learn Thirukkural" in page
+    assert "Study material for the institution-level assessment" in page and "Let&#39;s Learn Thirukkural" in page   # 1.2.148
     books = page[page.index('id="books"'):]
     assert books.count('class="card syl-book"') == len(BOOKS) and books.count("⬇ Download (PDF)") == len(BOOKS)
     shown = [b["lang"] for b in BOOKS]
@@ -83,7 +83,7 @@ def test_the_syllabus_is_reached_from_where_students_look():
     exam = _page(client, "/examination?lang=en")
     assert exam.count('href="/syllabus"') >= 2 and '<span lang="ta">தமிழ்</span>' in exam and '<span lang="mr">मराठी</span>' in exam
     assert 'href="/syllabus"' in _page(client, "/thirukkural-108?lang=en")
-    assert '<li><a href="/syllabus">Syllabus for the institution-level assessment</a></li>' in _page(client, "/about?lang=en")
+    assert '<li><a href="/syllabus">Study material for the institution-level assessment</a></li>' in _page(client, "/about?lang=en")
     assert 'href="/syllabus"' in _page(client, "/sitemap?lang=en")
     assert 'href="/syllabus"' in _page(client, "/resources?cat=study&lang=en")
     assert "/syllabus" in _page(client, "/search?lang=en&q=syllabus")
@@ -149,3 +149,43 @@ def test_the_books_added_on_3_november():
         assert f'<a href="#book-{lang}">' in page and f'href="/static/syllabus/KTS5-Thirukkural-Payilvom-{lang}.pdf" download' in page, lang
     urdu = _page(client, "/syllabus?lang=ur")
     assert "<bdi>پروفیسر ڈاکٹر امان اللہ ایم بی</bdi>" in urdu
+
+
+def test_study_material_not_syllabus():
+    # 3 Nov 2026 (1.2.148), the user: "Change Syllabus for the institution-level assessment as Study material for the
+    # institution-level assessment" - the title, the button and the line of the 108 couplets, in every language; the address
+    # stays /syllabus; the repository's entry renamed once where it still has the title it came with
+    from kts.i18n import CATALOG
+    en = CATALOG["en"]
+    assert en["syl.title"] == "Study material for the institution-level assessment" and en["syl.cta"] == "Study material: the study book"
+    assert "the study material for the institution-level assessment" in en["syl.k108"]
+    assert not any("syllabus" in v.lower() for k, v in en.items() if k.startswith("syl."))
+    for code, catalogue in CATALOG.items():
+        if code != "en":
+            assert all(catalogue[k] != en[k] for k in ("syl.title", "syl.cta", "syl.k108")), code
+    client = make_app(ADMIN_PASSWORD=None).test_client()
+    page = _page(client, "/syllabus?lang=en")
+    assert "<h1>Study material for the institution-level assessment</h1>" in page and "Syllabus" not in page
+    exam = _page(client, "/examination?lang=en")
+    assert "<b>Study material for the institution-level assessment</b>" in exam and "📘 Study material: the study book" in exam
+    assert "the study material for the institution-level assessment" in _page(client, "/thirukkural-108?lang=en")
+    hindi = _page(client, "/syllabus?lang=hi")
+    assert str(escape(CATALOG["hi"]["syl.title"])) in hindi
+
+
+def test_the_repository_entry_renamed_once():
+    from kts.db import execute, query
+    app = make_app(ADMIN_PASSWORD=None)
+    with app.app_context():
+        assert query("SELECT title FROM resources WHERE url = '/syllabus'", one=True)["title"] == "Thirukkural Payilvom · Study material for the institution-level assessment"
+        # a portal of before: the old title, not yet renamed; and one renamed in the Console, which keeps its name
+        execute("UPDATE resources SET title = ? WHERE url = '/syllabus'", ("Thirukkural Payilvom · Syllabus for the institution-level assessment",))
+        execute("DELETE FROM settings WHERE key = 'migrate.resource.study_material'")
+    again = make_app(**{name: app.config[name] for name in ("INSTANCE_DIR", "DATABASE", "UPLOAD_DIR")})
+    with again.app_context():
+        assert query("SELECT title FROM resources WHERE url = '/syllabus'", one=True)["title"] == "Thirukkural Payilvom · Study material for the institution-level assessment"
+        execute("UPDATE resources SET title = 'CICT study book' WHERE url = '/syllabus'")
+        execute("DELETE FROM settings WHERE key = 'migrate.resource.study_material'")
+    third = make_app(**{name: again.config[name] for name in ("INSTANCE_DIR", "DATABASE", "UPLOAD_DIR")})
+    with third.app_context():
+        assert query("SELECT title FROM resources WHERE url = '/syllabus'", one=True)["title"] == "CICT study book"

@@ -81,10 +81,10 @@ def test_no_video_guide_on_the_home_page():
     client = app.test_client()
     home = _page(client, "/?lang=en")
     assert "video-guide" not in home and "gv-btn" not in home and "gv-home" not in home
-    # the hub's video buttons (the hub shown) lead to the institutions' part of "How to take part"
-    assert home.count('<a class="btn ghost" href="/how-to-take-part#institutions">▶ Part 2: For Participating Institutions</a>') == 1
+    # the hub (shown) has no video button either; the video guide is off every page since 1.2.148
+    assert "▶ Part 2" not in home
     guide = _page(client, "/how-to-take-part?lang=en")
-    assert 'id="institutions"' in guide and 'id="video-guide"' in guide
+    assert 'id="institutions"' in guide and 'id="video-guide"' not in guide
 
 
 def test_find_your_next_step_and_the_launch_video_hidden(monkeypatch):

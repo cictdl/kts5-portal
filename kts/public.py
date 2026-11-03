@@ -253,6 +253,12 @@ def home():
         row = query("SELECT COUNT(*) AS n, COUNT(DISTINCT college_key) AS c, COUNT(DISTINCT state) AS s "
                     "FROM applications WHERE status != 'withdrawn'", one=True)
         stats = {"apps": row["n"], "colleges": row["c"], "states": row["s"]}
+    # while the students' registration is hidden: the institutions at a glance (1.2.148), counted as the dashboard counts them
+    inst_stats = None
+    if settings.get("stats.public") == "1" and settings.get("reg.public") != "1":
+        row = query("SELECT SUM(status = 'accepted') AS sel, COUNT(*) AS reg, COUNT(DISTINCT state) AS s FROM institutions "
+                    "WHERE status != 'identified'", one=True)
+        inst_stats = {"selected": row["sel"] or 0, "registered": row["reg"], "states": row["s"]}
     k = K.daily()
     kotd_lang, kotd_dir = _stream()
     if not K.lines(k, kotd_lang):
@@ -264,7 +270,7 @@ def home():
                            hub=FINDER.hub(settings, lang) if settings.get("home.hub") == "1" else None,
                            kts_banner=home_banner(lang), hei_open=HEI.window(settings) == "open",   # the banner (1.2.145)
                            ev_total=len(seminars), ev_years=ev_years,
-                           notices=notices, events=events, agencies=agencies, stats=stats,
+                           notices=notices, events=events, agencies=agencies, stats=stats, inst_stats=inst_stats,
                            kotd=k, kotd_lines=K.lines(k, kotd_lang), kotd_lang=kotd_lang, kotd_dir=kotd_dir,
                            featured=query("SELECT * FROM resources WHERE published = 1 AND featured = 1 "
                                           "ORDER BY sort_order, created_at DESC LIMIT 6"))
@@ -425,7 +431,7 @@ def portal_figures():
     figures = json.loads((data_dir / "figures.json").read_text(encoding="utf-8"))
     parts = {"lectures": len(rows("orientation_lectures.json")),
              "repository": sum(1 for r in rows("resources.json") if r["category"].startswith("video")),
-             "reels": len(rows("reels.json")), "guide": len(guide_videos())}
+             "reels": len(rows("reels.json"))}   # the video guide, off the pages since 1.2.148, no longer counted
     return {"langs": len(i18n.CATALOG), "kurals": len(corpus["kurals"]),
             "versions": len(next(iter(corpus["kurals"].values()))["tr"]),
             "audio": sum(1 for _ in (static / "audio").rglob("*.mp3")), "audio_hours": figures["audio_hours"],

@@ -40,7 +40,8 @@ def test_the_figures_are_counted_from_the_portal_itself():
     assert f["langs"] == 23 and f["kurals"] == 1330 and f["versions"] == 29
     assert f["audio"] == 1330 + 29 and f["audio_hours"] == FIGURES["audio_hours"] > 7
     # the orientation lectures, the videos of the repository, the reels and shorts and the video guide
-    assert f["videos"] >= 42 + 138 + 49 + 4 and f["video_parts"] == {"lectures": 42, "repository": 138, "reels": 49, "guide": 4}
+    # the video guide no longer counted, off the pages (1.2.148)
+    assert f["videos"] >= 42 + 138 + 49 and f["video_parts"] == {"lectures": 42, "repository": 138, "reels": 49}
     assert f["books"] == 18 and f["posters"] == 92 and f["events"] >= 253
     assert f["archives"] == FIGURES["archives"]
     assert FIGURES["archives"]["bundles"] == 865 and FIGURES["archives"]["gt_specimens"] == 133

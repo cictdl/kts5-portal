@@ -197,6 +197,12 @@
       <div class="card stat accent"><div class="num">{{ '{:,}'.format(stats.colleges) }}</div><div class="lbl">{{ t('home.stat_colleges') }}</div></div>
       <div class="card stat kumkum"><div class="num">{{ stats.states }}</div><div class="lbl">{{ t('home.stat_states') }}</div></div>
       {% endif %}
+      {# while the students' registration is hidden: the institutions (1.2.148) #}
+      {% if inst_stats %}
+      <div class="card stat indigo"><div class="num">{{ '{:,}'.format(inst_stats.selected) }}</div><div class="lbl">{{ t('nav.institutions') }}</div></div>
+      <div class="card stat accent"><div class="num">{{ '{:,}'.format(inst_stats.registered) }}</div><div class="lbl">{{ t('dash.inst_reg') }}</div></div>
+      <div class="card stat kumkum"><div class="num">{{ inst_stats.states }}</div><div class="lbl">{{ t('home.stat_states') }}</div></div>
+      {% endif %}
       <div class="card stat green"><div class="num">22</div><div class="lbl">{{ t('home.stat_langs') }}</div></div>
     </div>
   </div>

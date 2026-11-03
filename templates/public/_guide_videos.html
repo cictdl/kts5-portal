@@ -1,8 +1,8 @@
 {# The video guide to the portal (1.2.128): four videos on CICT's YouTube channel (data/guide_videos.json), each shown by its
    poster, a frame of the video kept on the portal; pressed, the poster plays its video in the page, in YouTube's player
    from youtube-nocookie.com (static/js/portal.js; nothing of YouTube loads before that), and without scripts it opens the
-   video on YouTube. video_guide() gives all four with their heading (at the foot of "How to take part" since 1.2.145, on the
-   home page before); video_part(n) one part, where its readers are. #}
+   video on YouTube. video_guide() gives all four with their heading; video_part(n) one part. No page uses them since 1.2.148
+   ("remove ▶ Video guide to the KTS 5.0 portal in all pages"); kept for a later use. #}
 {% macro gv_card(v) %}<div class="gv-card"><a class="gv-poster" href="{{ v.url }}" target="_blank" rel="noopener" data-yt="{{ v.youtube }}" aria-label="▶ {{ t('gv.p' ~ v.n) }}"><img src="{{ url_for('static', filename=v.poster) }}" alt="" width="640" height="360" loading="lazy"><span class="gv-play" aria-hidden="true">▶</span><span class="gv-len" dir="ltr">{{ v.duration }}</span></a><span class="gv-text"><span class="gv-name">{{ t('gv.p' ~ v.n) }}</span><a class="gv-watch" href="{{ v.url }}" target="_blank" rel="noopener">{{ t('home.reel_watch_yt') }} <span aria-hidden="true">↗</span></a></span></div>{% endmacro %}
 
 {% macro video_guide(id='video-guide', h='h2') %}

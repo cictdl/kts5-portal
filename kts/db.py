@@ -1395,6 +1395,13 @@ def init_db(app):
                      r.get("featured", 0), r.get("sort_order", 100), now, now),
                 )
             conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
+        # "Syllabus" became "Study material" (3 Nov 2026, 1.2.148): the title of the entry of the study book, once, where it is
+        # still the one it came with (an entry the Console has renamed keeps its name)
+        if not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.resource.study_material'").fetchone():
+            conn.execute("UPDATE resources SET title = ? WHERE url = '/syllabus' AND title = ?",
+                         ("Thirukkural Payilvom · Study material for the institution-level assessment", "Thirukkural Payilvom · Syllabus for the institution-level assessment"))
+            conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)",
+                         ("migrate.resource.study_material", "1", now))
         # the Thirukkural stories of PM eVidya CICT - Tamil, put in among the Thirukkural videos (1.2.93), have a tab of
         # their own (1.2.94): they move to it once; an entry that the Console puts back or elsewhere later stays there
         moved = [r["url"] for r in json.loads(seed_path.read_text(encoding="utf-8")) if r["category"] == "video_pmevidya"]
