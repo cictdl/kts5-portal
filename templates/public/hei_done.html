@@ -10,5 +10,17 @@
   </div>
   <p>{{ t('hei.done_next')|replace('{state}', place(row.state)) }}</p>
   <p><a class="btn ghost" href="{{ url_for('public.institutions') }}">{{ t('hei.list_link') }}</a></p>
+  {# pass it on (1.2.142): the page of the State/UT for the colleges nearby #}
+  {% if pass_on %}
+  <section class="card join-pass" style="margin-top:18px">
+    <h2 style="margin:0 0 8px;font-size:1.15rem">{{ t('join.share_t') }}</h2>
+    <p style="margin:0 0 8px">{{ t('join.done')|replace('{date}', pass_on.date)|replace('{state}', pass_on.label) }}</p>
+    <blockquote class="hub-msg" id="join-msg">{{ pass_on.text }}</blockquote>
+    <div class="btn-row"><a class="btn hub-wa" href="{{ pass_on.wa }}" target="_blank" rel="noopener noreferrer">{{ t('hub.share_wa') }}</a>
+      <a class="btn secondary" href="{{ pass_on.mail }}">✉ {{ t('hub.share_mail') }}</a>
+      <button class="btn secondary" type="button" data-copy="join-msg" data-done="{{ t('hub.copied') }}" hidden>⧉ {{ t('hub.share_copy') }}</button></div>
+    <p class="small" style="margin:10px 0 0"><a href="{{ url_for('public.join_state', code=pass_on.code) }}">{{ t('join.page') }}: {{ pass_on.label }} →</a></p>
+  </section>
+  {% endif %}
 </div>
 {% endblock %}

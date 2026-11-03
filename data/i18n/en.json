@@ -1375,5 +1375,21 @@
   "hub.n_ver_t": "Verify the nominations by {date}",
   "hub.n_ver": "Sign in to the Console: the applications of the selected students of your State/UT await your verification.",
   "hub.console": "Console sign-in",
-  "hub.page_title": "Is your college taking part?"
+  "hub.page_title": "Is your college taking part?",
+  "join.title": "{state}: {n} colleges and universities to be selected for KTS 5.0",
+  "join.first": "No college or university of {state} has registered yet. Be the first.",
+  "join.over": "More institutions have registered than will be selected: the Nodal Institution selects {n} on merit and keeps a reserve list.",
+  "join.ready_t": "Have this ready before you start",
+  "join.ready": "The AISHE code of the institution; the name, designation, e-mail and phone of the Head of the Institution; the same for the Institutional Coordinator and for the Faculty Supervisor/Guide. The form is filled in English.",
+  "join.geo": "Under Annexure-V, 15 of the 100 marks of the selection go to a balanced spread of districts within the State/UT.",
+  "join.share_t": "Forward this page to the Principals you know",
+  "join.share_msg": "Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom, the Students' Engagement Programme of the Ministry of Education: {n} colleges and universities of {state} are to be selected, and {reg} have registered so far. Register yours by {date}: {link}",
+  "join.share_subject": "KTS 5.0: colleges and universities of {state}, register by {date}",
+  "join.poster": "Print the A4 poster",
+  "join.scan": "Scan to register your institution",
+  "join.board_title": "Registration of institutions, State/UT by State/UT",
+  "join.board_note": "Each row of Annexure-I, with the institutions registered against the number to be selected. Open a State/UT for its page, its link and its poster.",
+  "join.page": "State/UT page",
+  "join.done": "Colleges and universities near you can still register until {date}. Send them the page of {state}:",
+  "join.assess": "{testing} of {n} Participating Institutions of {state} have opened the online test; {selected} have selected their student."
 }

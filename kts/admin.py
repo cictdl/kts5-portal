@@ -1458,7 +1458,7 @@ def institutions_export():
     headers = ["State/UT", "Name of Nodal HEI"] + ANNEXURE_II + ["Status", "Reference", "Head of the Institution", "Designation",
                "Head: e-mail", "Head: phone", "Coordinator: designation", "Faculty Supervisor/Guide", "Guide: designation",
                "Guide: e-mail", "Guide: mobile", "Online assessment", "Students assessed", "Selected student", "Registered (application)",
-               "Application status", "Remark", "Applied on", "Decided on"]
+               "Application status", "Remark", "Applied on", "Decided on", "Source"]
     data = []
     for n, r in enumerate(rows, start=1):
         test = "off" if not r["test_on"] else f"{r['test_from']} to {r['test_to']}"
@@ -1466,7 +1466,8 @@ def institutions_export():
                      r["coord_mobile"], r["coord_email"], r["status"], r["ref"], r["head_name"], r["head_designation"], r["head_email"],
                      r["head_phone"], r["coord_designation"], r["guide_name"], r["guide_designation"], r["guide_email"], r["guide_mobile"],
                      test, r["assessed"], r["winner_name"] or "", r["app_no"] or "", r["app_status"] or "",
-                     r["decision_note"], (r["created_at"] or "")[:10], (r["decided_at"] or "")[:10]))
+                     r["decision_note"], (r["created_at"] or "")[:10], (r["decided_at"] or "")[:10],
+                     "State/UT page" if r["source"] == "join" else ""))
     audit("institutions_exported", "institution", None, detail={"rows": len(data)}, user=_user(), ip=client_ip())
     return Response(xlsx_bytes(headers, data, "Institutions", text_cols=(6, 8, 15, 20)),
                     mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -1693,6 +1694,7 @@ SETTING_GROUPS = [
         ("hei.select_end", "Last date for the Nodal Institutions to select the Participating Institutions (YYYY-MM-DD)", "date"),
         ("hei.max_per_state", "Otherwise: institutions accepted in one State/UT at most, the same for all (0: no limit)", "number"),
         ("hei.public", "Show the participating institutions on the website, State/UT by State/UT", "bool"),
+        ("join.on", "Show the State/UT pages for the registration of institutions (/join), with their links and A4 posters", "bool"),
         ("nodal.officers_public", "Show the Nodal Officer of each State/UT (name, designation, e-mail and phone of the active Nodal Officer accounts) on the Nodal HEIs and Partners pages", "bool"),
         ("hei.orientation", "Pre-assessment orientation session by CICT for the institutions: date, time and link, shown on the institutions' page (empty: nothing)", "text")]),
     ("The assessment by the institutions and the registration of their students (D.O. letter of 9 October 2026)", [

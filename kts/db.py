@@ -585,6 +585,8 @@ LATER_COLUMNS = [
     ("institutions", "sop_note", "TEXT NOT NULL DEFAULT ''"),
     ("institutions", "sop_by", "INTEGER"),
     ("institutions", "sop_at", "TEXT"),
+    # where an institution's registration came from: 'join' when from its State/UT page (1.2.142)
+    ("institutions", "source", "TEXT NOT NULL DEFAULT ''"),
 ]
 
 # CICT on social media: (setting, name of the service, address). The links stand in the footer of
@@ -716,6 +718,8 @@ DEFAULT_SETTINGS = {
     "hei.cap_annexure": "1",
     "hei.select_end": "2026-11-17",
     "hei.public": "1",
+    # the State/UT pages for the registration of institutions, /join (1.2.142)
+    "join.on": "1",
     # the Nodal Officer of each Nodal HEI, with the contact details given for the account, on the public pages (1.2.70)
     "nodal.officers_public": "1",
     # the D.O. letter of 9 October 2026 (1.2.43): registration by the institutions' links; their online assessment

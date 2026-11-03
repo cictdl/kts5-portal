@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }}{% endblock %}
+{% block content %}
+{# The A4 poster of a State/UT page (1.2.142): the number to be selected, the last day, a QR code of the page and its short
+   address; no live count, since a printed number goes stale. The site's chrome is hidden in print. #}
+<div class="wrap section join-poster-page">
+  <div class="join-poster">
+    <img class="jp-logo" src="{{ url_for('static', filename='img/kts5-lockup.png') }}" alt="{{ t('site.name') }}" width="360">
+    <div>
+      <h1>{{ heading }}</h1>
+      {% if lang != 'en' %}<p class="jp-en" lang="en" dir="ltr">{{ heading_en }}</p>{% endif %}
+      <p class="jp-by">{{ t('hub.i_open_t')|replace('{date}', hei_end) }}</p>
+    </div>
+    <div>
+      {% if qr %}<img class="jp-qr" src="{{ qr }}" width="240" height="240" alt="{{ short }}">{% endif %}
+      <p class="jp-url" dir="ltr">{{ short }}</p>
+      <p class="jp-scan">{{ t('join.scan') }}</p>
+    </div>
+    <p class="small jp-foot"><b>{{ t('hei.nodal') }}:</b> <span lang="en" dir="ltr">{{ nodal }}</span> · <span lang="en" dir="ltr">Ministry of Education · CICT, Chennai</span></p>
+  </div>
+  <p class="no-print" style="text-align:center;margin-top:14px"><button class="btn" type="button" data-print>{{ t('common.print') }}</button> · <a href="{{ url_for('public.join_state', code=code, lang=lang if lang != 'en' else None) }}">← {{ label }}</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }}{% endblock %}
+{% block description %}{% if ph == 'recruit' %}{{ t('dash.inst_reg') }}: {{ t('dash.of')|replace('{n}', '{:,}'.format(row.reg))|replace('{total}', '{:,}'.format(row.n)) }}{% if chip %} · {{ chip[1] }}{% endif %}{% else %}{{ heading }}{% endif %}{% endblock %}
+{% block content %}
+{# The page of a row of Annexure-I for the registration of institutions (1.2.142, kts/drive.py): the live number against the
+   number to be selected, the button to register, what to have ready, the Nodal Institution, the message to forward. Counts only. #}
+{% from "public/_hub.html" import chip as chip_of %}
+{% macro share_block(sh, poster=True) %}
+<section class="card join-share" aria-labelledby="join-share-h">
+  <h2 id="join-share-h">{{ t('join.share_t') }}</h2>
+  <blockquote class="hub-msg" id="join-msg">{{ sh.text }}</blockquote>
+  <div class="btn-row">
+    <a class="btn hub-wa" href="{{ sh.wa }}" target="_blank" rel="noopener noreferrer">{{ t('hub.share_wa') }}</a>
+    <a class="btn secondary" href="{{ sh.mail }}">✉ {{ t('hub.share_mail') }}</a>
+    <button class="btn secondary" type="button" data-copy="join-msg" data-done="{{ t('hub.copied') }}" hidden>⧉ {{ t('hub.share_copy') }}</button>
+    <button class="btn secondary" type="button" data-share data-text="{{ sh.text }}" data-url="{{ sh.link }}" hidden>{{ t('common.share') }}</button>
+  </div>
+  {% if poster %}<p class="small" style="margin:12px 0 0"><a href="{{ url_for('public.join_poster', code=row.code, lang=lang if lang != 'en' else None) }}">🖨 {{ t('join.poster') }}</a></p>{% endif %}
+</section>
+{% endmacro %}
+{% macro nodal_block() %}
+<section class="card join-nodal">
+  <p class="small" style="margin:0"><b>{{ t('hei.nodal') }}:</b> <span lang="en" dir="ltr">{{ nodal }}</span></p>
+  {% if officers %}
+  {% for o in officers %}<div class="small join-officer" lang="en" dir="ltr"><b>{{ o.name }}</b>{% if o.designation %}<br><span class="dim">{{ o.designation }}</span>{% endif %}{% if o.email %}<br><a href="mailto:{{ o.email }}">{{ o.email }}</a>{% endif %}{% if o.phone %}<br><a href="tel:{{ o.phone|replace(' ', '') }}">{{ o.phone }}</a>{% endif %}</div>{% endfor %}
+  {% else %}<p class="small no-pending" style="margin:6px 0 0"><i class="no-dot off" aria-hidden="true"></i>{{ t('no.pending') }}</p>{% endif %}
+</section>
+{% endmacro %}
+<div class="wrap section join">
+  <span class="eyebrow">{{ label }}</span>
+  <h1>{{ heading }}</h1>
+  {% if ph == 'recruit' %}
+  <div class="join-grid">
+    <div>
+      {% set count = t('dash.inst_reg') ~ ': ' ~ t('dash.of')|replace('{n}', '{:,}'.format(row.reg))|replace('{total}', '{:,}'.format(row.n)) %}
+      <p class="join-count"><b class="join-big"><bdi dir="ltr">{{ '{:,}'.format(row.reg) }}</bdi></b> <span>{{ count }}</span></p>
+      {% if row.n %}
+      {% if row.n <= 100 %}
+      <div class="jm" role="img" aria-label="{{ count }}">{% for i in range(row.n) %}<i class="jm-sq{{ ' on' if i < row.reg }}"></i>{% endfor %}</div>
+      {% else %}
+      <div class="jm-bar" role="img" aria-label="{{ count }}"><i style="width:{{ [100, (100 * row.reg / row.n)|round(1)]|min }}%"></i></div>
+      {% endif %}
+      {% endif %}
+      <p class="small muted join-meta">{{ chip_of(chip) }}{% if row.week %} <span>{{ t('pg.week')|replace('{n}', row.week|string) }}</span> ·{% endif %} <span>{{ t('dash.updated')|replace('{time}', as_of) }}</span></p>
+      {% if row.reg == 0 %}<p class="join-first">{{ t('join.first')|replace('{state}', label) }}</p>
+      {% elif row.reg > row.n %}<p class="join-over">{{ t('join.over')|replace('{n}', '{:,}'.format(row.n)) }}</p>{% endif %}
+      <p><a class="btn saffron join-cta" href="{{ reg_url }}">{{ t('hei.cta') }}</a></p>
+      <section class="card join-ready"><h2>{{ t('join.ready_t') }}</h2><p class="small" style="margin:0">{{ t('join.ready') }}</p></section>
+      <section class="card join-how">
+        <p style="margin:0">{{ t('hub.i_open')|replace('{select}', words.select)|replace('{camp_to}', words.camp_to)|replace('{reg_end}', words.reg_end) }}</p>
+        <p class="small" style="margin:10px 0 0">{{ t('home.stipend') }} <a href="{{ url_for('public.stipend_guide') }}">{{ t('stip.link') }}</a></p>
+        <p class="small muted" style="margin:8px 0 0">{{ t('join.geo') }}</p>
+      </section>
+    </div>
+    <div>{{ nodal_block() }}{{ share_block(sh) }}</div>
+  </div>
+  {% elif ph == 'assess' %}
+  <p class="join-meta">{{ chip_of(chip) }}</p>
+  <p>{{ t('join.assess')|replace('{testing}', '{:,}'.format(row.testing))|replace('{n}', '{:,}'.format(row.participating))|replace('{state}', label)|replace('{selected}', '{:,}'.format(row.selected)) }}</p>
+  <p class="dim">{{ t('hub.i_shut') }}</p>
+  <p><a class="btn saffron join-cta" href="{{ url_for('campus.login') }}">{{ t('camp.login_title') }}</a></p>
+  <div class="join-grid"><div>{{ share_block(sh, poster=False) }}</div><div>{{ nodal_block() }}</div></div>
+  {% else %}
+  <p>{{ t('dash.inst_sel') }}: {{ t('dash.of')|replace('{n}', '{:,}'.format(row.participating))|replace('{total}', '{:,}'.format(row.n)) }}</p>
+  <p><a class="btn saffron" href="{{ url_for('public.dashboard') }}">{{ t('dash.link') }}</a></p>
+  {% endif %}
+  <p class="small join-foot"><a href="{{ url_for('public.join_board') }}">{{ t('join.board_title') }}</a> · <a href="{{ url_for('public.dashboard') }}">{{ t('dash.link') }}</a></p>
+</div>
+{% endblock %}

@@ -18,6 +18,7 @@ from flask import (Blueprint, Response, abort, current_app, flash, g, make_respo
 from . import campus as CAMP
 from . import companion as C
 from . import dashboard as D
+from . import drive as DRIVE
 from . import finder as FINDER
 from . import heis as HEI
 from . import kural as K
@@ -275,6 +276,68 @@ def my_college_json():
     q = (request.args.get("q") or "").strip()[:120]
     data = FINDER.search(q, get_lang()) if len(q) >= 3 else {"total": 0, "results": [], "searched": None}
     return Response(json.dumps(data, ensure_ascii=False), mimetype="application/json", headers={"Cache-Control": "no-store"})
+
+
+def _join_row(code):
+    """The row of a State/UT page, or a redirect from a paired Union Territory, or a 404."""
+    if get_setting("join.on") != "1":
+        abort(404)
+    state, to = DRIVE.resolve(code)
+    if state is None:
+        abort(404)
+    return state, to
+
+
+@bp.route("/join")
+def join_board():
+    """The State/UT pages for the registration of institutions (1.2.142): every row of Annexure-I, the emptiest first."""
+    if get_setting("join.on") != "1":
+        abort(404)
+    settings, lang = all_settings(), get_lang()
+    rows = [dict(r, label=HEI.label_of(r["state"], lang)) for r in DRIVE.table().values()]
+    rows.sort(key=lambda r: ((r["reg"] / r["n"]) if r["n"] else 9, -r["n"], r["label"]))
+    total = {"reg": sum(r["reg"] for r in rows), "n": sum(r["n"] for r in rows)}
+    today = now_ist().date()
+    chip = FINDER.days_chip(FINDER._day(settings, "hei.end"), today, lang) if DRIVE.phase(settings, today) == "recruit" else None
+    return render_template("public/join_board.html", rows=rows, total=total, chip=chip, as_of=now_ist().strftime("%H:%M"))
+
+
+@bp.route("/join/<code>")
+def join_state(code):
+    """The page of one row of Annexure-I: the live count, the button to register, the Nodal Institution, the message to forward."""
+    state, to = _join_row(code)
+    if to:
+        return redirect(url_for("public.join_state", code=to, **request.args))
+    settings, lang = all_settings(), get_lang()
+    today = now_ist().date()
+    row = DRIVE.table()[state]
+    ph = DRIVE.phase(settings, today)
+    chip = (FINDER.days_chip(FINDER._day(settings, "hei.end"), today, lang) if ph == "recruit"
+            else FINDER.days_chip(FINDER._day(settings, "camp.to"), today, lang) if ph == "assess" else None)
+    nodal = next((h["name"] for h in nodal_heis() if h["state"] == state), "")
+    return render_template("public/join_state.html", row=row, ph=ph, chip=chip, label=HEI.label_of(state, lang),
+                           heading=DRIVE.title(row, lang, settings, ph), sh=DRIVE.share(row, lang, settings, ph),
+                           reg_url=DRIVE.register_url(row), words=FINDER.hub(settings, lang)["words"], nodal=nodal,
+                           officers=_officers_of(_nodal_officers_by_state(), HEI.group_of(state)), as_of=now_ist().strftime("%H:%M"))
+
+
+@bp.route("/join/<code>/poster")
+def join_poster(code):
+    """The A4 poster of a State/UT page, with the QR code of the page (while the institutions register)."""
+    state, to = _join_row(code)
+    if to:
+        return redirect(url_for("public.join_poster", code=to, **request.args))
+    settings, lang = all_settings(), get_lang()
+    row = DRIVE.table()[state]
+    if DRIVE.phase(settings, now_ist().date()) != "recruit":
+        return redirect(url_for("public.join_state", code=row["code"], **request.args))
+    base = current_app.config["BASE_URL"].rstrip("/")
+    page = base + "/join/" + row["code"] + (f"?lang={lang}" if lang != "en" else "")
+    return render_template("public/join_poster.html", code=row["code"], label=HEI.label_of(state, lang),
+                           heading=DRIVE.title(row, lang, settings, "recruit"), heading_en=DRIVE.title(row, "en", settings, "recruit"),
+                           hei_end=FINDER.long_day(FINDER._day(settings, "hei.end"), lang), qr=qr_data_uri(page),
+                           short=re.sub(r"^https?://", "", base) + "/join/" + row["code"],
+                           nodal=next((h["name"] for h in nodal_heis() if h["state"] == state), ""))
 
 
 @bp.route("/about")
@@ -738,10 +801,14 @@ def hei_register():
     if invite and identified is None:
         flash("This invitation link is not valid or has been used: register the institution with the form, or write to the Nodal Officer.", "error")
         invite = ""
+    # from a State/UT page (1.2.142): the State/UT filled in, and the registration marked as coming from the page
+    ctx["via"] = "join" if (request.args.get("via") or request.form.get("via")) == "join" else ""
     if identified is not None:
         ctx["data"] = {f: identified[f] for f in HEI.FIELDS}
         ctx["invite"] = invite
-    elif ctx["window"] != "open":
+    elif request.method == "GET" and (request.args.get("state") or "").strip() in ref["all_states"]:
+        ctx["data"] = {"state": request.args["state"].strip()}
+    if identified is None and ctx["window"] != "open":
         return render_template("public/hei_register.html", **ctx)
     if request.method == "POST":
         ip = client_ip()
@@ -796,9 +863,9 @@ def hei_register():
             HEI.mail_decision(query("SELECT * FROM institutions WHERE id = ?", (identified["id"],), one=True))
             session["hei_applied"] = identified["id"]
             return redirect(url_for("public.hei_done", ref=identified["ref"]))
-        cols = HEI.FIELDS + ["inst_key", "status", "ip", "created_at", "updated_at"]
+        cols = HEI.FIELDS + ["inst_key", "status", "ip", "created_at", "updated_at", "source"]
         rid = execute(f"INSERT INTO institutions({', '.join(cols)}) VALUES({', '.join('?' * len(cols))})",
-                      [data[f] for f in HEI.FIELDS] + [HEI.key_of(data), "pending", ip, now, now])
+                      [data[f] for f in HEI.FIELDS] + [HEI.key_of(data), "pending", ip, now, now, ctx["via"]])
         execute("UPDATE institutions SET ref = ? WHERE id = ?", (HEI.ref_of(rid), rid))
         limiter.hit("hei", ip, 3600)
         audit("institution_applied", "institution", rid, detail=HEI.ref_of(rid), ip=ip)
@@ -814,7 +881,15 @@ def hei_done(ref):
     row = query("SELECT * FROM institutions WHERE ref = ?", (ref,), one=True)
     if row is None or session.get("hei_applied") != row["id"]:
         return redirect(url_for("public.home"))
-    return render_template("public/hei_done.html", row=row)
+    # "Pass it on" (1.2.142): the page of the institution's State/UT, while the institutions register
+    pass_on = None
+    settings = all_settings()
+    if settings.get("join.on") == "1" and DRIVE.phase(settings, now_ist().date()) == "recruit":
+        drow = DRIVE.table().get(HEI.nodal_state_of(row["state"]))
+        if drow:
+            pass_on = dict(DRIVE.share(drow, get_lang(), settings, "recruit"), code=drow["code"], label=HEI.label_of(drow["state"]),
+                           date=FINDER.long_day(FINDER._day(settings, "hei.end"), get_lang()))
+    return render_template("public/hei_done.html", row=row, pass_on=pass_on)
 
 
 @bp.route("/register/done/<app_no>")
@@ -1460,7 +1535,7 @@ def _nodal_table():
     for r in query("SELECT state, COUNT(*) AS n FROM institutions WHERE status = 'accepted' GROUP BY state"):
         now[HEI.nodal_state_of(r["state"])] = now.get(HEI.nodal_state_of(r["state"]), 0) + r["n"]
     officers = _nodal_officers_by_state()
-    rows = [dict(h, label=HEI.label_of(h["state"]), now=now.get(h["state"], 0), anchor=state_anchor(h["state"]),
+    rows = [dict(h, label=HEI.label_of(h["state"]), now=now.get(h["state"], 0), anchor=state_anchor(h["state"]), code=DRIVE.code_of(h["state"]),
                  officers=_officers_of(officers, HEI.group_of(h["state"]))) for h in heis]
     return rows, {"allocation": sum(int(h.get("allocation") or 0) for h in heis), "now": sum(r["now"] for r in rows)}
 
@@ -1627,7 +1702,7 @@ SITEMAP = [
                          ("public.register", {}, "nav.register"), ("public.status", {}, "nav.status"),
                          ("public.examination", {}, "nav.exam"), ("public.merit", {}, "nav.merit"),
                          ("public.stipend_guide", {}, "stip.title"), ("candidate.login", {}, "nav.candidate"),
-                         ("public.nodal_institutions", {}, "nav.nodal"),
+                         ("public.nodal_institutions", {}, "nav.nodal"), ("public.join_board", {}, "join.board_title"),
                          ("public.institutions", {}, "nav.institutions"), ("public.hei_register", {}, "hei.cta"),
                          ("campus.login", {}, "camp.login_title")]),
     ("pol.sm_learning", [("public.orientation", {}, "nav.orientation"), ("public.resources", {}, "nav.resources"),
@@ -1680,6 +1755,8 @@ def sitemap_xml():
     day = site_updated()
     paths = [url_for(ep, **args) for _heading, links in SITEMAP for ep, args, _label in links]
     paths.append(url_for("public.policy", page="sitemap"))
+    if get_setting("join.on") == "1":   # the 31 State/UT pages (1.2.142)
+        paths += [url_for("public.join_state", code=r["code"]) for r in DRIVE.table().values() if r["code"]]
     body = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for path in dict.fromkeys(paths):
         body.append(f"  <url><loc>{escape(base + path)}</loc><lastmod>{day}</lastmod></url>")

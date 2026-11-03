@@ -468,3 +468,31 @@
     });
   }
 })();
+
+
+// The State/UT pages (1.2.142): a button that copies a message ([data-copy] names the element whose text it copies) and one
+// that opens the phone's own share sheet ([data-share]); both stay hidden where the browser cannot do it.
+(function () {
+  if (navigator.clipboard) {
+    document.querySelectorAll("[data-copy]").forEach(function (b) {
+      var src = document.getElementById(b.getAttribute("data-copy"));
+      if (!src) return;
+      b.hidden = false;
+      var label = b.textContent;
+      b.addEventListener("click", function () {
+        navigator.clipboard.writeText(src.textContent.trim()).then(function () {
+          b.textContent = "✓ " + b.getAttribute("data-done");
+          setTimeout(function () { b.textContent = label; }, 2200);
+        }).catch(function () {});
+      });
+    });
+  }
+  if (navigator.share) {
+    document.querySelectorAll("[data-share]").forEach(function (b) {
+      b.hidden = false;
+      b.addEventListener("click", function () {
+        navigator.share({ text: b.getAttribute("data-text"), url: b.getAttribute("data-url") }).catch(function () {});
+      });
+    });
+  }
+})();

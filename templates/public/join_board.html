@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}{{ t('join.board_title') }}{% endblock %}
+{% block content %}
+{# The board of the State/UT pages (1.2.142): every row of Annexure-I, the emptiest first, with the institutions registered
+   against the number to be selected; each row opens its page (kts/drive.py). Counts only. #}
+{% from "public/_hub.html" import chip as chip_of %}
+<div class="wrap section join">
+  <span class="eyebrow">{{ t('site.name') }}</span>
+  <h1>{{ t('join.board_title') }}</h1>
+  <p class="dim" style="max-width:80ch">{{ t('join.board_note') }}</p>
+  <p class="small muted join-meta">{{ chip_of(chip) }} <span>{{ t('dash.updated')|replace('{time}', as_of) }}</span></p>
+  <ul class="jb">
+    {% for r in rows %}
+    <li><a class="jb-row" href="{{ url_for('public.join_state', code=r.code, lang=lang if lang != 'en' else None) }}">
+      <span class="jb-code" dir="ltr">{{ r.code|upper }}</span>
+      <span class="jb-name">{{ r.label }}</span>
+      <span class="jb-n"><bdi>{{ t('dash.of')|replace('{n}', '{:,}'.format(r.reg))|replace('{total}', '{:,}'.format(r.n)) }}</bdi></span>
+      <span class="jb-bar" aria-hidden="true"><i style="width:{{ [100, (100 * r.reg / r.n)|round(1) if r.n else 0]|min }}%"></i></span>
+    </a></li>
+    {% endfor %}
+    <li class="jb-total"><span class="jb-name">{{ t('dash.total') }}</span><span class="jb-n"><bdi>{{ t('dash.of')|replace('{n}', '{:,}'.format(total.reg))|replace('{total}', '{:,}'.format(total.n)) }}</bdi></span></li>
+  </ul>
+</div>
+{% endblock %}

@@ -1006,3 +1006,60 @@ footer.site .bottom .wrap { display: flex; justify-content: space-between; gap: 
   .hub-js .hub-panel.on { animation: none; }
   .hub-chip.now::before { animation: none; }
 }
+
+
+/* State/UT pages for the registration of institutions (1.2.142): the big number, the meter of squares (a bar over 100), the
+   button, the message to forward, the board of the rows, the A4 poster */
+.join .join-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; margin-top: 8px; }
+@media (min-width: 900px) { .join .join-grid { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 28px; align-items: start; } }
+.join .join-count { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin: 6px 0 10px; }
+.join .join-big { font-size: clamp(2.6rem, 9vw, 4rem); font-weight: 800; line-height: 1; color: var(--kumkum); letter-spacing: -.02em; }
+.join .jm { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; max-width: 420px; margin: 0 0 10px; }
+.join .jm-sq { display: block; aspect-ratio: 1; border-radius: 3px; background: var(--bg2); border: 1px solid var(--border); }
+.join .jm-sq.on { background: var(--saffron); border-color: var(--saffron); }
+.join .jm-bar { position: relative; height: 14px; max-width: 520px; border-radius: 999px; background: var(--bg2); overflow: hidden; margin: 4px 0 10px; }
+.join .jm-bar > i { position: absolute; inset-block: 0; inset-inline-start: 0; border-radius: 999px; background: var(--saffron); min-width: 6px; }
+.join .join-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 0 12px; }
+.join .join-first, .join .join-over { margin: 0 0 14px; padding: 10px 14px; border-radius: 12px; font-weight: 700; }
+.join .join-first { background: var(--kumkum-soft); color: var(--kumkum); }
+.join .join-over { background: var(--saffron-soft); color: var(--amber); }
+.join .join-cta { font-size: 1.15rem; padding: 14px 24px; }
+.join section.card { margin: 14px 0 0; }
+.join section.card h2 { margin: 0 0 8px; font-size: 1.1rem; }
+.join .join-officer { margin-top: 8px; }
+.join .join-foot { margin-top: 26px; }
+@media (max-width: 599px) { .join .join-cta { display: block; text-align: center; } }
+.hei-ready { margin: 0 0 18px; max-width: 72ch; }
+.hei-ready h3 { margin: 0 0 6px; font-size: 1rem; }
+/* the board */
+.jb { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 6px; max-width: 860px; }
+.jb-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 6px 12px; align-items: center; padding: 10px 14px;
+  border-radius: 12px; background: var(--surface); border: 1px solid var(--border); color: var(--ink); text-decoration: none; }
+.jb-row:hover { border-color: var(--saffron); text-decoration: none; }
+.jb-code { font-family: var(--mono); font-weight: 800; font-size: .8rem; padding: 2px 8px; border-radius: 6px; background: var(--indigo-soft); color: var(--indigo); }
+.jb-name { font-weight: 700; }
+.jb-n { font-variant-numeric: tabular-nums; font-size: .9rem; color: var(--dim); white-space: nowrap; }
+.jb-bar { grid-column: 1 / -1; position: relative; height: 8px; border-radius: 999px; background: var(--bg2); overflow: hidden; }
+.jb-bar > i { position: absolute; inset-block: 0; inset-inline-start: 0; border-radius: 999px; background: linear-gradient(90deg, var(--saffron), var(--kumkum)); }
+.jb-total { display: flex; justify-content: space-between; gap: 12px; padding: 10px 14px; font-weight: 800; border-top: 2px solid var(--border); }
+.join-cell a { white-space: nowrap; }
+/* the poster */
+.join-poster { max-width: 720px; margin: 0 auto; padding: 32px 28px; border: 2px solid var(--border-strong); border-radius: 18px; text-align: center;
+  display: flex; flex-direction: column; gap: 22px; align-items: center; background: #fff; color: #1c1917; }
+.join-poster h1 { margin: 0; font-size: 2rem; line-height: 1.25; }
+.join-poster .jp-logo { max-width: 100%; height: auto; }
+.join-poster .jp-en { margin: 6px 0 0; color: #57534e; font-size: 1.05rem; }
+.join-poster .jp-by { margin: 12px 0 0; font-size: 1.35rem; font-weight: 800; color: #b3261e; }
+.join-poster .jp-qr { width: 60mm; height: 60mm; image-rendering: pixelated; }
+.join-poster .jp-url { margin: 6px 0 0; font-family: var(--mono); font-size: 1.8rem; font-weight: 800; }
+.join-poster .jp-scan { margin: 4px 0 0; font-size: 1.1rem; }
+.join-poster .jp-foot { margin: 0; color: #57534e; }
+@media print {
+  @page { size: A4 portrait; margin: 12mm; }
+  .join-poster-page { padding: 0 !important; }   /* the section's own padding would push the foot onto a second page */
+  body:has(.join-poster) .draft-note { display: none !important; }
+  /* the skip link, off the screen: in a right-to-left page it sits far to the right and widened the printed page, pushing
+     the content off the paper (every page printed in Urdu or Kashmiri) */
+  .skip { display: none !important; }
+  .join-poster { border: 0; max-width: none; min-height: 262mm; justify-content: space-between; padding: 0; box-shadow: none; }
+}
