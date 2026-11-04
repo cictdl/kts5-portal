@@ -759,6 +759,9 @@ DEFAULT_SETTINGS = {
     # the seminars and workshops of CICT on the public pages (1.2.151): hidden; the page /seminars-workshops works either way;
     # '1' shows them again
     "events.public": "0",
+    # "Institution-level assessment" in the menu and the footer's quick links (1.2.156, the user, 4 November 2026: "Hide -
+    # Institution-level assessment menu items"): hidden; the page /examination works either way; '1' shows them again
+    "menu.assessment": "0",
     # CICT's central online test in the schedule and the upcoming events (1.2.152): left out ("Should remove the content ... Central
     # Online Test", CICT, 4 November 2026); '1' puts it back
     "schedule.central_test": "0",

@@ -1731,6 +1731,7 @@ SETTING_GROUPS = [
               ("schedule.central_test", "Show CICT's central online test (its days: exam.date to exam.date_to) in the schedule and among the upcoming events of the home page", "bool"),
               ("circular.new_days", "The newest circular of the Ministry (a circular notice with the letter attached) carries a blinking ‘NEW’ on the home page for so many days after it is put in (0: never)", "text"),
               ("events.public", "Show the seminars and workshops of CICT on the public pages: the menu, the cards on the home page and in the Digital repository, the figure in “KTS 5.0 in numbers”, the search and the sitemap (the page /seminars-workshops works either way)", "bool"),
+              ("menu.assessment", "Show “Institution-level assessment” in the menu and in the quick links of the footer (the page /examination works either way, with the links to it from the pages of the institutions, the guide and the study material)", "bool"),
               ("dashboard.public", "Public dashboard KTS 5.0 by State/UT (/dashboard): the live counts of each State/UT, its Nodal Officers and its Participating Institutions", "bool"),
               ("dashboard.names", "The dashboard names the student delegate of each Participating Institution once the Nodal Officer has verified the student (name and institution only, as the students agreed on registering)", "bool"),
               ("site.visitors", "Show the count of visitors in the footer of every page", "bool"),

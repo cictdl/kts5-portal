@@ -259,6 +259,8 @@ def create_app(config_object=Config):
             "ui_text": public.ui_text,
             # the seminars and workshops of CICT shown on the public pages (1.2.151: hidden by default)
             "events_public": lambda: db.get_setting("events.public") == "1",
+            # "Institution-level assessment" in the menu and the footer (1.2.156: hidden by default)
+            "assessment_menu": lambda: db.get_setting("menu.assessment") == "1",
         }
 
     # ---- errors ---------------------------------------------------------

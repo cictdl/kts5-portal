@@ -2,7 +2,7 @@
 {% block title %}{{ t('res.orient_title') }}{% endblock %}
 {% block content %}
 <div class="wrap section">
-  <span class="eyebrow">{{ t('nav.orientation') }}</span>
+  <span class="eyebrow">{{ t('site.name') }} · {{ t('site.theme') }}</span>
   <h1>{{ t('res.orient_title') }}</h1>
   <p class="lead dim" style="max-width:74ch">{{ t('res.orient_intro') }}</p>
   {% if settings['orientation.note'] %}<div class="alert info" dir="{{ st_dir('orientation.note') }}">{{ st('orientation.note') }}</div>{% endif %}

@@ -14,6 +14,12 @@ def test_the_menu_names_the_assessment_in_every_language():
     app = make_app(ADMIN_PASSWORD=None)
     client = app.test_client()
     page = client.get("/?lang=en").get_data(as_text=True)
+    # hidden from the menu since 1.2.156 (menu.assessment); shown again, under the page's own title
+    assert 'href="/examination"' not in page and ">Examination<" not in page
+    with app.app_context():
+        from kts.db import set_setting
+        set_setting("menu.assessment", "1")
+    page = client.get("/?lang=en").get_data(as_text=True)
     assert '<a href="/examination" class="">Institution-level assessment</a>' in page and ">Examination<" not in page
     assert "நிறுவன அளவிலான மதிப்பீடு" in client.get("/?lang=ta").get_data(as_text=True)
 

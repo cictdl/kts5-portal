@@ -6,7 +6,7 @@
   "nav.exam": "Institution-level assessment",
   "nav.resources": "Resources",
   "nav.kural": "Thirukkural",
-  "nav.orientation": "Orientation",
+  "nav.orientation": "Educational Videos",
   "nav.notices": "Notices",
   "nav.schedule": "Schedule",
   "nav.partners": "Partners",
@@ -355,7 +355,7 @@
   "res.daily_title": "Daily Kural",
   "res.daily_intro": "One couplet a day for the morning assembly, with its translation. Download a 200-day calendar for your school in any language.",
   "res.daily_calendar": "Download the 200-day calendar",
-  "res.orient_title": "Online orientation programme",
+  "res.orient_title": "Educational Videos",
   "res.orient_intro": "A two-lecture academic series on the Thirukkural, dubbed or subtitled in 22 Indian languages, each lecture followed by a 20-minute live question-and-answer segment.",
   "notices.title": "Notices and circulars",
   "notices.pinned": "Pinned",
@@ -1478,5 +1478,8 @@
   "ng.own_method": "A Nodal Institution may adopt its own transparent and objective methodology for the selection, keeping in view the objectives and broad principles of the Standard Operating Procedure; the methodology adopted is documented and communicated to CICT.",
   "ng.contact": "For any clarification or coordination on the programme: {name}, Registrar, Central Institute of Classical Tamil (CICT), Chennai · {email} · {phone}",
   "guide.i7_t": "After the nomination",
-  "guide.i7": "See that your student and representatives of your institution join the Inaugural and Valedictory Functions online, and that the student takes part in the academic orientation and the one-month research and academic engagement; guide the article/research note and organise the one-hour presentation, whose video recording you submit to CICT; keep the assessment records, attendance, photographs and reports; and validate the student's bank account details on the portal when it asks you to."
+  "guide.i7": "See that your student and representatives of your institution join the Inaugural and Valedictory Functions online, and that the student takes part in the academic orientation and the one-month research and academic engagement; guide the article/research note and organise the one-hour presentation, whose video recording you submit to CICT; keep the assessment records, attendance, photographs and reports; and validate the student's bank account details on the portal when it asks you to.",
+  "nav.acad": "Academic Orientation",
+  "acad.soon": "The content of the academic orientation will be published here.",
+  "nav.other_res": "Other Resources"
 }

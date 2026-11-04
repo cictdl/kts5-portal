@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ t('nav.acad') }}{% endblock %}
+{% block content %}
+{# The academic orientation of the selected students by CICT (1.2.156; the user, 4 November 2026: "Make a new Menu named, Academic
+   Orientation. In this we will provide content later"): its day (orientation.by, Annexure-III of the D.O. letter of 31 October 2026)
+   and, until CICT gives the content, the educational videos and the study material. #}
+<div class="wrap section">
+  <span class="eyebrow">{{ t('site.name') }} · {{ t('site.theme') }}</span>
+  <h1>{{ t('nav.acad') }}</h1>
+  <p class="lead dim" style="max-width:74ch">{{ t('timeline.live') }}{% if settings['orientation.by'] %} · <b><bdi>{{ t('kd.by')|replace('{date}', settings['orientation.by']|date) }}</bdi></b>{% endif %}</p>
+  <div class="alert info">{{ t('acad.soon') }}</div>
+  <div class="btn-row" style="margin-top:14px">
+    <a class="btn" href="{{ url_for('public.orientation') }}">▶ {{ t('nav.orientation') }}</a>
+    <a class="btn secondary" href="{{ url_for('public.syllabus') }}">📘 {{ t('syl.cta') }}</a>
+  </div>
+</div>
+{% endblock %}

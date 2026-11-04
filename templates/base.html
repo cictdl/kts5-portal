@@ -74,18 +74,23 @@
       <li><a href="{{ url_for('public.home') }}" class="{{ 'active' if ep == 'public.home' }}">{{ t('nav.home') }}</a></li>
       <li><a href="{{ url_for('public.about') }}" class="{{ 'active' if ep == 'public.about' }}">{{ t('nav.about') }}</a></li>
       <li><a href="{{ url_for('public.programme') }}" class="{{ 'active' if ep == 'public.programme' }}">{{ t('nav.programme') }}</a></li>
-      <li class="has-sub"><a href="{{ url_for('public.register') if students_public() else url_for('public.hei_register') }}" class="{{ 'active' if ep.startswith('public.register') or ep.startswith('public.hei_') or ep in ('public.institutions', 'public.nodal_institutions', 'public.guide', 'public.guide_institutions') }}" aria-haspopup="true">{{ t('nav.register') }}</a>
+      <li class="has-sub"><a href="{{ url_for('public.register') if students_public() else url_for('public.hei_register') }}" class="{{ 'active' if ep.startswith('public.register') or ep.startswith('public.hei_') or ep in ('public.institutions', 'public.nodal_institutions', 'public.guide', 'public.guide_institutions', 'public.merit') }}" aria-haspopup="true">{{ t('nav.register') }}</a>
         <ul class="sub">
           <li><a href="{{ url_for('public.guide') }}">{{ t('guide.title') }}</a></li>
           {% if students_public() %}<li><a href="{{ url_for('public.register') }}">{{ t('reg.title') }}</a></li>{% endif %}
           <li><a href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a></li>
           <li><a href="{{ url_for('public.institutions') }}">{{ t('nav.institutions') }}</a></li>
+          {% if get_setting('merit.published') == '1' %}<li><a href="{{ url_for('public.merit') }}">{{ t('nav.merit') }}</a></li>{% endif %}
           <li><a href="{{ url_for('public.nodal_institutions') }}">{{ t('nav.nodal') }}</a></li>
           <li><a href="{{ url_for('public.nodal_guidelines') }}">{{ t('ng.title') }}</a></li>
           <li><a href="{{ url_for('public.submit_guide') }}">{{ t('hs.title') }}</a></li>
           <li><a href="{{ url_for('campus.login') }}">{{ t('camp.login_title') }}</a></li>
         </ul></li>
-      <li><a href="{{ url_for('public.examination') }}" class="{{ 'active' if ep in ('public.examination', 'public.merit') }}">{{ t('nav.exam') }}</a></li>
+      {# "Institution-level assessment" hidden (1.2.156, menu.assessment); the Academic Orientation, its content from CICT later #}
+      {% if assessment_menu() %}
+      <li><a href="{{ url_for('public.examination') }}" class="{{ 'active' if ep == 'public.examination' }}">{{ t('nav.exam') }}</a></li>
+      {% endif %}
+      <li><a href="{{ url_for('public.academic_orientation') }}" class="{{ 'active' if ep == 'public.academic_orientation' }}">{{ t('nav.acad') }}</a></li>
       <li><a href="{{ url_for('public.orientation') }}" class="{{ 'active' if ep == 'public.orientation' }}">{{ t('nav.orientation') }}</a></li>
       <li class="has-sub"><a href="{{ url_for('public.resources') }}" class="{{ 'active' if ep.startswith('public.resource') or ep in ('public.cict_events_page', 'public.syllabus') }}" aria-haspopup="true">{{ t('nav.resources') }}</a>
         <ul class="sub">
@@ -93,11 +98,13 @@
           <li><a href="{{ url_for('public.syllabus') }}">{{ t('syl.title') }}</a></li>
           {% if events_public() %}<li><a href="{{ url_for('public.cict_events_page') }}">{{ t('ev.title') }}</a></li>{% endif %}
         </ul></li>
-      <li class="has-sub"><a href="{{ url_for('public.kural_browser') }}" class="{{ 'active' if ep.startswith('public.kural') or ep in ('public.daily_kural', 'public.companion') }}" aria-haspopup="true">{{ t('nav.kural') }}</a>
+      <li class="has-sub"><a href="{{ url_for('public.kural_browser') }}" class="{{ 'active' if ep.startswith('public.kural') or ep.startswith('practice.') or ep in ('public.daily_kural', 'public.companion') }}" aria-haspopup="true">{{ t('nav.other_res') }}</a>
         <ul class="sub">
           <li><a href="{{ url_for('public.kural_browser') }}">{{ t('res.kural_browser') }}</a></li>
           {% if get_setting('companion.on') == '1' %}<li><a href="{{ url_for('public.companion') }}">{{ t('comp.title') }}</a></li>{% endif %}
           <li><a href="{{ url_for('public.daily_kural') }}">{{ t('nav.daily') }}</a></li>
+          {% if get_setting('quiz.on') == '1' %}<li><a href="{{ url_for('quiz.join') }}">{{ t('quiz.title') }}</a></li>{% endif %}
+          {% if get_setting('practice.on') == '1' %}<li><a href="{{ url_for('practice.home') }}">{{ t('prac.title') }}</a></li>{% endif %}
         </ul></li>
       <li class="has-sub"><a href="{{ url_for('public.notices') }}" class="{{ 'active' if ep.startswith('public.notice') or ep == 'public.news' }}" aria-haspopup="true">{{ t('nav.notices') }}</a>
         <ul class="sub">
@@ -161,7 +168,9 @@
         <li><a href="{{ url_for('public.nodal_institutions') }}">{{ t('nav.nodal') }}</a></li>
         <li><a href="{{ url_for('public.institutions') }}">{{ t('nav.institutions') }}</a></li>
         <li><a href="{{ url_for('campus.login') }}">{{ t('camp.login_title') }}</a></li>
+        {% if assessment_menu() %}
         <li><a href="{{ url_for('public.examination') }}">{{ t('nav.exam') }}</a></li>
+        {% endif %}
         <li><a href="{{ url_for('public.merit') }}">{{ t('nav.merit') }}</a></li>
         <li><a href="{{ url_for('public.stipend_guide') }}">{{ t('stip.title') }}</a></li>
         <li><a href="{{ url_for('public.daily_kural') }}">{{ t('nav.daily') }}</a></li>

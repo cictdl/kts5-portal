@@ -1689,6 +1689,12 @@ def orientation():
                            lectures=orientation_lectures())
 
 
+@bp.route("/academic-orientation")
+def academic_orientation():
+    """The academic orientation of the selected students by CICT (1.2.156): its own item in the menu; CICT gives its content later."""
+    return render_template("public/academic_orientation.html", settings=all_settings())
+
+
 # ---- notices / schedule / partners / contact --------------------------------
 
 @bp.route("/notices")
@@ -1920,7 +1926,8 @@ SITEMAP = [
                          ("public.institutions", {}, "nav.institutions"), ("public.hei_register", {}, "hei.cta"),
                          ("public.nodal_guidelines", {}, "ng.title"), ("public.submit_guide", {}, "hs.title"),
                          ("campus.login", {}, "camp.login_title")]),
-    ("pol.sm_learning", [("public.orientation", {}, "nav.orientation"), ("public.resources", {}, "nav.resources"),
+    ("pol.sm_learning", [("public.academic_orientation", {}, "nav.acad"), ("public.orientation", {}, "nav.orientation"),
+                         ("public.resources", {}, "nav.resources"),
                          ("public.cict_events_page", {}, "ev.title"),
                          ("public.kural_browser", {}, "nav.kural"), ("public.companion", {}, "comp.title"),
                          ("public.daily_kural", {}, "nav.daily"),
