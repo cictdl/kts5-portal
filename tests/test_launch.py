@@ -358,7 +358,7 @@ def test_the_notice_of_before_the_launch_says_that_it_took_place():
     # (1.2.95), dated the day it changes; one that CICT has changed stays as it is
     from kts.db import LAUNCH_NOTICE, RETIRED_LAUNCH_NOTICES, execute, init_db, query
     assert "launched the web portal" in LAUNCH_NOTICE[1] and "on 22 October 2026" in LAUNCH_NOTICE[1]
-    assert "by 29 October 2026" in LAUNCH_NOTICE[1] and "will launch" not in LAUNCH_NOTICE[1]
+    assert "by 20 November 2026" in LAUNCH_NOTICE[1] and "will launch" not in LAUNCH_NOTICE[1]
     app = make_app(ADMIN_PASSWORD=None)
     old_title, old_body = RETIRED_LAUNCH_NOTICES[0]
     with app.app_context():

@@ -84,7 +84,7 @@ def test_the_page():
     assert page.count('class="dash-tile ') == 36
     assert ('<a class="dash-tile b1" href="#d-TN">\n          <b dir="ltr">TN</b>\n          <span class="dash-n" dir="ltr">2/50</span>') in page
     assert ('<a class="dash-tile cv" href="#d-JK">\n          <b dir="ltr">LA</b>\n          <span class="dash-n" dir="ltr">→ JK</span>') in page
-    assert "Counted with Jammu and Kashmir, as paired in Annexure-I" in page and "Union Territory paired with a State in Annexure-I" in page
+    assert "Counted with Jammu and Kashmir, as paired in Annexure-I" in page and "Union Territory counted with another row of Annexure-I" in page
     assert "No number in Annexure-I" not in page
     # the table: every figure, with the total
     table = page[page.index('class="table dash-table"'):page.index('class="dash-details"')]

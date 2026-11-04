@@ -48,8 +48,8 @@ def texts(lang):
         by = lambda s: portal_i18n.text("nl.by", lang).replace("{date}", s)  # noqa: E731
         select_end, hei_end = L._day("hei.select_end", get), L._day("hei.end", get)
         sel = f"{hei_end.day + 1}–{day('hei.select_end')}" if select_end and hei_end else day("hei.select_end")
-        dates = [sel, by(day("camp.to")), day("reg.end"), L.span_text(L._day("reg.end", get) and L._day("reg.end", get).replace(day=L._day("reg.end", get).day + 1),
-                                                                      L._day("verify.end", get), lang).replace(f" {L._day('verify.end', get).year}", ""),
+        # the verification (node 4) has no date in the Ministry's letter of 31 October 2026: none on the picture (1.2.155)
+        dates = [sel, by(day("camp.to")), day("reg.end"), "",
                  day("kts.start"), day("kts.end"), by(day("orientation.by")),
                  f"{day('internship.start')} – {day('papers.due')}"]
     return t, dates

@@ -84,7 +84,7 @@ def test_the_console_counts_them_and_the_selection_does_not():
         client.post("/candidate/exam", data={"_csrf": token})
     with app.test_request_context():
         execute("UPDATE exam_sessions SET status = 'submitted', score = 50, submitted_at = started_at")
-        run_selection(10, 5, None)
+        run_selection(None)
         ranked = {r["application_id"] for r in query("SELECT application_id FROM merit_list")}
         ids = {r["app_no"]: r["id"] for r in query("SELECT id, app_no FROM applications")}
     assert ranked == {ids[students[1]["app_no"]]}

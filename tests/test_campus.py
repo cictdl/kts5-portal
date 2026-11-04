@@ -95,7 +95,7 @@ def test_the_nodal_officer_uploads_annexure_ii_and_the_institution_completes_its
     assert (row["status"], row["coord_email"], row["aishe_code"], row["itype"], row["ref"]) == ("identified", "coord@stthomas.example", "C-22222", "Government-aided college", "KTS5-HEI-00001")
     assert row["invite_token"]
     mail = _mails(app, "coord@stthomas.example")[-1]
-    assert "identified as a participating institution" in mail["subject"] and f"/institutions/register?invite={row['invite_token']}" in mail["body"]
+    assert "is invited to register" in mail["subject"] and f"/institutions/register?invite={row['invite_token']}" in mail["body"]
     # on the website: identified, not yet listed; the officer's page counts it
     assert "St. Thomas" not in app.test_client().get("/institutions?lang=en").get_data(as_text=True)
     assert ">1</a>" in officer.get("/console/institutions").get_data(as_text=True)
@@ -113,9 +113,10 @@ def test_the_nodal_officer_uploads_annexure_ii_and_the_institution_completes_its
     assert r.status_code == 302 and r.headers["Location"].endswith("/institutions/register/done/KTS5-HEI-00001")
     with app.app_context():
         row = query("SELECT * FROM institutions", one=True)
-    assert row["status"] == "accepted" and row["invite_token"] is None and row["head_name"] == "Dr. Principal T"
-    assert "has selected your institution" in _mails(app, "coord@stthomas.example")[-1]["body"]
-    assert "St. Thomas College Thrissur" in app.test_client().get("/institutions?lang=en").get_data(as_text=True)
+    # registered, it awaits the selection of the Nodal Institution under Annexure-V, as every registered institution (1.2.155)
+    assert row["status"] == "pending" and row["invite_token"] is None and row["head_name"] == "Dr. Principal T"
+    assert "has been received" in _mails(app, "coord@stthomas.example")[-1]["body"]
+    assert "St. Thomas College Thrissur" not in app.test_client().get("/institutions?lang=en").get_data(as_text=True)
     # a used invitation
     assert "not valid or has been used" in client.get(f"/institutions/register?invite={data['invite']}&lang=en", follow_redirects=True).get_data(as_text=True)
 
@@ -349,7 +350,8 @@ def test_a_student_assessed_in_another_way_is_entered_and_ranked_after_those_wit
     with app.app_context():
         a = query("SELECT * FROM applications", one=True)
         assert a["exam_score"] is None and query("SELECT COUNT(*) AS n FROM exam_sessions", one=True)["n"] == 0
-        # a second application, with a score, ranks first in the selection
+        # a second application, of another college: each is the nominee of its own institution, and both are selected; the score
+        # of a test plays no part in the list (1.2.155)
         execute("UPDATE applications SET status = 'verified'")
         rid = execute("INSERT INTO applications(full_name, gender, dob, mobile, email, state, college_name, college_key, pref_lang, status, "
                       "created_at, updated_at) VALUES('Scored Student','F','2004-05-06','9123456700','scored@x.example','Kerala','Other College',"
@@ -359,9 +361,9 @@ def test_a_student_assessed_in_another_way_is_entered_and_ranked_after_those_wit
                 "'2026-10-18T10:20:00+05:30', 'submitted', 40, 20, 1200)", (rid,))
     from kts.admin import run_selection
     with app.test_request_context():
-        run_id, ranked, runners = run_selection(1, 1, None)
-        order = [(r["rank"], r["application_id"], r["score"]) for r in query("SELECT * FROM merit_list ORDER BY rank")]
-    assert ranked == 2 and order == [(1, rid, 40.0), (2, a["id"], 0.0)] or order[0][1] == rid
+        run_id, chosen, others = run_selection(None)
+        order = [(r["application_id"], r["outcome"]) for r in query("SELECT * FROM merit_list ORDER BY rank")]
+    assert (chosen, others) == (2, 0) and sorted(order) == sorted([(rid, "selected"), (a["id"], "selected")])
 
 
 def test_the_letter_in_the_data_and_the_pages():
@@ -372,10 +374,11 @@ def test_the_letter_in_the_data_and_the_pages():
     by = {h["state"]: h for h in heis}
     assert by["Tamil Nadu"]["name"] == "Central University of Tamil Nadu" and by["Tamil Nadu"]["allocation"] == 50
     assert by["Goa"]["name"] == "NIT Goa" and by["Goa"]["type"] == "nit" and by["Assam"]["name"] == "Assam University"
-    # the central test of CICT, closed by the letter, open again in its days from 1.2.120 (10 to 20 November 2026)
-    assert DEFAULT_SETTINGS["exam.open"] == "auto" and DEFAULT_SETTINGS["reg.by_institution"] == "1" and DEFAULT_SETTINGS["camp.to"] == "2026-11-19"
+    # the central test of CICT, closed by the letter, open again in its days from 1.2.120 (10 to 20 November 2026), switched off
+    # with the D.O. letter of 31 October 2026 (1.2.155)
+    assert DEFAULT_SETTINGS["exam.open"] == "0" and DEFAULT_SETTINGS["reg.by_institution"] == "1" and DEFAULT_SETTINGS["camp.to"] == "2026-11-19"
     assert "exam.open" not in RETIRED_DEFAULTS and "2026-10-21" in RETIRED_DEFAULTS["reg.end"] and "50" in RETIRED_DEFAULTS["hei.max_per_state"]
-    assert set(RETIRED_EVENT_TITLES) == {"selection", "letters", "live", "assess", "internship", "papers"}
+    assert set(RETIRED_EVENT_TITLES) == {"selection", "letters", "live", "assess", "internship", "papers", "hei_list"}
     app = make_app(ADMIN_PASSWORD=None)
     client = app.test_client()
     home = client.get("/?lang=en").get_data(as_text=True)

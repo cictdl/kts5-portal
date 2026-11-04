@@ -505,7 +505,7 @@ def test_letters_are_switched_off_and_on_and_a_sample_is_shown():
     sample = admin.get("/console/certificate/sample?kind=letter").get_data(as_text=True)
     assert "Sample Student Name" in sample and "CICT/KTS5/CL/2026/000000" in sample and "Dr. A. Sample" in sample
     from kts.admin import SETTING_GROUPS
-    group = [items for title, items in SETTING_GROUPS if title.startswith("Internship")]
+    group = [items for title, items in SETTING_GROUPS if title.startswith("The one-month research and academic engagement")]
     # and the switch, the note and the guidelines of the research papers (version 1.2.11)
     assert [key for key, _l, _k in group[0]] == ["letter.date", "internship.start", "papers.due", "present.due",
                                                  "papers.open", "papers.note", "papers.guide_url", "orientation.by"]

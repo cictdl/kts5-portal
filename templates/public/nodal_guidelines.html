@@ -17,6 +17,7 @@
   <section class="card accent ng-committee" aria-labelledby="ng-committee">
     <h2 id="ng-committee">{{ t('ng.committee') }}</h2>
     <p class="small muted" style="margin-top:0">{{ t('ng.committee_src') }}</p>
+    <p>{{ t('ng.screen') }}</p>
     <ol class="ng-list">
       {% for i in range(1, 6) %}<li><b>{{ t('ng.g%d_t' % i) }}:</b> {{ t('ng.g%d' % i) }}</li>
       {% endfor %}
@@ -34,6 +35,13 @@
     <p style="margin-bottom:0">{{ t('ng.records') }}</p>
   </section>
 
+  {# paragraph 6 and the note of Annexure-V (1.2.155) #}
+  <section class="card ng-replace" aria-labelledby="ng-replace">
+    <h2 id="ng-replace">{{ t('ng.replace_t') }}</h2>
+    <p>{{ t('ng.replace') }}</p>
+    <p style="margin-bottom:0">{{ t('ng.own_method') }}</p>
+  </section>
+
   <div class="ng-dates">{{ key_dates('h2', 'ng-kd') }}</div>
 
   <section class="card" aria-labelledby="ng-portal">
@@ -44,6 +52,8 @@
       <a class="btn secondary" href="{{ url_for('public.institutions') }}">{{ t('nav.institutions') }}</a>
     </div>
   </section>
-  <p class="small" style="margin-top:18px">{{ t('guide.help')|replace('{email}', settings['contact.email'])|replace('{phone}', settings['contact.phone']) }}</p>
+  {# the officer of CICT that the letter names (paragraph 9) #}
+  <p class="ng-contact" style="margin-top:18px"><b>{{ t('ng.contact')|replace('{name}', do_contact.name)|replace('{email}', do_contact.email)|replace('{phone}', do_contact.phone) }}</b></p>
+  <p class="small">{{ t('guide.help')|replace('{email}', settings['contact.email'])|replace('{phone}', settings['contact.phone']) }}</p>
 </div>
 {% endblock %}

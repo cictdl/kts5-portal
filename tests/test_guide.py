@@ -37,8 +37,8 @@ def test_the_three_parts_with_their_dates_and_links(site):
     for heading in ("How to take part", "For students", "For participating institutions", "For Nodal Officers of the States/UTs"):
         assert heading in page
     # the dates of the settings in the steps
-    assert "ask the Head of your institution to register it by 15 Nov 2026." in page and "<b>Register by 20 Nov 2026</b>" in page
-    assert "Between 22 Oct 2026 and 19 Nov 2026, your institution assesses" in page
+    assert "ask its Head to register it by 15 Nov 2026;" in page and "<b>Register by 20 Nov 2026</b>" in page
+    assert "By 19 Nov 2026, your institution assesses" in page and "Between 22 Oct 2026" not in page
     # the Nodal Officers accept the institutions up to the last day of the selection (the revised D.O. letter, 1.2.110)
     assert "and select the number that Annexure-I prescribes, with a reserve list, by 17 Nov 2026." in page
     assert "Selection of the Participating Institutions by the Nodal Institutions</div><div class=\"val\">17 Nov 2026</div>" in page

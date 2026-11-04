@@ -39,47 +39,79 @@ from .utils import college_key, now_ist, send_later, send_mail
 # Participating Institution; reserve: in the reserve list of the Nodal Institution, to replace one that drops out (1.2.111)
 STATUSES = ["identified", "pending", "accepted", "reserve", "declined"]
 
-# Annexure-V of the revised D.O. letter (26 October 2026), 3. Selection criteria: (key, criterion, maximum marks, indicators,
-# evidence). Total 100; recommended qualifying benchmark 60. In a tie: higher marks in institutional readiness, then in
-# academic engagement with the Thirukkural, then wider geographical representation, then the earlier complete registration.
-SOP = [("readiness", "Institutional readiness", 25,
-        "Nodal/Institutional Coordinator identified; faculty support; ability to conduct assessment and one-month academic engagement.",
-        "Official nomination/undertaking and brief implementation plan"),
-       ("outreach", "Proposed student outreach", 20,
-        "Credible plan to mobilise students across disciplines and conduct a transparent assessment.", "Outreach and assessment plan"),
-       ("academic", "Academic engagement with the Thirukkural", 20,
-        "Plan for the use of prescribed resources, faculty-guided study, an article/research note and a presentation.", "Academic activity note"),
-       ("geography", "Geographical representation", 15,
-        "Contribution to balanced district/regional representation within the State/UT.", "Institution location and district coverage"),
-       ("diversity", "Institutional diversity and inclusion", 10,
-        "Representation across institution types, disciplines and underserved/remote areas, as applicable.", "Institution profile"),
-       ("record", "Past record and documentation capacity", 10,
-        "Ability to complete activities, maintain records and submit reports within timelines.", "Relevant institutional record/undertaking")]
+# Annexure-V of the D.O. letter of 31 October 2026 (1.2.155; six criteria of 25/20/20/15/10/10 in the letter of 26 October before),
+# 3. Selection criteria: (key, criterion, maximum marks, scoring parameters, evidence, the marks the parameters give). Total 100;
+# recommended qualifying benchmark 60. Criterion 5, institutional and disciplinary diversity (20), is marked as its two parts: A, the
+# institution type (up to 10), and B, the disciplines (up to 10). In a tie (paragraph 4): higher marks in institutional readiness, then
+# in academic engagement with the Thirukkural, then in geographical representation, then the earlier complete registration.
+SOP = [("readiness", "1. Institutional readiness", 20,
+        "All four requirements: (i) Nodal/Institutional Coordinator identified; (ii) adequate faculty support available; (iii) arrangements "
+        "made for student assessment; (iv) readiness to undertake the one-month academic engagement. 20 marks: all four fulfilled; "
+        "15: any three; 10: any two; 5: any one; 0: none.",
+        "Institutional undertaking and implementation plan", (0, 5, 10, 15, 20)),
+       ("outreach", "2. Proposed student outreach", 20,
+        "20 marks: 200 or more students proposed for mobilisation; 15: 150–199 students; 10: 100–149; 5: 50–99; 0: fewer than 50.",
+        "Number of students proposed and outreach plan", (0, 5, 10, 15, 20)),
+       ("academic", "3. Academic engagement with the Thirukkural", 20,
+        "All four components: (i) use of prescribed resources; (ii) faculty-guided study; (iii) preparation of an article/research note; "
+        "(iv) presentation. 20 marks: all four covered; 15: any three; 10: any two; 5: any one; 0: none.",
+        "Academic activity plan (preference for the study of the Thirukkural in any of the 22 scheduled Indian languages)", (0, 5, 10, 15, 20)),
+       ("geography", "4. Geographical representation", 20,
+        "20 marks: located in or substantially serves an Aspirational District or an otherwise under-represented district/region of "
+        "the State/UT; 15: strengthens the representation of a district/region with limited representation among the institutions under "
+        "consideration; 10: provides additional district/regional representation; 5: the district/region is already adequately represented.",
+        "Institution location, district coverage and distribution of eligible applications", (5, 10, 15, 20)),
+       ("diversity_type", "5A. Institutional diversity: institution type", 10,
+        "10 marks: the selection adds an institution type not represented, or not adequately represented, in the proposed State/UT "
+        "list; 5: the type is already adequately represented. Types: University; College; Standalone Institution; Institution of "
+        "National Importance/other specialised HEI.",
+        "Institution profile, AISHE details", (5, 10)),
+       ("diversity_disc", "5B. Disciplinary diversity", 10,
+        "10 marks: programmes offered in four broad disciplinary groups; 7: three; 5: two; 2: one. Groups: (i) Arts, Humanities, "
+        "Languages and Social Sciences; (ii) Science and Mathematics; (iii) Engineering, Technology and Technical Education; "
+        "(iv) Commerce, Management, Law, Education, Medical/Allied and other professional disciplines.",
+        "Programme/course information", (2, 5, 7, 10))]
 SOP_BENCHMARK = 60
 # the reserve list: ordinarily up to 20 per cent of the prescribed allocation
 RESERVE_SHARE = 20
 
 
-def sop_marks(row):
-    """{criterion: marks} of the institution, as the committee recorded them; {} when not yet."""
+def _recorded(row):
     try:
         marks = json.loads(row["sop_scores"] or "{}")
     except (ValueError, TypeError):
+        return {}
+    return marks if isinstance(marks, dict) else {}
+
+
+def sop_legacy(row):
+    """
+    The marks recorded on the six criteria of the letter of 26 October 2026 (before 1.2.155), which no longer count: {criterion: marks},
+    or {} for marks of the present criteria or none.
+    """
+    marks = _recorded(row)
+    return marks if "record" in marks or ("diversity" in marks and "diversity_type" not in marks) else {}
+
+
+def sop_marks(row):
+    """{criterion: marks} of the institution, as the committee recorded them on the present criteria; {} when not yet."""
+    marks = _recorded(row)
+    if sop_legacy(row):
         return {}
     return {key: int(marks[key]) for key, *_ in SOP if isinstance(marks.get(key), int)}
 
 
 def sop_order(row):
-    """The order of Annexure-V, best first: the total, then the tie-breaks it names (the geographical one is the committee's)."""
+    """The order of Annexure-V, best first: the total, then the tie-breaks of its paragraph 4, then the earlier registration."""
     marks = sop_marks(row)
     return (-(row["sop_total"] if row["sop_total"] is not None else -1), -marks.get("readiness", 0), -marks.get("academic", 0),
-            row["created_at"] or "")
+            -marks.get("geography", 0), row["created_at"] or "")
 
 
 def reserve_of(state):
-    """The reserve list that Annexure-V suggests for the State/UT: up to 20 per cent of its allocation, rounded up; 0 without one."""
+    """The reserve list that Annexure-V suggests for the State/UT: ordinarily up to 20 per cent of its allocation (at least one); 0 without one."""
     n = allocation_of(state)
-    return -(-n * RESERVE_SHARE // 100) if n else 0
+    return max(1, n * RESERVE_SHARE // 100) if n else 0
 # what an institution writes, in English, as the student does
 # Annexure-IV of the D.O. letter of 9 October 2026: the Institutional Coordinator and the Faculty Supervisor/Guide, each with
 # name, designation, mobile and e-mail (1.2.46)
@@ -210,16 +242,18 @@ def mail_invited(row):
     except ValueError:
         by = "the date shown on the portal"
     for address in [a for a in dict.fromkeys([row["coord_email"], row["head_email"]]) if a]:
-        send_mail(address, f"KTS 5.0: {row['name']} is identified as a participating institution",
-                  f"Dear Sir/Madam,\n\nThe Nodal Institution of {unit_name(row['state'])} has identified {row['name']} as a participating "
-                  f"institution of Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom, the nationwide Students' Engagement "
+        send_mail(address, f"KTS 5.0: {row['name']} is invited to register",
+                  f"Dear Sir/Madam,\n\nThe Nodal Institution of {unit_name(row['state'])} invites {row['name']} to register for "
+                  f"Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom, the nationwide Students' Engagement "
                   f"Programme of the Ministry of Education (the Sangamam at Varanasi: {_by(get_setting('kts.start'))} – "
                   f"{_by(get_setting('kts.end'))}).\n\n"
                   f"Please complete the registration of the institution on the KTS 5.0 portal with this link:\n\n{link}\n\n"
-                  f"It asks for the Head of the Institution and confirms the Institutional Coordinator. The institution then "
-                  f"assesses its students on the Thirukkural (the portal offers a ready online test), selects one student on "
-                  f"merit and registers that student on the portal by {by}. The steps and the dates are on the "
-                  f"institution's page of the portal after the registration.\n\nReference: {row['ref']}\n\n"
+                  f"It asks for the Head of the Institution and confirms the Institutional Coordinator. The Nodal Institution then "
+                  f"selects the Participating Institutions from those registered, under the Standard Operating Procedure "
+                  f"(Annexure-V of the D.O. letter of 31 October 2026) and within the number that Annexure-I prescribes; "
+                  f"registration does not by itself confer selection. A selected institution assesses its students on the "
+                  f"Thirukkural (the portal offers a ready online test) and nominates one student on merit on the portal by {by}. "
+                  f"The steps and the dates are on the institution's page of the portal.\n\nReference: {row['ref']}\n\n"
                   f"Central Institute of Classical Tamil, Chennai")
 
 
@@ -271,15 +305,20 @@ def mail_received(row):
         send_mail(address, f"KTS 5.0: application of {row['name']} received ({row['ref']})",
                   f"Dear Sir/Madam,\n\nThe application of your institution to take part in Kashi Tamil Sangamam 5.0 – "
                   f"Thirukkural Payilvom has been received.\n\nReference: {row['ref']}\n{_details(row)}\n"
-                  f"The Nodal Officer of {unit_name(row['state'])} reviews it; you will receive another mail with the decision. "
-                  f"Once accepted, the institution is listed at {base}/institutions and its nominated student can choose it "
-                  f"when registering at {base}/register.\n\nCentral Institute of Classical Tamil, Chennai")
+                  f"The Nodal Institution of {unit_name(row['state'])} scrutinises the registered institutions and selects, by "
+                  f"{_by(get_setting('hei.select_end'))}, the number of Participating Institutions that Annexure-I of the D.O. letter of "
+                  f"31 October 2026 prescribes, under the Standard Operating Procedure (Annexure-V); registration does not by itself "
+                  f"confer selection. You will receive another mail with the decision. A selected institution is listed at "
+                  f"{base}/institutions; it assesses its interested students and nominates one student on merit from its own page "
+                  f"on the portal ({base}/institution/login).\n\nCentral Institute of Classical Tamil, Chennai")
     officers = [u for u in query("SELECT * FROM users WHERE role = 'nodal' AND active = 1")
                 if row["state"] in with_covered([s for s in (u["states"] or "").split("|") if s])]
     send_later([(u["email"], f"KTS 5.0: {row['name']} applies to participate ({row['state']})",
                  f"Dear {u['name']},\n\nAn institution of {row['state']} has applied to take part in KTS 5.0.\n\n"
                  f"Reference: {row['ref']}\n{_details(row)}\n"
-                 f"Accept or decline it in the console: {base}/console/institutions?status=pending\n\nCICT, Chennai")
+                 f"Scrutinise it and record the marks of the Evaluation Committee on the criteria of Annexure-V in the console; the "
+                 f"Participating Institutions are selected in the order of the marks, within the number of Annexure-I, by "
+                 f"{_by(get_setting('hei.select_end'))}: {base}/console/institutions?status=pending\n\nCICT, Chennai")
                 for u in officers])
 
 
@@ -296,10 +335,17 @@ def mail_decision(row):
         subject = f"KTS 5.0: {row['name']} is a Participating Institution"
         body = (f"Dear Sir/Madam,\n\nThe Nodal Institution of {unit_name(row['state'])} has selected your institution as a Participating "
                 f"Institution of Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom.\n\nReference: {row['ref']}\n{_details(row)}\n"
-                f"Please assess your interested students on the Thirukkural and nominate one eligible student on merit, with one "
-                f"Faculty Supervisor/Guide, by {_by(get_setting('reg.end'))}. The nomination form, signed by the Head of "
-                f"the Institution, is at {base}/static/KTS5-nomination-form.pdf. The student registers at {base}/register, "
-                f"chooses \"{row['name']}\" as the institution and uploads the signed form.\n\n"
+                f"Please assess your interested students on the Thirukkural by {_by(get_setting('camp.to'))} (a short written test, "
+                f"an oral interaction, a presentation, an essay, a quiz or a combination of these; fair, documented and approved by "
+                f"the Head of the Institution or an authorised committee) and nominate one student on merit, with one Faculty "
+                f"Supervisor/Guide, by {_by(get_setting('reg.end'))}.\n\n"
+                f"How to nominate: sign in to the institution's page at {base}/institution/login with the e-mail address of the "
+                f"Institutional Coordinator or of the Head of the Institution (a six-digit code is mailed; there is no password). "
+                f"There you may switch on the portal's ready online test for your students; then select the student, and the "
+                f"portal mails the student a personal registration link. The student, or the coordinator with the student's "
+                f"details, completes the registration with that link: a photograph, an ID proof and the nomination form signed "
+                f"and sealed by the Head of the Institution ({base}/static/KTS5-nomination-form.pdf). The steps: "
+                f"{base}/how-to-submit-the-student\n\n"
                 f"The participating institutions are listed at {base}/institutions\n\nCentral Institute of Classical Tamil, Chennai")
     else:
         subject = f"KTS 5.0: application of {row['name']} ({row['ref']})"

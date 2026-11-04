@@ -45,7 +45,7 @@ def test_the_rows_of_annexure_i():
         assert HEI.with_covered(["Lakshadweep", "Kerala"]) == ["Lakshadweep", "Kerala"]
         assert (HEI.allocation_of("Lakshadweep"), HEI.allocation_of("Chandigarh"), HEI.allocation_of("Ladakh")) == (21, 21, 11)
         assert (HEI.allocation_of("Dadra and Nagar Haveli and Daman and Diu"), HEI.allocation_of("Andaman and Nicobar Islands")) == (50, 50)
-        assert (HEI.cap_of("Lakshadweep"), HEI.reserve_of("Ladakh"), HEI.reserve_of("Andaman and Nicobar Islands")) == (21, 3, 10)
+        assert (HEI.cap_of("Lakshadweep"), HEI.reserve_of("Ladakh"), HEI.reserve_of("Andaman and Nicobar Islands")) == (21, 2, 10)
         assert HEI.label_of("Lakshadweep", "en") == HEI.label_of("Kerala", "en") == "Kerala and Lakshadweep"
         assert HEI.label_of("Gujarat", "en") == "Gujarat and Dadra and Nagar Haveli and Daman and Diu" and HEI.label_of("Goa", "en") == "Goa"
         assert HEI.label_of("Kerala", "ta") == "கேரளா மற்றும் லட்சத்தீவு" and HEI.label_of("Kerala", "hi") == "केरल और लक्षद्वीप"
@@ -140,7 +140,7 @@ def test_a_union_territory_institution_goes_to_the_nodal_institution_of_its_stat
         row = query("SELECT * FROM institutions WHERE name = 'Kavaratti Arts College'", one=True)
         mail = query("SELECT body FROM outbox WHERE to_addr = 'c@lk.example' ORDER BY id LIMIT 1", one=True)["body"]
         to_officer = query("SELECT subject, body FROM outbox WHERE to_addr = 'nodal.kerala9@tests.example' ORDER BY id DESC LIMIT 1", one=True)
-    assert "State/UT: Lakshadweep" in mail and "The Nodal Officer of Kerala and Lakshadweep reviews it" in mail
+    assert "State/UT: Lakshadweep" in mail and "The Nodal Institution of Kerala and Lakshadweep scrutinises the registered institutions" in mail
     assert to_officer["subject"] == "KTS 5.0: Kavaratti Arts College applies to participate (Lakshadweep)"
     # the Nodal Officer of Kerala sees it; the number of Annexure-I is the two together
     page = officer.get("/console/institutions").get_data(as_text=True)
@@ -163,10 +163,10 @@ def test_a_union_territory_institution_goes_to_the_nodal_institution_of_its_stat
         u = query("SELECT * FROM users WHERE email = 'nodal.kerala9@tests.example'", one=True)
         assert NODAL.states_of(u) == ["Kerala", "Lakshadweep"] and NODAL.own_states(u) == ["Kerala"]
         subject, body = NODAL.officer_mail(u)
-        assert NODAL.account_paragraph(["Kerala"]).startswith("As Nodal Officer for Kerala and Lakshadweep, you see")
+        assert NODAL.account_paragraph(["Kerala"]).startswith("As Nodal Officer for Kerala and Lakshadweep, you scrutinise")
     assert subject.endswith("(Kerala and Lakshadweep)") and "1 institution awaits your decision" in subject
     assert "institutions of Kerala and Lakshadweep, on " in body
-    assert "Institutions awaiting your decision: 1." in body
+    assert "Institutions registered and awaiting your selection: 1." in body
     # a Nodal Officer of another State sees nothing of it
     other = _nodal(app, "nodal.goa9@tests.example", ["Goa"])
     assert "Kavaratti Arts College" not in other.get("/console/institutions").get_data(as_text=True)
@@ -193,7 +193,7 @@ def test_the_figures_count_the_pair_together():
     assert ('<a class="dash-tile cv" href="#d-KL">\n          <b dir="ltr">LD</b>\n          <span class="dash-n" dir="ltr">→ KL</span>\n'
             '          <span class="dash-tip" role="tooltip"><b>Lakshadweep</b>\n'
             '            <span>Counted with Kerala, as paired in Annexure-I</span></span>') in page
-    assert page.count('class="dash-tile cv"') == 5 and "Union Territory paired with a State in Annexure-I" in page
+    assert page.count('class="dash-tile cv"') == 5 and "Union Territory counted with another row of Annexure-I" in page
     assert '<tr id="st-KL">\n          <th scope="row"><a href="#d-KL">Kerala and Lakshadweep</a></th>' in page
     block = page[page.index('id="d-KL"'):]
     block = block[:block.index("</details>")]

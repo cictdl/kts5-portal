@@ -3,8 +3,8 @@
 {% block content %}
 {% set tot = board.total %}
 {% set pills = {'none': 'kumkum', 'testing': 'saffron', 'selected': 'saffron', 'registered': 'grey', 'verified': 'green'} %}
-<p class="dim" style="max-width:90ch">Each participating institution assesses its students on or before <b>{{ settings['camp.to']|date }}</b> (from {{ settings['camp.from']|date }}),
-  selects one on merit, and that student registers on or before <b>{{ settings['reg.end']|date }}</b>; the Nodal Officer verifies the application by <b>{{ settings['verify.end']|date }}</b>.
+<p class="dim" style="max-width:90ch">Each selected Participating Institution assesses its students on or before <b>{{ settings['camp.to']|date }}</b>,
+  selects one on merit and nominates that student, who registers with the institution's personal link, on or before <b>{{ settings['reg.end']|date }}</b>; the Nodal Officer verifies the application by <b>{{ settings['verify.end']|date }}</b>.
   Today is {{ today.strftime('%d %b %Y') }}.{% if scope is not none %} You see the institutions of <b>{{ scope_label(scope) }}</b>.{% endif %}</p>
 
 <div class="kpis">

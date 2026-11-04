@@ -2,7 +2,7 @@
 {% block title %}Institutions{% endblock %}
 {% block content %}
 <p class="dim" style="max-width:92ch">The institutions of the States/UTs, as the revised D.O. letter of the Ministry sets out: every interested institution
-  registers up to <b>{{ hei_end|date }}</b>; the Nodal Institution scrutinises them, records the marks of its evaluation committee on the six criteria of
+  registers up to <b>{{ hei_end|date }}</b>; the Nodal Institution scrutinises them, records the marks of its evaluation committee on the five criteria of
   the Standard Operating Procedure (Annexure-V: 100 marks, benchmark {{ benchmark }}) and, by <b>{{ select_end|date }}</b>, selects the number
   Annexure-I prescribes, with a reserve list of ordinarily up to 20 per cent; each selected Participating Institution assesses its students and
   nominates one on merit, registered with the portal's link on or before <b>{{ reg_end|date }}</b>. A selected institution that withdraws or does
@@ -25,9 +25,9 @@
 </table></div>
 {% if can_decide %}
 <div class="card" style="margin-bottom:16px">
-  <h3 style="margin-top:0">The list identified by the Nodal Institution (Annexure-II)</h3>
-  <p class="small dim" style="margin:0 0 8px">Upload the list in the format of Annexure-II (<a href="{{ url_for('admin.institutions_format') }}">download the format</a>; .xlsx or .csv: Name of Institution, District/City, Type, AISHE/Institution Code, Institutional Coordinator Name, Mobile No., Official Email ID; a State/UT column when the list covers several).
-    Each institution becomes <i>identified</i> and is invited by e-mail to complete its registration (the Head of the Institution, the declaration); it is then a participating institution at once. An institution that is in the list already is left alone.</p>
+  <h3 style="margin-top:0">Invite institutions to register (a list)</h3>
+  <p class="small dim" style="margin:0 0 8px">Upload a list of institutions to invite (<a href="{{ url_for('admin.institutions_format') }}">download the format</a>; .xlsx or .csv: Name of Institution, District/City, Type, AISHE/Institution Code, Institutional Coordinator Name, Mobile No., Official Email ID; a State/UT column when the list covers several).
+    Each institution becomes <i>identified</i> and is invited by e-mail to complete its registration (the Head of the Institution, the declaration); it then awaits your selection like any other registered institution, under Annexure-V and within the number of Annexure-I (the D.O. letter of 31 October 2026). An institution that is in the list already is left alone. The final list of the selected institutions downloads as <b>Excel (Annexure-II)</b>, in the format of the letter.</p>
   <form method="post" action="{{ url_for('admin.institutions_identified') }}" enctype="multipart/form-data" class="btn-row" style="margin:0">
     <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
     <select name="state"><option value="">State/UT of the list (when the sheet has no State/UT column)</option>{% for s in states %}<option>{{ s }}</option>{% endfor %}</select>
@@ -42,7 +42,8 @@
   <div class="field"><label for="status_f">Status</label><select id="status_f" name="status"><option value="">Any</option>{% for s in ('identified', 'pending', 'accepted', 'reserve', 'declined') %}<option {{ 'selected' if f.status == s }}>{{ s }}</option>{% endfor %}</select></div>
   <div class="field"><label>&nbsp;</label><button class="btn" type="submit">Filter</button></div>
   <div class="field"><label for="order_f">Order</label><select id="order_f" name="order"><option value="">By status</option><option value="marks" {{ 'selected' if order == 'marks' }}>By the marks of Annexure-V</option></select></div>
-  <div class="field"><label>&nbsp;</label><a class="btn ghost" href="{{ url_for('admin.institutions_export', **request.args.to_dict()) }}">Excel (Annexure-II)</a></div>
+  <div class="field"><label>&nbsp;</label><a class="btn ghost" href="{{ url_for('admin.institutions_annexure_ii', state=request.args.get('state') or None) }}">Excel (Annexure-II)</a></div>
+  <div class="field"><label>&nbsp;</label><a class="btn ghost" href="{{ url_for('admin.institutions_export', **request.args.to_dict()) }}">Excel (all institutions)</a></div>
   <div class="field"><label>&nbsp;</label><a class="btn ghost" href="{{ url_for('admin.institutions_evaluation', state=f.state or None) }}">Evaluation sheet (Annexure-V)</a></div>
 </form>
 <div class="table-wrap"><table class="table institutions">

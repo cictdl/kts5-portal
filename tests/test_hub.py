@@ -91,7 +91,7 @@ def test_the_hub_of_the_home_page(monkeypatch):
     assert "Searching the 4 Participating Institutions selected so far" in hub
     assert '<div class="hub-invite" data-hub-invite hidden>' in hub
     assert "Colleges and universities can still register until 15 November 2026. Send this to your Principal:" in hub
-    assert "Colleges and universities register on the KTS 5.0 portal by 15 November 2026: http://localhost:8905/institutions/register One student" in hub
+    assert "Colleges and universities register on the KTS 5.0 portal by 15 November 2026: http://localhost:8905/institutions/register The Nodal Institution of the State/UT selects" in hub
     wa = hub[hub.index('href="https://wa.me/?text=') + 6:]
     wa = wa[:wa.index('"')]
     assert "15 November 2026" in unquote(wa) and "/institutions/register" in unquote(wa)

@@ -63,7 +63,7 @@ def test_the_letter_of_tamil_nadu_in_english():
     assert "Dr. T. N. Officer, Nodal Officer · Registrar · nodal.tn@cutn.example · 9444000001" in doc
     assert "The Ministry has designated Central University of Tamil Nadu as the Nodal Higher Educational Institution for Tamil Nadu and Andaman and Nicobar Islands, to select 50 Participating Institutions" in doc
     # the dates of the settings, in words
-    for when in ("Assess your students by 19 November 2026.", "Nominate one student on merit by 20 November 2026.", "Verification, 21 November – 5 December 2026.",
+    for when in ("Assess your students by 19 November 2026.", "Nominate one student on merit by 20 November 2026.",
                  "28 November – 12 December 2026 at Varanasi", "The one-month research and academic engagement, 15 December 2026 – 14 January 2027.",
                  "an academic orientation by 14 December 2026", "By 14 January 2027 the article", "By 19 November 2026"):
         assert when in doc, when
@@ -71,6 +71,8 @@ def test_the_letter_of_tamil_nadu_in_english():
     assert "registrar@cict.in" in doc and "At a glance" in doc and "Yours faithfully," in doc and "Nodal Officer, KTS 5.0 – Tamil Nadu and Andaman and Nicobar Islands" in doc
     assert "<w:bidi/>" not in doc and "<w:rtl/>" not in doc and '<w:pageBreakBefore/>' in doc and doc.count("<w:tbl>") == 2
     assert "(Name of the Nodal Officer)" not in doc
+    # the verification is CICT's step, not dated as the Ministry's (1.2.155)
+    assert not re.search(r"\b5 December 2026", doc) and "21 November" not in doc
 
 
 def test_without_an_officer_and_in_tamil_and_urdu():

@@ -320,7 +320,8 @@ def letter_docx(state, lang, officer=None):
     numbered("8.", "nl.p8_t", "nl.p8")
     d.p([d.run(t("nl.glance_t"), bold=True, size=23, colour=INDIGO)], before=8, after=3, keep=True)
     by = lambda s: text("nl.by", lang).replace("{date}", s)  # noqa: E731
-    rows = [(by(v["camp_to"]), "nl.g1"), (v["reg_end"], "nl.g2"), (v["verify_span"], "nl.g3"), (v["kts_start"], "nl.g4"),
+    # the dates of the Ministry's timeline only: the verification (nl.g3) has no date in the letter of 31 October 2026 (1.2.155)
+    rows = [(by(v["camp_to"]), "nl.g1"), (v["reg_end"], "nl.g2"), (v["kts_start"], "nl.g4"),
             (v["kts_end"], "nl.g5"), (by(v["orientation_by"]), "nl.g6"), (v["engagement"], "nl.g7"), (v["papers_due"], "nl.g8")]
     table = [[[[d.run(text("nl.col_when", lang), bold=True, size=19, colour=INDIGO)]], [[d.run(text("nl.col_what", lang), bold=True, size=19, colour=INDIGO)]]]]
     table += [[[[d.run(when, bold=True, size=19)]], [[d.run(t(key), size=19)]]] for when, key in rows]

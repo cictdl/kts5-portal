@@ -127,8 +127,8 @@ def test_candidate_exam(client):
 def test_selection_and_merit(client):
     token = _csrf(client)
     client.post("/console/login", data={"_csrf": token, "email": "admin@kts5.local", "password": "Sangamam2026X"})
-    r = client.post("/console/selection", data={"_csrf": token, "action": "run", "select_count": "1000", "wait_count": "300"}, follow_redirects=True)
-    assert b"1 institutions ranked" in r.data
+    r = client.post("/console/selection", data={"_csrf": token, "action": "run"}, follow_redirects=True)
+    assert b"the verified nominee of each Participating Institution" in r.data
     r = client.post("/console/selection", data={"_csrf": token, "action": "publish", "note": "Provisional"}, follow_redirects=True)
     assert b"published" in r.data
     r = client.get("/merit-list")

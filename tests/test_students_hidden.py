@@ -109,7 +109,7 @@ def test_the_tiles_of_the_assessment_page():
     tiles = page[page.index('<div class="grid grid-2"'):]
     tiles = tiles[:tiles.index("</div>\n        </div>") if "</div>\n        </div>" in tiles else 1500]
     assert "📅" not in page and "Institution-level assessments</div>" not in tiles
-    assert "📝" not in page and "Last date to apply" not in tiles
+    assert "📝" not in page and "Last date for nomination" not in tiles
     assert "💻" in tiles and "⏳" in tiles
     shown = _get(_app("1").test_client(), "/examination?lang=en")
-    assert "📝 Last date to apply" in shown and "📅" not in shown
+    assert "📝 Last date for nomination" in shown and "📅" not in shown

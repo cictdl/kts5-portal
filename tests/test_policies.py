@@ -62,7 +62,7 @@ def test_the_help_page_gives_the_dates_of_the_settings(app):
         settings = all_settings()
     html = app.test_client().get("/help?lang=en").get_data(as_text=True)
     # the dates of the D.O. letter of 9 October 2026 (1.2.53): the institutions register, assess, and their students register
-    for key in ("hei.end", "camp.from", "camp.to", "reg.end"):
+    for key in ("hei.end", "camp.to", "reg.end"):
         assert f"<bdi>{fmt_date(settings[key], False)}</bdi>" in html, key
     # no test of CICT at a fixed hour any more
     assert f"<bdi>{settings['exam.start_time']}</bdi>" not in html and "IST</bdi>" not in html

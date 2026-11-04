@@ -1062,7 +1062,8 @@ def test_alt_texts_use_keys_that_exist():
     # 1.2.149: the Participating Institutions at a glance (2)
     # 1.2.151: the hint of the search without the seminars and workshops (1)
     # 1.2.152: the strip, the circular band, the quick links, the key dates, the two new pages (77)
-    assert len(CATALOG["en"]) == 1473
+    # 1.2.155: the D.O. letter of 31 October 2026 - the guidelines (screening, replacement, own methodology, contact) and How to take part (7)
+    assert len(CATALOG["en"]) == 1480
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1094,7 +1095,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.154" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.155" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

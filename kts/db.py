@@ -639,7 +639,8 @@ DEFAULT_SETTINGS = {
     "exam.show_score": "1",
     # the central test, retired by the D.O. letter of 9 October 2026 (1.2.43; the institutions assess, kts/campus.py), open
     # again in its days (1.2.120)
-    "exam.open": "auto",
+    # CICT's central online test (1.2.120), switched off since 1.2.155: the D.O. letter of 31 October 2026 has none (the user, 4 November)
+    "exam.open": "0",
     # the central test also for registered students not yet verified (1.2.119; the user's "let unverified registered
     # students take it too", 29 October 2026)
     "exam.unverified": "1",
@@ -846,6 +847,8 @@ RETIRED_EVENT_TITLES = {
     "live": ["Live sessions: 20 question-and-answer sessions", "Live online orientation with an interactive question-and-answer session"],
     # the revised D.O. letter (26 October 2026)
     "assess": ["Completion of the institution-level assessments: each institution selects one student on merit"],
+    # the D.O. letter of 31 October 2026 has no preliminary list of institutions (1.2.155)
+    "hei_list": ["Nodal Institutions furnish the details of their Nodal Officer and the preliminary list of institutions"],
     "internship": ["Commencement of the one-month internship and research period"],
     "papers": ["Submission of research papers"],
 }
@@ -896,7 +899,7 @@ DO_NOTICE = (
         "• By 14 December 2026: academic orientation by CICT and access to the study material and educational videos.",
         "• 15 December 2026 – 14 January 2027: the one-month research and academic engagement: structured study, an original "
         "article/research note of four to five pages under a Faculty Supervisor/Guide, and a one-hour presentation at the "
-        "institution, recorded.",
+        "institution, recorded; the institution submits the video recording of the presentation to CICT.",
         "• By 14 January 2027: submission of the article/research note, the activity report and the supporting records.",
         "",
         "Each eligible selected student is entitled to a stipend of Rs. 10,000, disbursed through Direct Benefit Transfer after "
@@ -904,7 +907,7 @@ DO_NOTICE = (
         "Institution through this portal.",
         "",
         "For any clarification: Dr. R. Bhuvaneshwari, Registrar, Central Institute of Classical Tamil (CICT), Chennai, "
-        "registrar@cict.in.",
+        "registrar@cict.in, mobile 9790325518 / 9965734497.",
     ]),
 )
 DO_NOTICE_FILE = "notices/KTS5-DO-letter-31-October-2026.pdf"
@@ -945,7 +948,12 @@ CORPUS_SLIPS = [
 ]
 
 RETIRED_AGENCY_ROLES = {
-    "CICT": ["Implementing institute for KTS 5.0: runs this portal, the student registration and selection, the 21-language orientation, the digital repository and all Thirukkural content."],
+    "CICT": ["Implementing institute for KTS 5.0: runs this portal, the student registration and selection, the 21-language orientation, the digital repository and all Thirukkural content.",
+             # the D.O. letter of 31 October 2026: the institutions register, the Participating Institutions nominate (1.2.155)
+             "Implementing institute for KTS 5.0: runs this portal, the student registration and selection, the 22-language orientation, the digital repository and all Thirukkural content."],
+    "UGC": ["Circulates the call for applications to universities and colleges across India and nominates faculty mentors."],
+    "AICTE": ["Outreach to technical institutions for student registration."],
+    "IRCTC": ["Travel, accommodation and local tours for delegates; Thirukkural displays at railway stations with Indian Railways."],
 }
 
 
@@ -1329,7 +1337,7 @@ def nodal_notice(heis):
         "scrutinises them and selects the prescribed number on 16 and 17 November 2026, with a reserve list; each "
         "selected Participating Institution assesses its interested students by 19 November and nominates one on merit by "
         "20 November 2026. "
-        "The participating institutions accepted so far are listed on the page of the Nodal Institutions.",
+        "The Participating Institutions selected by the Nodal Institutions are listed on the page of the Nodal Institutions.",
     ])
     return "State/UT-wise list of Nodal Higher Educational Institutions", body
 
@@ -1532,6 +1540,26 @@ def init_db(app):
                      (DO_NOTICE[1], now, DO_NOTICE[0], DO_NOTICE[1].replace("16-2/2026-Skt.I (Pt.)", "16-2/2026-Skt.(Pt.)")))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
 
+    # The D.O. letter of 31 October 2026 (1.2.155): the notice of the letter (the video of the presentation, the Registrar's mobiles),
+    # the circular of the Nodal HEIs and the launch notice take their present text where a database holds the earlier one unchanged;
+    # the marks of Annexure-V recorded on the six criteria of the letter of 26 October no longer count (their total is cleared, the
+    # marks stay recorded); CICT's central online test is switched off (the user, 4 November 2026). Each once.
+    mark = "migrate.do_31oct.1155"
+    if not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
+        before = DO_NOTICE[1].replace("recorded; the institution submits the video recording of the presentation to CICT.", "recorded.") \
+                             .replace("registrar@cict.in, mobile 9790325518 / 9965734497.", "registrar@cict.in.")
+        conn.execute("UPDATE notices SET body = ?, updated_at = ? WHERE title = ? AND body = ?", (DO_NOTICE[1], now, DO_NOTICE[0], before))
+        if seed_path.exists():
+            title, body = nodal_notice(json.loads(seed_path.read_text(encoding="utf-8")))
+            before = body.replace("The Participating Institutions selected by the Nodal Institutions are listed",
+                                  "The participating institutions accepted so far are listed")
+            conn.execute("UPDATE notices SET body = ?, updated_at = ? WHERE title = ? AND body = ?", (body, now, title, before))
+        conn.execute("UPDATE notices SET body = ?, updated_at = ? WHERE title = ? AND body = ?",
+                     (LAUNCH_NOTICE[1], now, LAUNCH_NOTICE[0], LAUNCH_BODY_1154))
+        conn.execute("UPDATE institutions SET sop_total = NULL WHERE sop_total IS NOT NULL AND sop_scores LIKE '%\"record\"%'")
+        conn.execute("UPDATE settings SET value = '0', updated_at = ? WHERE key = 'exam.open' AND value != '0'", (now,))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
+
     # The launch of 14 October 2026, 5:00 PM was postponed (1.2.69): on a database that has announced it already (its notice
     # was put in by an earlier start), the launch, registration and the banner are switched off, once. Nothing else changes,
     # and CICT switches them on again in the Console with the new moment; a new database is left as it is.
@@ -1595,9 +1623,20 @@ LAUNCH_NOTICE = (
     "Sangamam (KTS 5.0), kts.cict.in, and its registration on 22 October 2026. KTS 5.0 is scheduled to be held from "
     "28 November to 12 December 2026 under the theme “Thirukkural Payilvom – Thirukkural Abhyas Karen”. The programme "
     "seeks to celebrate the cultural and civilisational bonds between Kashi and Tamil Nadu and to promote the timeless "
+    "ethical and moral values of the Thirukkural.\n\nAll interested higher educational institutions register on kts.cict.in up to "
+    "15 November 2026; the Nodal Institutions select the Participating Institutions on 16 and 17 November, and each selected "
+    "Participating Institution assesses its interested students by 19 November and nominates one student on merit through the "
+    "portal by 20 November 2026 (the D.O. letter of the Ministry of Education of 31 October 2026).",
+)
+# its text up to 1.2.154 (the dates of the letter of 26 October): a notice that a database holds unchanged takes the present one (1.2.155)
+LAUNCH_BODY_1154 = (
+    "The Hon'ble Minister of Education, Shri Pralhad Joshi, launched the web portal of the fifth edition of Kashi Tamil "
+    "Sangamam (KTS 5.0), kts.cict.in, and its registration on 22 October 2026. KTS 5.0 is scheduled to be held from "
+    "28 November to 12 December 2026 under the theme “Thirukkural Payilvom – Thirukkural Abhyas Karen”. The programme "
+    "seeks to celebrate the cultural and civilisational bonds between Kashi and Tamil Nadu and to promote the timeless "
     "ethical and moral values of the Thirukkural.\n\nThe registration of the selected students is open on kts.cict.in. "
     "Each participating institution completes the assessment of its students by 29 October 2026, selects one student on "
-    "merit and registers that student on the portal by 29 October 2026.",
+    "merit and registers that student on the portal by 29 October 2026."
 )
 
 # The notice as put in before the launch took place, for 14 October 2026, 5:00 PM (1.2.69 to 1.2.94): one that a

@@ -120,9 +120,12 @@ def account_paragraph(states):
     """The part of the mail of a new account that a Nodal Officer reads."""
     from .heis import with_covered
     names = ", ".join(rows_of(with_covered(list(states))))   # the row of Annexure-I: Kerala and Lakshadweep (1.2.135)
-    text = (f"As Nodal Officer for {names}, you see the applications of the students of the institutions "
-            f"of your State/UT, with their photograph, ID proof and signed nomination form, and you verify them: "
-            f"Console > Verification queue. Only verified students are consolidated by CICT into the list of the selected students.")
+    text = (f"As Nodal Officer for {names}, you scrutinise the institutions of your State/UT that register on the portal, record "
+            f"the marks of the Evaluation Committee on the criteria of Annexure-V of the D.O. letter of 31 October 2026 and select "
+            f"the number of Participating Institutions that Annexure-I prescribes, with a reserve list: Console > Institutions. "
+            f"Then you see the applications of the students the Participating Institutions nominate, with their photograph, ID "
+            f"proof and signed nomination form, and you verify them: Console > Verification queue. Only verified students are "
+            f"consolidated by CICT into the list of the selected students.")
     end = verify_end()
     if end:
         text += f" Verification closes on {long_date(end)}."
@@ -178,7 +181,8 @@ def officer_mail(user, reminder=False, now=None):
             lines += [name] + block(fold(per, members)) + [""]
         lines += [f"All together: {total['awaiting']} awaiting, {total['verified']} verified, {total['rejected']} rejected."]
     if pending:
-        lines += ["", f"Institutions awaiting your decision: {pending}. Accept or decline them: {base}/console/institutions?status=pending"]
+        lines += ["", f"Institutions registered and awaiting your selection: {pending}. Record their marks of Annexure-V and select the "
+                      f"Participating Institutions within the number of Annexure-I: {base}/console/institutions?status=pending"]
     close = closes_line()
     lines += ["", close] if close else []
     lines += ["", f"Open the verification queue: {base}/console/applications?status=submitted",

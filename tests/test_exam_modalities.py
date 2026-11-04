@@ -107,15 +107,16 @@ def test_an_attempt_that_ran_out_with_the_browser_closed_is_counted_by_the_selec
     admin.get("/console/selection")
     with admin.session_transaction() as s:
         token = s["_csrf"]
-    r = admin.post("/console/selection", data={"_csrf": token, "action": "run", "select_count": "2", "wait_count": "1"})
+    r = admin.post("/console/selection", data={"_csrf": token, "action": "run"})
     assert r.status_code == 302
     attempt = _attempt(app, students[2])
     assert attempt["status"] == "expired" and attempt["score"] == scores[students[2]["app_no"]]
     from kts.db import query
     with app.app_context():
         ranked = query("SELECT m.rank, m.outcome, a.app_no FROM merit_list m JOIN applications a ON a.id = m.application_id ORDER BY m.rank")
-    # the three are of one college: the best of them is ranked, and it is the one whose time ran out
-    assert [(r["rank"], r["app_no"], r["outcome"]) for r in ranked] == [(1, students[2]["app_no"], "selected")]
+    # the three are of one college: one of them is its nominee and selected, the others are not (1.2.155: no rank by the score)
+    assert [r["outcome"] for r in ranked] == ["selected", "not_selected", "not_selected"]
+    assert sorted(r["app_no"] for r in ranked) == sorted(s["app_no"] for s in students[:3])
 
 
 def test_the_test_closes_at_the_end_of_the_window_for_everyone(monkeypatch):

@@ -163,6 +163,7 @@ def test_the_schedule_without_the_central_online_test():
     with app.app_context():
         from kts.db import set_setting
         set_setting("schedule.central_test", "1")
+        set_setting("exam.open", "auto")   # switched off by default from 1.2.155
     assert "CICT&#39;s central online test, from the candidate portal" in _get(client, "/schedule?lang=en")
 
 

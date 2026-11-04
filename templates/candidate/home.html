@@ -16,7 +16,8 @@
           <dt>{{ t('common.email') }}</dt><dd><bdi>{{ cand.email }}</bdi></dd>
           <dt>{{ t('common.submitted') }}</dt><dd>{{ cand.created_at|datetime }}</dd>
           {% if cand.status == 'rejected' and cand.remarks %}<dt>{{ t('common.remarks') }}</dt><dd><bdi>{{ cand.remarks }}</bdi></dd>{% endif %}
-          {% if merit %}<dt>{{ t('status.rank') }}</dt><dd><b>{{ merit.rank }}</b> · {{ t('status.' ~ merit.outcome) }}</dd>{% endif %}
+          {# no rank among the selected students (1.2.155) #}
+          {% if merit %}<dt>{{ t('common.status') }}</dt><dd><b>{{ t('status.' ~ merit.outcome) }}</b></dd>{% endif %}
         </dl></div>
         <div class="btn-row" style="margin-top:12px"><a class="btn sm secondary" href="{{ url_for('candidate.ack') }}">{{ t('reg.ack') }}</a>
           {% set letter = letter_link(cand) %}{% if letter %}<a class="btn sm saffron" href="{{ letter }}">✉️ {{ t('letter.get') }}</a>{% endif %}

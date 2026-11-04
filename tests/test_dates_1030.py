@@ -44,7 +44,7 @@ def test_the_invitation_mail_has_the_days_of_the_sangamam():
     for body in bodies:
         assert "15 October" not in body and "15 November" not in body
         assert "(the Sangamam at Varanasi: 28 November 2026 – 12 December 2026)" in body
-        assert "registers that student on the portal by 20 November 2026" in body
+        assert "nominates one student on merit on the portal by 20 November 2026" in body
         assert "/institutions/register?invite=t0k3n" in body
 
 
@@ -66,7 +66,7 @@ def test_poster_1_has_the_dates_of_the_settings():
 
 
 def test_the_schedule_has_the_central_online_test(monkeypatch):
-    app = _portal(**{"schedule.central_test": "1"})   # left out of the schedule since 1.2.152 unless this is '1'
+    app = _portal(**{"schedule.central_test": "1", "exam.open": "auto"})   # left out of the schedule since 1.2.152 unless this is '1'
     _on(monkeypatch, "2026-10-01")
     upcoming, past = _halves(_page(app, "/schedule?lang=en"))
     row = _row(upcoming, "timeline.exam")
@@ -86,7 +86,7 @@ def test_the_schedule_leaves_out_a_test_switched_off(monkeypatch):
     _on(monkeypatch, "2026-10-01")
     assert _text("timeline.exam") not in _page(app, "/schedule?lang=en")
     # a test of one day has no last day
-    app = _portal(**{"exam.date_to": "", "schedule.central_test": "1"})
+    app = _portal(**{"exam.date_to": "", "schedule.central_test": "1", "exam.open": "auto"})
     upcoming, _ = _halves(_page(app, "/schedule?lang=en"))
     row = _row(upcoming, "timeline.exam")
     assert "10 Nov 2026" in row and "– " not in row

@@ -231,7 +231,8 @@ def _pipeline():
     for row in json.loads((current_app.config["DATA_DIR"] / "timeline.json").read_text(encoding="utf-8")):
         if row["key"] in ("hei_reg", "hei_select", "assess", "selection", "live", "internship", "papers"):
             marks.append((row["key"], row["starts"], row.get("ends"), row["title"]))
-    for key, setting, i18n_key in (("inauguration", "kts.start", "timeline.inauguration"), ("valedictory", "kts.end", "timeline.valedictory")):
+    for key, setting, i18n_key in (("reg_close", "reg.end", "timeline.reg_close"),   # the nomination, 20 November (1.2.155)
+                                   ("inauguration", "kts.start", "timeline.inauguration"), ("valedictory", "kts.end", "timeline.valedictory")):
         day = (get_setting(setting) or "")[:10]
         if day:
             marks.append((key, day, None, i18n_key))

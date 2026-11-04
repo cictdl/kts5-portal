@@ -1,23 +1,27 @@
 {% extends "console/base.html" %}
 {% block title %}Marks of Annexure-V · {{ row.name }}{% endblock %}
 {% block content %}
-{# The marks of the evaluation committee of the Nodal Institution on the six criteria of the Standard Operating Procedure,
-   Annexure-V of the revised D.O. letter (1.2.111) #}
+{# The marks of the evaluation committee of the Nodal Institution on the criteria of the Standard Operating Procedure, Annexure-V
+   of the D.O. letter of 31 October 2026 (1.2.155): each mark one that the scoring parameters give #}
 <p><a href="{{ url_for('admin.institutions', state=row.state, order='marks') }}">← Institutions of {{ row.state }}</a></p>
 <h1 style="margin-bottom:4px">{{ row.name }}</h1>
 <p class="dim" style="margin-top:0">{{ row.ref }} · {{ row.state }} · {{ row.district }} · {{ row.itype }}{% if row.aishe_code %} · AISHE {{ row.aishe_code }}{% endif %} · registered {{ row.created_at|datetime }}</p>
-<p class="dim" style="max-width:92ch">The marks of the evaluation committee (at least three members, with the State/UT Nodal Officer) on the selection
-  criteria of the Standard Operating Procedure, Annexure-V: 100 in all, recommended qualifying benchmark {{ benchmark }}. The institutions of
+<p class="dim" style="max-width:92ch">The marks of the evaluation committee (at least three members, with the State/UT Nodal Officer) on the five selection
+  criteria of the Standard Operating Procedure, Annexure-V of the D.O. letter of 31 October 2026 (criterion 5 in its two parts, A and B): 100 in all,
+  recommended qualifying benchmark {{ benchmark }}. Only the applications found eligible after scrutiny are marked. The institutions of
   {{ row.state }} are ranked by the total; in a tie, by institutional readiness, then academic engagement with the Thirukkural, then wider
   geographical representation, then the earlier complete registration. Annexure-I prescribes <b>{{ allocation or '–' }}</b> Participating
   Institutions for {{ row.state }}{% if reserve %}, with a reserve list of ordinarily up to <b>{{ reserve }}</b>{% endif %}.</p>
+{% if legacy %}<div class="alert warning" style="max-width:980px">Marks recorded on the six criteria of the letter of 26 October 2026:
+  {% for k, v in legacy.items() %}{{ k }} {{ v }}{{ ' · ' if not loop.last }}{% endfor %}. They no longer count: please record the marks on the five
+  criteria of the letter of 31 October 2026 below.</div>{% endif %}
 <form method="post" class="card" style="max-width:980px">
   <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
   <div class="table-wrap"><table class="table">
     <thead><tr><th>Criterion</th><th>Indicators</th><th>Evidence</th><th class="num">Marks</th></tr></thead>
-    <tbody>{% for key, criterion, most, indicators, evidence in sop %}
+    <tbody>{% for key, criterion, most, indicators, evidence, allowed in sop %}
     <tr><td><b>{{ criterion }}</b></td><td class="small">{{ indicators }}</td><td class="small muted">{{ evidence }}</td>
-      <td class="num" style="white-space:nowrap"><input type="number" name="{{ key }}" min="0" max="{{ most }}" step="1" required value="{{ marks.get(key, '') }}" style="width:5em" aria-label="{{ criterion }}, out of {{ most }}"> / {{ most }}
+      <td class="num" style="white-space:nowrap"><select name="{{ key }}" required aria-label="{{ criterion }}, out of {{ most }}"><option value="">—</option>{% for m in allowed|reverse %}<option value="{{ m }}" {{ 'selected' if marks.get(key) == m }}>{{ m }}</option>{% endfor %}</select> / {{ most }}
         {% if errors.get(key) %}<div class="small" style="color:var(--kumkum)">{{ errors[key] }}</div>{% endif %}</td></tr>
     {% endfor %}</tbody>
   </table></div>

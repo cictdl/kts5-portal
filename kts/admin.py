@@ -553,52 +553,45 @@ def exam_session(sid):
 
 # ---- selection / merit list -------------------------------------------------
 
-def run_selection(select_count, wait_count, user):
+def run_selection(user):
     """
-    Rank every candidate who submitted the test, keep the best candidate of
-    each institution, and mark the top `select_count` as selected, the next
-    `wait_count` as waitlisted, the rest as not selected.
-    Tie-breaks: higher score, shorter time taken, earlier application.
+    The list of the selected students (1.2.155, the D.O. letter of 31 October 2026): each selected Participating Institution nominates
+    one student on merit, and that nominee, once verified by the Nodal Institution and CICT, is the selected student - no rank among the
+    students and no waiting list (the reserve list of Annexure-V is one of institutions). Where several verified applications name the
+    same institution, the one registered with the institution's personal link is selected (else the earliest); the others are not.
+    The list runs State/UT by State/UT and institution by institution; its "rank" is only the serial number.
     """
-    # an attempt whose time ran out while the browser was closed is still "in progress": it is
-    # closed and scored here, so that the student is ranked with the answers that were saved
+    # an attempt whose time ran out while the browser was closed is still "in progress": it is closed and scored here
     from .candidate import _finalise
     for stale in query("SELECT * FROM exam_sessions WHERE status = 'in_progress' AND deadline_at < ?",
                        ((now_ist() - timedelta(seconds=45)).isoformat(),)):
         _finalise(stale, "expired")
-    # a student assessed by the institution in another way has no score here: ranked after those with one (1.2.43)
-    rows = query("SELECT a.id, a.college_key, COALESCE(s.score, 0) AS score, COALESCE(s.time_taken_sec, 0) AS time_taken_sec, a.created_at "
-                 "FROM applications a LEFT JOIN exam_sessions s ON s.application_id = a.id "
-                 "WHERE a.status IN ('verified','selected','waitlisted','not_selected') AND (s.id IS NULL OR s.status != 'in_progress') "
-                 "ORDER BY (s.score IS NULL), s.score DESC, s.time_taken_sec ASC, a.created_at ASC")
-    seen = set()
-    ranked, runners_up = [], []
+    rows = query("SELECT a.id, a.college_key, a.institution_id, a.created_at, "
+                 "COALESCE((SELECT score FROM exam_sessions s WHERE s.application_id = a.id AND s.status != 'in_progress' "
+                 "ORDER BY s.id DESC LIMIT 1), 0) AS score, "
+                 "CASE WHEN i.application_id = a.id THEN 0 ELSE 1 END AS unbound "
+                 "FROM applications a LEFT JOIN institutions i ON i.id = a.institution_id "
+                 "WHERE a.status IN ('verified','selected','waitlisted','not_selected') "
+                 "ORDER BY a.college_state, a.college_name COLLATE NOCASE, unbound, a.created_at ASC")
+    seen, chosen, others = set(), [], []
     for r in rows:
-        if r["college_key"] in seen:
-            runners_up.append(r)
-            continue
-        seen.add(r["college_key"])
-        ranked.append(r)
+        unit = ("institution", r["institution_id"]) if r["institution_id"] else ("college", r["college_key"])
+        (others if unit in seen else chosen).append(r)
+        seen.add(unit)
     run_id = now_ist().strftime("%Y%m%d-%H%M%S")
     now = utcnow()
     execute("DELETE FROM merit_list")
-    execute("UPDATE applications SET exam_rank = NULL, updated_at = ? WHERE status IN ('selected','waitlisted','not_selected')", (now,))
-    execute("UPDATE applications SET status = 'verified' WHERE status IN ('selected','waitlisted','not_selected')")
-    entries, updates = [], []
-    for i, r in enumerate(ranked, start=1):
-        outcome = "selected" if i <= select_count else ("waitlisted" if i <= select_count + wait_count else "not_selected")
-        entries.append((i, r["id"], r["score"], r["college_key"], outcome, run_id, now))
-        updates.append((outcome, i, now, r["id"]))
-    for r in runners_up:
-        updates.append(("not_selected", None, now, r["id"]))
+    execute("UPDATE applications SET exam_rank = NULL, status = 'verified', updated_at = ? WHERE status IN ('selected','waitlisted','not_selected')",
+            (now,))
+    entries = [(n, r["id"], r["score"], r["college_key"], "selected", run_id, now) for n, r in enumerate(chosen, start=1)]
+    entries += [(len(chosen) + n, r["id"], r["score"], r["college_key"], "not_selected", run_id, now) for n, r in enumerate(others, start=1)]
     if entries:
         executemany("INSERT INTO merit_list(rank, application_id, score, college_key, outcome, run_id, created_at) VALUES(?,?,?,?,?,?,?)", entries)
-    if updates:
-        executemany("UPDATE applications SET status = ?, exam_rank = ?, updated_at = ? WHERE id = ?", updates)
-    audit("selection_run", "merit_list", None,
-          detail={"run": run_id, "ranked": len(ranked), "selected": min(select_count, len(ranked)), "runners_up": len(runners_up)},
+    executemany("UPDATE applications SET status = ?, exam_rank = NULL, updated_at = ? WHERE id = ?",
+                [("selected", now, r["id"]) for r in chosen] + [("not_selected", now, r["id"]) for r in others])
+    audit("selection_run", "merit_list", None, detail={"run": run_id, "selected": len(chosen), "not_selected": len(others)},
           user=user, ip=client_ip())
-    return run_id, len(ranked), len(runners_up)
+    return run_id, len(chosen), len(others)
 
 
 @bp.route("/selection", methods=["GET", "POST"])
@@ -608,31 +601,28 @@ def selection():
     if request.method == "POST":
         action = request.form.get("action")
         if action == "run":
-            sc = safe_int(request.form.get("select_count"), 1000)
-            wc = safe_int(request.form.get("wait_count"), 300)
-            set_setting("merit.select_count", str(sc))
-            set_setting("merit.wait_count", str(wc))
-            run_id, ranked, runners = run_selection(sc, wc, _user())
-            flash(f"Selection run {run_id}: {ranked} institutions ranked, {runners} runner-up candidates within the same institutions.", "success")
+            run_id, chosen, others = run_selection(_user())
+            flash(f"List {run_id}: {chosen} selected student{'' if chosen == 1 else 's'}, the verified nominee of each Participating Institution"
+                  + (f"; {others} other application(s) of the same institutions not selected." if others else "."), "success")
         elif action == "publish":
             set_setting("merit.published", "1")
             set_setting("merit.note", (request.form.get("note") or "").strip())
             audit("merit_published", "merit_list", None, user=_user(), ip=client_ip())
-            flash("Merit list published on the public site.", "success")
+            flash("The list of the selected students is published on the public site.", "success")
         elif action == "unpublish":
             set_setting("merit.published", "0")
             audit("merit_unpublished", "merit_list", None, user=_user(), ip=client_ip())
-            flash("Merit list hidden from the public site.", "warning")
+            flash("The list of the selected students is hidden from the public site.", "warning")
         return redirect(url_for("admin.selection"))
     summary = {r["outcome"]: r["n"] for r in query("SELECT outcome, COUNT(*) AS n FROM merit_list GROUP BY outcome")}
     last = query("SELECT run_id, created_at FROM merit_list ORDER BY id DESC LIMIT 1", one=True)
     top = query("SELECT m.rank, m.score, m.outcome, a.app_no, a.full_name, a.college_name, a.college_state, a.pref_lang "
                 "FROM merit_list m JOIN applications a ON a.id = m.application_id ORDER BY m.rank LIMIT 100")
-    tested = query("SELECT COUNT(*) AS n FROM exam_sessions WHERE status != 'in_progress'", one=True)["n"]
+    verified = query("SELECT COUNT(*) AS n FROM applications WHERE status IN ('verified','selected','waitlisted','not_selected')", one=True)["n"]
     by_state = query("SELECT a.college_state AS s, SUM(m.outcome = 'selected') AS sel, COUNT(*) AS n "
                      "FROM merit_list m JOIN applications a ON a.id = m.application_id GROUP BY s ORDER BY sel DESC")
     return render_template("console/selection.html", settings=settings, summary=summary, last=last, top=top,
-                           tested=tested, by_state=by_state)
+                           verified=verified, by_state=by_state)
 
 
 @bp.route("/selection/export.xlsx")
@@ -1204,8 +1194,9 @@ def institutions():
 @login_required("hei.decide")
 def institution_marks(iid):
     """
-    The marks of the evaluation committee of the Nodal Institution on the six criteria of Annexure-V (the revised D.O. letter,
-    1.2.111), each within its maximum; their total out of 100 orders the institutions of the State/UT.
+    The marks of the evaluation committee of the Nodal Institution on the criteria of Annexure-V of the D.O. letter of 31 October
+    2026 (1.2.155; of 26 October in 1.2.111), each one of the marks its scoring parameters give; their total out of 100 orders the
+    institutions of the State/UT.
     """
     user = _user()
     scope = state_scope(user)
@@ -1217,10 +1208,10 @@ def institution_marks(iid):
     if request.method == "POST":
         note = (request.form.get("note") or "").strip()[:1000]
         marks = {}
-        for key, _criterion, most, *_ in HEI.SOP:
+        for key, _criterion, _most, _parameters, _evidence, allowed in HEI.SOP:
             value = (request.form.get(key) or "").strip()
-            if not value.isdigit() or not 0 <= int(value) <= most:
-                errors[key] = f"a whole number from 0 to {most}"
+            if not value.isdigit() or int(value) not in allowed:
+                errors[key] = "one of " + ", ".join(str(m) for m in allowed)
             else:
                 marks[key] = int(value)
         if not errors:
@@ -1231,6 +1222,7 @@ def institution_marks(iid):
             flash(f"{row['name']}: {sum(marks.values())} of 100 recorded.", "success")
             return redirect(url_for("admin.institutions", state=row["state"], order="marks"))
     return render_template("console/institution_marks.html", row=row, marks=marks, errors=errors, note=note, sop=HEI.SOP,
+                           legacy=HEI.sop_legacy(row),
                            benchmark=HEI.SOP_BENCHMARK, allocation=HEI.allocation_of(row["state"]), reserve=HEI.reserve_of(row["state"]))
 
 
@@ -1248,8 +1240,10 @@ def institutions_evaluation():
         sql += f" AND state IN ({','.join('?' * len(scope))})" if scope else " AND 0"
         args += scope
     if request.args.get("state"):
-        sql += " AND state = ?"
-        args.append(request.args["state"])
+        # the row of Annexure-I: a State with the Union Territory paired with it, ranked together (1.2.155)
+        covered = HEI.with_covered([request.args["state"]])
+        sql += f" AND state IN ({','.join('?' * len(covered))})"
+        args += covered
     rows = query(sql, args)
     nodal = {s: h["name"] for h in _nodal_heis() for s in HEI.group_of(h["state"])}   # a paired Union Territory: its State's (1.2.135)
     headers = (["State/UT", "Nodal HEI", "Number to be selected (Annexure-I)", "Reserve list (up to 20%)", "Rank", "Name of Institution",
@@ -1345,10 +1339,11 @@ ANNEXURE_II = ["S. No.", "Name of Institution", "District/City", "Type", "AISHE/
 @bp.route("/institutions/annexure-ii.xlsx")
 @login_required("hei.decide")
 def institutions_format():
-    """The format of Annexure-II to fill in (the State/UT column takes the list of a Nodal Officer of several States/UTs)."""
+    """The format of the list of institutions to invite (the State/UT column takes the list of a Nodal Officer of several States/UTs;
+    called Annexure-II before 1.2.155 - Annexure-II is the final list of the selected institutions, institutions_annexure_ii)."""
     return Response(xlsx_bytes(ANNEXURE_II + ["State/UT"], [], "Annexure-II", text_cols=(4, 6)),
                     mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    headers={"Content-Disposition": "attachment; filename=KTS5-Annexure-II-institutions.xlsx"})
+                    headers={"Content-Disposition": "attachment; filename=KTS5-institutions-to-invite.xlsx"})
 
 
 def _annexure_columns(rows):
@@ -1374,8 +1369,9 @@ def _annexure_columns(rows):
 @login_required("hei.decide")
 def institutions_identified():
     """
-    The list of institutions identified by the Nodal Institution (Annexure-II), uploaded as .xlsx or .csv: each
-    becomes an institution 'identified', invited by mail to complete its registration (then accepted at once).
+    A list of institutions that the Nodal Institution invites to register, uploaded as .xlsx or .csv: each becomes an institution
+    'identified', invited by mail to complete its registration; then it awaits the selection like any other (1.2.155; accepted at once
+    before, which the D.O. letter of 31 October 2026 does not allow: the selection is under Annexure-V, within Annexure-I).
     """
     user = _user()
     scope = state_scope(user)
@@ -1384,7 +1380,7 @@ def institutions_identified():
     f = request.files.get("file")
     filename = (f.filename or "") if f else ""
     if not filename.lower().endswith((".xlsx", ".csv")):
-        flash("Upload the list as an Excel file (.xlsx) or as .csv, in the format of Annexure-II.", "error")
+        flash("Upload the list as an Excel file (.xlsx) or as .csv, in the format of the list of institutions to invite.", "error")
         return redirect(url_for("admin.institutions"))
     data = f.read(SHEET_MAX_BYTES + 1)
     if len(data) > SHEET_MAX_BYTES:
@@ -1397,7 +1393,7 @@ def institutions_identified():
         return redirect(url_for("admin.institutions"))
     found = _annexure_columns(rows)
     if not found:
-        flash("The list needs at least the columns Name of Institution and Official Email ID (the format of Annexure-II).", "error")
+        flash("The list needs at least the columns Name of Institution and Official Email ID (the format of the list of institutions to invite).", "error")
         return redirect(url_for("admin.institutions"))
     head, cols = found
     ref = json.loads((current_app.config["DATA_DIR"] / "states.json").read_text(encoding="utf-8"))
@@ -1443,10 +1439,67 @@ def institutions_identified():
     return render_template("console/institutions_identified.html", created=created, skipped=skipped, filename=filename)
 
 
+@bp.route("/institutions/annexure-ii-selected.xlsx")
+@login_required("hei.view")
+def institutions_annexure_ii():
+    """
+    The final list of the institutions selected by the Nodal HEI, in the format of Annexure-II of the D.O. letter of 31 October 2026
+    (1.2.155): for each row of Annexure-I that the account sees (or the State/UT asked for), its five head lines - State/UT, Name of
+    Nodal HEI, Number of institutions prescribed in Annexure-I, Total registrations received, Number of institutions selected - and
+    the selected institutions: # | Name of Institution | District/City | Type | AISHE/Institution Code | Coordinator Name | Mobile No. |
+    Email ID.
+    """
+    import xlsxwriter
+    scope = state_scope(_user())
+    want = (request.args.get("state") or "").strip()
+    blocks = []
+    for h in _nodal_heis():
+        members = HEI.group_of(h["state"])
+        if (scope is not None and not any(m in scope for m in members)) or (want and want not in members):
+            continue
+        marks = ",".join("?" * len(members))
+        registered = query(f"SELECT COUNT(*) AS n FROM institutions WHERE status != 'identified' AND state IN ({marks})", members, one=True)["n"]
+        selected = query(f"SELECT * FROM institutions WHERE status = 'accepted' AND state IN ({marks}) ORDER BY name COLLATE NOCASE", members)
+        blocks.append((HEI.label_of(h["state"]), h["name"], int(h.get("allocation") or 0), registered, selected))
+    buf = io.BytesIO()
+    wb = xlsxwriter.Workbook(buf, {"in_memory": True})
+    ws = wb.add_worksheet("Annexure-II")
+    bold = wb.add_format({"bold": True})
+    head = wb.add_format({"bold": True, "bg_color": "#EDE7DB", "border": 1, "text_wrap": True})
+    cell = wb.add_format({"border": 1})
+    text = wb.add_format({"border": 1, "num_format": "@"})
+    ws.write(0, 0, "ANNEXURE-II", bold)
+    ws.write(1, 0, "FORMAT FOR LIST OF INSTITUTIONS SELECTED BY THE NODAL HEI", bold)
+    r = 3
+    for label, hei, prescribed, registered, selected in blocks:
+        for line in (f"State/UT: {label}", f"Name of Nodal HEI: {hei}", f"Number of institutions prescribed in Annexure-I: {prescribed}",
+                     f"Total registrations received: {registered}", f"Number of institutions selected: {len(selected)}"):
+            ws.write(r, 0, line, bold)
+            r += 1
+        for c, title in enumerate(("#", "Name of Institution", "District/City", "Type", "AISHE/Institution Code", "Coordinator Name",
+                                   "Mobile No.", "Email ID")):
+            ws.write(r, c, title, head)
+        r += 1
+        for n, i in enumerate(selected, start=1):
+            for c, (value, fmt) in enumerate(((n, cell), (i["name"], cell), (i["district"], cell), (i["itype"], cell),
+                                              (i["aishe_code"] or "", text), (i["coord_name"] or "", cell), (i["coord_mobile"] or "", text),
+                                              (i["coord_email"] or "", cell))):
+                ws.write(r, c, value, fmt) if fmt is cell else ws.write_string(r, c, str(value), fmt)
+            r += 1
+        r += 2
+    for c, width in enumerate((5, 48, 22, 26, 22, 28, 14, 32)):
+        ws.set_column(c, c, width)
+    wb.close()
+    audit("institutions_annexure_ii_exported", "institution", None, detail={"rows": len(blocks)}, user=_user(), ip=client_ip())
+    return Response(buf.getvalue(), mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    headers={"Content-Disposition": "attachment; filename=KTS5-Annexure-II-selected-institutions.xlsx"})
+
+
 @bp.route("/institutions/export.xlsx")
 @login_required("hei.view")
 def institutions_export():
-    """The list in the format of Annexure-II, with the state of each institution's assessment and registration."""
+    """Every institution of the filter with its details and the state of its assessment and nomination (the final list in the format
+    of Annexure-II is institutions_annexure_ii, 1.2.155)."""
     _f, sql, args = _inst_filters(state_scope(_user()))
     rows = query("SELECT i.*, a.app_no AS app_no, a.status AS app_status, w.name AS winner_name, "
                  "(SELECT COUNT(*) FROM campus_students s JOIN campus_attempts t ON t.student_id = s.id "
@@ -1704,7 +1757,7 @@ SETTING_GROUPS = [
         ("join.on", "Show the State/UT pages for the registration of institutions (/join), with their links and A4 posters", "bool"),
         ("nodal.officers_public", "Show the Nodal Officer of each State/UT (name, designation, e-mail and phone of the active Nodal Officer accounts) on the Nodal HEIs and Partners pages", "bool"),
         ("hei.orientation", "Pre-assessment orientation session by CICT for the institutions: date, time and link, shown on the institutions' page (empty: nothing)", "text")]),
-    ("The assessment by the institutions and the registration of their students (D.O. letter of 9 October 2026)", [
+    ("The assessment by the institutions and the nomination of their students (D.O. letter of 31 October 2026)", [
         ("reg.by_institution", "Students register only with the link that the portal sends when their institution selects them (off: anybody may register, as before 1.2.43)", "bool"),
         ("camp.on", "The portal offers the participating institutions its online assessment (the question bank, in the language of each student)", "bool"),
         ("camp.from", "Institution-level assessments from (YYYY-MM-DD)", "date"),
@@ -1731,7 +1784,7 @@ SETTING_GROUPS = [
                      ("exam.negative", "Negative marks per wrong answer", "number"), ("exam.show_score", "Show score to candidates", "bool"),
                      ("exam.open", "Window mode: auto | 1 (force open) | 0 (force closed)", "text"), ("exam.instructions_url", "Link to the official instructions PDF", "text"),
                      ("exam.unverified", "Registered students may take the central test before the Nodal Officer verifies their application (off: verified students only; the selection counts verified students only either way)", "bool")]),
-    ("Internship: the one-month research and academic engagement (dates named in the confirmation letter of the selected students)",
+    ("The one-month research and academic engagement (dates named in the confirmation letter of the selected students)",
      [("letter.date", "Date of the confirmation letter (YYYY-MM-DD)", "date"),
       ("internship.start", "One-month research and academic engagement begins (YYYY-MM-DD)", "date"),
       ("papers.due", "Last date for the article/research note (YYYY-MM-DD)", "date"),
@@ -1750,8 +1803,8 @@ SETTING_GROUPS = [
                                   ("inaug.link", "Live stream of the inauguration (address, shown to the selected students)", "text"),
                                   ("inaug.code", "Attendance code announced during the live stream (from the day of the inauguration; empty: the students cannot record their attendance)", "text"),
                                   ("schedule.tentative", "Show the note “tentative timeline” on the schedule page", "bool")]),
-    ("Merit list", [("merit.published", "Merit list published", "bool"), ("merit.select_count", "Number to select", "number"),
-                    ("merit.wait_count", "Waitlist size", "number"), ("merit.note", "Note shown above the merit list", "text")]),
+    ("The selected students", [("merit.published", "The list of the selected students published", "bool"),
+                               ("merit.note", "Note shown above the list of the selected students", "text")]),
     ("Stipend", [("stipend.open", "Form for the bank details of the selected students is open", "bool"),
                  ("stipend.last_date", "Last date for first entries (YYYY-MM-DD; empty: none)", "date"),
                  ("stipend.amount", "Stipend in rupees", "number"),

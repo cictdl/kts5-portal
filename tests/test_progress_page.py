@@ -24,6 +24,7 @@ def _portal():
     with app.app_context():   # the students' registration shown (hidden by default since 1.2.147)
         from kts.db import set_setting as _set
         _set("reg.public", "1")
+        _set("reg.end", "2026-11-20")   # the nomination, among the milestones (1.2.155); the tests' portal keeps it far ahead
     tn = _inst(app, "Presidency College", state="Tamil Nadu", test_on=1)
     sid = _student(app, tn, "Student One", tested=True)
     _student(app, tn, "Student Two", tested=True)
@@ -68,7 +69,7 @@ def test_the_figures():
     assert all(s["to_select"] for s in p["states"]) and "Lakshadweep" not in {s["state"] for s in p["states"]}
     # the milestones, in order, with at most one 'next'
     keys = [m["key"] for m in p["milestones"]]
-    assert keys == ["hei_reg", "hei_select", "assess", "selection", "inauguration", "valedictory", "live", "internship", "papers"]
+    assert keys == ["hei_reg", "hei_select", "assess", "reg_close", "selection", "inauguration", "valedictory", "live", "internship", "papers"]
     assert [m["starts"] for m in p["milestones"]] == sorted(m["starts"] for m in p["milestones"])
     statuses = [m["status"] for m in p["milestones"]]
     assert statuses.count("next") <= 1 and set(statuses) <= {"done", "current", "next", "upcoming"}
@@ -97,7 +98,7 @@ def test_the_page():
     assert page.count('<polyline class="line"') == 2 and 'data-k="inst_today">Today: 4</bdi>' in page
     assert "Tamil Nadu and Andaman and Nicobar Islands" in page and "<bdi dir=\"ltr\">3/50</bdi>" in page
     track = page[page.index('class="prog-track"'):]
-    assert track.count("<li class=\"ms-") == 9 and ("In " in track or "Now" in track or "Done" in track)
+    assert track.count("<li class=\"ms-") == 10 and ("In " in track or "Now" in track or "Done" in track)
     assert 'href="/dashboard">KTS 5.0 by State/UT →</a>' in page
     # never a name
     for word in ("Presidency", "Loyola", "Student One", "Campus Student", "campus1@"):

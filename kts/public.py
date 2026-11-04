@@ -115,7 +115,9 @@ def _timeline(settings):
     reg_on = settings.get("reg.open") != "0"   # registration switched off (as while the launch is postponed): no dates for it
     fixed = [(key, kind, day + "T00:00", None)
              for key, kind, day in (("timeline.reg_open", "registration", reg_on and _iso_day(settings.get("reg.start"))),
-                                    ("timeline.reg_close", "registration", reg_on and _iso_day(settings.get("reg.end"))),
+                                    # the nomination by the Participating Institutions (20 November) while it is open (1.2.155)
+                                    ("timeline.reg_close", "registration", (reg_on or settings.get("nominate.open") != "0")
+                                     and _iso_day(settings.get("reg.end"))),
                                     ("timeline.inauguration", "general", _iso_day(settings.get("kts.start"))),
                                     ("timeline.valedictory", "general", _iso_day(settings.get("kts.end")))) if day]
     # CICT's central online test (1.2.126), its days as the settings have them, while it is not switched off; left out of the
@@ -260,9 +262,11 @@ def latest_circular(settings):
     return row, row["title"].split(":")[0].strip(), days > 0 and (row["publish_at"] or row["created_at"] or "")[:10] >= since
 
 
-# the D.O. letter of the Ministry of 31 October 2026, as the Guidelines for Nodal Institutions cite it (1.2.152)
+# the D.O. letter of the Ministry of 31 October 2026, as the Guidelines for Nodal Institutions cite it (1.2.152), with the officer of
+# CICT it names for clarification and coordination (paragraph 9, 1.2.155)
 DO_NO = "D.O. No. 16-2/2026-Skt.I (Pt.)"
 DO_DATE = "2026-10-31"
+DO_CONTACT = {"name": "Dr. R. Bhuvaneshwari", "email": "registrar@cict.in", "phone": "9790325518 / 9965734497"}
 
 
 def key_dates_box(settings=None):
@@ -368,7 +372,7 @@ def home():
 @bp.route("/guidelines-for-nodal-institutions")
 def nodal_guidelines():
     """Guidelines for Nodal Institutions (1.2.152): the key points of the D.O. letter of 31 October 2026, with the letter."""
-    return render_template("public/nodal_guidelines.html", settings=all_settings(), do_date=DO_DATE,
+    return render_template("public/nodal_guidelines.html", settings=all_settings(), do_date=DO_DATE, do_contact=DO_CONTACT,
                            do_no=Markup('<span class="do-no" dir="ltr">{}</span>').format(DO_NO),
                            pdf_url=url_for("public.public_file", relpath=DO_NOTICE_FILE))
 
@@ -775,10 +779,9 @@ def _validate(form, files, inst=None):
         errors["mentor_phone"] = t("reg.err_mobile")
     if not valid_pincode(data["pincode"]):
         errors["pincode"] = t("reg.err_pincode")
-    if data["dob"]:
-        age = age_on(data["dob"])
-        if age is None or age < 17 or age > 35:
-            errors["dob"] = t("reg.err_dob")
+    # no age limit since 1.2.155 (the D.O. letter of 31 October 2026 sets none): only a date that can be read
+    if data["dob"] and age_on(data["dob"]) is None:
+        errors["dob"] = t("reg.err_required")
     if data["pref_lang"] and data["pref_lang"] not in K.ORIENTATION_LANGS:
         errors["pref_lang"] = t("reg.err_required")
     if data["gender"] not in ("M", "F", "O"):
@@ -1054,12 +1057,13 @@ def hei_register():
             return render_template("public/hei_register.html", **ctx), 400
         now = utcnow()
         if identified is not None:
-            # identified by the Nodal Institution: a participating institution at once
-            execute(f"UPDATE institutions SET {', '.join(f + ' = ?' for f in HEI.FIELDS)}, inst_key = ?, status = 'accepted', "
-                    f"invite_token = NULL, decided_by = invited_by, decided_at = ?, ip = ?, updated_at = ? WHERE id = ?",
-                    [data[f] for f in HEI.FIELDS] + [HEI.key_of(data), now, ip, now, identified["id"]])
+            # invited by the Nodal Institution: registered, it awaits the selection like any other (1.2.155; selected at once before,
+            # which the D.O. letter of 31 October 2026 does not allow - the selection is under Annexure-V, within Annexure-I)
+            execute(f"UPDATE institutions SET {', '.join(f + ' = ?' for f in HEI.FIELDS)}, inst_key = ?, status = 'pending', "
+                    f"invite_token = NULL, ip = ?, updated_at = ? WHERE id = ?",
+                    [data[f] for f in HEI.FIELDS] + [HEI.key_of(data), ip, now, identified["id"]])
             audit("institution_registered", "institution", identified["id"], detail=identified["ref"], ip=ip)
-            HEI.mail_decision(query("SELECT * FROM institutions WHERE id = ?", (identified["id"],), one=True))
+            HEI.mail_received(query("SELECT * FROM institutions WHERE id = ?", (identified["id"],), one=True))
             session["hei_applied"] = identified["id"]
             return redirect(url_for("public.hei_done", ref=identified["ref"]))
         cols = HEI.FIELDS + ["inst_key", "status", "ip", "created_at", "updated_at", "source"]
@@ -1163,7 +1167,7 @@ def merit():
         sql = ("SELECT m.rank, m.score, m.outcome, a.app_no, a.full_name, a.college_name, a.college_state, a.state "
                "FROM merit_list m JOIN applications a ON a.id = m.application_id WHERE 1=1")
         args = []
-        if outcome in ("selected", "waitlisted"):
+        if outcome == "selected":   # no waiting list since 1.2.155
             sql += " AND m.outcome = ?"
             args.append(outcome)
         if q:

@@ -151,7 +151,7 @@ def test_the_morning_mail_names_the_institutions_awaiting():
     with app.app_context():
         mail = query("SELECT * FROM outbox WHERE to_addr = 'nodal.kerala@tests.example' ORDER BY id DESC LIMIT 1", one=True)
     assert mail["subject"] == "KTS 5.0: 1 institution awaits your decision (Kerala and Lakshadweep)"   # the row of Annexure-I (1.2.135)
-    assert "Institutions awaiting your decision: 1." in mail["body"]
+    assert "Institutions registered and awaiting your selection: 1." in mail["body"]
 
 
 def test_register_leads_to_the_institutions():
@@ -239,8 +239,8 @@ def test_each_state_accepts_at_most_its_number_of_annexure_i():
 
 
 def test_the_marks_of_annexure_v_rank_the_institutions_and_the_reserve_list():
-    # the revised D.O. letter (1.2.111): the committee's marks on the six criteria, the order they give, the evaluation sheet,
-    # and the reserve list, from which a selected institution that drops out is replaced
+    # the D.O. letter of 31 October 2026 (1.2.155; of 26 October, six criteria, 1.2.111): the committee's marks on the five criteria,
+    # the order they give, the evaluation sheet, and the reserve list, from which a selected institution that drops out is replaced
     import json as _json
     from kts import heis as HEI
     from kts.db import query
@@ -249,26 +249,26 @@ def test_the_marks_of_annexure_v_rank_the_institutions_and_the_reserve_list():
         _apply(app.test_client(), name=name, state="Kerala", aishe_code="", head_email=f"ha{n}@x.example", coord_email=f"ca{n}@x.example")
     with app.app_context():
         ids = {r["name"]: r["id"] for r in query("SELECT id, name FROM institutions")}
-        assert [k for k, *_ in HEI.SOP] == ["readiness", "outreach", "academic", "geography", "diversity", "record"]
+        assert [k for k, *_ in HEI.SOP] == ["readiness", "outreach", "academic", "geography", "diversity_type", "diversity_disc"]
         assert sum(m for _k, _c, m, *_ in HEI.SOP) == 100 and HEI.SOP_BENCHMARK == 60
-        assert (HEI.reserve_of("Kerala"), HEI.reserve_of("Uttar Pradesh"), HEI.reserve_of("Puducherry"), HEI.reserve_of("Ladakh")) == (5, 60, 1, 3)
+        assert (HEI.reserve_of("Kerala"), HEI.reserve_of("Uttar Pradesh"), HEI.reserve_of("Puducherry"), HEI.reserve_of("Ladakh")) == (4, 60, 1, 2)
     officer = _nodal(app, "nodal.kerala3@tests.example", ["Kerala"])
     page = officer.get(f"/console/institutions/{ids['College Beta']}/marks").get_data(as_text=True)
-    assert "Institutional readiness" in page and "Past record and documentation capacity" in page and 'max="25"' in page
-    # a mark above the maximum is refused
+    assert "Institutional readiness" in page and "5B. Disciplinary diversity" in page and '<select name="readiness"' in page
+    # a mark the scoring parameters do not give is refused
     r = officer.post(f"/console/institutions/{ids['College Beta']}/marks",
-                     data={"_csrf": _token(officer), "readiness": "26", "outreach": "10", "academic": "10", "geography": "10",
-                           "diversity": "5", "record": "5"})
-    assert r.status_code == 200 and "a whole number from 0 to 25" in r.get_data(as_text=True)
-    for name, marks in (("College Alpha", (20, 15, 15, 10, 5, 5)), ("College Beta", (25, 15, 15, 10, 5, 0)),
+                     data={"_csrf": _token(officer), "readiness": "25", "outreach": "10", "academic": "10", "geography": "10",
+                           "diversity_type": "5", "diversity_disc": "5"})
+    assert r.status_code == 200 and "one of 0, 5, 10, 15, 20" in r.get_data(as_text=True)
+    for name, marks in (("College Alpha", (15, 15, 15, 10, 10, 5)), ("College Beta", (20, 15, 15, 10, 5, 5)),
                         ("College Gamma", (10, 10, 10, 10, 5, 5))):
         officer.post(f"/console/institutions/{ids[name]}/marks",
-                     data=dict(zip(("readiness", "outreach", "academic", "geography", "diversity", "record"), map(str, marks)),
+                     data=dict(zip(("readiness", "outreach", "academic", "geography", "diversity_type", "diversity_disc"), map(str, marks)),
                                _csrf=_token(officer), note="Committee of 3, 12 Nov 2026"))
     with app.app_context():
         rows = {r["name"]: r for r in query("SELECT * FROM institutions")}
         assert (rows["College Alpha"]["sop_total"], rows["College Beta"]["sop_total"], rows["College Gamma"]["sop_total"]) == (70, 70, 50)
-        assert _json.loads(rows["College Beta"]["sop_scores"])["readiness"] == 25
+        assert _json.loads(rows["College Beta"]["sop_scores"])["readiness"] == 20
         # a tie of 70: institutional readiness first
         order = sorted(rows.values(), key=HEI.sop_order)
         assert [r["name"] for r in order] == ["College Beta", "College Alpha", "College Gamma"]
@@ -301,7 +301,7 @@ def test_the_marks_of_annexure_v_rank_the_institutions_and_the_reserve_list():
     values = [[c.value for c in row] for row in ws.iter_rows()]
     assert values[0][:5] == ["State/UT", "Nodal HEI", "Number to be selected (Annexure-I)", "Reserve list (up to 20%)", "Rank"]
     assert [(v[4], v[5], v[17]) for v in values[1:]] == [(1, "College Beta", 70), (2, "College Alpha", 70), (3, "College Gamma", 50)]
-    assert values[1][2] == 21 and values[1][3] == 5 and values[3][18] == "no"
+    assert values[1][2] == 21 and values[1][3] == 4 and values[3][18] == "no"
     # a Nodal Officer of another State/UT sees none of them
     other = _nodal(app, "nodal.assam3@tests.example", ["Assam"])
     assert other.get(f"/console/institutions/{ids['College Gamma']}/marks").status_code == 404
