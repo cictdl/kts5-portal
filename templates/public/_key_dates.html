@@ -1,0 +1,21 @@
+{# KTS 5.0 – Key dates (1.2.152, CICT's note of 4 November 2026): the timeline of the Ministry's D.O. letter of 31 October 2026
+   (Annexure-III D) in three groups - registration and selection, the online programme, research and submission - each day from its
+   setting (public.key_dates_box), so that a day changed in the Console changes here too #}
+{% macro key_dates(heading='h2', id='kd-title') %}
+{% set kd = key_dates_box() %}
+<div class="kd-box">
+  <{{ heading }} class="kd-title" id="{{ id }}">{{ t('kd.title') }}</{{ heading }}>
+  <div class="kd-groups">
+    {% for g in kd %}
+    <section class="kd-group kd-{{ loop.index }}" aria-labelledby="{{ id }}-{{ loop.index }}">
+      <h3 class="kd-gh" id="{{ id }}-{{ loop.index }}">{{ t(g.title) }}</h3>
+      <ul class="kd-list">
+        {% for r in g.rows %}
+        <li{% if not r.d1 %} class="kd-note"{% endif %}>{% if r.d1 %}<span class="kd-when"><bdi>{% if r.prefix %}{{ t(r.prefix)|replace('{date}', r.d1|date) }}{% elif r.d2 %}{{ r.d1|date }} – {{ r.d2|date }}{% else %}{{ r.d1|date }}{% endif %}</bdi></span>{% endif %}<span class="kd-what">{{ t(r.label) }}</span></li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endfor %}
+  </div>
+</div>
+{% endmacro %}

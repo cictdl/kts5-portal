@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}{{ t('ng.title') }}{% endblock %}
+{% block content %}
+{# Guidelines for Nodal Institutions (1.2.152, CICT's note of 4 November 2026): the key points of the Ministry's D.O. letter of
+   31 October 2026 for the Nodal Institutions - the Evaluation Committee (Annexure-V, paragraph 2), the selection criteria
+   (paragraph 3) and the finalisation (paragraphs 4 and 5), the key dates (Annexure-III D) - with the letter itself to download #}
+{% from "public/_key_dates.html" import key_dates with context %}
+<div class="wrap section ng-page">
+  <span class="eyebrow">{{ t('site.name') }} · {{ t('tag.circular') }}</span>
+  <h1>{{ t('ng.title') }}</h1>
+  <p class="lead" style="max-width:80ch">{{ t('ng.lead')|replace('{do}', do_no)|replace('{date}', do_date|date) }}</p>
+  <div class="btn-row">
+    <a class="btn saffron" href="{{ pdf_url }}" target="_blank" rel="noopener" type="application/pdf"><span aria-hidden="true">⬇ </span>{{ t('ng.download') }}</a>
+    <a class="btn secondary" href="{{ url_for('public.nodal_institutions') }}">{{ t('nodal.title') }}</a>
+  </div>
+
+  <section class="card accent ng-committee" aria-labelledby="ng-committee">
+    <h2 id="ng-committee">{{ t('ng.committee') }}</h2>
+    <p class="small muted" style="margin-top:0">{{ t('ng.committee_src') }}</p>
+    <ol class="ng-list">
+      {% for i in range(1, 6) %}<li><b>{{ t('ng.g%d_t' % i) }}:</b> {{ t('ng.g%d' % i) }}</li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  <section class="card ng-criteria" aria-labelledby="ng-criteria">
+    <h2 id="ng-criteria">{{ t('ng.criteria') }}</h2>
+    <div class="table-wrap"><table class="table">
+      <thead><tr><th scope="col" class="num">#</th><th scope="col"><span class="visually-hidden">{{ t('ng.criteria') }}</span></th><th scope="col" class="num">{{ t('ng.max') }}</th></tr></thead>
+      <tbody>{% for i in range(1, 6) %}<tr><td class="num">{{ i }}</td><td>{{ t('ng.c%d' % i) }}</td><td class="num"><b>20</b></td></tr>{% endfor %}</tbody>
+    </table></div>
+    <p><b>{{ t('ng.total') }}</b></p>
+    <p>{{ t('ng.rank') }}</p>
+    <p style="margin-bottom:0">{{ t('ng.records') }}</p>
+  </section>
+
+  <div class="ng-dates">{{ key_dates('h2', 'ng-kd') }}</div>
+
+  <section class="card" aria-labelledby="ng-portal">
+    <h2 id="ng-portal">{{ t('ng.portal') }}</h2>
+    <div class="btn-row" style="margin:0">
+      <a class="btn" href="{{ url_for('public.submit_guide') }}#nodal">{{ t('hs.title') }}</a>
+      <a class="btn secondary" href="{{ url_for('auth.login') }}">{{ t('nav.nodal_login') }}</a>
+      <a class="btn secondary" href="{{ url_for('public.institutions') }}">{{ t('nav.institutions') }}</a>
+    </div>
+  </section>
+  <p class="small" style="margin-top:18px">{{ t('guide.help')|replace('{email}', settings['contact.email'])|replace('{phone}', settings['contact.phone']) }}</p>
+</div>
+{% endblock %}

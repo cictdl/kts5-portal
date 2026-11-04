@@ -87,7 +87,7 @@ def _halves(page):
 
 
 def _banner(page):
-    start = page.index('<div class="banner">')
+    start = page.index('<div class="banner')   # "banner reg-open" too (1.2.152)
     return page[start:page.index("</div></div>", start)]
 
 
@@ -240,8 +240,8 @@ def test_the_home_page_shows_the_next_four_and_the_days_of_the_sangamam(monkeypa
     assert '<span class="kicker"><bdi>28 Nov 2026 – 12 Dec 2026</bdi></span>' in page
     card = page[page.index("<h3>" + _text("schedule.upcoming") + "</h3>"):]
     card = card[:card.index("</ul>")]
-    # the central online test (10 November, 1.2.126) stands fourth since the institutions register up to 15 November (1.2.133)
-    assert [key for key in KEYS if _text(key) in card] == KEYS[:3] and _text("timeline.exam") in card
+    # the central online test (10 November, 1.2.126) stood fourth; left out of the schedule since 1.2.152 (schedule.central_test)
+    assert [key for key in KEYS if _text(key) in card] == KEYS[:4] and _text("timeline.exam") not in card
     assert "07 Oct 2026" in card and "12:00 AM" not in card
     # after the last step of the timeline (the engagement ends on 14 January 2027, 1.2.133), nothing is upcoming
     _on(monkeypatch, "2027-01-15")

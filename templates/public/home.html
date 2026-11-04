@@ -1,18 +1,38 @@
 {% extends "base.html" %}
 {% block title %}{{ t('site.name') }}{% endblock %}
 {% block content %}
-{# The State/UT-wise list of Nodal Higher Educational Institutions, for the attention of all (1.2.74): a band above the
-   hero, linking to the list; its label pulses three times as the page opens, as the quiz button does (1.2.57) #}
+{# The circular band, for the attention of all (1.2.74), above the hero; since 1.2.152 (CICT's note of 4 November 2026) on a plain
+   light background, not red: the newest circular of the Ministry first (the newest circular notice with the letter attached,
+   public.latest_circular), with a blinking NEW while it is recent (circular.new_days), then the Guidelines for Nodal Institutions
+   and the State/UT-wise list of the Nodal Higher Educational Institutions; the participating institutions beside them (1.2.77) #}
 <div class="nodal-attention">
   <div class="wrap">
-    <a class="na-link" href="{{ url_for('public.nodal_institutions') }}">
-      <span class="na-tag"><span aria-hidden="true">📢 </span>{{ t('tag.circular') }}</span>
-      <span class="na-text"><span class="na-title">{{ t('nodal.title') }}</span> <span class="na-go" aria-hidden="true">{{ fwd }}</span></span>
-    </a>
-    {# the participating institutions, State/UT by State/UT, as prominently (1.2.77) #}
+    <div class="na-head"><span class="na-tag"><span aria-hidden="true">📢 </span>{{ t('tag.circular') }}</span>{% if circ_new %}<span class="new-badge">{{ t('circ.new') }}</span>{% endif %}</div>
+    <ul class="na-items">
+      {% if circular %}<li class="na-first"><a class="na-link" href="{{ url_for('public.notice', nid=circular.id) }}"><span class="na-title" lang="en" dir="ltr">{{ circular_head }}</span> <span class="na-go" aria-hidden="true">{{ fwd }}</span></a>
+        <a class="na-pdf" href="{{ url_for('public.public_file', relpath=circular.attachment) }}" target="_blank" rel="noopener" type="application/pdf"><span aria-hidden="true">⬇ </span>PDF</a></li>{% endif %}
+      <li><a class="na-link" href="{{ url_for('public.nodal_guidelines') }}"><span class="na-title">{{ t('ng.title') }}</span> <span class="na-go" aria-hidden="true">{{ fwd }}</span></a></li>
+      <li><a class="na-link" href="{{ url_for('public.nodal_institutions') }}"><span class="na-title">{{ t('nodal.title') }}</span> <span class="na-go" aria-hidden="true">{{ fwd }}</span></a></li>
+    </ul>
     <a class="na-btn" href="{{ url_for('public.institutions') }}"><span aria-hidden="true">🏛️ </span>{{ t('nav.institutions') }} <span aria-hidden="true">{{ fwd }}</span></a>
   </div>
 </div>
+{# Quick links (1.2.152, CICT: "Make the Registration, Programme Guidelines, Study Materials (particularly the 108 Tirukkural
+   couplets), and Login pages easily accessible through prominent links on the website homepage") #}
+<nav class="quick-links" aria-label="{{ t('site.quick_links') }}">
+  <div class="wrap">
+    <ul class="ql-grid">
+      {% if hei_open %}<li><a class="ql ql-reg" href="{{ url_for('public.hei_register') }}"><span class="ql-ico" aria-hidden="true">📝</span><span>{{ t('hei.cta') }}</span></a></li>{% endif %}
+      <li><a class="ql" href="{{ url_for('public.guide') }}"><span class="ql-ico" aria-hidden="true">📘</span><span>{{ t('home.hei_guidelines') }}</span></a></li>
+      <li><a class="ql" href="{{ url_for('public.nodal_guidelines') }}"><span class="ql-ico" aria-hidden="true">🏛️</span><span>{{ t('ng.title') }}</span></a></li>
+      <li><a class="ql" href="{{ url_for('public.kural108') }}"><span class="ql-ico" aria-hidden="true">📜</span><span>{{ t('k108.title') }}</span></a></li>
+      <li><a class="ql" href="{{ url_for('public.syllabus') }}"><span class="ql-ico" aria-hidden="true">📚</span><span>{{ t('ql.study') }}</span></a></li>
+      <li><a class="ql" href="{{ url_for('public.submit_guide') }}"><span class="ql-ico" aria-hidden="true">📤</span><span>{{ t('ql.submit') }}</span></a></li>
+      <li><a class="ql ql-login" href="{{ url_for('campus.login') }}"><span class="ql-ico" aria-hidden="true">🔐</span><span>{{ t('nav.inst_login') }}</span></a></li>
+      <li><a class="ql ql-login" href="{{ url_for('auth.login') }}"><span class="ql-ico" aria-hidden="true">🔑</span><span>{{ t('nav.nodal_login') }}</span></a></li>
+    </ul>
+  </div>
+</nav>
 <section class="hero">
   <div class="watermark" aria-hidden="true">குறள்</div>
   <div class="wrap">
@@ -160,18 +180,15 @@
 </section>
 {% endif %}
 
-<section class="section">
+{# KTS 5.0 – Key dates (1.2.152): the three groups of the D.O. letter of 31 October 2026 (public/_key_dates.html) in place of the tiles;
+   the students' registration window under them while that is shown (reg.public, 1.2.147) #}
+{% from "public/_key_dates.html" import key_dates with context %}
+<section class="section home-kd">
   <div class="wrap">
-    <div class="section-head"><div><span class="eyebrow">{{ t('home.kicker') }}</span><h2>{{ t('home.dates') }}</h2></div>
-    </div>
-    <div class="dates">
-      {# the students' registration window, while shown (reg.public, 1.2.147) #}
-      {% if settings.get('reg.public') == '1' %}<div class="date-tile"><div class="lbl">{{ t('home.reg_window') }}</div><div class="val">{% if dates.reg_after_launch %}{{ t('reg.after_launch') }}{% else %}<bdi>{{ dates.reg_start|date }} – {{ dates.reg_end|date }}</bdi>{% endif %}</div>
-        <div class="sub">{% if dates.reg_state == 'open' %}<span class="pill green">{{ t('home.open') }}</span>{% elif dates.reg_state == 'not_yet' %}<span class="pill saffron">{{ t('reg.not_yet') }} {{ dates.reg_start|date }}</span>{% elif dates.reg_ended %}<span class="pill kumkum">{{ t('reg.closed') }}</span>{% endif %}</div></div>{% endif %}
-      <div class="date-tile"><div class="lbl">{{ t('home.exam_date') }}</div><div class="val">{{ dates.assess_to|date }}</div><div class="sub">{{ t('home.assess_sub') }}</div></div>
-      <div class="date-tile"><div class="lbl">{{ t('home.merit') }}</div><div class="val">{% if settings['merit.published'] == '1' %}<a href="{{ url_for('public.merit') }}">{{ t('home.published') }}</a>{% else %}{{ settings['verify.end']|date }}{% endif %}</div><div class="sub">{{ t('home.merit_sub') }}</div></div>
-      <div class="date-tile"><div class="lbl">{{ t('home.orientation') }}</div><div class="val">{{ settings['orientation.by']|date }}</div><div class="sub">{{ t('home.orient_val') }} · {{ t('home.orient_sub') }}</div></div>
-    </div>
+    <span class="eyebrow">{{ t('home.kicker') }}</span>
+    {{ key_dates('h2', 'home-kd') }}
+    {% if settings.get('reg.public') == '1' %}<div class="dates kd-reg"><div class="date-tile"><div class="lbl">{{ t('home.reg_window') }}</div><div class="val">{% if dates.reg_after_launch %}{{ t('reg.after_launch') }}{% else %}<bdi>{{ dates.reg_start|date }} – {{ dates.reg_end|date }}</bdi>{% endif %}</div>
+        <div class="sub">{% if dates.reg_state == 'open' %}<span class="pill green">{{ t('home.open') }}</span>{% elif dates.reg_state == 'not_yet' %}<span class="pill saffron">{{ t('reg.not_yet') }} {{ dates.reg_start|date }}</span>{% elif dates.reg_ended %}<span class="pill kumkum">{{ t('reg.closed') }}</span>{% endif %}</div></div></div>{% endif %}
   </div>
 </section>
 

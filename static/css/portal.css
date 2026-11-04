@@ -341,29 +341,53 @@ mark { background: rgba(255, 196, 0, .45); color: inherit; padding: 0 1px; borde
   70% { box-shadow: 0 0 0 16px rgba(224,123,26,0), 0 6px 16px rgba(179,38,30,.22); transform: scale(1); }
   100% { box-shadow: 0 0 0 3px rgba(224,123,26,.28), 0 6px 16px rgba(179,38,30,.22); transform: scale(1); }
 }
-/* the State/UT-wise list of Nodal HEIs on the home page, for the attention of all (1.2.74): a deep red band above the hero
-   in both themes (white on #b3261e, 6:1); its label pulses three times as the page opens (under five seconds: WCAG 2.2.2),
-   not at all for those who ask their device for reduced motion */
-.nodal-attention { background: linear-gradient(90deg, #b3261e, #8f1d17); border-bottom: 1px solid #7a1913; }
-.nodal-attention .wrap { padding: 11px 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; }
-/* the participating institutions beside it (1.2.77): a white button on the red band */
-.nodal-attention .na-btn { background: #fff; color: #b3261e; font-weight: 700; border-radius: 999px; padding: 7px 18px; text-decoration: none;
-  white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
-.nodal-attention .na-btn:hover { background: #ffe9e6; text-decoration: none; }
-.nodal-attention .na-btn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+/* The circular band (1.2.74), plain since 1.2.152 (CICT, 4 November 2026: "should not be highlighted with red background ... keep
+   simple background"): a light band with a rule under it, in both themes; the newest circular first, its PDF beside it; the
+   participating institutions on a dark-blue button (white on #1f3a5f, 11:1) */
+.nodal-attention { background: var(--surface); border-bottom: 1px solid var(--border); }
+.nodal-attention .wrap { padding: 10px 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 22px; }
+.nodal-attention .na-head { display: flex; align-items: center; gap: 8px; flex: none; }
+.nodal-attention .na-tag { background: var(--indigo-soft); color: var(--indigo); border-radius: 999px; padding: 3px 12px; font-size: .78rem;
+  font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.nodal-attention .na-items { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 22px; flex: 1 1 420px; min-width: 0; }
+.nodal-attention .na-link { color: var(--indigo); font-weight: 700; text-decoration: none; }
+.nodal-attention .na-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.nodal-attention .na-first .na-title { font-weight: 800; }
+.nodal-attention .na-link:hover .na-title { text-decoration-thickness: 2px; }
+.nodal-attention .na-go { white-space: nowrap; }
+.nodal-attention .na-pdf { margin-inline-start: 8px; font-size: .8rem; font-weight: 700; color: var(--kumkum); border: 1px solid currentColor;
+  border-radius: 6px; padding: 1px 7px; text-decoration: none; white-space: nowrap; }
+.nodal-attention .na-pdf:hover { background: var(--kumkum-soft); text-decoration: none; }
+.nodal-attention .na-btn { background: #1f3a5f; color: #fff; font-weight: 700; border-radius: 999px; padding: 7px 18px; text-decoration: none; white-space: nowrap; }
+.nodal-attention .na-btn:hover { background: #2b4c78; text-decoration: none; }
+.nodal-attention a:focus-visible { outline: 3px solid var(--saffron); outline-offset: 2px; border-radius: 6px; }
 /* a long name (Tamil) may take two lines on a phone rather than widen the page (1.2.83) */
-@media (max-width: 599px) { .nodal-attention .na-btn { white-space: normal; max-width: 100%; } }
-.nodal-attention .na-link { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; color: #fff; font-weight: 700; text-decoration: none; }
-.nodal-attention .na-tag { background: #fff; color: #b3261e; border-radius: 999px; padding: 3px 12px; font-size: .78rem;
-  letter-spacing: .06em; text-transform: uppercase; box-shadow: 0 0 0 3px rgba(255,255,255,.28); }
-.nodal-attention .na-title { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
-.nodal-attention .na-text { font-size: 1.08rem; }
-.nodal-attention .na-go { font-size: 1.2rem; line-height: 1; white-space: nowrap; }
-.nodal-attention .na-link:hover .na-title { text-decoration-thickness: 3px; }
-.nodal-attention .na-link:focus-visible { outline: 3px solid #fff; outline-offset: 3px; border-radius: 6px; }
+@media (max-width: 599px) { .nodal-attention .na-btn { white-space: normal; max-width: 100%; } .nodal-attention .na-items { flex-direction: column; align-items: flex-start; } }
+/* NEW beside "Circular" (1.2.152): black-on-yellow lettering in a red frame; it blinks once a second for five seconds as the page
+   opens and again while the pointer is on the band (WCAG 2.2.2: nothing blinks longer than five seconds unasked), and not at all
+   for those who ask their device for reduced motion */
+.new-badge { display: inline-block; background: #ffd400; color: #8a0000; font-weight: 800; font-size: .74rem; letter-spacing: .08em; line-height: 1.35;
+  padding: 1px 7px; border-radius: 4px; box-shadow: inset 0 0 0 1.5px #b3261e; text-transform: uppercase; }
+@keyframes new-blink { 0%, 60% { opacity: 1; } 61%, 100% { opacity: .08; } }
+@keyframes new-blink-again { 0%, 60% { opacity: 1; } 61%, 100% { opacity: .08; } }
 @media (prefers-reduced-motion: no-preference) {
-  .nodal-attention .na-tag { animation: quiz-pulse 1.5s ease-out .5s 3; }
+  .new-badge { animation: new-blink 1s steps(1, end) .3s 5; }
+  .nodal-attention:hover .new-badge, .nodal-attention:focus-within .new-badge { animation: new-blink-again 1s steps(1, end) 0s 5; }
 }
+/* Quick links (1.2.152): eight tiles under the circular band, four a row (two on phones) */
+.quick-links { padding: 14px 0 4px; }
+.quick-links .ql-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.quick-links .ql { display: flex; align-items: center; gap: 10px; min-height: 56px; height: 100%; padding: 9px 14px; background: var(--surface);
+  border: 1px solid var(--border); border-inline-start: 4px solid var(--saffron); border-radius: 10px; color: var(--indigo); font-weight: 700;
+  line-height: 1.3; text-decoration: none; box-shadow: var(--shadow); transition: border-color .15s, transform .15s; }
+.quick-links .ql:hover, .quick-links .ql:focus-visible { border-color: var(--saffron); text-decoration: none; transform: translateY(-1px); }
+.quick-links .ql-reg { background: var(--saffron-soft); }
+.quick-links .ql-login { border-inline-start-color: var(--indigo); }
+.quick-links .ql-ico { font-size: 1.35rem; line-height: 1; flex: none; }
+@media (max-width: 899px) { .quick-links .ql-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; } }
+@media (max-width: 599px) { .quick-links .ql { font-size: .9rem; padding: 8px 10px; gap: 8px; min-height: 52px; } .quick-links .ql-ico { font-size: 1.15rem; } }
+/* Nastaliq needs the taller lines that the buttons already have in Urdu and Kashmiri */
+html[lang="ur"] .quick-links .ql, html[lang="ks"] .quick-links .ql { line-height: 1.9; }
 .btn.saffron:hover { filter: brightness(.94); }
 /* the reel of the official Kashi Tamil Sangamam account on the home page (1.2.79): a card that opens it on Instagram */
 .home-reel { padding: 28px 0 4px; }
@@ -1128,3 +1152,34 @@ footer.site .bottom .wrap { display: flex; justify-content: space-between; gap: 
 @media (max-width: 479px) { .pi .pi-ring { grid-column: 1 / -1; } .pi .pi-kpi { padding: 14px; } .pi .pi-kpi .num { font-size: 1.75rem; }
   .pi .pi-row { grid-template-columns: minmax(0, 1fr) auto; } .pi .pi-bar { grid-column: 1 / -1; grid-row: 2; } }
 @media print { .pi .pi-trend { break-inside: avoid; } }
+/* the strip of the registration of institutions (1.2.152, CICT: "should be highlighted with bigger font and color background"):
+   larger, white on dark blue (11:1), its link a white button */
+.banner.reg-open { background: #1f3a5f; color: #fff; font-size: 1.12rem; font-weight: 700; border-bottom: 0; }
+.banner.reg-open .wrap { padding: 11px 0; flex-wrap: wrap; justify-content: center; text-align: center; }
+.banner.reg-open .dot { display: none; }   /* the band itself is the highlight; a long sentence would leave the dot on a line of its own */
+.banner.reg-open .banner-go { display: inline-block; background: #fff; color: #1f3a5f; text-decoration: none; padding: 5px 16px; border-radius: 999px;
+  margin-inline-start: 10px; white-space: nowrap; box-shadow: 0 2px 8px rgba(0, 0, 0, .25); }
+.banner.reg-open .banner-go:hover { background: #ffe8c8; }
+.banner.reg-open .banner-go:focus-visible { outline: 3px solid #ffb347; outline-offset: 2px; }
+@media (max-width: 599px) { .banner.reg-open { font-size: 1rem; } .banner.reg-open .banner-go { margin: 6px 0 0; } }
+/* the number of the Ministry's letter on one line (1.2.152) */
+.do-no { white-space: nowrap; }
+/* KTS 5.0 – Key dates (1.2.152): three groups side by side (one under another on phones), the days in bold */
+.kd-title { margin: 0 0 12px; }
+.kd-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.kd-group { background: var(--surface); border: 1px solid var(--border); border-top: 4px solid var(--saffron); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); }
+.kd-group.kd-2 { border-top-color: var(--indigo); }
+.kd-group.kd-3 { border-top-color: var(--green); }
+.kd-gh { margin: 0 0 10px; font-size: 1.05rem; color: var(--indigo); }
+.kd-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 11px; }
+.kd-list li { display: grid; gap: 2px; }
+.kd-when { font-weight: 800; color: var(--kumkum); font-size: .95rem; }
+.kd-note .kd-what { color: var(--dim); font-size: .9rem; }
+@media (max-width: 899px) { .kd-groups { grid-template-columns: 1fr; } }
+.kd-reg { margin-top: 14px; }
+/* the Guidelines for Nodal Institutions and the steps of submitting the selected student (1.2.152) */
+.ng-page .card, .hs-page .card, .ng-page .ng-dates { margin-top: 18px; }
+.ng-list { margin: 0; padding-inline-start: 1.3em; display: grid; gap: 9px; }
+.hs-steps { margin: 0 0 14px; padding-inline-start: 1.4em; display: grid; gap: 12px; }
+.hs-steps .hs-st { display: block; color: var(--indigo); }
+.ui-name { font-weight: 800; color: var(--indigo); background: var(--indigo-soft); padding: 0 5px; border-radius: 4px; }

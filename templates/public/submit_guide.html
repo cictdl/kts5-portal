@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ t('hs.title') }}{% endblock %}
+{% block content %}
+{# Submitting the selected student (1.2.152, CICT's note of 4 November 2026: "The Nodal officers/ Coordinator how to submit the
+   students list in the web portal"): the Institutional Coordinator's steps on the institution's page and the Nodal Officer's in the
+   Console. Those screens are in English: their buttons and sections are named in English, in bold, wherever each language's
+   sentence puts them (public.ui_text); the days are those of the settings. #}
+<div class="wrap section hs-page">
+  <span class="eyebrow">{{ t('site.name') }}</span>
+  <h1>{{ t('hs.title') }}</h1>
+  <p class="lead" style="max-width:80ch">{{ t('hs.lead')|replace('{date}', settings['reg.end']|date) }}</p>
+  <div class="btn-row"><a class="btn" href="#coordinator">{{ t('hs.coord') }}</a><a class="btn secondary" href="#nodal">{{ t('hs.nodal') }}</a></div>
+
+  <section class="card accent hs-part" id="coordinator" aria-labelledby="hs-coord">
+    <h2 id="hs-coord">{{ t('hs.coord') }}</h2>
+    <ol class="hs-steps">
+      {% for key, values in coord_steps %}<li><b class="hs-st">{{ t(key ~ '_t') }}</b> <span>{{ ui_text(key, **values) }}</span></li>
+      {% endfor %}
+    </ol>
+    <div class="btn-row" style="margin:0">
+      <a class="btn saffron" href="{{ url_for('campus.login') }}">{{ t('nav.inst_login') }}</a>
+      <a class="btn secondary" href="{{ url_for('static', filename='KTS5-nomination-form.pdf') }}" target="_blank" rel="noopener">{{ t('reg.nomination_download') }}</a>
+    </div>
+  </section>
+
+  <section class="card hs-part" id="nodal" aria-labelledby="hs-nodal">
+    <h2 id="hs-nodal">{{ t('hs.nodal') }}</h2>
+    <ol class="hs-steps">
+      {% for key, values in nodal_steps %}<li><b class="hs-st">{{ t(key ~ '_t') }}</b> <span>{{ ui_text(key, **values) }}</span></li>
+      {% endfor %}
+    </ol>
+    <div class="btn-row" style="margin:0">
+      <a class="btn saffron" href="{{ url_for('auth.login') }}">{{ t('nav.nodal_login') }}</a>
+      <a class="btn secondary" href="{{ url_for('public.nodal_guidelines') }}">{{ t('ng.title') }}</a>
+    </div>
+  </section>
+  <p class="small" style="margin-top:18px">{{ t('guide.help')|replace('{email}', settings['contact.email'])|replace('{phone}', settings['contact.phone']) }}</p>
+</div>
+{% endblock %}

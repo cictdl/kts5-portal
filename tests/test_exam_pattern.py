@@ -24,9 +24,10 @@ def test_the_pages_state_the_pattern():
     client = app.test_client()
     for path in ("/examination", "/programme"):
         assert LINE in client.get(path + "?lang=en").get_data(as_text=True), path
-    # the home page names the ways an institution may assess its students (the revised D.O. letter, 1.2.111); the online test
-    # of the portal, with its pattern, is one of them
-    assert "a test, an oral interaction, an essay, a presentation or a quiz" in client.get("/?lang=en").get_data(as_text=True)
+    # the page of the assessment names the ways an institution may assess its students (the revised D.O. letter, 1.2.111; the
+    # home page did on its date tile until the key dates took the tiles' place, 1.2.152); the online test of the portal is one
+    assert ("a short written test, an oral interaction, a presentation, an essay, a quiz or a suitable combination"
+            in client.get("/examination?lang=en").get_data(as_text=True))
 
 
 def test_the_pattern_gives_100_marks():

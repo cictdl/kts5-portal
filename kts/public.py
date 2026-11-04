@@ -23,7 +23,7 @@ from . import finder as FINDER
 from . import heis as HEI
 from . import kural as K
 from . import letters as LETTERS
-from .db import LAUNCH_NOTICE, RETIRED_LAUNCH_NOTICES, all_settings, audit, execute, get_setting, query, utcnow
+from .db import DO_NOTICE_FILE, LAUNCH_NOTICE, RETIRED_LAUNCH_NOTICES, all_settings, audit, execute, get_setting, query, utcnow
 from . import i18n
 from . import search as S
 from .i18n import get_lang, offered, t
@@ -118,9 +118,10 @@ def _timeline(settings):
                                     ("timeline.reg_close", "registration", reg_on and _iso_day(settings.get("reg.end"))),
                                     ("timeline.inauguration", "general", _iso_day(settings.get("kts.start"))),
                                     ("timeline.valedictory", "general", _iso_day(settings.get("kts.end")))) if day]
-    # CICT's central online test (1.2.126), its days as the settings have them, while it is not switched off
+    # CICT's central online test (1.2.126), its days as the settings have them, while it is not switched off; left out of the
+    # schedule unless schedule.central_test is '1' (1.2.152)
     first, last = _iso_day(settings.get("exam.date")), _iso_day(settings.get("exam.date_to"))
-    if first and settings.get("exam.open") != "0":
+    if first and settings.get("exam.open") != "0" and settings.get("schedule.central_test") == "1":
         fixed.append(("timeline.exam", "examination", first + "T00:00", last + "T00:00" if last and last > first else None))
     for key, kind, starts_at, ends_at in fixed:
         rows.append({"id": None, "title": i18n.text(key, "en"), "description": "", "kind": kind, "lang": "",
@@ -225,6 +226,7 @@ def _notice_filter(settings):
 # CICT's banner of KTS 5.0 on the home page, before the Kural of the day (1.2.145): in the visitor's language when CICT gives
 # one, else the English one (1.2.146; the Tamil one before); the text of the banner, in its language, as its description; the
 # size of the 1080-px file
+# (the English one replaced on 4 November 2026 by CICT's new one, with the official logo of the Kashi Tamil Sangamam, 1.2.152)
 HOME_BANNERS = {
     "en": {"files": ("img/banner/kts5-banner-en-720.jpg", "img/banner/kts5-banner-en-1080.jpg"), "lang": "en", "size": (1080, 1146),
            "alt": "Kashi Tamil Sangamam – Thirukkural Payilvom: to study Thirukkural, the classical Tamil text of enduring ethical, social and philosophical significance, in your language. 1000 internships for students of higher education, through 1000 Higher Educational Institutions (HEIs); each internship is of ₹10,000. Each selected HEI will select one student for internship as per schedule. Thirukkural is available in 22 Indian languages of the 8th Schedule and in English. For more details and registration by HEIs, visit kts.cict.in"},
@@ -236,6 +238,79 @@ HOME_BANNERS = {
 def home_banner(lang):
     """The banner of the home page for a language: its own, else the English one."""
     return HOME_BANNERS.get(lang) or HOME_BANNERS["en"]
+
+
+def latest_circular(settings):
+    """
+    The newest circular of the Ministry for the circular band of the home page (1.2.152): the newest published notice of the
+    category 'circular' with the letter attached; (notice, its title up to the colon, whether it carries NEW). NEW while it is
+    no older than circular.new_days days.
+    """
+    hide, hide_args = _notice_filter(settings)
+    row = query("SELECT * FROM notices WHERE published = 1 AND category = 'circular' AND attachment != '' "
+                "AND (publish_at IS NULL OR publish_at <= ?)" + hide + " ORDER BY created_at DESC, id DESC LIMIT 1",
+                (utcnow(), *hide_args), one=True)
+    if row is None:
+        return None, "", False
+    try:
+        days = int(settings.get("circular.new_days") or 0)
+    except ValueError:
+        days = 0
+    since = date.fromordinal(now_ist().date().toordinal() - days).isoformat()
+    return row, row["title"].split(":")[0].strip(), days > 0 and (row["publish_at"] or row["created_at"] or "")[:10] >= since
+
+
+# the D.O. letter of the Ministry of 31 October 2026, as the Guidelines for Nodal Institutions cite it (1.2.152)
+DO_NO = "D.O. No. 16-2/2026-Skt.I (Pt.)"
+DO_DATE = "2026-10-31"
+
+
+def key_dates_box(settings=None):
+    """
+    KTS 5.0 – Key dates (1.2.152, CICT's note of 4 November 2026): the timeline of the D.O. letter of 31 October 2026
+    (Annexure-III D) in three groups, each day from its setting: [{'title', 'rows': [{'label', 'd1', 'd2', 'prefix'}]}].
+    A row without a day is a note of its group; a step whose day is not set is left out.
+    """
+    s = settings or all_settings()
+
+    def day(key):
+        return _iso_day(s.get(key))
+
+    def row(label, d1=None, d2=None, prefix=None):
+        return {"label": label, "d1": d1, "d2": d2, "prefix": prefix}
+
+    hei_end, select_end = day("hei.end"), day("hei.select_end")
+    select_from = None
+    if hei_end and select_end:
+        after = date.fromordinal(date.fromisoformat(hei_end).toordinal() + 1).isoformat()
+        select_from = after if after < select_end else None
+    groups = [
+        {"title": "kd.g1", "rows": [row("kd.reg", hei_end, prefix="kd.upto"),
+                                    row("kd.select", select_from or select_end, select_end if select_from else None),
+                                    row("kd.assess", day("camp.to"), prefix="kd.by"),
+                                    row("kd.nominate", day("reg.end"))]},
+        {"title": "kd.g2", "rows": [row("kd.inaug", day("kts.start")), row("kd.valed", day("kts.end")),
+                                    row("kd.online"), row("kd.cert")]},
+        {"title": "kd.g3", "rows": [row("kd.orient", day("orientation.by"), prefix="kd.by"),
+                                    row("kd.research", day("internship.start"), day("papers.due")),
+                                    row("kd.submit", day("papers.due"), prefix="kd.by")]},
+    ]
+    for g in groups:
+        g["rows"] = [r for r in g["rows"] if r["d1"] or r["label"] in ("kd.online", "kd.cert")]
+    return groups
+
+
+def ui_text(key, **values):
+    """The text of key with its {placeholders} put in (1.2.152): a str value is escaped, Markup goes in as it is."""
+    out = str(escape(t(key)))
+    for name, value in values.items():
+        out = out.replace("{%s}" % name, str(value if isinstance(value, Markup) else escape(value)))
+    return Markup(out)
+
+
+def _ui(name):
+    """The English name of a button or section of an English-only screen, in bold (1.2.152)."""
+    return Markup('<b class="ui-name" lang="en" dir="ltr">{}</b>').format(name)
 
 
 @bp.route("/")
@@ -265,7 +340,9 @@ def home():
         kotd_lang, kotd_dir = "en", "ltr"
     seminars = cict_events()
     ev_years = (min(e["start"][:4] for e in seminars), max(e["start"][:4] for e in seminars)) if seminars else None
+    circular, circular_head, circ_new = latest_circular(settings)   # the circular band (1.2.152)
     return render_template("public/home.html", settings=settings, dates=_key_dates(settings), uz=home_uzbek(),
+                           circular=circular, circular_head=circular_head, circ_new=circ_new,
                            # "Find your next step" (1.2.140), while shown (home.hub, hidden since 1.2.146)
                            hub=FINDER.hub(settings, lang) if settings.get("home.hub") == "1" else None,
                            kts_banner=home_banner(lang), hei_open=HEI.window(settings) == "open",   # the banner (1.2.145)
@@ -274,6 +351,48 @@ def home():
                            kotd=k, kotd_lines=K.lines(k, kotd_lang), kotd_lang=kotd_lang, kotd_dir=kotd_dir,
                            featured=query("SELECT * FROM resources WHERE published = 1 AND featured = 1 "
                                           "ORDER BY sort_order, created_at DESC LIMIT 6"))
+
+
+@bp.route("/guidelines-for-nodal-institutions")
+def nodal_guidelines():
+    """Guidelines for Nodal Institutions (1.2.152): the key points of the D.O. letter of 31 October 2026, with the letter."""
+    return render_template("public/nodal_guidelines.html", settings=all_settings(), do_date=DO_DATE,
+                           do_no=Markup('<span class="do-no" dir="ltr">{}</span>').format(DO_NO),
+                           pdf_url=url_for("public.public_file", relpath=DO_NOTICE_FILE))
+
+
+@bp.route("/how-to-submit-the-student")
+def submit_guide():
+    """
+    Submitting the selected student on the portal (1.2.152): the steps of the Institutional Coordinator (the institution's page)
+    and of the Nodal Officer (the Console), the English names of their buttons put in by ui_text, the days from the settings.
+    """
+    settings = all_settings()
+    numeric = get_lang() != "en"
+
+    def day(key):
+        return fmt_date(settings.get(key), numeric)
+
+    inst_login = Markup('<a href="{}">{}</a>').format(url_for("campus.login"), t("nav.inst_login"))
+    nodal_login = Markup('<a href="{}">{}</a>').format(url_for("auth.login"), t("nav.nodal_login"))
+    excel = _ui("Excel")
+    coord = [("hs.c1", {"inst_login": inst_login}),
+             ("hs.c2", {}),
+             ("hs.c3", {"date": day("camp.to"), "online_test": _ui("The online assessment of the portal"),
+                        "switch_on": _ui("Switch on"), "excel": excel}),
+             ("hs.c4", {"students_list": _ui("Students who took the online assessment"), "select": _ui("Select"),
+                        "selected": _ui("The selected student"), "send_link": _ui("Select and send the registration link")}),
+             ("hs.c5", {"open_reg": _ui("Open the registration"), "date": day("reg.end")}),
+             ("hs.c6", {}),
+             ("hs.c7", {"withdraw": _ui("Withdraw the selection")})]
+    nodal = [("hs.n1", {"nodal_login": nodal_login}),
+             ("hs.n2", {"institutions": _ui("Institutions"), "marks": _ui("Marks"), "select_inst": _ui("✓ Select"),
+                        "reserve": _ui("Reserve"), "annex2": _ui("Excel (Annexure-II)"), "date": day("hei.select_end")}),
+             ("hs.n3", {"progress": _ui("Progress"), "progress_excel": _ui("Excel (all, with contacts)")}),
+             ("hs.n4", {"queue": _ui("Verification queue"), "verify": _ui("✓ Verify"), "reject": _ui("✗ Reject"),
+                        "date": day("verify.end")}),
+             ("hs.n5", {"applications": _ui("Applications"), "excel": excel, "csv": _ui("CSV")})]
+    return render_template("public/submit_guide.html", settings=settings, coord_steps=coord, nodal_steps=nodal)
 
 
 @bp.route("/my-college")
@@ -1781,6 +1900,7 @@ SITEMAP = [
                          ("public.stipend_guide", {}, "stip.title"), ("candidate.login", {}, "nav.candidate"),
                          ("public.nodal_institutions", {}, "nav.nodal"), ("public.join_board", {}, "join.board_title"),
                          ("public.institutions", {}, "nav.institutions"), ("public.hei_register", {}, "hei.cta"),
+                         ("public.nodal_guidelines", {}, "ng.title"), ("public.submit_guide", {}, "hs.title"),
                          ("campus.login", {}, "camp.login_title")]),
     ("pol.sm_learning", [("public.orientation", {}, "nav.orientation"), ("public.resources", {}, "nav.resources"),
                          ("public.cict_events_page", {}, "ev.title"),

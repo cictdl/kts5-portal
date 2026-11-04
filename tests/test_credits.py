@@ -49,5 +49,6 @@ def test_the_foot_of_every_page_in_every_language():
 def test_long_words_wrap_on_a_phone():
     styles = (ROOT / "static" / "css" / "portal.css").read_text(encoding="utf-8")
     assert "footer.site .langs ul { flex: 1 1 16rem; }" in styles
-    assert "@media (max-width: 599px) { .nodal-attention .na-btn { white-space: normal; max-width: 100%; } }" in styles
+    assert ("@media (max-width: 599px) { .nodal-attention .na-btn { white-space: normal; max-width: 100%; } .nodal-attention .na-items "
+            "{ flex-direction: column; align-items: flex-start; } }") in styles
     assert ".date-tile { min-width: 0; overflow-wrap: anywhere; }" in styles

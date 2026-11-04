@@ -15,7 +15,7 @@
     <div class="date-tile"><div class="lbl">{{ t('guide.date_hei') }}</div><div class="val">{{ settings['hei.end']|date }}</div></div>
     <div class="date-tile"><div class="lbl">{{ t('guide.date_select') }}</div><div class="val">{{ settings['hei.select_end']|date }}</div></div>
     <div class="date-tile"><div class="lbl">{{ t('guide.date_assess') }}</div><div class="val"><bdi>{{ settings['camp.from']|date }} – {{ settings['camp.to']|date }}</bdi></div></div>
-    <div class="date-tile"><div class="lbl">{{ t('guide.date_reg') }}</div><div class="val">{{ settings['reg.end']|date }}</div></div>
+    <div class="date-tile"><div class="lbl">{{ t('guide.date_nominate') }}</div><div class="val">{{ settings['reg.end']|date }}</div></div>
     <div class="date-tile"><div class="lbl">{{ t('guide.date_verify') }}</div><div class="val">{{ settings['verify.end']|date }}</div></div>
   </div>
   {% for part, letter, count in parts if not only or only == part %}

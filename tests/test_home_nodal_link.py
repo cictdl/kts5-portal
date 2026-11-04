@@ -30,10 +30,10 @@ def test_the_home_page_points_everyone_to_the_nodal_institutions():
     assert client.get("/nodal-institutions?lang=en").status_code == 200
 
 
-def test_the_band_pulses_only_for_those_who_allow_movement():
-    css = (ROOT / "static" / "css" / "portal.css").read_text(encoding="utf-8")
+def test_the_band_is_plain_and_its_new_blinks_only_for_those_who_allow_movement():
+    css = (ROOT / "static" / "css" / "portal.css").read_text(encoding="utf-8").replace("\r\n", "\n")
     band = css[css.index(".nodal-attention {"):css.index(".btn.saffron:hover")]
-    assert "@media (prefers-reduced-motion: no-preference)" in band
-    assert "animation: quiz-pulse 1.5s ease-out .5s 3" in band
-    # fixed colours, white on deep red in the dark theme as well
-    assert "#b3261e" in band and "var(--kumkum)" not in band
+    # a plain band since 1.2.152 (CICT: "should not be highlighted with red background ... keep simple background"), in both themes
+    assert ".nodal-attention { background: var(--surface);" in band and "#8f1d17" not in band and "linear-gradient" not in band
+    # the NEW beside "Circular" blinks five times (WCAG 2.2.2), not at all for those who ask for reduced motion
+    assert "@media (prefers-reduced-motion: no-preference) {\n  .new-badge { animation: new-blink 1s steps(1, end) .3s 5; }" in band

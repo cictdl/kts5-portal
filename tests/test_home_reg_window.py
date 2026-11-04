@@ -15,8 +15,9 @@ NOTE = "Registration is now open for Participating Institutions."   # since 1.2.
 
 
 def _tile(page):
+    # alone under the key dates since 1.2.152: up to the end of its section (home) or the next heading (schedule)
     start = page.index('<div class="lbl">Registration window</div>')
-    return page[start:page.index('<div class="date-tile">', start)]
+    return page[start:min(i for i in (page.find("</section>", start), page.find("<h2", start)) if i > 0)]
 
 
 def test_registration_opens_after_the_launch(monkeypatch):

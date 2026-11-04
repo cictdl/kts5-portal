@@ -120,6 +120,6 @@ def test_the_home_page_tells_the_institutions_what_they_do(site):
     assert re.findall(r'href="([^"]+)"', section) == ["/how-to-take-part", "/schedule", "/resources", "/institutions/register"]
     assert ">Programme guidelines<" in section and ">Timelines<" in section
     # right under the hero, before the dates
-    assert home.index("hei-intro") < home.index('class="dates"')
+    assert home.index("hei-intro") < home.index('class="kd-box"')   # the key dates (1.2.152)
     catalog = json.loads((ROOT / "data" / "i18n" / "ta.json").read_text(encoding="utf-8"))
     assert catalog["home.hei_title"] in _page(site, "/", "ta")

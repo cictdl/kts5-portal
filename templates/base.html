@@ -21,7 +21,7 @@
 {% endblock %}
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=46">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=47">
 {% block head %}{% endblock %}
 </head>
 <body>
@@ -32,7 +32,8 @@
     <div>{{ t('site.ministry') }} · {{ t('site.organiser') }}</div>
     <div class="links">
       {% if students_public() %}<a href="{{ url_for('public.status') }}">{{ t('nav.status') }}</a>{% endif %}
-      <a href="{{ url_for('candidate.login') }}">{{ t('nav.candidate') }}</a>
+      {# "Institution login" in place of "Candidate login" (1.2.152, CICT's note of 4 November 2026); the candidate portal works at its address #}
+      <a href="{{ url_for('campus.login') }}">{{ t('nav.inst_login') }}</a>
       <a href="{{ url_for('auth.login') }}">{{ t('nav.admin') }}</a>
       {# search across the whole portal (1.2.90) #}
       <form class="site-search" role="search" method="get" action="{{ url_for('public.search') }}">
@@ -62,10 +63,7 @@
     </div>
     <img class="gov-logo moe" src="{{ url_for('static', filename='img/logos/moe.png') }}" alt="{{ t('site.ministry') }}" height="46">
     <img class="logo" src="{{ url_for('static', filename='img/cict-logo.png') }}" alt="{{ t('site.organiser') }}" width="58" height="58">
-    {# "Apply now" leads to "Register your institution" while the registration of institutions is open (1.2.145) #}
-    {# the students' registration only while shown (reg.public, 1.2.147) #}
-    {% set cta_href = url_for('public.hei_register') if hei_window() == 'open' else (url_for('public.register') if students_public() else '') %}
-    {% if cta_href %}<a class="btn saffron cta" href="{{ cta_href }}">{{ t('home.cta_register') }}</a>{% endif %}
+    {# no "Apply now" here since 1.2.152 (CICT: "it is not clear that what to apply"); the registration is in the strip under the menu #}
   </div>
 </header>
 <nav class="nav" aria-label="{{ t('nav.menu') }}">
@@ -83,6 +81,8 @@
           <li><a href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a></li>
           <li><a href="{{ url_for('public.institutions') }}">{{ t('nav.institutions') }}</a></li>
           <li><a href="{{ url_for('public.nodal_institutions') }}">{{ t('nav.nodal') }}</a></li>
+          <li><a href="{{ url_for('public.nodal_guidelines') }}">{{ t('ng.title') }}</a></li>
+          <li><a href="{{ url_for('public.submit_guide') }}">{{ t('hs.title') }}</a></li>
           <li><a href="{{ url_for('campus.login') }}">{{ t('camp.login_title') }}</a></li>
         </ul></li>
       <li><a href="{{ url_for('public.examination') }}" class="{{ 'active' if ep in ('public.examination', 'public.merit') }}">{{ t('nav.exam') }}</a></li>
@@ -113,7 +113,7 @@
 </nav>
 {% if get_setting('site.banner_on') == '1' and get_setting('site.banner') %}
 {% set banner = banner_state() %}
-<div class="banner{{ ' launch' if banner == 'launch' }}"><div class="wrap"><span class="dot" aria-hidden="true"></span>{% if banner == 'launch' %}{% set la = launch_view().at %}<span>{{ t('launch.banner')|replace('{date}', la|date)|replace('{time}', la|clock) }}</span>{% elif banner == 'not_yet' %}<span>{{ t('reg.not_yet') }} {{ get_setting('reg.start')|date }}</span>{% elif banner == 'after_launch' %}<span>{{ t('reg.after_launch_note') }}{% if hei_window() == 'open' %} <a class="banner-go" href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }} {{ fwd }}</a>{% endif %}</span>{% elif banner == 'closed' %}<span>{{ t('reg.closed') }}</span>{% else %}<span dir="{{ st_dir('site.banner') }}">{{ st('site.banner') }}</span>{% endif %}</div></div>
+<div class="banner{{ ' launch' if banner == 'launch' }}{{ ' reg-open' if banner == 'after_launch' }}"><div class="wrap"><span class="dot" aria-hidden="true"></span>{% if banner == 'launch' %}{% set la = launch_view().at %}<span>{{ t('launch.banner')|replace('{date}', la|date)|replace('{time}', la|clock) }}</span>{% elif banner == 'not_yet' %}<span>{{ t('reg.not_yet') }} {{ get_setting('reg.start')|date }}</span>{% elif banner == 'after_launch' %}<span>{{ t('reg.after_launch_note') }}{% if hei_window() == 'open' %} <a class="banner-go" href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }} {{ fwd }}</a>{% endif %}</span>{% elif banner == 'closed' %}<span>{{ t('reg.closed') }}</span>{% else %}<span dir="{{ st_dir('site.banner') }}">{{ st('site.banner') }}</span>{% endif %}</div></div>
 {% endif %}
 {% if lang_draft and get_setting('site.draft_note_on') == '1' %}
 <div class="draft-note"><div class="wrap"><span>{{ t('site.draft_note') }}</span> <a href="{{ url_for('public.set_lang', code='en') }}" hreflang="en" lang="en" dir="ltr">English</a></div></div>

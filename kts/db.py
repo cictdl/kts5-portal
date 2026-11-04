@@ -758,6 +758,11 @@ DEFAULT_SETTINGS = {
     # the seminars and workshops of CICT on the public pages (1.2.151): hidden; the page /seminars-workshops works either way;
     # '1' shows them again
     "events.public": "0",
+    # CICT's central online test in the schedule and the upcoming events (1.2.152): left out ("Should remove the content ... Central
+    # Online Test", CICT, 4 November 2026); '1' puts it back
+    "schedule.central_test": "0",
+    # the days for which the newest circular of the Ministry carries a blinking NEW on the home page (1.2.152); 0: never
+    "circular.new_days": "30",
     # the public dashboard KTS 5.0 by State/UT (1.2.122, kts/dashboard.py)
     "dashboard.public": "1",
     # its student delegates by name, once verified (1.2.124)
@@ -868,7 +873,7 @@ RETIRED_EVENT_DAYS = {
 DO_NOTICE = (
     "D.O. letter of the Ministry of Education, 31 October 2026: Students' Engagement Programme under KTS 5.0 (revised Annexure-I and timeline)",
     "\n".join([
-        "D.O. No. 16-2/2026-Skt.(Pt.) of 31 October 2026 from the Additional Secretary, Department of Higher Education, Ministry of "
+        "D.O. No. 16-2/2026-Skt.I (Pt.) of 31 October 2026 from the Additional Secretary, Department of Higher Education, Ministry of "
         "Education, to the Vice-Chancellors/Directors of the Nodal Higher Educational Institutions, revising the letter of 9 October "
         "2026 on the nationwide Students' Engagement Programme of Kashi Tamil Sangamam 5.0 (28 November – 12 December 2026). The "
         "letter with its annexures is attached.",
@@ -1515,6 +1520,13 @@ def init_db(app):
         if not conn.execute("SELECT 1 FROM notices WHERE title = ?", (DO_NOTICE[0],)).fetchone():
             conn.execute("INSERT INTO notices(title, body, category, lang, pinned, published, attachment, link, created_at, updated_at) "
                          "VALUES(?,?,'circular','en',1,1,?,'/schedule',?,?)", (DO_NOTICE[0], DO_NOTICE[1], DO_NOTICE_FILE, now, now))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
+    # its number as the letter prints it (1.2.152): "16-2/2026-Skt.I (Pt.)"; the notice put in before takes it, once, where its text is
+    # still the one put in
+    mark = "migrate.do_31oct.number"
+    if not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
+        conn.execute("UPDATE notices SET body = ?, updated_at = ? WHERE title = ? AND body = ?",
+                     (DO_NOTICE[1], now, DO_NOTICE[0], DO_NOTICE[1].replace("16-2/2026-Skt.I (Pt.)", "16-2/2026-Skt.(Pt.)")))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
 
     # The launch of 14 October 2026, 5:00 PM was postponed (1.2.69): on a database that has announced it already (its notice

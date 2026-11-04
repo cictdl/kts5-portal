@@ -58,19 +58,16 @@ def test_the_banner_before_the_kural_of_the_day():
     assert 'href="/static/img/banner/kts5-banner-en-1080.jpg"' in banner and "/institutions/register" not in banner
 
 
-def test_apply_now_leads_to_the_registration_of_institutions():
-    client = _app().test_client()
-    for path in ("/?lang=en", "/about?lang=en", "/syllabus?lang=hi"):
-        page = _page(client, path)
-        assert '<a class="btn saffron cta" href="/institutions/register">' in page, path
-    assert '<a class="btn saffron cta" href="/institutions/register">Apply now</a>' in _page(client, "/?lang=en")
-    # while it is not open: nothing, the students' registration being hidden (1.2.147); shown, the students' registration
-    for app in (_app(hei_open="0"), _app(hei_end="2020-01-01")):
-        assert 'class="btn saffron cta"' not in _page(app.test_client(), "/?lang=en")
-    with app.app_context():   # the students' registration shown (hidden by default since 1.2.147)
+def test_no_apply_now_in_the_masthead():
+    # "Apply now" led to the registration of institutions (1.2.145); gone since 1.2.152 (CICT: "Delete 'Apply now' from here since
+    # it is not clear that what to apply"): the strip under the menu carries the registration
+    for app in (_app(), _app(hei_open="0")):
+        for path in ("/?lang=en", "/about?lang=en", "/syllabus?lang=hi"):
+            assert 'class="btn saffron cta"' not in _page(app.test_client(), path), path
+    with app.app_context():   # nor for the students' registration, when it is shown
         from kts.db import set_setting as _set
         _set("reg.public", "1")
-        assert '<a class="btn saffron cta" href="/register">Apply now</a>' in _page(app.test_client(), "/?lang=en")
+        assert 'class="btn saffron cta"' not in _page(app.test_client(), "/?lang=en")
 
 
 def test_no_video_guide_on_the_home_page():

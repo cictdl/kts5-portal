@@ -49,7 +49,8 @@ def test_the_pages_say_22_languages(code):
 
 def test_the_home_page_names_22_languages_and_english():
     client = make_app(ADMIN_PASSWORD=None).test_client()
-    assert "22 languages and English" in client.get("/?lang=en").get_data(as_text=True)
+    # the home page named them on its date tile of the orientation until the key dates took the tiles' place (1.2.152)
+    assert "Online orientation in 22 languages" in client.get("/programme?lang=en").get_data(as_text=True)
     page = client.get("/orientation?lang=en").get_data(as_text=True)
     assert "21 " not in page.split("<main")[1].split("</main>")[0]
 

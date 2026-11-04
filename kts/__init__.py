@@ -252,6 +252,9 @@ def create_app(config_object=Config):
             "hei_window": lambda: heis.window(db.all_settings()),
             # the students' registration shown on the public pages (1.2.147: hidden by default)
             "students_public": lambda: db.get_setting("reg.public") == "1",
+            # KTS 5.0 – Key dates (1.2.152) and the steps of /how-to-submit-the-student with their English button names
+            "key_dates_box": public.key_dates_box,
+            "ui_text": public.ui_text,
             # the seminars and workshops of CICT shown on the public pages (1.2.151: hidden by default)
             "events_public": lambda: db.get_setting("events.public") == "1",
         }

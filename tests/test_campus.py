@@ -380,7 +380,9 @@ def test_the_letter_in_the_data_and_the_pages():
     client = app.test_client()
     home = client.get("/?lang=en").get_data(as_text=True)
     # the countdown of the home page is to Kashi Tamil Sangamam 5.0 (1.2.50), no longer to a test of CICT
-    assert "Institution-level assessments" in home and 'data-countdown="2026-10-29' not in home and "Assessment at the institution" in home
+    # the key dates of the D.O. letter of 31 October 2026 in place of the date tiles (1.2.152)
+    assert "Thirukkural assessment of the interested students by each Participating Institution" in home and 'data-countdown="2026-10-29' not in home \
+        and "Assessment at the institution" in home
     exam = client.get("/examination?lang=en").get_data(as_text=True)
     assert "Institution-level assessment" in exam and 'href="/institution/login"' in exam and "11:30" not in exam
     assert 'href="/institution/login">Institution sign-in</a>' in home
