@@ -254,6 +254,8 @@ def create_app(config_object=Config):
             "students_public": lambda: db.get_setting("reg.public") == "1",
             # KTS 5.0 – Key dates (1.2.152) and the steps of /how-to-submit-the-student with their English button names
             "key_dates_box": public.key_dates_box,
+            # the nomination by the Participating Institutions open (1.2.154)
+            "nomination_open": lambda: public.nomination_open(db.all_settings()),
             "ui_text": public.ui_text,
             # the seminars and workshops of CICT shown on the public pages (1.2.151: hidden by default)
             "events_public": lambda: db.get_setting("events.public") == "1",

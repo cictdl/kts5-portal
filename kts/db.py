@@ -761,6 +761,9 @@ DEFAULT_SETTINGS = {
     # CICT's central online test in the schedule and the upcoming events (1.2.152): left out ("Should remove the content ... Central
     # Online Test", CICT, 4 November 2026); '1' puts it back
     "schedule.central_test": "0",
+    # the nomination by the Participating Institutions (1.2.154): the personal registration link of the student a Participating
+    # Institution has selected opens the form up to reg.end, even while the students' own registration is off; '0' closes it
+    "nominate.open": "1",
     # the days for which the newest circular of the Ministry carries a blinking NEW on the home page (1.2.152); 0: never
     "circular.new_days": "30",
     # the public dashboard KTS 5.0 by State/UT (1.2.122, kts/dashboard.py)

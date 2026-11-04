@@ -276,8 +276,8 @@ def key_dates_box(settings=None):
     def day(key):
         return _iso_day(s.get(key))
 
-    def row(label, d1=None, d2=None, prefix=None):
-        return {"label": label, "d1": d1, "d2": d2, "prefix": prefix}
+    def row(label, d1=None, d2=None, prefix=None, endpoint=None):
+        return {"label": label, "d1": d1, "d2": d2, "prefix": prefix, "endpoint": endpoint}
 
     hei_end, select_end = day("hei.end"), day("hei.select_end")
     select_from = None
@@ -288,7 +288,7 @@ def key_dates_box(settings=None):
         {"title": "kd.g1", "rows": [row("kd.reg", hei_end, prefix="kd.upto"),
                                     row("kd.select", select_from or select_end, select_end if select_from else None),
                                     row("kd.assess", day("camp.to"), prefix="kd.by"),
-                                    row("kd.nominate", day("reg.end"))]},
+                                    row("kd.nominate", day("reg.end"), endpoint="public.submit_guide")]},   # how (1.2.154)
         {"title": "kd.g2", "rows": [row("kd.inaug", day("kts.start")), row("kd.valed", day("kts.end")),
                                     row("kd.online"), row("kd.cert")]},
         {"title": "kd.g3", "rows": [row("kd.orient", day("orientation.by"), prefix="kd.by"),
@@ -298,6 +298,18 @@ def key_dates_box(settings=None):
     for g in groups:
         g["rows"] = [r for r in g["rows"] if r["d1"] or r["label"] in ("kd.online", "kd.cert")]
     return groups
+
+
+def nomination_open(settings):
+    """
+    The nomination by the Participating Institutions open (1.2.154): nominate.open not '0' and reg.end, the last day of the
+    nomination (20 November 2026 by the D.O. letter of 31 October 2026), not past. Then the personal registration link of the
+    student a Participating Institution has selected opens the registration form, whatever reg.open and reg.public say.
+    """
+    if settings.get("nominate.open") == "0":
+        return False
+    end = _iso_day(settings.get("reg.end"))
+    return not end or now_ist().strftime("%Y-%m-%d") <= end
 
 
 def ui_text(key, **values):
@@ -821,14 +833,16 @@ def register():
     mother = [K.lang_info(c) | {"code": c} for c in ["ta"] + [c for c in K.SCHEDULED if c != "ta"]]
     ctx = dict(settings=settings, state=state, ref=ref, langs=langs, mother=mother,
                dates=_key_dates(settings), data={}, errors={}, inst=None, token="")
-    if state != "open":
-        end = _iso_day(settings.get("reg.end"))
-        ctx["ended"] = bool(end) and end < now_ist().strftime("%Y-%m-%d")
-        return render_template("public/register_closed.html", **ctx)
     # since the D.O. letter of 9 October 2026: only the student selected by a participating institution registers,
     # with the personal link (the institution fixed by it), or here choosing the institution (1.2.47)
     token = (request.args.get("token") or request.form.get("token") or "").strip()
     inst = CAMP.registration_token(token)
+    # the nomination by the Participating Institutions (1.2.154): the personal link opens the form up to reg.end even while the
+    # students' own registration is switched off or hidden; without a link the registration stays closed
+    if state != "open" and not (inst is not None and nomination_open(settings)):
+        end = _iso_day(settings.get("reg.end"))
+        ctx["ended"] = bool(end) and end < now_ist().strftime("%Y-%m-%d")
+        return render_template("public/register_closed.html", **ctx)
     by_inst = settings.get("reg.by_institution") == "1"
     ctx.update(inst=inst, token=token if inst else "", by_inst=by_inst, token_bad=bool(token) and inst is None,
                heis=HEI.accepted_by_state(ref["all_states"]) if by_inst and inst is None else [])

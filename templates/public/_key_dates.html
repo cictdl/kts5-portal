@@ -11,7 +11,7 @@
       <h3 class="kd-gh" id="{{ id }}-{{ loop.index }}">{{ t(g.title) }}</h3>
       <ul class="kd-list">
         {% for r in g.rows %}
-        <li{% if not r.d1 %} class="kd-note"{% endif %}>{% if r.d1 %}<span class="kd-when"><bdi>{% if r.prefix %}{{ t(r.prefix)|replace('{date}', r.d1|date) }}{% elif r.d2 %}{{ r.d1|date }} – {{ r.d2|date }}{% else %}{{ r.d1|date }}{% endif %}</bdi></span>{% endif %}<span class="kd-what">{{ t(r.label) }}</span></li>
+        <li{% if not r.d1 %} class="kd-note"{% endif %}>{% if r.d1 %}<span class="kd-when"><bdi>{% if r.prefix %}{{ t(r.prefix)|replace('{date}', r.d1|date) }}{% elif r.d2 %}{{ r.d1|date }} – {{ r.d2|date }}{% else %}{{ r.d1|date }}{% endif %}</bdi></span>{% endif %}<span class="kd-what">{% if r.endpoint %}<a href="{{ url_for(r.endpoint) }}">{{ t(r.label) }}</a>{% else %}{{ t(r.label) }}{% endif %}</span></li>
         {% endfor %}
       </ul>
     </section>

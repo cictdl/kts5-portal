@@ -37,7 +37,16 @@ def test_the_sentence_in_every_language():
 
 
 def test_the_link_only_while_institutions_register():
+    # once the registration of institutions is off or over: the nomination by the Participating Institutions, while it is open
+    # (1.2.154; the sentence alone before)
     for app in (_app(hei_open="0"), _app(hei_end="2020-01-01")):
+        strip = _strip(app.test_client().get("/?lang=en").get_data(as_text=True))
+        assert "Each Participating Institution nominates one student on merit through the CICT portal" in strip
+        assert 'href="/how-to-submit-the-student"' in strip and 'href="/institutions/register"' not in strip
+        # with the nomination closed by CICT: the sentence alone
+        from kts.db import set_setting
+        with app.app_context():
+            set_setting("nominate.open", "0")
         strip = _strip(app.test_client().get("/?lang=en").get_data(as_text=True))
         assert "Registration is now open for Participating Institutions." in strip and "banner-go" not in strip
 
