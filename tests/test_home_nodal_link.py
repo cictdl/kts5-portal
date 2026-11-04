@@ -35,5 +35,6 @@ def test_the_band_is_plain_and_its_new_blinks_only_for_those_who_allow_movement(
     band = css[css.index(".nodal-attention {"):css.index(".btn.saffron:hover")]
     # a plain band since 1.2.152 (CICT: "should not be highlighted with red background ... keep simple background"), in both themes
     assert ".nodal-attention { background: var(--surface);" in band and "#8f1d17" not in band and "linear-gradient" not in band
-    # the NEW beside "Circular" blinks five times (WCAG 2.2.2), not at all for those who ask for reduced motion
-    assert "@media (prefers-reduced-motion: no-preference) {\n  .new-badge { animation: new-blink 1s steps(1, end) .3s 5; }" in band
+    # the NEW beside "Circular" blinks continuously (1.2.153; five times in 1.2.152), not at all for those who ask for reduced motion
+    assert "@media (prefers-reduced-motion: no-preference) {\n  .new-badge { animation: new-blink 1s steps(1, end) .3s infinite; }\n}" in band
+    assert "new-blink-again" not in band

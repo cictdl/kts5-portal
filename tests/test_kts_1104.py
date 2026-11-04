@@ -96,9 +96,10 @@ def test_the_circular_band():
         assert "new-badge" not in _get(client, "/?lang=en")
     css = (ROOT / "static" / "css" / "portal.css").read_text(encoding="utf-8")
     rules = css[css.index(".nodal-attention {"):css.index(".btn.saffron:hover")]
-    # a plain band, not red; the NEW blinks five times, again on the band, and never for those who ask for reduced motion
+    # a plain band, not red; the NEW blinks continuously (1.2.153, the user: "make the NEW badge blink continuously"), and never
+    # for those who ask for reduced motion
     assert ".nodal-attention { background: var(--surface);" in rules and "linear-gradient" not in rules and "#8f1d17" not in rules
-    assert "@media (prefers-reduced-motion: no-preference) {\n  .new-badge { animation: new-blink 1s steps(1, end) .3s 5; }" in rules.replace("\r\n", "\n")
+    assert "@media (prefers-reduced-motion: no-preference) {\n  .new-badge { animation: new-blink 1s steps(1, end) .3s infinite; }" in rules.replace("\r\n", "\n")
 
 
 def test_a_newer_circular_comes_first():

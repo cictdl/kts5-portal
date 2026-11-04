@@ -363,16 +363,14 @@ mark { background: rgba(255, 196, 0, .45); color: inherit; padding: 0 1px; borde
 .nodal-attention a:focus-visible { outline: 3px solid var(--saffron); outline-offset: 2px; border-radius: 6px; }
 /* a long name (Tamil) may take two lines on a phone rather than widen the page (1.2.83) */
 @media (max-width: 599px) { .nodal-attention .na-btn { white-space: normal; max-width: 100%; } .nodal-attention .na-items { flex-direction: column; align-items: flex-start; } }
-/* NEW beside "Circular" (1.2.152): black-on-yellow lettering in a red frame; it blinks once a second for five seconds as the page
-   opens and again while the pointer is on the band (WCAG 2.2.2: nothing blinks longer than five seconds unasked), and not at all
-   for those who ask their device for reduced motion */
+/* NEW beside "Circular" (1.2.152): black-on-yellow lettering in a red frame; it blinks once a second for as long as the page is open
+   (1.2.153, the user: "make the NEW badge blink continuously"; five blinks before), and not at all for those who ask their device
+   for reduced motion */
 .new-badge { display: inline-block; background: #ffd400; color: #8a0000; font-weight: 800; font-size: .74rem; letter-spacing: .08em; line-height: 1.35;
   padding: 1px 7px; border-radius: 4px; box-shadow: inset 0 0 0 1.5px #b3261e; text-transform: uppercase; }
 @keyframes new-blink { 0%, 60% { opacity: 1; } 61%, 100% { opacity: .08; } }
-@keyframes new-blink-again { 0%, 60% { opacity: 1; } 61%, 100% { opacity: .08; } }
 @media (prefers-reduced-motion: no-preference) {
-  .new-badge { animation: new-blink 1s steps(1, end) .3s 5; }
-  .nodal-attention:hover .new-badge, .nodal-attention:focus-within .new-badge { animation: new-blink-again 1s steps(1, end) 0s 5; }
+  .new-badge { animation: new-blink 1s steps(1, end) .3s infinite; }
 }
 /* Quick links (1.2.152): eight tiles under the circular band, four a row (two on phones) */
 .quick-links { padding: 14px 0 4px; }
