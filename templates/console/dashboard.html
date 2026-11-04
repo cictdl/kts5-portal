@@ -2,12 +2,13 @@
 {% block title %}Dashboard{% endblock %}
 {% block content %}
 {% if backup_warn %}<div class="alert warning">💾 {{ backup_warn }} <a href="{{ url_for('admin.backups') }}">Backups</a></div>{% endif %}
-<div class="kpis">
+<div class="kpis" style="grid-template-columns:repeat(auto-fit,minmax(132px,1fr))">
   <div class="kpi"><div class="lbl">Applications</div><div class="num">{{ '{:,}'.format(total) }}</div><div class="sub">{{ by_status.get('submitted', 0) }} awaiting verification</div></div>
   <div class="kpi"><div class="lbl">Verified</div><div class="num">{{ '{:,}'.format(by_status.get('verified', 0) + by_status.get('selected', 0) + by_status.get('waitlisted', 0) + by_status.get('not_selected', 0)) }}</div><div class="sub">{{ by_status.get('rejected', 0) }} rejected</div></div>
   <div class="kpi"><div class="lbl">Institutions</div><div class="num">{{ '{:,}'.format(colleges) }}</div><div class="sub">{{ states }} states / UTs</div></div>
   <div class="kpi"><div class="lbl">Assessed by institutions</div><div class="num">{{ '{:,}'.format(prog.tested) }}</div><div class="sub">{{ '{:,}'.format(prog.signed_up) }} signed up · {{ prog.testing }} institutions online</div></div>
-  <div class="kpi"><div class="lbl">Selected</div><div class="num">{{ '{:,}'.format(by_status.get('selected', 0)) }}</div><div class="sub">{{ by_status.get('waitlisted', 0) }} waitlisted · {{ 'published' if settings['merit.published'] == '1' else 'not published' }}</div></div>
+  <a class="kpi" href="{{ url_for('admin.nominees') }}" style="text-decoration:none;color:inherit"><div class="lbl">Selected on merit</div><div class="num">{{ '{:,}'.format(prog.selected) }}</div><div class="sub">by the Participating Institutions · {{ '{:,}'.format(prog.not_registered) }} not registered yet</div></a>
+  <div class="kpi"><div class="lbl">Selected</div><div class="num">{{ '{:,}'.format(by_status.get('selected', 0)) }}</div><div class="sub">the list {{ 'published' if settings['merit.published'] == '1' else 'not published' }}</div></div>
   <div class="kpi"><div class="lbl">Open tasks</div><div class="num">{{ (tasks.get('open', 0) + tasks.get('in_progress', 0) + tasks.get('blocked', 0)) }}</div><div class="sub">{{ overdue }} overdue · {{ tasks.get('blocked', 0) }} blocked</div></div>
 </div>
 

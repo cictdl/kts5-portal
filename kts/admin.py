@@ -1332,6 +1332,86 @@ def progress_export():
                     headers={"Content-Disposition": "attachment; filename=KTS5-institutions-progress.xlsx"})
 
 
+NOMINEE_STAGES = (("all", "all"), ("link", "not registered yet"), ("registered", "registered, awaiting verification"),
+                  ("verified", "verified"))
+
+
+def _nominees(scope, state="", stage="all", q=""):
+    """
+    The students selected on merit by the Participating Institutions (institutions.winner_id, from the institution's page, 1.2.43 and
+    1.2.154), State/UT by State/UT: the student, the institution, the day of the selection, the online test if the student took it,
+    and the application once the student has registered with the institution's personal link (1.2.157).
+    """
+    sql = ("SELECT i.id AS inst_id, i.name AS inst_name, i.ref, i.state, i.district, i.coord_name, i.coord_email, i.coord_mobile, "
+           "i.guide_name, i.winner_at, i.application_id, w.name, w.email, w.mobile, w.roll_no, w.course, w.lang, w.source, "
+           "t.status AS t_status, t.score, t.correct_count, a.app_no, a.status AS app_status "
+           "FROM institutions i JOIN campus_students w ON w.id = i.winner_id "
+           "LEFT JOIN campus_attempts t ON t.student_id = w.id AND t.status IN ('submitted', 'expired') "
+           "LEFT JOIN applications a ON a.id = i.application_id WHERE i.status = 'accepted'")
+    args = []
+    if scope is not None:
+        sql += f" AND i.state IN ({','.join('?' * len(scope))})" if scope else " AND 0"
+        args += scope
+    if state:   # a State with the Union Territory Annexure-I pairs with it
+        group = HEI.with_covered([state])
+        sql += f" AND i.state IN ({','.join('?' * len(group))})"
+        args += group
+    verified = ",".join("?" * len(PROGRESS.VERIFIED))
+    if stage == "link":
+        sql += " AND i.application_id IS NULL"
+    elif stage == "registered":
+        sql += f" AND i.application_id IS NOT NULL AND a.status NOT IN ({verified})"
+        args += PROGRESS.VERIFIED
+    elif stage == "verified":
+        sql += f" AND a.status IN ({verified})"
+        args += PROGRESS.VERIFIED
+    if q:
+        sql += (" AND (w.name LIKE ? OR w.email LIKE ? OR w.mobile LIKE ? OR w.roll_no LIKE ? OR i.name LIKE ? OR i.ref LIKE ? "
+                "OR a.app_no LIKE ?)")
+        args += [f"%{q}%"] * 7
+    return query(sql + " ORDER BY i.state, i.name COLLATE NOCASE", args)
+
+
+@bp.route("/nominees")
+@login_required("hei.view")
+def nominees():
+    """The students selected on merit by the Participating Institutions, before and after they register (1.2.157)."""
+    scope = state_scope(_user())
+    f = {k: (request.args.get(k) or "").strip() for k in ("state", "stage", "q")}
+    if f["state"] and scope is not None and f["state"] not in scope:
+        f["state"] = ""
+    if f["stage"] not in dict(NOMINEE_STAGES):
+        f["stage"] = "all"
+    every = _nominees(scope)
+    board = PROGRESS.board(scope)
+    k = {"all": len(every), "link": sum(1 for r in every if not r["application_id"]),
+         "verified": sum(1 for r in every if r["app_status"] in PROGRESS.VERIFIED)}
+    k["registered"] = k["all"] - k["link"] - k["verified"]
+    k["yet"] = max(board["total"]["participating"] - k["all"], 0)
+    rows = every if (f["stage"] == "all" and not f["state"] and not f["q"]) else _nominees(scope, f["state"], f["stage"], f["q"])
+    return render_template("console/nominees.html", rows=rows, k=k, f=f, states=board["states"], stages=NOMINEE_STAGES, scope=scope,
+                           verified=PROGRESS.VERIFIED, settings=all_settings())
+
+
+@bp.route("/nominees.xlsx")
+@login_required("hei.view")
+def nominees_export():
+    """Every student selected on merit (of the Nodal Officer's States/UTs), with the contacts (1.2.157)."""
+    rows = _nominees(state_scope(_user()))
+    headers = ["S. No.", "State/UT", "Participating Institution", "Reference", "District/City", "Student", "Course", "Roll no.", "E-mail",
+               "Mobile", "Language", "Selected on", "Online test (marks)", "Correct answers", "Application no.", "Application status",
+               "Institutional Coordinator", "Coordinator e-mail", "Coordinator mobile", "Faculty Supervisor/Guide"]
+    data = [(n, r["state"], r["inst_name"], r["ref"], r["district"], r["name"], r["course"], r["roll_no"], r["email"], r["mobile"],
+             r["lang"], (r["winner_at"] or "")[:16].replace("T", " "), r["score"] if r["t_status"] else "",
+             r["correct_count"] if r["t_status"] else "", r["app_no"] or "",
+             (r["app_status"] or "").replace("_", " ") if r["app_no"] else "not registered yet",
+             r["coord_name"], r["coord_email"], r["coord_mobile"], r["guide_name"] or "")
+            for n, r in enumerate(rows, start=1)]
+    return Response(xlsx_bytes(headers, data, "Selected on merit", text_cols=(7, 9, 14, 18)),
+                    mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    headers={"Content-Disposition": "attachment; filename=KTS5-students-selected-on-merit.xlsx"})
+
+
 ANNEXURE_II = ["S. No.", "Name of Institution", "District/City", "Type", "AISHE/Institution Code", "Institutional Coordinator Name",
                "Mobile No.", "Official Email ID"]
 
