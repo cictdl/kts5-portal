@@ -1159,7 +1159,12 @@ footer.site .bottom .wrap { display: flex; justify-content: space-between; gap: 
   margin-inline-start: 10px; white-space: nowrap; box-shadow: 0 2px 8px rgba(0, 0, 0, .25); }
 .banner.reg-open .banner-go:hover { background: #ffe8c8; }
 .banner.reg-open .banner-go:focus-visible { outline: 3px solid #ffb347; outline-offset: 2px; }
-@media (max-width: 599px) { .banner.reg-open { font-size: 1rem; } .banner.reg-open .banner-go { margin: 6px 0 0; } }
+@media (max-width: 599px) { .banner.reg-open { font-size: 1rem; } .banner.reg-open .banner-go { margin: 6px 0 0; white-space: normal; max-width: 100%; } }
+/* 1.2.160: on a phone the button may break into two lines - kept on one, in Tamil it was wider than the screen; so may the
+   name of the source on a card of the news ("Shri Pralhad Joshi, Union Minister of Education" was wider than a 320 px phone) */
+@media (max-width: 599px) { .news-day .pill { white-space: normal; } }
+@media (max-width: 599px) { .quick-links .ql > span:last-child { min-width: 0; overflow-wrap: anywhere; } .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } .step, .pi .pi-kpi .lbl { overflow-wrap: anywhere; } .num-visit { max-width: 100%; } }
+@media (max-width: 479px) { .quick-links .ql-grid, .steps { grid-template-columns: minmax(0, 1fr); } }
 /* the number of the Ministry's letter on one line (1.2.152) */
 .do-no { white-space: nowrap; }
 /* KTS 5.0 – Key dates (1.2.152): three groups side by side (one under another on phones), the days in bold */

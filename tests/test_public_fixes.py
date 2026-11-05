@@ -995,16 +995,16 @@ def test_version_of_style_sheet_and_script():
     for path in TEMPLATES:
         for name, version in re.findall(r"filename='((?:css|js)/portal\.(?:css|js))'\) \}\}\?v=(\d+)", path.read_text(encoding="utf-8")):
             linked.setdefault(path.relative_to(ROOT / "templates").as_posix(), []).append((name, version))
-    expected = {name: [("css/portal.css", "48"), ("js/portal.js", "24")]
+    expected = {name: [("css/portal.css", "49"), ("js/portal.js", "24")]
                 for name in ("base.html", "candidate/exam_paper.html", "console/base.html")}
     # the certificate has a style sheet of its own and the script for its print button
     expected["public/certificate.html"] = [("js/portal.js", "24")]
     expected["public/letter.html"] = [("js/portal.js", "24")]
     # the pages of the classroom quiz have a frame of their own, with the style sheet and the script of the portal
-    expected["quiz/layout.html"] = [("css/portal.css", "48"), ("js/portal.js", "24")]
+    expected["quiz/layout.html"] = [("css/portal.css", "49"), ("js/portal.js", "24")]
     assert linked == expected
     for path in TEMPLATES:
-        assert not re.search(r"portal\.css'\) \}\}(?!\?v=48\")", path.read_text(encoding="utf-8")), path
+        assert not re.search(r"portal\.css'\) \}\}(?!\?v=49\")", path.read_text(encoding="utf-8")), path
         assert not re.search(r"portal\.js'\) \}\}(?!\?v=24\")", path.read_text(encoding="utf-8")), path
 
 
@@ -1098,7 +1098,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.159" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.160" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 
