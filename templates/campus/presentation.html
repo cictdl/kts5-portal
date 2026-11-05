@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Presentation video · {{ inst.name }} · KTS 5.0{% endblock %}
+{% block content %}
+{# The video recording of the one-hour presentation/lecture of the selected student (1.2.158; Annexure-III C-4 of the D.O. letter of
+   31 October 2026: "The institution shall submit the video recording of the presentation to CICT"). A link to the video: a
+   one-hour recording is far larger than the portal takes in one upload (25 MB). #}
+<div class="wrap section" lang="en" dir="ltr">
+  <span class="eyebrow">Participating institution · {{ inst.ref }}</span>
+  <h1>Presentation video</h1>
+  <p class="lead dim" style="max-width:80ch">During the one-month research and academic engagement ({{ first|date if first else '–' }} – {{ last|date if last else '–' }}),
+    the student selected by {{ inst.name }} delivers a one-hour presentation/lecture on the Thirukkural at the institution. The institution submits
+    the video recording of the presentation to CICT here, by <b>{{ last|date if last else 'the date given by CICT' }}</b>.</p>
+
+  {% if not application %}
+  <div class="alert info" style="max-width:80ch">This page opens once the nomination of your student is submitted. <a href="{{ url_for('campus.home') }}#winner">The selected student →</a></div>
+  {% else %}
+  <p class="small muted">Student: <b>{{ application.full_name }}</b> · application <code>{{ application.app_no }}</code></p>
+  {% if row %}
+  <div class="card {{ 'green' if row.status == 'accepted' else 'accent' }}" style="max-width:80ch;margin-bottom:16px">
+    <h3>{% if row.status == 'accepted' %}Accepted by CICT{% elif row.status == 'returned' %}Returned by CICT – please correct and submit again{% else %}Submitted to CICT{% endif %}</h3>
+    <dl class="small" style="margin:6px 0 0">
+      <dt>Title</dt><dd>{{ row.title }}</dd>
+      <dt>Date · duration</dt><dd>{{ row.held_on|date }} · {{ row.minutes }} minutes{% if row.audience is not none %} · audience {{ row.audience }}{% endif %}</dd>
+      <dt>Video</dt><dd><a href="{{ row.video_url }}" target="_blank" rel="noopener noreferrer" style="word-break:break-all">{{ row.video_url }}</a></dd>
+      {% if row.material_url %}<dt>Presentation material</dt><dd><a href="{{ row.material_url }}" target="_blank" rel="noopener noreferrer" style="word-break:break-all">{{ row.material_url }}</a></dd>{% endif %}
+      <dt>Submitted</dt><dd>{{ row.updated_at|datetime }}</dd>
+      {% if row.review_note %}<dt>Remark of CICT</dt><dd>{{ row.review_note }}</dd>{% endif %}
+    </dl>
+  </div>
+  {% endif %}
+
+  {% if not started %}
+  <div class="alert info" style="max-width:80ch">The submission opens on <b>{{ first|date if first else 'the date given by CICT' }}</b>, when the one-month engagement begins. You will then give: the title of the presentation, its date, its duration, the number of people who attended, and the link to its video recording (with, if you wish, the link to the presentation material).</div>
+  {% elif row and row.status == 'accepted' %}
+  <p class="small dim" style="max-width:80ch">CICT has accepted the video. To change anything now, write to CICT (<a href="mailto:{{ settings['contact.email'] }}">{{ settings['contact.email'] }}</a>).</p>
+  {% else %}
+  <form method="post" class="card" style="max-width:80ch" novalidate data-once>
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <h3>{{ 'Change the submission' if row else 'Submit the video' }}</h3>
+    <p class="small dim">Upload the recording to a video or file service of your choice (for example YouTube as an unlisted video, Google Drive or OneDrive) and give its link here. The link must open for anyone who has it, or be shared with <b>{{ settings['contact.email'] }}</b>, so that CICT can view the video.</p>
+    <div class="fields">
+      <div class="field wide"><label for="p_title">Title / topic of the presentation</label><input type="text" id="p_title" name="title" maxlength="200" value="{{ data.get('title', '') }}" required>{% if errors.title %}<span class="err">{{ errors.title }}</span>{% endif %}</div>
+      <div class="field"><label for="p_date">Date of the presentation</label><input type="date" id="p_date" name="held_on" value="{{ data.get('held_on', '') }}" min="{{ first.isoformat() if first else '' }}" max="{{ today.isoformat() }}" required>{% if errors.held_on %}<span class="err">{{ errors.held_on }}</span>{% endif %}</div>
+      <div class="field"><label for="p_minutes">Duration (minutes)</label><input type="number" id="p_minutes" name="minutes" min="1" max="600" value="{{ data.get('minutes', '') }}" required>{% if errors.minutes %}<span class="err">{{ errors.minutes }}</span>{% endif %}</div>
+      <div class="field"><label for="p_audience">People who attended (optional)</label><input type="number" id="p_audience" name="audience" min="0" max="100000" value="{{ data.get('audience', '') if data.get('audience') is not none else '' }}">{% if errors.audience %}<span class="err">{{ errors.audience }}</span>{% endif %}</div>
+      <div class="field wide"><label for="p_video">Link to the video recording</label><input type="url" id="p_video" name="video_url" maxlength="500" placeholder="https://" value="{{ data.get('video_url', '') }}" required>{% if errors.video_url %}<span class="err">{{ errors.video_url }}</span>{% endif %}</div>
+      <div class="field wide"><label for="p_material">Link to the presentation material (optional)</label><input type="url" id="p_material" name="material_url" maxlength="500" placeholder="https://" value="{{ data.get('material_url', '') }}">{% if errors.material_url %}<span class="err">{{ errors.material_url }}</span>{% endif %}</div>
+      <div class="field wide"><label for="p_note">Remarks (optional)</label><textarea id="p_note" name="note" rows="3" maxlength="1000">{{ data.get('note', '') }}</textarea></div>
+    </div>
+    <label class="check" style="margin-top:10px"><input type="checkbox" name="shared" value="1" required> The video opens with this link for anyone who has it, or is shared with {{ settings['contact.email'] }}; it is the recording of the presentation of our selected student, delivered at the institution.</label>
+    {% if errors.shared %}<span class="err">{{ errors.shared }}</span>{% endif %}
+    <div class="btn-row" style="margin-top:12px"><button class="btn saffron" type="submit">{{ 'Submit again' if row else 'Submit the video' }}</button><a class="btn ghost" href="{{ url_for('campus.home') }}">The institution's page</a></div>
+  </form>
+  {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

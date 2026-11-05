@@ -158,7 +158,7 @@ def test_the_mail_of_a_selected_institution_says_how_to_nominate():
     mail = _mails(app, inst["coord_email"])[-1]
     assert "is a Participating Institution" in mail["subject"]
     body = mail["body"]
-    assert "/institution/login" in body and "/how-to-submit-the-student" in body and "personal registration link" in body
+    assert "/institution/login" in body and "/how-to-submit-the-student" in body and "submit the nomination there" in body
     assert "chooses" not in body and "approved by the Head of the Institution or an authorised committee" in body
     # the Nodal Officers are asked to record the marks and select, not to accept or decline
     with app.app_context():

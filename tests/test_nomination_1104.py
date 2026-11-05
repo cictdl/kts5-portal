@@ -63,7 +63,7 @@ def test_the_institution_nominates_its_student_while_registration_is_off():
         assert (a["institution_id"], a["status"], a["full_name"]) == (inst["id"], "submitted", "Priya Student")
         assert query("SELECT application_id FROM institutions WHERE id = ?", (inst["id"],), one=True)["application_id"] == a["id"]
     page = coord.get("/institution").get_data(as_text=True)
-    assert "has registered: application" in page and a["app_no"] in page
+    assert "is submitted: application" in page and a["app_no"] in page
     # the link works once; and still nothing without one
     assert 'name="full_name"' not in app.test_client().get(_path(link)).get_data(as_text=True)
     assert 'name="full_name"' not in app.test_client().get("/register?lang=en").get_data(as_text=True)

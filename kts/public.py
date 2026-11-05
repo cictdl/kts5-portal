@@ -397,10 +397,11 @@ def submit_guide():
              ("hs.c3", {"date": day("camp.to"), "online_test": _ui("The online assessment of the portal"),
                         "switch_on": _ui("Switch on"), "excel": excel}),
              ("hs.c4", {"students_list": _ui("Students who took the online assessment"), "select": _ui("Select"),
-                        "selected": _ui("The selected student"), "send_link": _ui("Select and send the registration link")}),
-             ("hs.c5", {"open_reg": _ui("Open the registration"), "date": day("reg.end")}),
+                        "selected": _ui("The selected student"), "send_link": _ui("Select the student")}),
+             ("hs.c5", {"open_reg": _ui("Submit the nomination"), "date": day("reg.end")}),
              ("hs.c6", {}),
-             ("hs.c7", {"withdraw": _ui("Withdraw the selection")})]
+             ("hs.c7", {"withdraw": _ui("Withdraw the selection")}),
+             ("hs.c8", {"presentation": _ui("Presentation video")})]
     nodal = [("hs.n1", {"nodal_login": nodal_login}),
              ("hs.n2", {"institutions": _ui("Institutions"), "marks": _ui("Marks"), "select_inst": _ui("✓ Select"),
                         "reserve": _ui("Reserve"), "annex2": _ui("Excel (Annexure-II)"), "date": day("hei.select_end")}),
@@ -840,6 +841,10 @@ def register():
     # with the personal link (the institution fixed by it), or here choosing the institution (1.2.47)
     token = (request.args.get("token") or request.form.get("token") or "").strip()
     inst = CAMP.registration_token(token)
+    # the Institutional Coordinator, signed in on the institution's page, submits the nomination (1.2.158, B-3 of the D.O. letter of
+    # 31 October 2026); a link mailed to a student before keeps the student's form
+    me = CAMP.current_institution() if inst is not None else None
+    by_coord = me is not None and me["id"] == inst["id"]
     # the nomination by the Participating Institutions (1.2.154): the personal link opens the form up to reg.end even while the
     # students' own registration is switched off or hidden; without a link the registration stays closed
     if state != "open" and not (inst is not None and nomination_open(settings)):
@@ -847,7 +852,7 @@ def register():
         ctx["ended"] = bool(end) and end < now_ist().strftime("%Y-%m-%d")
         return render_template("public/register_closed.html", **ctx)
     by_inst = settings.get("reg.by_institution") == "1"
-    ctx.update(inst=inst, token=token if inst else "", by_inst=by_inst, token_bad=bool(token) and inst is None,
+    ctx.update(inst=inst, token=token if inst else "", by_inst=by_inst, token_bad=bool(token) and inst is None, by_coord=by_coord,
                heis=HEI.accepted_by_state(ref["all_states"]) if by_inst and inst is None else [])
     if inst is not None and request.method == "GET":
         winner = CAMP.winner_of(inst)
@@ -911,14 +916,18 @@ def register():
         limiter.hit("register", ip, 3600)  # only applications that were stored are counted
         audit("application_submitted", "application", row_id, detail=app_no, ip=ip)
         if inst is not None:
-            CAMP.bind_application(inst, row_id)
+            CAMP.bind_application(inst, row_id, by_coord=by_coord)
+        if by_coord:
+            audit("nomination_submitted", "institution", inst["id"], detail=app_no, ip=ip)
         from .certificate import certificate_link
         cert = certificate_link(query("SELECT * FROM applications WHERE id = ?", (row_id,), one=True), external=True)
         send_mail(
             data["email"],
             f"KTS 5.0 application received: {app_no}",
-            f"Dear {data['full_name']},\n\nYour application for Kashi Tamil Sangamam 5.0 (Thirukkural Payilvom) "
-            f"has been received.\n\nApplication number: {app_no}\nInstitution: {data['college_name']}\n"
+            f"Dear {data['full_name']},\n\n"
+            + (f"Your nomination for Kashi Tamil Sangamam 5.0 (Thirukkural Payilvom) has been submitted by {inst['name']}."
+               if by_coord else "Your application for Kashi Tamil Sangamam 5.0 (Thirukkural Payilvom) has been received.")
+            + f"\n\nApplication number: {app_no}\nInstitution: {data['college_name']}\n"
             f"Language chosen: {K.lang_info(data['pref_lang'])['name']}\n\n"
             f"Keep this number safe. Use it with your date of birth and the last four digits of your mobile number "
             f"to follow your application at {current_app.config['BASE_URL']}/status and to sign in to the candidate "
@@ -928,6 +937,7 @@ def register():
             + "Central Institute of Classical Tamil, Chennai",
         )
         session["just_registered"] = row_id
+        session["just_nominated"] = row_id if by_coord else None
         return redirect(url_for("public.register_done", app_no=app_no))
 
     ctx["captcha"] = new_captcha()
@@ -1100,7 +1110,7 @@ def register_done(app_no):
     row = query("SELECT * FROM applications WHERE app_no = ?", (app_no,), one=True)
     if row is None or session.get("just_registered") != row["id"]:
         return redirect(url_for("public.status"))
-    return render_template("public/register_done.html", app=row,
+    return render_template("public/register_done.html", app=row, nominated=session.get("just_nominated") == row["id"],
                            qr=qr_data_uri(f"{current_app.config['BASE_URL']}/status?app={app_no}"),
                            lang_name=K.lang_info(row["pref_lang"])["name"], settings=all_settings())
 

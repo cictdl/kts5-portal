@@ -1065,7 +1065,8 @@ def test_alt_texts_use_keys_that_exist():
     # 1.2.152: the strip, the circular band, the quick links, the key dates, the two new pages (77)
     # 1.2.155: the D.O. letter of 31 October 2026 - the guidelines (screening, replacement, own methodology, contact) and How to take part (7)
     # 1.2.156: the menu - the Academic Orientation, its sentence, the Other Resources (3)
-    assert len(CATALOG["en"]) == 1483
+    # 1.2.158: the nomination by the Institutional Coordinator (12) and the step of the presentation video (2)
+    assert len(CATALOG["en"]) == 1497
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1097,7 +1098,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.157" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.158" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

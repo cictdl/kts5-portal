@@ -341,10 +341,10 @@ def mail_decision(row):
                 f"Supervisor/Guide, by {_by(get_setting('reg.end'))}.\n\n"
                 f"How to nominate: sign in to the institution's page at {base}/institution/login with the e-mail address of the "
                 f"Institutional Coordinator or of the Head of the Institution (a six-digit code is mailed; there is no password). "
-                f"There you may switch on the portal's ready online test for your students; then select the student, and the "
-                f"portal mails the student a personal registration link. The student, or the coordinator with the student's "
-                f"details, completes the registration with that link: a photograph, an ID proof and the nomination form signed "
-                f"and sealed by the Head of the Institution ({base}/static/KTS5-nomination-form.pdf). The steps: "
+                f"There you may switch on the portal's ready online test for your students; then select the student on merit and "
+                f"submit the nomination there: the Institutional Coordinator fills in the student's form with a photograph, an ID "
+                f"proof and the nomination form signed and sealed by the Head of the Institution "
+                f"({base}/static/KTS5-nomination-form.pdf). The steps: "
                 f"{base}/how-to-submit-the-student\n\n"
                 f"The participating institutions are listed at {base}/institutions\n\nCentral Institute of Classical Tamil, Chennai")
     else:

@@ -293,8 +293,9 @@ def test_the_selected_student_registers_with_the_link_of_the_institution():
     assert "Priya Student is selected" in page and "/register?token=" in page
     link = re.search(r"https?://[^\s<]+/register\?token=[A-Za-z0-9_-]+", page).group(0)
     mail = _mails(app, "priya@student.example")[-1]
-    assert "register as the student selected by" in mail["subject"] and link in mail["body"]
-    assert link in _mails(app, inst["coord_email"])[-1]["body"]
+    # 1.2.158: the student is informed, without the link; the coordinator submits the nomination from the institution's page
+    assert "you are selected by" in mail["subject"] and "/register?token=" not in mail["body"]
+    assert "Submit the nomination" in _mails(app, inst["coord_email"])[-1]["body"]
     # the form comes with the institution fixed and the student filled in
     form, r = _register_with(app, link)
     assert "from your registration link" in form and inst["name"] in form and 'value="Priya Student"' in form
@@ -316,7 +317,7 @@ def test_the_selected_student_registers_with_the_link_of_the_institution():
     assert "This registration link is not valid" in r.get_data(as_text=True)
     # the coordinator's page and the console show the registration
     page = coord.get("/institution").get_data(as_text=True)
-    assert "has registered: application" in page and a["app_no"] in page
+    assert "is submitted: application" in page and a["app_no"] in page
     admin = _staff(app, "root@tests.example", "superadmin")
     page = admin.get("/console/institutions?state=Kerala").get_data(as_text=True)
     assert a["app_no"] in page and "submitted" in page

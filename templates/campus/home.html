@@ -22,7 +22,7 @@
         <ol class="prose" style="margin:0">
           <li><b>Assess your students</b> on the theme <i>Thirukkural Payilvom – Thirukkural Abhyas Karen</i>, by the online assessment below or by any other suitable mode (a short written test, an oral interaction, a presentation, an essay, a quiz or a combination of these, on the prescribed study material), on or before <b>{{ period[1].strftime('%d %B %Y') if period[1] else 'the date given by CICT' }}</b>. The assessment is to be fair, documented and approved by the Head of the Institution or an authorised committee; keep its records. The study material in 22 languages and English is in the <a href="{{ url_for('public.resources') }}">repository</a> and the <a href="{{ url_for('public.kural_browser') }}">Thirukkural browser</a>.</li>
           <li><b>Select one student</b> as the winner, on merit, and nominate them with one Faculty Supervisor/Guide, endorsed by the Head of the Institution (<a href="{{ url_for('static', filename='KTS5-nomination-form.pdf') }}">nomination form</a>).</li>
-          <li><b>Register the selected student</b> on this portal with the personal link that the portal sends when you select the student below, on or before <b>{{ reg_end.strftime('%d %B %Y') if reg_end else 'the date given by CICT' }}</b>: photograph, ID proof, the signed nomination form and the Faculty Supervisor/Guide.</li>
+          <li><b>Submit the nomination</b> of the selected student on this page (“Submit the nomination” below), on or before <b>{{ reg_end.strftime('%d %B %Y') if reg_end else 'the date given by CICT' }}</b>: photograph, ID proof, the signed nomination form and the Faculty Supervisor/Guide.</li>
           <li>Your student and representatives of your institution join the Inaugural Function (<b>{{ settings['kts.start']|date }}</b>) and the Valedictory Function (<b>{{ settings['kts.end']|date }}</b>) of KTS 5.0 online; the link follows by e-mail. The selected students receive the study material and the academic orientation, take part in the one-month research and academic engagement, write a 4–5 page article/research note and deliver a one-hour presentation in your institution, whose video recording your institution submits to CICT; each eligible selected student is entitled to a stipend of ₹10,000, subject to the programme guidelines and the completion of the prescribed requirements, paid through DBT after the outputs are verified and the student's bank details validated. Your institution organises campus activities on the theme and reports to the Nodal Institution.</li>
         </ol>
         {% if settings.get('hei.orientation') %}<p class="alert info" style="margin:12px 0 0"><b>Pre-assessment orientation session by CICT:</b> {{ settings['hei.orientation'] }}</p>{% endif %}
@@ -78,7 +78,7 @@
             <td class="num">{% if done %}<b>{{ s.score|int }}</b><div class="small muted">{{ s.correct_count }} correct</div>{% else %}–{% endif %}</td>
             <td class="num">{% if done %}{{ s.time_taken_sec // 60 }}:{{ '%02d' % (s.time_taken_sec % 60) }}{% else %}–{% endif %}</td>
             {% if not application %}<td>{% if not winner or winner.id != s.id %}<form method="post" action="{{ url_for('campus.winner') }}" style="margin:0"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="student_id" value="{{ s.id }}">
-              <button class="btn xs" name="action" value="select" data-confirm="Select {{ s.name }} as the student of {{ inst.name }}? The registration link is mailed to the student and to you.">Select</button></form>{% endif %}</td>{% endif %}</tr>
+              <button class="btn xs" name="action" value="select" data-confirm="Select {{ s.name }} as the student of {{ inst.name }}? The student is informed by e-mail; you then submit the nomination.">Select</button></form>{% endif %}</td>{% endif %}</tr>
           {% endfor %}</tbody>
         </table></div>
         {% else %}<p class="small muted">No student has signed up yet.</p>{% endif %}
@@ -87,15 +87,15 @@
       <div class="card {{ 'green' if application else 'accent' }}" style="margin-top:14px" id="winner">
         <h3>The selected student</h3>
         {% if application %}
-        <p><b>{{ application.full_name }}</b> has registered: application <b>{{ application.app_no }}</b>, {{ application.created_at|datetime }} · status: <span class="status-chip st-{{ application.status }}">{{ application.status.replace('_', ' ') }}</span>{% if application.exam_score is not none %} · score of the online assessment {{ application.exam_score|int }}{% endif %}.</p>
+        <p>The nomination of <b>{{ application.full_name }}</b> is submitted: application <b>{{ application.app_no }}</b>, {{ application.created_at|datetime }} · status: <span class="status-chip st-{{ application.status }}">{{ application.status.replace('_', ' ') }}</span>{% if application.exam_score is not none %} · score of the online assessment {{ application.exam_score|int }}{% endif %}.</p>
         <p class="small muted">The Nodal Officer of {{ inst.state }} verifies the application; the student follows it on the <a href="{{ url_for('public.status') }}">status page</a> and in the candidate portal.</p>
         {% elif winner %}
-        <p><b>{{ winner.name }}</b> ({{ winner.email }} · {{ winner.mobile }}){% if winner.t_status in ('submitted', 'expired') %}, score {{ winner.score|int }} in the online assessment{% else %}, assessed by the institution{% endif %}, selected {{ inst.winner_at|datetime }}.</p>
-        <p>Registration link, mailed to the student and to you; the student (or you, with the student's details and documents) fills it in on or before {{ reg_end.strftime('%d %B %Y') if reg_end else 'the date given by CICT' }}:</p>
-        <p><code dir="ltr" style="word-break:break-all">{{ reg_url }}</code></p>
+        <p><b>{{ winner.name }}</b> ({{ winner.email }} · {{ winner.mobile }}){% if winner.t_status in ('submitted', 'expired') %}, score {{ winner.score|int }} in the online assessment{% else %}, assessed by the institution{% endif %}, selected {{ inst.winner_at|datetime }}, and informed by e-mail.</p>
+        {# the Institutional Coordinator submits the nomination (1.2.158, B-3 of the D.O. letter of 31 October 2026) #}
+        <p>Submit the nomination on or before <b>{{ reg_end.strftime('%d %B %Y') if reg_end else 'the date given by CICT' }}</b>: fill in the student's nomination form with the student's details, a photograph, an ID proof, the nomination form signed and sealed by the Head of the Institution (<a href="{{ url_for('static', filename='KTS5-nomination-form.pdf') }}">blank form</a>) and the details of the Faculty Supervisor/Guide, at one sitting.</p>
         <form method="post" action="{{ url_for('campus.winner') }}" class="btn-row" style="margin:0"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
-          <a class="btn sm saffron" href="{{ reg_url }}">Open the registration</a>
-          <button class="btn sm ghost" name="action" value="clear" data-confirm="Withdraw the selection of {{ winner.name }}? The registration link stops working.">Withdraw the selection</button></form>
+          <a class="btn sm saffron" href="{{ reg_url }}">Submit the nomination</a>
+          <button class="btn sm ghost" name="action" value="clear" data-confirm="Withdraw the selection of {{ winner.name }}?">Withdraw the selection</button></form>
         {% else %}
         <p class="small dim">Select a student in the list above, or enter the student your institution selected after assessing in another way:</p>
         <form method="post" action="{{ url_for('campus.winner') }}" class="fields" style="margin:0" data-once>
@@ -106,10 +106,18 @@
           <div class="field"><label for="w_roll">Roll number</label><input type="text" id="w_roll" name="roll_no" maxlength="40"></div>
           <div class="field"><label for="w_course">Course and year</label><input type="text" id="w_course" name="course" maxlength="120"></div>
           <div class="field"><label for="w_lang">Language for the orientation and the study material</label><select id="w_lang" name="lang" required><option value="">—</option>{% for l in langs %}<option value="{{ l.code }}">{{ l.native }} · {{ l.name }}</option>{% endfor %}</select></div>
-          <div class="field"><label>&nbsp;</label><button class="btn sm saffron" name="action" value="enter" data-confirm="Select this student as the student of {{ inst.name }}? The registration link is mailed to the student and to you.">Select and send the registration link</button></div>
+          <div class="field"><label>&nbsp;</label><button class="btn sm saffron" name="action" value="enter" data-confirm="Select this student as the student of {{ inst.name }}? The student is informed by e-mail; you then submit the nomination.">Select the student</button></div>
         </form>
         {% endif %}
       </div>
+      {% if application %}
+      <div class="card {{ 'green' if presentation and presentation.status == 'accepted' else '' }}" style="margin-top:14px" id="presentation">
+        <h3>Presentation video</h3>
+        <p class="small dim">During the one-month research and academic engagement ({{ settings['internship.start']|date }} – {{ settings['present.due']|date }}) your student delivers a one-hour presentation/lecture at the institution; you submit its video recording to CICT.</p>
+        <p class="small">{% if presentation %}{% if presentation.status == 'accepted' %}<span class="pill green">accepted by CICT</span>{% elif presentation.status == 'returned' %}<span class="pill red">returned by CICT</span>{% else %}<span class="pill saffron">submitted {{ presentation.updated_at|datetime }}</span>{% endif %}{% else %}<span class="pill grey">not submitted yet</span>{% endif %}</p>
+        <a class="btn sm {{ 'secondary' if presentation else 'saffron' }}" href="{{ url_for('campus.presentation') }}">{{ 'Open the submission' if presentation else 'Submit the presentation video' }}</a>
+      </div>
+      {% endif %}
       {% endif %}
     </div>
     <div>

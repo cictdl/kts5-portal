@@ -10,8 +10,8 @@ mailed to those that are behind (version 1.2.52).
   IST, as the Nodal Officers' mail), while remind.on is on and up to the last day of registration:
   on and after remind.test_by to those that have done nothing; on and after remind.select_by to
   those that have not selected a student (the Head of the Institution in copy); on and after
-  remind.register_by to those whose selected student has not registered (the student receives the
-  personal link again). Where two are due on one morning, only the later one goes.
+  remind.register_by to those that have not submitted the nomination of their selected student (1.2.158: the coordinator
+  submits it; the student is no longer reminded). Where two are due on one morning, only the later one goes.
 * CICT, or the Nodal Officer of the State/UT, can send a reminder by hand to the institutions that
   are behind (Console > Progress): once a day to each.
 """
@@ -186,9 +186,9 @@ def mails_for(inst, kind, reminder=True):
                 f"  1. Assess your interested students on the Thirukkural, on or before {long_date(camp_to)}: with the online "
                 f"assessment of the portal (switch it on at the institution's page and give the students its link and access code), "
                 f"or in any other suitable mode.\n"
-                f"  2. Select one student on merit on the institution's page; the portal mails that student a personal registration link.\n"
-                f"  3. The student registers on or before {long_date(reg_end)}, with the nomination form signed by the Head of the "
-                f"Institution and the details of the Faculty Supervisor/Guide.\n\n"
+                f"  2. Select one student on merit on the institution's page; the portal informs the student by e-mail.\n"
+                f"  3. Submit the nomination of the student on the institution's page on or before {long_date(reg_end)}, with the "
+                f"nomination form signed by the Head of the Institution and the details of the Faculty Supervisor/Guide.\n\n"
                 + sign_in + _nodal_line(inst) + footer)
         out = [(inst["coord_email"], subject, body)]
         if kind == "select" and inst["head_email"] and inst["head_email"] != inst["coord_email"]:
@@ -196,23 +196,14 @@ def mails_for(inst, kind, reminder=True):
                         f"For your information: the reminder below has gone to the Institutional Coordinator of {inst['name']}, "
                         f"{inst['coord_name']}.\n\n" + "-" * 60 + "\n\n" + body))
         return out
-    # the selected student has not registered
-    link = f"{base}/register?token={inst['reg_token']}" if inst["reg_token"] else f"{base}/register"
-    subject = f"{head}KTS 5.0: {inst['winner_name']} has not registered yet – register by {long_date(reg_end)}"
-    out = [(inst["coord_email"], subject,
-            dear + f"{inst['name']} selected {inst['winner_name']} for Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom, but the "
-            f"registration of the student is not complete. The last date is {long_date(reg_end)}.\n\n"
-            f"The student's personal registration link (the registration may be filled in by the student or by you):\n\n{link}\n\n"
-            f"Keep ready: a photograph, an ID proof, the nomination form signed by the Head of the Institution, and the name, "
-            f"designation, e-mail and mobile of the Faculty Supervisor/Guide.\n\n" + sign_in + _nodal_line(inst) + footer)]
-    if inst["winner_email"]:
-        out.append((inst["winner_email"], subject,
-                    f"Dear {inst['winner_name']},\n\n{inst['name']} has selected you for Kashi Tamil Sangamam 5.0 – Thirukkural "
-                    f"Payilvom, but your registration on the KTS 5.0 portal is not complete. Register on or before "
-                    f"{long_date(reg_end)} with your personal link:\n\n{link}\n\nKeep ready: a photograph, an ID proof and the "
-                    f"nomination form signed by the Head of the Institution (your Institutional Coordinator has it), and the name, "
-                    f"designation, e-mail and mobile of your Faculty Supervisor/Guide.\n\n" + footer))
-    return out
+    # the nomination of the selected student is not submitted (1.2.158: the Institutional Coordinator submits it)
+    subject = f"{head}KTS 5.0: submit the nomination of {inst['winner_name']} by {long_date(reg_end)}"
+    return [(inst["coord_email"], subject,
+             dear + f"{inst['name']} selected {inst['winner_name']} for Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom, but the "
+             f"nomination of the student is not submitted yet. The last date is {long_date(reg_end)}.\n\n"
+             f"Submit it on the institution's page: press \u201cSubmit the nomination\u201d and fill in the student's form with a "
+             f"photograph, an ID proof, the nomination form signed by the Head of the Institution, and the name, designation, "
+             f"e-mail and mobile of the Faculty Supervisor/Guide.\n\n" + sign_in + _nodal_line(inst) + footer)]
 
 
 def _mark(conn, inst_id, kind, user_id=None):

@@ -142,12 +142,13 @@ def test_the_morning_reminders_go_once_each():
     assert "open from 15 October 2026 to 21 October 2026: 3 students signed up, 2 tested" in testing["body"]
     head = next(m for m in fresh if m["to_addr"] == "head@testing.college.example")
     assert head["body"].startswith("Dear Dr. Head,\n\nFor your information: the reminder below has gone to the Institutional Coordinator")
-    # 21 October: the selected student who has not registered, and the coordinator, with the personal link
+    # 21 October: the coordinator of the institution whose nomination is not submitted (1.2.158: the coordinator submits it; the
+    # student is no longer reminded)
     assert progress.daily(app, _at(21)) == 1
     last = _mails(app)[8:]
-    assert sorted(m["to_addr"] for m in last) == ["coord@selected.college.example", "devi.pillai@students.example"]
-    assert all("Devi Pillai has not registered yet – register by 22 October 2026" in m["subject"] for m in last)
-    assert all("/register?token=tok-selected" in m["body"] for m in last)
+    assert [m["to_addr"] for m in last] == ["coord@selected.college.example"]
+    assert last[0]["subject"] == "Reminder – KTS 5.0: submit the nomination of Devi Pillai by 22 October 2026"
+    assert "/register?token=" not in last[0]["body"] and "Submit the nomination" in last[0]["body"]
     # after the last day of registration, and when switched off: none
     assert progress.daily(app, _at(23)) == 0
     with app.app_context():
@@ -198,7 +199,7 @@ def test_the_page_for_cict_and_for_the_nodal_officer(monkeypatch):
     assert "A reminder is mailed to 3 institution(s) that are behind." in r.get_data(as_text=True)
     subjects = {m["to_addr"]: m["subject"] for m in _mails(app)}
     assert subjects["coord@idle.college.example"].startswith("Reminder – KTS 5.0: select your student")
-    assert subjects["coord@selected.college.example"].startswith("Reminder – KTS 5.0: Devi Pillai has not registered yet")
+    assert subjects["coord@selected.college.example"].startswith("Reminder – KTS 5.0: submit the nomination of Devi Pillai")
     assert "coord@madurai.college.example" not in subjects
     again = officer.post("/console/progress", data={"_csrf": _token(officer), "state": "Kerala"}, follow_redirects=True)
     assert "No institution is behind, or each has had a reminder today." in again.get_data(as_text=True)

@@ -3,7 +3,8 @@
 {% block content %}
 <div class="wrap section">
   {% if not printable %}
-  <div class="alert success"><b>{{ t('reg.done_title') }}.</b> {{ t('reg.done_lead') }} <b>{{ app.app_no }}</b>. {{ t('reg.done_note') }}</div>
+  {% if nominated %}<div class="alert success"><b>{{ t('reg.nom_done_title') }}.</b> {{ t('reg.nom_done_lead') }} <b>{{ app.app_no }}</b>. {{ t('reg.nom_done_note') }}</div>
+  {% else %}<div class="alert success"><b>{{ t('reg.done_title') }}.</b> {{ t('reg.done_lead') }} <b>{{ app.app_no }}</b>. {{ t('reg.done_note') }}</div>{% endif %}
   {% endif %}
   <div class="doc">
     <div class="head">
@@ -39,7 +40,8 @@
   <div class="btn-row no-print" style="margin-top:16px;justify-content:center">
     <button class="btn" type="button" data-print>{{ t('common.print') }}</button>
     {% set cert = certificate_link(app) %}{% if cert %}<a class="btn saffron" href="{{ cert }}">🏅 {{ t('cert.get') }}</a>{% endif %}
-    <a class="btn secondary" href="{{ url_for('candidate.login') }}">{{ t('nav.candidate') }}</a>
+    {% if nominated %}<a class="btn secondary" href="{{ url_for('campus.home') }}">{{ t('nav.inst_login') }}</a>
+    {% else %}<a class="btn secondary" href="{{ url_for('candidate.login') }}">{{ t('nav.candidate') }}</a>{% endif %}
     <a class="btn ghost" href="{{ url_for('public.home') }}">{{ t('nav.home') }}</a>
   </div>
 </div>

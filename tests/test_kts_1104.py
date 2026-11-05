@@ -214,7 +214,7 @@ def test_submitting_the_selected_student():
         assert f"<h1>{escape(cat['hs.title'])}</h1>" in page, code
         main = page[page.index("<main"):page.index("</main>")]
         assert not re.search(r"\{[a-z_0-9]+\}", main), (code, re.findall(r"\{[a-z_0-9]+\}", main))
-        assert main.count('class="ui-name"') == 22 and '<b class="ui-name" lang="en" dir="ltr">✓ Verify</b>' in main, code
+        assert main.count('class="ui-name"') == 23 and '<b class="ui-name" lang="en" dir="ltr">✓ Verify</b>' in main, code
         assert 'href="/institution/login"' in main and 'href="/console/login"' in main, code
 
 

@@ -113,6 +113,28 @@ CREATE TABLE IF NOT EXISTS campus_attempts (
     user_agent      TEXT DEFAULT ''
 );
 
+-- the video recording of the one-hour presentation of each institution's selected student, submitted by the institution as a link
+-- (1.2.158; Annexure-III C-4 of the D.O. letter of 31 October 2026): submitted, then accepted or returned by CICT
+CREATE TABLE IF NOT EXISTS presentations (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    institution_id  INTEGER NOT NULL UNIQUE REFERENCES institutions(id),
+    application_id  INTEGER REFERENCES applications(id),
+    title           TEXT NOT NULL,
+    held_on         TEXT NOT NULL,
+    minutes         INTEGER NOT NULL,
+    audience        INTEGER,
+    video_url       TEXT NOT NULL,
+    material_url    TEXT NOT NULL DEFAULT '',
+    note            TEXT NOT NULL DEFAULT '',
+    status          TEXT NOT NULL DEFAULT 'submitted',
+    review_note     TEXT NOT NULL DEFAULT '',
+    reviewed_by     INTEGER,
+    reviewed_at     TEXT,
+    submitted_at    TEXT NOT NULL,
+    updated_at      TEXT NOT NULL,
+    ip              TEXT NOT NULL DEFAULT ''
+);
+
 -- the reminders mailed to the participating institutions, each once (1.2.52, kts/progress.py)
 CREATE TABLE IF NOT EXISTS institution_reminders (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,

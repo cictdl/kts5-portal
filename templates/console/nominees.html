@@ -5,12 +5,12 @@
    Participating Institution selects on merit on its page of the portal, from the day of the selection - before the student registers
    as well - with the institution, the assessment, and the registration and verification that follow. #}
 <p class="dim" style="max-width:92ch">Each selected Participating Institution assesses its interested students and selects one student on merit on its
-  page of the portal. The student then registers with the institution's personal link by <b>{{ settings['reg.end']|date }}</b>, and the Nodal
+  page of the portal. The Institutional Coordinator then submits the nomination there by <b>{{ settings['reg.end']|date }}</b>, and the Nodal
   Institution and CICT verify the application.{% if scope is not none %} You see the institutions of <b>{{ scope_label(scope) }}</b>.{% endif %}</p>
 <div class="kpis">
   <div class="kpi"><div class="lbl">Selected on merit</div><div class="num">{{ '{:,}'.format(k.all) }}</div><div class="sub">{{ '{:,}'.format(k.yet) }} Participating Institution(s) yet to select</div></div>
-  <div class="kpi"><div class="lbl">Not registered yet</div><div class="num">{{ '{:,}'.format(k.link) }}</div><div class="sub">registration link sent</div></div>
-  <div class="kpi"><div class="lbl">Registered</div><div class="num">{{ '{:,}'.format(k.registered) }}</div><div class="sub">awaiting verification</div></div>
+  <div class="kpi"><div class="lbl">Not submitted yet</div><div class="num">{{ '{:,}'.format(k.link) }}</div><div class="sub">the nomination by the coordinator</div></div>
+  <div class="kpi"><div class="lbl">Submitted</div><div class="num">{{ '{:,}'.format(k.registered) }}</div><div class="sub">awaiting verification</div></div>
   <div class="kpi"><div class="lbl">Verified</div><div class="num">{{ '{:,}'.format(k.verified) }}</div><div class="sub">by the Nodal Institution and CICT</div></div>
 </div>
 <form method="get" class="filters">
@@ -32,7 +32,7 @@
     <td class="small">{{ r.winner_at|datetime }}<div class="muted">{% if r.t_status %}online test: {{ r.score|round(1) }} marks{% if r.correct_count is not none %} · {{ r.correct_count }} correct{% endif %}{% else %}assessed by the institution{% endif %}</div></td>
     <td class="small">{% if r.app_no %}<a href="{{ url_for('admin.applications', q=r.app_no) }}"><code>{{ r.app_no }}</code></a>
       <div>{% if r.app_status in verified %}<span class="pill green">{{ r.app_status.replace('_', ' ') }}</span>{% else %}<span class="pill saffron">{{ r.app_status.replace('_', ' ') }}</span>{% endif %}</div>
-      {% else %}<span class="pill grey">not registered yet</span><div class="muted">registration link sent</div>{% endif %}</td></tr>
+      {% else %}<span class="pill grey">nomination not submitted yet</span>{% endif %}</td></tr>
   {% else %}<tr><td colspan="6" class="muted">No student is selected on merit yet{% if f.state or f.q or f.stage != 'all' %} at this choice{% endif %}.</td></tr>{% endfor %}</tbody>
 </table></div>
 {% endblock %}

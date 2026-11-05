@@ -27,6 +27,7 @@ merit, and registers that student's details on the portal. CICT consolidates the
 import hashlib
 import json
 import random
+import re
 import secrets
 import sqlite3
 from datetime import date, timedelta
@@ -242,6 +243,7 @@ def home():
                            period=(start, end), reg_end=_day(settings.get("reg.end")),
                            test_url=f"{base}/assessment/{inst['test_slug']}" if inst["test_slug"] else "",
                            reg_url=f"{base}/register?token={inst['reg_token']}" if inst["reg_token"] and not application else "",
+                           presentation=presentation_of(inst),
                            langs=[K.lang_info(c) | {"code": c} for c in K.ORIENTATION_LANGS])
 
 
@@ -309,23 +311,29 @@ def students_xlsx():
 
 # ---- the winner and the registration link ----------------------------------------------------------------------
 
-def registration_mail(inst, student, link):
-    body = (f"Dear {student['name']},\n\n{inst['name']} has selected you, on the basis of its assessment, as its student for "
-            f"Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom.\n\nRegister on the KTS 5.0 portal with this personal link, "
-            f"on or before {_reg_end_text()}:\n\n{link}\n\nKeep ready: a photograph, an ID proof and the nomination form "
-            f"signed by the Head of the Institution (your Institutional Coordinator has it; the form is at "
-            f"{current_app.config['BASE_URL']}/static/KTS5-nomination-form.pdf), and the name, designation, e-mail and mobile "
-            f"of your Faculty Supervisor/Guide.\n\nThe link is for you alone and works once.\n\n"
-            f"Central Institute of Classical Tamil, Chennai")
+def registration_mail(inst, student):
+    """
+    The selection of the student (1.2.158: the Institutional Coordinator submits the nomination, B-3 of the D.O. letter of 31 October
+    2026): the student is informed, without a link; the coordinator is asked to submit the nomination from the institution's page.
+    """
+    base = current_app.config["BASE_URL"]
     if student["email"]:
-        send_mail(student["email"], f"KTS 5.0: register as the student selected by {inst['name']}", body)
-    send_mail(inst["coord_email"], f"KTS 5.0: registration link of {student['name']} ({inst['ref']})",
-              f"Dear {inst['coord_name']},\n\nThe registration link of the student selected by {inst['name']}, "
-              f"{student['name']}, is:\n\n{link}\n\nIt was sent to the student as well"
+        send_mail(student["email"], f"KTS 5.0: you are selected by {inst['name']}",
+                  f"Dear {student['name']},\n\n{inst['name']} has selected you, on the basis of its assessment, as its student for "
+                  f"Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom.\n\nYour Institutional Coordinator, {inst['coord_name']}, submits "
+                  f"your nomination on the KTS 5.0 portal on or before {_reg_end_text()}. Give the coordinator a photograph, an ID "
+                  f"proof and your details (date of birth, address, course and year of study, language); the nomination form is "
+                  f"signed and sealed by the Head of the Institution, with your Faculty Supervisor/Guide.\n\nOnce the nomination is "
+                  f"submitted, you receive your application number by e-mail, to follow your application at {base}/status and to "
+                  f"sign in to the candidate portal.\n\nCentral Institute of Classical Tamil, Chennai")
+    send_mail(inst["coord_email"], f"KTS 5.0: submit the nomination of {student['name']} ({inst['ref']})",
+              f"Dear {inst['coord_name']},\n\n{inst['name']} has selected {student['name']} on merit. Submit the nomination on the "
+              f"KTS 5.0 portal on or before {_reg_end_text()}: sign in to the institution's page, {base}/institution, and press "
+              f"\u201cSubmit the nomination\u201d. The form asks for the student's details, a photograph, an ID proof, the nomination "
+              f"form signed and sealed by the Head of the Institution ({base}/static/KTS5-nomination-form.pdf) and the details of the "
+              f"Faculty Supervisor/Guide.\n\nThe student has been informed by e-mail"
               + (f" ({student['email']})" if student["email"] else "") +
-              f". The registration may be filled in by the student or by you, on or before {_reg_end_text()}. "
-              f"You see its state on the institution's page: {current_app.config['BASE_URL']}/institution\n\n"
-              f"Central Institute of Classical Tamil, Chennai")
+              f".\n\nCentral Institute of Classical Tamil, Chennai")
 
 
 def _reg_end_text():
@@ -338,7 +346,7 @@ def _issue(inst, student_id):
     execute("UPDATE institutions SET winner_id = ?, winner_at = ?, reg_token = ?, updated_at = ? WHERE id = ?",
             (student_id, utcnow(), token, utcnow(), inst["id"]))
     student = query("SELECT * FROM campus_students WHERE id = ?", (student_id,), one=True)
-    registration_mail(inst, student, f"{current_app.config['BASE_URL']}/register?token={token}")
+    registration_mail(inst, student)
     audit("winner_selected", "institution", inst["id"], detail={"student": student_id, "name": student["name"]}, ip=client_ip())
 
 
@@ -350,7 +358,7 @@ def winner():
         abort(403)
     action = request.form.get("action")
     if inst["application_id"] and action != "none":
-        flash("The selected student has registered already; write to CICT to change the selection.", "error")
+        flash("The nomination of the selected student is submitted already; write to CICT to change the selection.", "error")
         return redirect(url_for("campus.home"))
     if action == "select":
         sid = request.form.get("student_id")
@@ -359,7 +367,8 @@ def winner():
         if student is None:
             abort(404)
         _issue(inst, student["id"])
-        flash(f"{student['name']} is selected. The registration link is mailed to the student and to you, and shown below.", "success")
+        flash(f"{student['name']} is selected and informed by e-mail. Now submit the nomination: \u201cSubmit the nomination\u201d below.",
+              "success")
     elif action == "enter":
         d = {k: (request.form.get(k) or "").strip() for k in ("name", "email", "mobile", "roll_no", "course", "lang")}
         d["name"], english = plain_english(d["name"])
@@ -377,14 +386,15 @@ def winner():
                           "VALUES(?,?,?,?,?,?,?,'entered',?,?)",
                           (inst["id"], d["name"], d["email"], d["mobile"], d["roll_no"], d["course"], d["lang"], utcnow(), client_ip()))
         _issue(inst, sid)
-        flash(f"{d['name']} is selected. The registration link is mailed to the student and to you, and shown below.", "success")
+        flash(f"{d['name']} is selected and informed by e-mail. Now submit the nomination: \u201cSubmit the nomination\u201d below.",
+              "success")
     elif action == "clear":
         if inst["application_id"]:
             abort(403)
         execute("UPDATE institutions SET winner_id = NULL, winner_at = NULL, reg_token = NULL, updated_at = ? WHERE id = ?",
                 (utcnow(), inst["id"]))
         audit("winner_cleared", "institution", inst["id"], ip=client_ip())
-        flash("The selection is withdrawn; the registration link no longer works.", "success")
+        flash("The selection is withdrawn; its nomination link no longer works.", "success")
     else:
         abort(400)
     return redirect(url_for("campus.home"))
@@ -401,10 +411,11 @@ def winner_of(inst):
     return query("SELECT * FROM campus_students WHERE id = ?", (inst["winner_id"],), one=True) if inst["winner_id"] else None
 
 
-def bind_application(inst, application_id):
+def bind_application(inst, application_id, by_coord=False):
     """
     The application registered with the institution's link: the institution keeps it, and the score
-    of the winner's online assessment goes with the application as its exam session.
+    of the winner's online assessment goes with the application as its exam session. by_coord: submitted by the Institutional
+    Coordinator signed in on the institution's page (1.2.158).
     """
     execute("UPDATE institutions SET application_id = ?, updated_at = ? WHERE id = ?", (application_id, utcnow(), inst["id"]))
     attempt = query("SELECT * FROM campus_attempts WHERE student_id = ? AND status IN ('submitted', 'expired')",
@@ -416,9 +427,119 @@ def bind_application(inst, application_id):
                  attempt["deadline_at"], attempt["submitted_at"], attempt["status"], attempt["score"], attempt["correct_count"],
                  attempt["time_taken_sec"], attempt["ip"], attempt["user_agent"]))
         execute("UPDATE applications SET exam_score = ?, updated_at = ? WHERE id = ?", (attempt["score"], utcnow(), application_id))
-    send_mail(inst["coord_email"], f"KTS 5.0: the student of {inst['name']} has registered",
-              f"Dear {inst['coord_name']},\n\nThe student selected by {inst['name']} has registered on the KTS 5.0 portal. "
-              f"The Nodal Officer of {inst['state']} now verifies the application.\n\nCentral Institute of Classical Tamil, Chennai")
+    app = query("SELECT app_no, full_name FROM applications WHERE id = ?", (application_id,), one=True)
+    if by_coord:
+        send_mail(inst["coord_email"], f"KTS 5.0: the nomination of {app['full_name']} is submitted ({app['app_no']})",
+                  f"Dear {inst['coord_name']},\n\nThe nomination of {app['full_name']}, the student selected by {inst['name']}, is "
+                  f"submitted on the KTS 5.0 portal: application {app['app_no']}. The student receives the application number by "
+                  f"e-mail. The Nodal Officer of {inst['state']} now verifies the application.\n\nCentral Institute of Classical Tamil, Chennai")
+    else:
+        send_mail(inst["coord_email"], f"KTS 5.0: the student of {inst['name']} has registered",
+                  f"Dear {inst['coord_name']},\n\nThe student selected by {inst['name']} has registered on the KTS 5.0 portal: "
+                  f"application {app['app_no']}. The Nodal Officer of {inst['state']} now verifies the application.\n\n"
+                  f"Central Institute of Classical Tamil, Chennai")
+
+
+# ---- the video recording of the presentation (1.2.158) --------------------------------------------------------
+
+PRESENTATION_FIELDS = ("title", "held_on", "minutes", "audience", "video_url", "material_url", "note")
+URL_RE = re.compile(r"https?://[^\s<>\"']{3,490}")
+
+
+def presentation_of(inst):
+    return query("SELECT * FROM presentations WHERE institution_id = ?", (inst["id"],), one=True)
+
+
+def presentation_window(settings=None):
+    """(first day, last date): from the start of the one-month engagement (internship.start) to its last date (present.due)."""
+    settings = settings or all_settings()
+    return _day(settings.get("internship.start")), _day(settings.get("present.due"))
+
+
+def _presentation_form(form, first, today):
+    d = {k: (form.get(k) or "").strip() for k in PRESENTATION_FIELDS}
+    errors = {}
+    if not d["title"]:
+        errors["title"] = "Give the title or topic of the presentation."
+    d["title"] = d["title"][:200]
+    held = _day(d["held_on"])
+    if held is None:
+        errors["held_on"] = "Give the date of the presentation."
+    elif (first and held < first) or held > today:
+        errors["held_on"] = (f"The presentation is held during the one-month engagement, from {first:%d %B %Y}, and not after today."
+                             if first else "The date cannot be after today.")
+    try:
+        d["minutes"] = int(d["minutes"])
+        if not 1 <= d["minutes"] <= 600:
+            raise ValueError
+    except ValueError:
+        errors["minutes"] = "Give the duration in minutes (a number)."
+    if d["audience"]:
+        try:
+            d["audience"] = int(d["audience"])
+            if not 0 <= d["audience"] <= 100000:
+                raise ValueError
+        except ValueError:
+            errors["audience"] = "Give the number of people who attended, or leave it empty."
+    else:
+        d["audience"] = None
+    if not URL_RE.fullmatch(d["video_url"]):
+        errors["video_url"] = "Give the full link to the video, beginning with https://"
+    if d["material_url"] and not URL_RE.fullmatch(d["material_url"]):
+        errors["material_url"] = "Give the full link, beginning with https://, or leave it empty."
+    d["note"] = d["note"][:1000]
+    if form.get("shared") != "1":
+        errors["shared"] = "Confirm that CICT can open the video with this link."
+    return d, errors
+
+
+@bp.route("/institution/presentation", methods=["GET", "POST"])
+@institution_required
+def presentation():
+    """
+    The video recording of the one-hour presentation/lecture that the selected student delivers at the institution during the
+    one-month research and academic engagement: the institution submits it to CICT (Annexure-III C-4 of the D.O. letter of
+    31 October 2026; 1.2.158), as a link to the video with its title, date, duration and audience - a one-hour recording is far
+    larger than the portal takes in one request (25 MB). Open from the start of the engagement once the nomination is submitted;
+    changed until CICT accepts it.
+    """
+    inst = current_institution()
+    if inst["status"] != "accepted":
+        abort(403)
+    settings = all_settings()
+    application = query("SELECT * FROM applications WHERE id = ?", (inst["application_id"],), one=True) if inst["application_id"] else None
+    row = presentation_of(inst)
+    first, last = presentation_window(settings)
+    today = now_ist().date()
+    started = first is not None and today >= first
+    data, errors = (dict(row) if row else {}), {}
+    if request.method == "POST":
+        if application is None or not started or (row is not None and row["status"] == "accepted"):
+            abort(403)
+        data, errors = _presentation_form(request.form, first, today)
+        if not errors:
+            now = utcnow()
+            values = [data[k] for k in PRESENTATION_FIELDS]
+            if row is None:
+                execute("INSERT INTO presentations(institution_id, application_id, " + ", ".join(PRESENTATION_FIELDS) + ", status, "
+                        "submitted_at, updated_at, ip) VALUES(?,?," + ",".join("?" * len(PRESENTATION_FIELDS)) + ",'submitted',?,?,?)",
+                        [inst["id"], application["id"], *values, now, now, client_ip()])
+            else:
+                execute("UPDATE presentations SET " + ", ".join(k + " = ?" for k in PRESENTATION_FIELDS) + ", application_id = ?, "
+                        "status = 'submitted', review_note = '', reviewed_by = NULL, reviewed_at = NULL, updated_at = ?, ip = ? "
+                        "WHERE id = ?", [*values, application["id"], now, client_ip(), row["id"]])
+            audit("presentation_submitted", "institution", inst["id"], detail={"title": data["title"], "video": data["video_url"]},
+                  ip=client_ip())
+            send_mail(inst["coord_email"], f"KTS 5.0: the video of the presentation is submitted ({inst['ref']})",
+                      f"Dear {inst['coord_name']},\n\nThe video recording of the presentation of {application['full_name']} is "
+                      f"submitted to CICT:\n\nTitle: {data['title']}\nDate: {_day(data['held_on']):%d %B %Y}\nDuration: "
+                      f"{data['minutes']} minutes\nVideo: {data['video_url']}\n\nCICT reviews it; you see its status on "
+                      f"{current_app.config['BASE_URL']}/institution/presentation\n\nCentral Institute of Classical Tamil, Chennai")
+            flash("The video of the presentation is submitted to CICT.", "success")
+            return redirect(url_for("campus.presentation"))
+        flash("Please correct the marked fields.", "error")
+    return render_template("campus/presentation.html", inst=inst, settings=settings, application=application, row=row,
+                           data=data, errors=errors, first=first, last=last, today=today, started=started), 400 if errors else 200
 
 
 # ---- the students: sign-up, the paper, the result ------------------------------------------------------------

@@ -48,13 +48,13 @@ def test_the_admin_sees_every_student_selected_on_merit():
     for name in ("Anu Student", "Balu Student", "Chitra Student"):
         assert f"<b>{name}</b>" in page, name
     # the figures: three selected, one institution yet to select; one not registered, one awaiting verification, one verified
-    for label, n in (("Selected on merit", 3), ("Not registered yet", 1), ("Registered", 1), ("Verified", 1)):
+    for label, n in (("Selected on merit", 3), ("Not submitted yet", 1), ("Submitted", 1), ("Verified", 1)):
         assert f'<div class="lbl">{label}</div><div class="num">{n}</div>' in page, label
     assert "1 Participating Institution(s) yet to select" in page
     # the row of each: the online test, the institution's own assessment, the registration
     anu = page[page.index("<b>Anu Student</b>"):]
     anu = anu[:anu.index("</tr>")]
-    assert "online test: 80.0 marks" in anu and "not registered yet" in anu and "Alpha College" in anu and "Kerala" in anu
+    assert "online test: 80.0 marks" in anu and "nomination not submitted yet" in anu and "Alpha College" in anu and "Kerala" in anu
     balu = page[page.index("<b>Balu Student</b>"):]
     balu = balu[:balu.index("</tr>")]
     assert "B.A. Tamil · roll no. 21TA007" in balu and "assessed by the institution" in balu
@@ -98,7 +98,7 @@ def test_the_excel():
     assert rows[0][:6] == ("S. No.", "State/UT", "Participating Institution", "Reference", "District/City", "Student")
     by = {row[5]: row for row in rows[1:]}
     assert set(by) == {"Anu Student", "Balu Student", "Chitra Student"}
-    assert by["Anu Student"][15] == "not registered yet" and by["Anu Student"][12] == 80
+    assert by["Anu Student"][15] == "nomination not submitted yet" and by["Anu Student"][12] == 80
     assert by["Balu Student"][7] == "21TA007" and by["Balu Student"][14] == students[0]["app_no"] and by["Balu Student"][15] == "submitted"
     assert by["Chitra Student"][15] == "verified" and by["Chitra Student"][16] == "Coordinator Gamma College"
     # a Nodal Officer's Excel: the officer's States/UTs only
@@ -114,7 +114,7 @@ def test_the_menu_and_the_dashboard():
     assert 'href="/console/nominees">🎓 Selected on merit</a>' in home
     tile = home[home.index('<a class="kpi" href="/console/nominees"'):]
     tile = tile[:tile.index("</a>")]
-    assert '<div class="lbl">Selected on merit</div><div class="num">3</div>' in tile and "1 not registered yet" in tile
+    assert '<div class="lbl">Selected on merit</div><div class="num">3</div>' in tile and "1 nomination(s) not submitted yet" in tile
     assert "waitlisted" not in home
     # no Console, no list
     r = app.test_client().get("/console/nominees")

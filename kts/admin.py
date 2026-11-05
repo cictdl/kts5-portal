@@ -1332,7 +1332,7 @@ def progress_export():
                     headers={"Content-Disposition": "attachment; filename=KTS5-institutions-progress.xlsx"})
 
 
-NOMINEE_STAGES = (("all", "all"), ("link", "not registered yet"), ("registered", "registered, awaiting verification"),
+NOMINEE_STAGES = (("all", "all"), ("link", "nomination not submitted yet"), ("registered", "submitted, awaiting verification"),
                   ("verified", "verified"))
 
 
@@ -1404,12 +1404,101 @@ def nominees_export():
     data = [(n, r["state"], r["inst_name"], r["ref"], r["district"], r["name"], r["course"], r["roll_no"], r["email"], r["mobile"],
              r["lang"], (r["winner_at"] or "")[:16].replace("T", " "), r["score"] if r["t_status"] else "",
              r["correct_count"] if r["t_status"] else "", r["app_no"] or "",
-             (r["app_status"] or "").replace("_", " ") if r["app_no"] else "not registered yet",
+             (r["app_status"] or "").replace("_", " ") if r["app_no"] else "nomination not submitted yet",
              r["coord_name"], r["coord_email"], r["coord_mobile"], r["guide_name"] or "")
             for n, r in enumerate(rows, start=1)]
     return Response(xlsx_bytes(headers, data, "Selected on merit", text_cols=(7, 9, 14, 18)),
                     mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     headers={"Content-Disposition": "attachment; filename=KTS5-students-selected-on-merit.xlsx"})
+
+
+def _presentations(scope, state="", status=""):
+    """The presentation videos submitted by the Participating Institutions (1.2.158), State/UT by State/UT."""
+    sql = ("SELECT p.*, i.name AS inst_name, i.ref, i.state, i.coord_name, i.coord_email, i.coord_mobile, a.app_no, a.full_name "
+           "FROM presentations p JOIN institutions i ON i.id = p.institution_id LEFT JOIN applications a ON a.id = p.application_id "
+           "WHERE 1=1")
+    args = []
+    if scope is not None:
+        sql += f" AND i.state IN ({','.join('?' * len(scope))})" if scope else " AND 0"
+        args += scope
+    if state:
+        group = HEI.with_covered([state])
+        sql += f" AND i.state IN ({','.join('?' * len(group))})"
+        args += group
+    if status in ("submitted", "accepted", "returned"):
+        sql += " AND p.status = ?"
+        args.append(status)
+    due = (get_setting("present.due") or "")[:10]
+    rows = query(sql + " ORDER BY i.state, i.name COLLATE NOCASE", args)
+    return [dict(r, late=bool(due) and (r["updated_at"] or "")[:10] > due) for r in rows]
+
+
+@bp.route("/presentations", methods=["GET", "POST"])
+@login_required("hei.view")
+def presentations():
+    """The videos of the one-hour presentations of the selected students (Annexure-III C-4, 1.2.158): CICT accepts or returns each."""
+    user = _user()
+    scope = state_scope(user)
+    if request.method == "POST":
+        if not has_perm(user, "papers.review"):
+            abort(403)
+        row = query("SELECT p.*, i.name AS inst_name, i.ref, i.state, i.coord_name, i.coord_email FROM presentations p "
+                    "JOIN institutions i ON i.id = p.institution_id WHERE p.id = ?", (safe_int(request.form.get("id")),), one=True)
+        if row is None or (scope is not None and row["state"] not in scope):
+            abort(404)
+        action = request.form.get("action")
+        note = (request.form.get("note") or "").strip()[:500]
+        if action not in ("accept", "return"):
+            abort(400)
+        if action == "return" and not note:
+            flash("Write the remark that goes to the institution with the return.", "error")
+            return redirect(url_for("admin.presentations", **request.args.to_dict()))
+        status = "accepted" if action == "accept" else "returned"
+        execute("UPDATE presentations SET status = ?, review_note = ?, reviewed_by = ?, reviewed_at = ? WHERE id = ?",
+                (status, note if status == "returned" else "", user["id"], utcnow(), row["id"]))
+        audit("presentation_" + status, "institution", row["institution_id"], detail={"ref": row["ref"], "note": note}, user=user,
+              ip=client_ip())
+        base = current_app.config["BASE_URL"]
+        if status == "accepted":
+            send_mail(row["coord_email"], f"KTS 5.0: the video of the presentation is accepted ({row['ref']})",
+                      f"Dear {row['coord_name']},\n\nCICT has accepted the video recording of the presentation of the student of "
+                      f"{row['inst_name']} (\u201c{row['title']}\u201d).\n\nCentral Institute of Classical Tamil, Chennai")
+        else:
+            send_mail(row["coord_email"], f"KTS 5.0: the video of the presentation is returned ({row['ref']})",
+                      f"Dear {row['coord_name']},\n\nCICT has returned the video recording of the presentation of the student of "
+                      f"{row['inst_name']} (\u201c{row['title']}\u201d), with this remark:\n\n{note}\n\nPlease correct it and submit "
+                      f"it again at {base}/institution/presentation\n\nCentral Institute of Classical Tamil, Chennai")
+        flash(f"{row['inst_name']}: the video is {status}; the coordinator is informed by mail.", "success")
+        return redirect(url_for("admin.presentations", **request.args.to_dict()))
+    f = {k: (request.args.get(k) or "").strip() for k in ("state", "status")}
+    if f["state"] and scope is not None and f["state"] not in scope:
+        f["state"] = ""
+    every = _presentations(scope)
+    nominated = PROGRESS.board(scope)["total"]["registered"]
+    k = {"all": len(every), "nominated": nominated, "late": sum(1 for r in every if r["late"] and r["status"] == "submitted")}
+    for s in ("submitted", "accepted", "returned"):
+        k[s] = sum(1 for r in every if r["status"] == s)
+    rows = every if not (f["state"] or f["status"]) else _presentations(scope, f["state"], f["status"])
+    return render_template("console/presentations.html", rows=rows, k=k, f=f, states=PROGRESS.board(scope)["states"], scope=scope,
+                           can_review=has_perm(user, "papers.review"), settings=all_settings())
+
+
+@bp.route("/presentations.xlsx")
+@login_required("hei.view")
+def presentations_export():
+    """Every presentation video (of the Nodal Officer's States/UTs), with the links (1.2.158)."""
+    rows = _presentations(state_scope(_user()))
+    headers = ["S. No.", "State/UT", "Participating Institution", "Reference", "Student", "Application no.", "Title of the presentation",
+               "Date", "Minutes", "Attended", "Video", "Presentation material", "Remarks", "Submitted", "After the last date", "Status",
+               "Remark of CICT", "Institutional Coordinator", "Coordinator e-mail", "Coordinator mobile"]
+    data = [(n, r["state"], r["inst_name"], r["ref"], r["full_name"] or "", r["app_no"] or "", r["title"], r["held_on"], r["minutes"],
+             r["audience"] if r["audience"] is not None else "", r["video_url"], r["material_url"], r["note"],
+             (r["updated_at"] or "")[:16].replace("T", " "), "yes" if r["late"] else "", r["status"], r["review_note"],
+             r["coord_name"], r["coord_email"], r["coord_mobile"])
+            for n, r in enumerate(rows, start=1)]
+    return Response(xlsx_bytes(headers, data, "Presentation videos", text_cols=(5, 10, 11, 19)),
+                    mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    headers={"Content-Disposition": "attachment; filename=KTS5-presentation-videos.xlsx"})
 
 
 ANNEXURE_II = ["S. No.", "Name of Institution", "District/City", "Type", "AISHE/Institution Code", "Institutional Coordinator Name",
@@ -1851,7 +1940,7 @@ SETTING_GROUPS = [
         ("remind.on", "Reminders by mail to the participating institutions that are behind: each once, in the morning at the time of the Nodal Officers' mail, up to the last day of registration (Console › Progress)", "bool"),
         ("remind.test_by", "Reminder to assess the students and select one, to the institutions that have done nothing yet, from (YYYY-MM-DD)", "date"),
         ("remind.select_by", "Reminder to select the student, to those that have not, with the Head of the Institution in copy, from (YYYY-MM-DD)", "date"),
-        ("remind.register_by", "Reminder to register the selected student, to the coordinator and the student (the personal link again), from (YYYY-MM-DD)", "date")]),
+        ("remind.register_by", "Reminder to submit the nomination of the selected student, to the coordinator, from (YYYY-MM-DD)", "date")]),
     ("Verification by the Nodal Officers of the States/UTs", [
         ("verify.end", "Verification by the Nodal Officers closes on (YYYY-MM-DD; shown to them and in their mails; CICT can still verify after it)", "date"),
         ("nodal.digest", "Morning mail to every Nodal Officer with applications awaiting them, from the opening of registration to the close of verification", "bool"),
