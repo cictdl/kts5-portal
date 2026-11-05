@@ -143,7 +143,8 @@ def test_kts5_in_the_news():
     # five newspaper clippings of 23 October 2026, the day after the launch, in the album "KTS 5.0 in the news" (1.2.98),
     # newest album first; CICT adds later ones in the Console under the same album
     import json
-    seeds = [s for s in json.loads((ROOT / "data" / "gallery.json").read_text(encoding="utf-8")) if s["key"].startswith("news-")]
+    seeds = [s for s in json.loads((ROOT / "data" / "gallery.json").read_text(encoding="utf-8"))
+             if s["key"].startswith("news-2026-10-23-")]
     assert [s["caption"].split(",")[0] for s in seeds] == ["Dinamani", "Hindu Tamil Thisai", "The Hindu", "Dinamalar", "Dinathanthi"]
     assert {s["album"] for s in seeds} == {"KTS 5.0 in the news"} and {s["taken_on"] for s in seeds} == {"2026-10-23"}
     for s in seeds:
@@ -151,10 +152,10 @@ def test_kts5_in_the_news():
         assert data[:3] == b"\xff\xd8\xff" and len(data) < 400_000 and b"Exif" not in data[:200]
     client = make_app(ADMIN_PASSWORD=None).test_client()
     page = client.get("/gallery?lang=en").get_data(as_text=True)
-    assert page.count('<figure class="photo">') == 11 and "11 photographs" in page   # 11 since 1.2.141
+    assert page.count('<figure class="photo">') == 15 and "15 photographs" in page   # 11 since 1.2.141, 15 since 1.2.159
     assert page.index("<bdi>KTS 5.0 in the news</bdi>") < page.index("<bdi>Launch of the KTS 5.0 web portal and registration</bdi>")
     news = client.get("/gallery?lang=en&album=KTS+5.0+in+the+news").get_data(as_text=True)
-    assert news.count('<figure class="photo">') == 5 and "Classical text Thirukkural to take centre stage" in news
+    assert news.count('<figure class="photo">') == 9 and "Classical text Thirukkural to take centre stage" in news   # 9 since 1.2.159
     assert "காசி தமிழ் சங்கமம் நவ., 28ல் தொடக்கம்" in news
     for s in seeds:
         r = client.get(f"/files/gallery/{s['file']}")
