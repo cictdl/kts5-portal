@@ -44,9 +44,18 @@ anything on the server**:
   is moved out of the folder;
 * before an update replaces anything, the safety copy of the run receives
   everything that will be replaced: the folders `kts`, `templates`, `static`,
-  `data` and `lib` and the files of the site's root (about 27 MB), and the
-  database, copied through SQLite itself so that the copy is complete. The
-  copy lies in `%TEMP%\kts5-setup\before-<date>` of the system user;
+  `data` and `lib` and the files of the site's root (about 250 MB with the
+  study books), and the database, copied through SQLite itself so that the
+  copy is complete. The copy lies in `%TEMP%\kts5-setup\before-<date>` of the
+  system user;
+* room on the disk: every run first removes what earlier runs left in
+  `kts5-setup` (every download `portal-<date>.zip` and its unpacked copy
+  `src-<date>`, and all but the two newest safety copies), deletes its own
+  download as soon as it is unpacked and the unpacked copy at the end, and
+  stops before it changes anything when the drive of `kts5-setup` has less
+  than 1,000 MB free or the drive of the site less than 500 MB. Until 1.2.163
+  every run left about 0.7 GB behind, and on 5 November 2026 the disk of the
+  server was full;
 * while an update replaces the files, visitors see the page "The portal is
   being updated" (`app_offline.htm`): IIS stops the running program for that
   time, so that it never answers with the files of two versions. The page is
@@ -247,7 +256,7 @@ then the task of Plesk (steps 1 to 5 above).
    page "The portal is being updated"; a form that is sent in those seconds
    is not stored and has to be sent again.
 3. **Read step 2 of the output.** It must read
-   `complete: portal version 1.2.162 with 23 interface languages`, with the
+   `complete: portal version 1.2.163 with 23 interface languages`, with the
    number that `kts\version.py` of the release names. If the line names no
    version, the old installer ran. Nothing is lost and the portal works, with
    the new code; wait ten minutes and run the task once more. That run does
@@ -359,7 +368,7 @@ portal, the vendored libraries, `web.config`, and empty `instance\`,
    `data\`, `instance\`, `uploads\`, `logs\` … directly inside `httpdocs`.
    Delete the zip afterwards.
 4. Open `http://kts.cict.in/healthz`. Expected:
-   `{"ok": true, "time": "…", "version": "1.2.162"}`.
+   `{"ok": true, "time": "…", "version": "1.2.163"}`.
    First start takes 10–20 seconds (it creates the database).
 5. If you get **502.3** instead, open `web.config` in the File Manager editor
    and replace the two values with the ones the probe printed:

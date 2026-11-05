@@ -247,6 +247,35 @@ function Stop-Here($text) {
   exit 1
 }
 
+function Remove-OldRuns($work, $keep, $current) {
+  # What earlier runs left in the work folder (1.2.163): every download (portal-*.zip) and its unpacked copy (src-*), and
+  # all but the $keep newest safety copies (before-*, newest by the date in the name); never the safety copy $current of
+  # this run. Each run used to leave about 0.7 GB there, and on 5 November 2026 the disk of the server was full.
+  # Returns the megabytes set free.
+  $old = @()
+  $old += @(Get-ChildItem -Path $work -Filter "portal-*.zip" -File -Force -ErrorAction SilentlyContinue)
+  $old += @(Get-ChildItem -Path $work -Filter "src-*" -Directory -Force -ErrorAction SilentlyContinue)
+  $safety = @(Get-ChildItem -Path $work -Filter "before-*" -Directory -Force -ErrorAction SilentlyContinue |
+    Where-Object { $_.FullName -ne $current } | Sort-Object Name -Descending)
+  if ($safety.Count -gt $keep) { $old += @($safety | Select-Object -Skip $keep) }
+  $freed = 0
+  foreach ($item in $old) {
+    $size = 0
+    if ($item -is [IO.FileInfo]) { $size = $item.Length }
+    else { $size = (Get-ChildItem -Path $item.FullName -Recurse -File -Force -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum).Sum }
+    try { Remove-Item -LiteralPath $item.FullName -Recurse -Force -ErrorAction Stop; $freed += [double]$size } catch {}
+  }
+  return [int][math]::Round($freed / 1MB)
+}
+
+function Get-FreeMegabytes($path) {
+  # The megabytes free on the drive of $path; -1 where that cannot be told (a share, a path that does not exist).
+  try {
+    $root = [IO.Path]::GetPathRoot((Resolve-Path -LiteralPath $path -ErrorAction Stop).Path)
+    return [long][math]::Floor((New-Object IO.DriveInfo($root)).AvailableFreeSpace / 1MB)
+  } catch { return -1 }
+}
+
 # The check of the portal must also work while the certificate is still Plesk's own, untrusted one.
 Add-Type -TypeDefinition @"
 using System.Net;
@@ -771,6 +800,20 @@ if (Test-Path (Join-Path $SitePath "app_offline.htm")) {
   if (Remove-OfflinePage $SitePath) { Note "app_offline.htm, left behind by an earlier run, was taken out of the site folder" }
   else { Bad "app_offline.htm could not be removed from $SitePath : delete it in Plesk (Files), no visitor reaches the portal while it is there" }
 }
+# Room on the disk (1.2.163): what earlier runs left in the work folder goes first, then the run needs about 1,000 MB on that
+# drive (the download, its unpacked copy, the safety copy) and 500 MB on the drive of the site, or it stops before it changes
+# anything. On 5 November 2026 the disk of the server was full, with about 0.7 GB left behind by every earlier run.
+$freed = Remove-OldRuns $work 2 $backup
+if ($freed -gt 0) { Note "$freed MB that earlier runs had left in $work were set free (the two newest safety copies are kept)" }
+$freeWork = Get-FreeMegabytes $work
+$freeSite = Get-FreeMegabytes $SitePath
+if ($freeWork -ge 0) { Note "free on the drive of $work : $freeWork MB" }
+if ($freeWork -ge 0 -and $freeWork -lt 1000) {
+  Stop-Here "only $freeWork MB are free on the drive of $work, and an update needs about 1,000 MB there. Free some space on the server (ask its administrator), then run this task again. Nothing was changed."
+}
+if ($freeSite -ge 0 -and $freeSite -lt 500) {
+  Stop-Here "only $freeSite MB are free on the drive of $SitePath, and the portal needs room there to run. Free some space on the server (ask its administrator), then run this task again. Nothing was changed."
+}
 
 # ------------------------------------------------------------------ 2. download
 Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -795,6 +838,7 @@ if ($SourcePath) {
   }
   Note ("downloaded {0:N1} MB" -f ((Get-Item $zip).Length / 1MB))
   [IO.Compression.ZipFile]::ExtractToDirectory($zip, $unpacked)
+  try { Remove-Item -LiteralPath $zip -Force -ErrorAction Stop } catch {}   # unpacked: the download is no longer needed (1.2.163)
   $source = Get-ChildItem -Path $unpacked -Directory | Select-Object -First 1
   if (-not $source) { Stop-Here "the downloaded file is empty." }
   $source = $source.FullName
@@ -1215,6 +1259,11 @@ if ($check.ok) {
   $todo.Add((Get-SignInNote $SitePath $HostName))
   $todo.Add("Then, in the console: Settings (dates, contact), Question bank > Generate, Notices.")
   if ($Portable) { $todo.Add("Do not connect this folder to Git in Plesk: the web.config of the repository is written for a server with the HttpPlatformHandler module. To update the portal, run this task again.") }
+}
+
+# The unpacked download is no longer needed (1.2.163); the safety copy of this run stays for the next two runs.
+if ($unpacked -and (Test-Path -LiteralPath $unpacked)) {
+  try { Remove-Item -LiteralPath $unpacked -Recurse -Force -ErrorAction Stop; Note "the unpacked download was removed from $work" } catch {}
 }
 
 Write-Host ""
