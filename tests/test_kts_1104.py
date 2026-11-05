@@ -73,7 +73,7 @@ def test_the_strip_of_the_registration_is_highlighted():
 
 def test_the_circular_band():
     from kts.db import DO_NOTICE, DO_NOTICE_FILE
-    app = _app(**LIVE)
+    app = _app(**LIVE, home_circular="1")   # the line of the newest circular, hidden since 1.2.162 (tests/test_home_circular_1105.py)
     client = app.test_client()
     for code, cat in CATALOGUES.items():
         page = _get(client, f"/?lang={code}")
@@ -103,7 +103,7 @@ def test_the_circular_band():
 
 
 def test_a_newer_circular_comes_first():
-    app = _app(**LIVE)
+    app = _app(**LIVE, home_circular="1")
     with app.app_context():
         from kts.db import execute
         execute("INSERT INTO notices(title, body, category, lang, pinned, published, attachment, created_at, updated_at) "

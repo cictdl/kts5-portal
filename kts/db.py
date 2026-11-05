@@ -792,6 +792,9 @@ DEFAULT_SETTINGS = {
     "nominate.open": "1",
     # the days for which the newest circular of the Ministry carries a blinking NEW on the home page (1.2.152); 0: never
     "circular.new_days": "30",
+    # the newest circular of the Ministry, with its PDF, first in the circular band of the home page (1.2.162, the user, 5 November
+    # 2026: "hide: D.O. letter of the Ministry of Education, 31 October 2026"): hidden; the notice stays under Notices; '1' shows it
+    "home.circular": "0",
     # the public dashboard KTS 5.0 by State/UT (1.2.122, kts/dashboard.py)
     "dashboard.public": "1",
     # its student delegates by name, once verified (1.2.124)

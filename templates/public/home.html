@@ -4,12 +4,14 @@
 {# The circular band, for the attention of all (1.2.74), above the hero; since 1.2.152 (CICT's note of 4 November 2026) on a plain
    light background, not red: the newest circular of the Ministry first (the newest circular notice with the letter attached,
    public.latest_circular), with a blinking NEW while it is recent (circular.new_days), then the Guidelines for Nodal Institutions
-   and the State/UT-wise list of the Nodal Higher Educational Institutions; the participating institutions beside them (1.2.77) #}
+   and the State/UT-wise list of the Nodal Higher Educational Institutions; the participating institutions beside them (1.2.77).
+   The newest circular only while the Console shows it (home.circular, hidden since 1.2.162: "hide: D.O. letter of the Ministry of
+   Education, 31 October 2026") #}
 <div class="nodal-attention">
   <div class="wrap">
     <div class="na-head"><span class="na-tag"><span aria-hidden="true">📢 </span>{{ t('tag.circular') }}</span>{% if circ_new %}<span class="new-badge">{{ t('circ.new') }}</span>{% endif %}</div>
     <ul class="na-items">
-      {% if circular %}<li class="na-first"><a class="na-link" href="{{ url_for('public.notice', nid=circular.id) }}"><span class="na-title" lang="en" dir="ltr">{{ circular_head }}</span> <span class="na-go" aria-hidden="true">{{ fwd }}</span></a>
+      {% if circular and settings.get('home.circular') == '1' %}<li class="na-first"><a class="na-link" href="{{ url_for('public.notice', nid=circular.id) }}"><span class="na-title" lang="en" dir="ltr">{{ circular_head }}</span> <span class="na-go" aria-hidden="true">{{ fwd }}</span></a>
         <a class="na-pdf" href="{{ url_for('public.public_file', relpath=circular.attachment) }}" target="_blank" rel="noopener" type="application/pdf"><span aria-hidden="true">⬇ </span>PDF</a></li>{% endif %}
       <li><a class="na-link" href="{{ url_for('public.nodal_guidelines') }}"><span class="na-title">{{ t('ng.title') }}</span> <span class="na-go" aria-hidden="true">{{ fwd }}</span></a></li>
       <li><a class="na-link" href="{{ url_for('public.nodal_institutions') }}"><span class="na-title">{{ t('nodal.title') }}</span> <span class="na-go" aria-hidden="true">{{ fwd }}</span></a></li>
