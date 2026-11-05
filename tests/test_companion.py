@@ -157,7 +157,7 @@ def test_menu_sitemap_and_switch():
     assert 'href="/companion"' in client.get("/thirukkural").get_data(as_text=True)
     assert "/companion</loc>" in client.get("/sitemap.xml").get_data(as_text=True)
     page = client.get("/companion?q=anger").get_data(as_text=True)
-    assert 'class="active" aria-haspopup="true">Other Resources</a>' in page   # the menu's item renamed (1.2.156)
+    assert 'class="active" aria-haspopup="true">Additional Resources</a>' in page   # the menu's item renamed (1.2.156, 1.2.161)
     with app.app_context():
         set_setting("companion.on", "0")
     assert client.get("/companion").status_code == 404

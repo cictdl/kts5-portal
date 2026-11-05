@@ -197,7 +197,7 @@ def test_the_main_menu_and_the_home_page_lead_to_it():
     for code, catalogue in CATALOG.items():
         page = _page(client, f"/?lang={code}")
         menu = page.split('id="primary-menu"')[1].split("</nav>")[0]
-        resources = menu[menu.index('<li class="has-sub"><a href="/resources"'):]
+        resources = menu[menu.index('<li class="has-sub"><a href="/thirukkural"'):]   # Additional Resources (1.2.161)
         resources = resources[:resources.index("</ul></li>")]
         assert f'<li><a href="/resources">{escape(catalogue["res.title"])}</a></li>' in resources, code
         assert f'<li><a href="/seminars-workshops">{escape(catalogue["ev.title"])}</a></li>' in resources, code
@@ -208,7 +208,7 @@ def test_the_main_menu_and_the_home_page_lead_to_it():
                 f'{escape(catalogue["ev.count"].replace("{n}", str(len(EVENTS))))}</span>') in card, code
     # the menu marks the page as the one open
     page = _page(client, "/seminars-workshops?lang=en")
-    assert '<li class="has-sub"><a href="/resources" class="active" aria-haspopup="true">' in page
+    assert '<li class="has-sub"><a href="/thirukkural" class="active" aria-haspopup="true">' in page
 
 
 def test_the_years_before_2020_are_not_shown():

@@ -83,7 +83,8 @@ def test_the_syllabus_is_reached_from_where_students_look():
     exam = _page(client, "/examination?lang=en")
     assert exam.count('href="/syllabus"') >= 2 and '<span lang="ta">தமிழ்</span>' in exam and '<span lang="mr">मराठी</span>' in exam
     assert 'href="/syllabus"' in _page(client, "/thirukkural-108?lang=en")
-    assert '<li><a href="/syllabus">Study material for the institution-level assessment</a></li>' in _page(client, "/about?lang=en")
+    # in the menu, under the Students' Engagement Programme (1.2.161)
+    assert '<li><a href="/syllabus">Multilingual Study Materials</a></li>' in _page(client, "/about?lang=en")
     assert 'href="/syllabus"' in _page(client, "/sitemap?lang=en")
     assert 'href="/syllabus"' in _page(client, "/resources?cat=study&lang=en")
     assert "/syllabus" in _page(client, "/search?lang=en&q=syllabus")

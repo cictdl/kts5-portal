@@ -21,7 +21,7 @@
 {% endblock %}
 <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=49">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}?v=50">
 {% block head %}{% endblock %}
 </head>
 <body>
@@ -86,25 +86,29 @@
           <li><a href="{{ url_for('public.submit_guide') }}">{{ t('hs.title') }}</a></li>
           <li><a href="{{ url_for('campus.login') }}">{{ t('camp.login_title') }}</a></li>
         </ul></li>
-      {# "Institution-level assessment" hidden (1.2.156, menu.assessment); the Academic Orientation, its content from CICT later #}
+      {# "Institution-level assessment" hidden (1.2.156, menu.assessment); shown again by the Console, it keeps its place after Register #}
       {% if assessment_menu() %}
       <li><a href="{{ url_for('public.examination') }}" class="{{ 'active' if ep == 'public.examination' }}">{{ t('nav.exam') }}</a></li>
       {% endif %}
-      <li><a href="{{ url_for('public.academic_orientation') }}" class="{{ 'active' if ep == 'public.academic_orientation' }}">{{ t('nav.acad') }}</a></li>
-      <li><a href="{{ url_for('public.orientation') }}" class="{{ 'active' if ep == 'public.orientation' }}">{{ t('nav.orientation') }}</a></li>
-      <li class="has-sub"><a href="{{ url_for('public.resources') }}" class="{{ 'active' if ep.startswith('public.resource') or ep in ('public.cict_events_page', 'public.syllabus') }}" aria-haspopup="true">{{ t('nav.resources') }}</a>
+      {# the new order of the menu (1.2.161, CICT): the Students' Engagement Programme - the study book in many languages, the
+         Educational Videos and the Academic Orientation (its content from CICT later) #}
+      <li class="has-sub"><a href="{{ url_for('public.syllabus') }}" class="{{ 'active' if ep in ('public.syllabus', 'public.orientation', 'public.academic_orientation') }}" aria-haspopup="true">{{ t('nav.sep') }}</a>
         <ul class="sub">
-          <li><a href="{{ url_for('public.resources') }}">{{ t('res.title') }}</a></li>
-          <li><a href="{{ url_for('public.syllabus') }}">{{ t('syl.title') }}</a></li>
-          {% if events_public() %}<li><a href="{{ url_for('public.cict_events_page') }}">{{ t('ev.title') }}</a></li>{% endif %}
+          <li><a href="{{ url_for('public.syllabus') }}">{{ t('nav.study_ml') }}</a></li>
+          <li><a href="{{ url_for('public.orientation') }}">{{ t('nav.orientation') }}</a></li>
+          <li><a href="{{ url_for('public.academic_orientation') }}">{{ t('nav.acad') }}</a></li>
         </ul></li>
-      <li class="has-sub"><a href="{{ url_for('public.kural_browser') }}" class="{{ 'active' if ep.startswith('public.kural') or ep.startswith('practice.') or ep in ('public.daily_kural', 'public.companion') }}" aria-haspopup="true">{{ t('nav.other_res') }}</a>
+      {# Additional Resources (1.2.161; "Other Resources" from 1.2.156, "Thirukkural" before): the Thirukkural pages, and the
+         digital repository and CICT's seminars and workshops, which were under "Resources" #}
+      <li class="has-sub"><a href="{{ url_for('public.kural_browser') }}" class="{{ 'active' if ep.startswith('public.kural') or ep.startswith('practice.') or ep.startswith('public.resource') or ep in ('public.daily_kural', 'public.companion', 'public.cict_events_page') }}" aria-haspopup="true">{{ t('nav.other_res') }}</a>
         <ul class="sub">
           <li><a href="{{ url_for('public.kural_browser') }}">{{ t('res.kural_browser') }}</a></li>
           {% if get_setting('companion.on') == '1' %}<li><a href="{{ url_for('public.companion') }}">{{ t('comp.title') }}</a></li>{% endif %}
           <li><a href="{{ url_for('public.daily_kural') }}">{{ t('nav.daily') }}</a></li>
           {% if get_setting('quiz.on') == '1' %}<li><a href="{{ url_for('quiz.join') }}">{{ t('quiz.title') }}</a></li>{% endif %}
           {% if get_setting('practice.on') == '1' %}<li><a href="{{ url_for('practice.home') }}">{{ t('prac.title') }}</a></li>{% endif %}
+          <li><a href="{{ url_for('public.resources') }}">{{ t('res.title') }}</a></li>
+          {% if events_public() %}<li><a href="{{ url_for('public.cict_events_page') }}">{{ t('ev.title') }}</a></li>{% endif %}
         </ul></li>
       <li class="has-sub"><a href="{{ url_for('public.notices') }}" class="{{ 'active' if ep.startswith('public.notice') or ep == 'public.news' }}" aria-haspopup="true">{{ t('nav.notices') }}</a>
         <ul class="sub">

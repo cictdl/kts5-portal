@@ -1481,7 +1481,7 @@
   "guide.i7": "See that your student and representatives of your institution join the Inaugural and Valedictory Functions online, and that the student takes part in the academic orientation and the one-month research and academic engagement; guide the article/research note and organise the one-hour presentation, whose video recording you submit to CICT; keep the assessment records, attendance, photographs and reports; and validate the student's bank account details on the portal when it asks you to.",
   "nav.acad": "Academic Orientation",
   "acad.soon": "The content of the academic orientation will be published here.",
-  "nav.other_res": "Other Resources",
+  "nav.other_res": "Additional Resources",
   "reg.nom_title": "Nomination of the selected student",
   "reg.nom_hint": "Nomination by {inst}: as the Institutional Coordinator, fill in this form with the details and documents of the student selected on merit, and submit it. Fill it in at one sitting.",
   "reg.nom_inst_locked": "The nominating institution",
@@ -1495,5 +1495,7 @@
   "reg.nom_done_note": "The student receives it by e-mail, and uses it with the date of birth and mobile number to follow the application and to sign in to the candidate portal.",
   "hs.c8_t": "Submit the video of the presentation",
   "hs.c8": "During the one-month research and academic engagement, your student delivers a one-hour presentation/lecture at the institution. Submit its video recording to CICT on the institution's page under {presentation}: the link to the video, shared so that CICT can open it, with its date, title and duration.",
-  "reg.nom_english_note": "Fill in this form in English only: write the student's name, address and institution in English letters (A-Z), as in the college records."
+  "reg.nom_english_note": "Fill in this form in English only: write the student's name, address and institution in English letters (A-Z), as in the college records.",
+  "nav.sep": "Students' Engagement Programme",
+  "nav.study_ml": "Multilingual Study Materials"
 }

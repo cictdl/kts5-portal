@@ -51,8 +51,9 @@ def _urls(app, *endpoints):
 
 def test_the_menu_in_its_order():
     page = _get(_app().test_client(), "/?lang=en")
-    assert _top(_menu(page)) == ["Home", "About KTS", "Programme", "Register", "Academic Orientation", "Educational Videos", "Resources",
-                                 "Other Resources", "Notices", "Schedule", "Partners", "Gallery", "Contact"]
+    # the new order of 1.2.161 (tests/test_menu_1105.py)
+    assert _top(_menu(page)) == ["Home", "About KTS", "Programme", "Register", "Students&#39; Engagement Programme", "Additional Resources",
+                                 "Notices", "Schedule", "Partners", "Gallery", "Contact"]
 
 
 def test_the_assessment_leaves_the_menu_and_its_page_stays():
@@ -66,14 +67,14 @@ def test_the_assessment_leaves_the_menu_and_its_page_stays():
     # the page itself, and the links to it from the pages that need it
     assert "<h1>Institution-level assessment</h1>" in _get(client, "/examination?lang=en")
     assert 'href="/examination"' in _get(client, "/how-to-take-part?lang=en")
-    # the Console's switch brings both back, the menu's item before the Academic Orientation
+    # the Console's switch brings both back, the menu's item before the Students' Engagement Programme (1.2.161)
     assert [k for _title, items in SETTING_GROUPS for k, *_ in items].count("menu.assessment") == 1
     with app.app_context():
         set_setting("menu.assessment", "1")
     home = _get(client, "/?lang=en")
     assert '<a href="/examination" class="">Institution-level assessment</a>' in _menu(home)
     assert '<li><a href="/examination">Institution-level assessment</a></li>' in home[home.index('<footer class="site">'):]
-    assert _top(_menu(home))[3:6] == ["Register", "Institution-level assessment", "Academic Orientation"]
+    assert _top(_menu(home))[3:6] == ["Register", "Institution-level assessment", "Students&#39; Engagement Programme"]
     assert 'class="active">Institution-level assessment</a>' in _menu(_get(client, "/examination?lang=en"))
 
 
@@ -82,13 +83,13 @@ def test_what_was_good_on_the_assessment_page_stays_in_the_menu():
     app = _app()
     client = app.test_client()
     menu = _menu(_get(client, "/?lang=en"))
-    # the classroom quiz and the practice test under Other Resources, with the Thirukkural pages
+    # the classroom quiz and the practice test under Additional Resources (1.2.161), with the Thirukkural pages
     kural, companion, daily, quiz, practice, syllabus, merit = _urls(app, "public.kural_browser", "public.companion", "public.daily_kural",
                                                                      "quiz.join", "practice.home", "public.syllabus", "public.merit")
-    assert _sub(menu, "Other Resources") == [(kural, "Thirukkural in 22 languages"), (companion, "Thirukkural study companion"),
-                                             (daily, "Daily Kural"), (quiz, "Classroom quiz"), (practice, "Practice test")]
-    # the study material stays under Resources
-    assert (syllabus, "Study material for the institution-level assessment") in _sub(menu, "Resources")
+    assert _sub(menu, "Additional Resources")[:5] == [(kural, "Thirukkural in 22 languages"), (companion, "Thirukkural study companion"),
+                                                      (daily, "Daily Kural"), (quiz, "Classroom quiz"), (practice, "Practice test")]
+    # the study material under the Students' Engagement Programme (1.2.161)
+    assert (syllabus, "Multilingual Study Materials") in _sub(menu, "Students&#39; Engagement Programme")
     # the list of the selected students under Register, once published
     assert "Selected students" not in menu
     with app.app_context():
@@ -104,14 +105,15 @@ def test_what_was_good_on_the_assessment_page_stays_in_the_menu():
 def test_the_practice_test_marks_other_resources():
     app = _app()
     (practice,) = _urls(app, "practice.home")
-    assert 'class="active" aria-haspopup="true">Other Resources</a>' in _menu(_get(app.test_client(), f"{practice}?lang=en"))
+    assert 'class="active" aria-haspopup="true">Additional Resources</a>' in _menu(_get(app.test_client(), f"{practice}?lang=en"))
 
 
 def test_the_academic_orientation():
     app = _app()
     client = app.test_client()
     page = _get(client, "/academic-orientation?lang=en")
-    assert "<h1>Academic Orientation</h1>" in page and 'class="active">Academic Orientation</a>' in _menu(page)
+    assert "<h1>Academic Orientation</h1>" in page
+    assert 'class="active" aria-haspopup="true">Students&#39; Engagement Programme</a>' in _menu(page)   # its item since 1.2.161
     assert "Academic orientation by CICT, with access to the study material and educational videos · <b><bdi>By 14 " in page
     assert "The content of the academic orientation will be published here." in page
     assert 'href="/orientation">▶ Educational Videos</a>' in page and 'href="/syllabus">📘 Study material: the study book</a>' in page
@@ -123,8 +125,7 @@ def test_the_academic_orientation():
         assert f"<h1>{escape(catalogue['nav.acad'])}</h1>" in page, code
         assert escape(catalogue["acad.soon"]) in page, code
         top = _top(_menu(page))
-        assert top[4:8] == [escape(catalogue["nav.acad"]), escape(catalogue["nav.orientation"]), escape(catalogue["nav.resources"]),
-                            escape(catalogue["nav.other_res"])], code
+        assert top[4:6] == [escape(catalogue["nav.sep"]), escape(catalogue["nav.other_res"])], code   # the order of 1.2.161
 
 
 def test_the_educational_videos():
@@ -132,7 +133,7 @@ def test_the_educational_videos():
     client = app.test_client()
     page = _get(client, "/orientation?lang=en")
     assert "<h1>Educational Videos</h1>" in page and "Online orientation programme" not in page
-    assert 'class="active">Educational Videos</a>' in _menu(page)
+    assert 'class="active" aria-haspopup="true">Students&#39; Engagement Programme</a>' in _menu(page)   # its item since 1.2.161
     (resources,) = _urls(app, "public.resources")
     assert "<h3>Educational Videos</h3>" in _get(client, f"{resources}?lang=en")
 
