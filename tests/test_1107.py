@@ -55,10 +55,11 @@ def test_the_last_date_beside_the_button():
 def test_item_7_of_the_programme():
     page = _get(_app().test_client(), "/programme?lang=en")
     assert "Student presentation and dissemination of knowledge" in page
-    for words in ("an original article or research note of not more than 10 pages", "with a PowerPoint (PPT) or another suitable presentation",
-                  "the institution submits its video recording to CICT",
-                  "The student and the institution post the news of KTS 5.0 on the student&#39;s and the college&#39;s social media and "
-                  "arrange for it to appear in the local news media."):
+    # the minimum of 4 pages and the college's website (1.2.167)
+    for words in ("an original article or research note of at least 4 and not more than 10 pages",
+                  "with a PowerPoint (PPT) or another suitable presentation", "the institution submits its video recording to CICT",
+                  "The student and the institution post the news of KTS 5.0 on the student&#39;s social media and arrange for it to "
+                  "appear on the college&#39;s website and social media and in the local news media."):
         assert words in page, words
 
 
@@ -76,12 +77,12 @@ def test_the_article_of_not_more_than_10_pages_everywhere():
             for key in keys:
                 assert cat[key] != en[key], (code, key)
     client = _app().test_client()
-    assert "write an article or research note of not more than 10 pages" in _get(client, "/about?lang=en")
-    assert "write an article/research note of not more than 10 pages" in _get(client, "/how-to-take-part?lang=en")
+    assert "write an article or research note of at least 4 and not more than 10 pages" in _get(client, "/about?lang=en")
+    assert "write an article/research note of at least 4 and not more than 10 pages" in _get(client, "/how-to-take-part?lang=en")
     # the institution's page, in English
     from pathlib import Path
     home = (Path(__file__).resolve().parents[1] / "templates" / "campus" / "home.html").read_text(encoding="utf-8")
-    assert "4–5" not in home and "write an article/research note of not more than 10 pages" in home
+    assert "4–5" not in home and "write an article/research note of at least 4 and not more than 10 pages" in home
 
 
 def test_the_two_books_to_come():
