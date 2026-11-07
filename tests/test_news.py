@@ -87,7 +87,8 @@ def test_the_reports_of_the_web():
     # Education Post, Hindustan Times, Organiser, Jagran Josh and Hindu Tamil Thisai (1.2.127); 23 more of 22-26 October and the
     # Hindi of Akashvani News and DD News as versions in Hindi, on the same sites (1.2.141); the file in the order of the days and the hours
     reports = [n for n in NEWS if n["kind"] == "article"]
-    assert [n["source"] for n in reports] == ["Dainik Bhaskar", "Akashvani News", "Akashvani News", "Bhaskar Hindi", "ThePrint", "Careers360", "Akashvani News", "DD News", "DD India", "ThePrint Hindi", "Awaz-The Voice", "Punjab Kesari", "REVOI", "EdexLive", "ETV Bharat", "Hindu Tamil Thisai", "Dinamalar", "Dinamalar", "The Hindu", "The New Indian Express", "Public TV", "Dinamalar TV", "Dainik Jagran", "The Indian Express", "Daily Thanthi", "Dinamani", "NDTV Education", "DT Next", "Hindu Tamil Thisai", "Education Post", "Hindustan Times", "News18", "Organiser", "CNBCTV18", "Jagran Josh", "Times Now Tamil", "Dinamalar Kalvimalar", "Eenadu", "Akashvani News", "Akashvani News", "Akashvani News", "Prabhat Khabar", "Amar Ujala", "Hindu Tamil Thisai"]
+    assert [n["source"] for n in reports] == ["Dainik Bhaskar", "Akashvani News", "Akashvani News", "Bhaskar Hindi", "ThePrint", "Careers360", "Akashvani News", "DD News", "DD India", "ThePrint Hindi", "Awaz-The Voice", "Punjab Kesari", "REVOI", "EdexLive", "ETV Bharat", "Hindu Tamil Thisai", "Dinamalar", "Dinamalar", "The Hindu", "The New Indian Express", "Public TV", "Dinamalar TV", "Dainik Jagran", "The Indian Express", "Daily Thanthi", "Dinamani", "NDTV Education", "DT Next", "Hindu Tamil Thisai", "Education Post", "Hindustan Times", "News18", "Organiser", "CNBCTV18", "Jagran Josh", "Times Now Tamil", "Dinamalar Kalvimalar", "Eenadu", "Akashvani News", "Akashvani News", "Akashvani News", "Prabhat Khabar", "Amar Ujala", "Hindu Tamil Thisai",
+                                          "News9", "TV9 Bangla", "TV9 Hindi"]   # 1.2.166
     hosts = {"DD News": "https://ddnews.gov.in/", "Dinamalar": "https://www.dinamalar.com/",
              "Daily Thanthi": "https://www.dailythanthi.com/", "NDTV Education": "https://www.ndtv.com/",
              "Akashvani News": "https://newsonair.gov.in/", "Careers360": "https://news.careers360.com/",
@@ -104,7 +105,9 @@ def test_the_reports_of_the_web():
              "Public TV": "https://publictv.in/", "Dinamalar TV": "https://www.dinamalar.com/dinamalartv/", "Dainik Jagran": "https://www.jagran.com/",
              "Dinamani": "https://www.dinamani.com/", "News18": "https://www.news18.com/", "CNBCTV18": "https://www.cnbctv18.com/",
              "Times Now Tamil": "https://tamil.timesnownews.com/", "Dinamalar Kalvimalar": "https://www.dinamalar.com/news/kalvimalar-news-en/",
-             "Eenadu": "https://www.eenadu.net/", "Prabhat Khabar": "https://www.prabhatkhabar.com/", "Amar Ujala": "https://www.amarujala.com/"}
+             "Eenadu": "https://www.eenadu.net/", "Prabhat Khabar": "https://www.prabhatkhabar.com/", "Amar Ujala": "https://www.amarujala.com/",
+             # 1.2.166
+             "News9": "https://www.news9live.com/", "TV9 Bangla": "https://tv9bangla.com/", "TV9 Hindi": "https://www.tv9hindi.com/"}
     for n in reports:
         assert len({v["lang"] for v in n["versions"]}) == len(n["versions"]) <= 2, n["key"]
         for v in n["versions"]:
@@ -268,7 +271,7 @@ def test_the_news_added_on_3_november():
     # 1.2.141: the posts of the official accounts on social media (the Ministry of Education, the Minister, PIB, CICT and Kashi
     # Tamil Sangamam), one card per announcement with a button for each network, each at its hour among the reports of the day
     # (the hour of a post on X read from its id); the Hindi reports of Akashvani News and DD News, in Hindi, as versions
-    social = [n for n in NEWS if n["kind"] == "social"]
+    social = [n for n in NEWS if n["kind"] == "social" and n["date"] <= "2026-11-02"]   # those of 3-4 November: tests/test_news_1107.py
     assert len(social) == 21 and sum(len(n["links"]) for n in social) == 39
     assert {n["source"] for n in social} == {"CICT", "Kashi Tamil Sangamam", "Ministry of Education", "Press Information Bureau",
                                              "Shri Pralhad Joshi, Union Minister of Education", "PIB Chennai"}

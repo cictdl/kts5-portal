@@ -50,7 +50,7 @@ def test_the_figures_are_counted_from_the_portal_itself():
     assert f["audio"] == 1330 + 29 and f["audio_hours"] == FIGURES["audio_hours"] > 7
     # the orientation lectures, the videos of the repository, the reels and shorts and the video guide
     # the video guide no longer counted, off the pages (1.2.148)
-    assert f["videos"] >= 42 + 138 + 49 and f["video_parts"] == {"lectures": 42, "repository": 138, "reels": 49}
+    assert f["videos"] >= 46 + 138 + 49 and f["video_parts"] == {"lectures": 46, "repository": 138, "reels": 49}   # 46 lectures since 1.2.166
     assert f["books"] == 18 and f["posters"] == 92 and f["events"] >= 253
     assert f["archives"] == FIGURES["archives"]
     assert FIGURES["archives"]["bundles"] == 865 and FIGURES["archives"]["gt_specimens"] == 133
@@ -80,7 +80,7 @@ def test_the_banner_on_the_home_page():
                            "Lexicon entries", "Tamil Audio Lexicon entries"]
     numbers = [int(t[1]) for t in tiles]
     assert numbers[:7] == [23, 1330, 1359, numbers[3], 18, 92, numbers[6]] and numbers[3] >= 217 and numbers[6] >= 253
-    assert numbers[8:18] == [156, 57, 44, 22, 15, 7, 6, 42, 49, 15]   # the gallery 15 since 1.2.159
+    assert numbers[8:18] == [156, 57, 44, 22, 15, 7, 6, 46, 49, 15]   # the gallery 15 since 1.2.159, the lectures 46 since 1.2.166
     assert numbers[18:] == [865, 100000, 41, 15, 133, 17, 108655, 275262, 6758, 59170]
     hrefs = [t[0] for t in tiles]
     assert hrefs[:8] == ["/about", "/thirukkural", "/thirukkural", "/resources", "/syllabus", "/posters",
@@ -89,7 +89,7 @@ def test_the_banner_on_the_home_page():
                            "/resources?cat=video_pmevidya", "/resources?cat=app", "/resources?cat=music", "/orientation",
                            "/programme#reels", "/gallery"]
     assert all(h.startswith("https://www.digitalarchives.cict.in/") for h in hrefs[18:]) and len(set(hrefs[18:])) >= 4
-    assert "in 9 categories" in band and "in 21 languages" in band and "in 28 languages" in band
+    assert "in 9 categories" in band and "in 23 languages" in band and "in 28 languages" in band   # the lectures in 23 since 1.2.166
     assert '<h3 class="num-h3" id="numbers-res-h">Digital repository</h3>' in band
     assert band.index('id="numbers-res-h"') < band.index('id="numbers-da-h"')
     # the sub-lines

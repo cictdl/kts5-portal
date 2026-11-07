@@ -32,10 +32,10 @@
       {% elif p.kind == 'social' %}
       {# a post of an official account on social media (1.2.141): one card per announcement, a button for each network it went
          out on; the headline is the portal's, the quote the post's own words; links only, nothing of theirs on the page #}
-      <p class="small muted" style="margin:0 0 8px"><span class="pill{% if p.gov %} saffron{% endif %}">{{ p.source }}</span> {% for a in p.links|map(attribute='account')|unique %}<span lang="en" dir="ltr">@{{ a }}</span>{% if not loop.last %} · {% endif %}{% endfor %}{% if p.shown.time %} · {{ p.shown.time }}{% endif %}</p>
+      <p class="small muted" style="margin:0 0 8px"><span class="pill{% if p.gov %} saffron{% endif %}">{{ p.source }}</span> {% for a in p.links|map(attribute='account')|select|unique %}<span lang="en" dir="ltr">@{{ a }}</span>{% if not loop.last %} · {% endif %}{% endfor %}{% if p.shown.time %} · {{ p.shown.time }}{% endif %}</p>
       <h3 style="margin:0;line-height:1.4" lang="en" dir="ltr"><a href="{{ p.links[0].url }}" target="_blank" rel="noopener">{{ p.title }}</a></h3>
       {% if p.quote %}<p class="reel-quote" style="margin:6px 0 0" lang="{{ p.quote_lang|langtag }}" dir="auto">“{{ p.quote }}”</p>{% endif %}
-      <p class="reel-links" style="margin:12px 0 0">{% for l in p.links %}<a class="btn sm secondary" lang="en" dir="ltr" title="@{{ l.account }}" href="{{ l.url }}" target="_blank" rel="noopener">{{ l.site }}{% if l.kind in ('video', 'reel') %} ▶{% endif %} <span aria-hidden="true">↗</span></a>{% endfor %}</p>
+      <p class="reel-links" style="margin:12px 0 0">{% for l in p.links %}<a class="btn sm secondary" lang="en" dir="ltr" {% if l.account %}title="@{{ l.account }}" {% endif %}href="{{ l.url }}" target="_blank" rel="noopener">{{ l.site }}{% if l.kind in ('video', 'reel') %} ▶{% endif %} <span aria-hidden="true">↗</span></a>{% endfor %}</p>
       {% else %}
       {% if p.kind == 'press' %}<p class="small muted" style="margin:0 0 8px"><span class="pill saffron">{{ t('news.press') }}</span> <bdi>{{ p.shown.office }}</bdi> · <bdi lang="{{ p.shown.lang|langtag }}">{{ p.shown.ministry }}</bdi> · {{ p.shown.time }}</p>
       {% else %}<p class="small muted" style="margin:0 0 8px"><span class="pill">{{ p.source }}</span> {% if p.shown.byline %}<bdi>{{ p.shown.byline }}</bdi> · {% endif %}{{ p.shown.time }}</p>{% endif %}
