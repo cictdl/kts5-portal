@@ -796,8 +796,9 @@ DEFAULT_SETTINGS = {
     # 2026: "hide: D.O. letter of the Ministry of Education, 31 October 2026"): hidden; the notice stays under Notices; '1' shows it
     "home.circular": "0",
     # the figures CICT asked to hide on 7 November 2026 ("Hide the above said two graphs"): the card "Institutions registered"
-    # (with today and the last 7 days) of At a glance on /institutions, and the ring "Participating Institutions under a Nodal
-    # Officer" on /nodal-institutions (1.2.164); '1' shows each again
+    # (with today and the last 7 days) of At a glance on /institutions, and on the home page too (1.2.165: "at home page hide 258
+    # Institutions registered"), and the ring "Participating Institutions under a Nodal Officer" on /nodal-institutions (1.2.164);
+    # '1' shows each again
     "institutions.registered": "0",
     "nodal.covered": "0",
     # the public dashboard KTS 5.0 by State/UT (1.2.122, kts/dashboard.py)

@@ -1900,7 +1900,7 @@ SETTING_GROUPS = [
               ("schedule.central_test", "Show CICT's central online test (its days: exam.date to exam.date_to) in the schedule and among the upcoming events of the home page", "bool"),
               ("circular.new_days", "The newest circular of the Ministry (a circular notice with the letter attached) carries a blinking ‘NEW’ on the home page for so many days after it is put in (0: never)", "text"),
               ("home.circular", "Show the newest circular of the Ministry, with its PDF, first in the circular band of the home page (the notice stays under Notices either way)", "bool"),
-              ("institutions.registered", "Show the card “Institutions registered” (today, the last 7 days) in At a glance on the page of the Participating Institutions", "bool"),
+              ("institutions.registered", "Show the card “Institutions registered” in At a glance on the home page and on the page of the Participating Institutions (there with today and the last 7 days)", "bool"),
               ("nodal.covered", "Show the ring “Participating Institutions under a Nodal Officer” on the page of the Nodal Institutions", "bool"),
               ("events.public", "Show the seminars and workshops of CICT on the public pages: the menu, the cards on the home page and in the Digital repository, the figure in “KTS 5.0 in numbers”, the search and the sitemap (the page /seminars-workshops works either way)", "bool"),
               ("menu.assessment", "Show “Institution-level assessment” in the menu and in the quick links of the footer (the page /examination works either way, with the links to it from the pages of the institutions, the guide and the study material)", "bool"),
