@@ -21,12 +21,14 @@ def test_the_note_and_its_old_wording():
 
 def test_no_language_says_ten_lectures_any_more():
     from kts.i18n import CATALOG
+    # about.p2 names the article of not more than 10 pages (1.2.164): that 10 is not the number of the lectures
     for key in KEYS:
-        assert not re.search(r"\bten\b|\bten-|(?<!\d)10(?!\d)", CATALOG["en"][key], re.I), key
+        text = CATALOG["en"][key].replace("not more than 10 pages", "")
+        assert not re.search(r"\bten\b|\bten-|(?<!\d)10(?!\d)", text, re.I), key
     assert "2 lectures" in CATALOG["en"]["home.orient_sub"] and "two-lecture" in CATALOG["en"]["about.p2"]
     for code, catalogue in CATALOG.items():
         for key in KEYS:
-            assert not re.search(r"(?<!\d)10(?!\d)", catalogue[key]), (code, key)
+            assert len(re.findall(r"(?<!\d)10(?!\d)", catalogue[key])) <= (1 if key == "about.p2" else 0), (code, key)
         assert re.search(r"(?<!\d)2(?!\d)", catalogue["home.orient_sub"]), code
 
 

@@ -15,8 +15,10 @@
   <section class="card prog prog-in no-status" id="officers" aria-labelledby="no-h">
     <h2 id="no-h" style="margin-top:0">{{ t('no.title') }}</h2>
     <p class="dim small" style="max-width:88ch">{{ t('no.sub')|replace('{date}', now_date)|replace('{time}', now_time) }}</p>
-    <div class="prog-rings no-rings">
-      {% for key, n, total, cls in (('k_added', status.added, status.rows, 'ring-verified'), ('k_pending', status.pending, status.rows, 'ring-testing'), ('k_covered', status.covered, status.total, 'ring-participating')) %}
+    {# the third ring, the Participating Institutions under a Nodal Officer, hidden since 1.2.164 (CICT, 7 November 2026; nodal.covered) #}
+    {% set show_covered = get_setting('nodal.covered') == '1' %}
+    <div class="prog-rings no-rings{{ '' if show_covered else ' n2' }}">
+      {% for key, n, total, cls in (('k_added', status.added, status.rows, 'ring-verified'), ('k_pending', status.pending, status.rows, 'ring-testing'), ('k_covered', status.covered, status.total, 'ring-participating')) if show_covered or key != 'k_covered' %}
       <div class="card prog-ring {{ cls }}">
         <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="52"/><circle class="arc" cx="60" cy="60" r="52" style="--share:{{ '%.4f'|format(n / total) if total else 0 }}"/>
           <text x="60" y="66" text-anchor="middle" class="pct">{{ (100 * n / total)|round|int if total else 0 }}%</text></svg>

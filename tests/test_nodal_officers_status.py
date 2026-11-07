@@ -19,8 +19,10 @@ DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 
 
 def _portal():
-    from kts.db import execute
+    from kts.db import execute, set_setting
     app = make_app(ADMIN_PASSWORD=None)
+    with app.app_context():
+        set_setting("nodal.covered", "1")   # the third ring, hidden since 1.2.164 (tests/test_1107.py)
     _nodal(app, "nodal.kl@cuk.example", ["Kerala"])
     _nodal(app, "nodal.tn@cutn.example", ["Tamil Nadu"])
     with app.app_context():
@@ -35,7 +37,7 @@ def test_the_section_and_the_dots_of_the_table():
     assert '<section class="card prog prog-in no-status" id="officers"' in page
     assert '<h2 id="no-h" style="margin-top:0">The Nodal Officers on the portal</h2>' in page and "As the portal shows them on " in page
     # the rings: 2 of 31 with an officer, 29 to nominate, 71 of 1,000 Participating Institutions under an officer (Kerala 21 + Tamil Nadu 50)
-    rings = page[page.index('class="prog-rings no-rings"'):page.index('class="no-steps-h"')]
+    rings = page[page.index('class="prog-rings no-rings'):page.index('class="no-steps-h"')]
     assert rings.count('class="card prog-ring') == 3
     assert '<div class="num">2</div>' in rings and '<div class="num">29</div>' in rings and '<div class="num">71</div>' in rings
     assert "2 of 31" in rings and "29 of 31" in rings and "71 of 1,000" in rings and 'style="--share:0.0645"' in rings and 'style="--share:0.0710"' in rings

@@ -11,15 +11,18 @@
   {# the Participating Institutions at a glance (1.2.149): the figures of the dashboard, then the list #}
   <section class="pi" aria-labelledby="pi-h">
     <div class="pi-head"><h2 id="pi-h">{{ t('home.stats') }}</h2><span class="small muted"><i class="pi-live" aria-hidden="true"></i>{{ t('dash.updated')|replace('{time}', pi.now) }}</span></div>
-    <div class="pi-kpis">
+    {% set show_reg = get_setting('institutions.registered') == '1' %}{# the card hidden since 1.2.164 (CICT, 7 November 2026) #}
+    <div class="pi-kpis{{ '' if show_reg else ' n3' }}">
       <div class="card pi-kpi pi-ring">
         <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="52"/><circle class="arc" cx="60" cy="60" r="52" style="stroke-dashoffset:{{ pi.offset }}"/>
           <text x="60" y="67" text-anchor="middle" class="pct">{{ pi.pct }}%</text></svg>
         <div><div class="num">{{ '{:,}'.format(pi.selected) }}</div><div class="lbl">{{ t('nav.institutions') }}</div>
           <div class="sub small muted"><bdi>{{ t('dash.of')|replace('{n}', '{:,}'.format(pi.selected))|replace('{total}', '{:,}'.format(pi.to_select)) }}</bdi></div></div>
       </div>
+      {% if show_reg %}
       <div class="card pi-kpi"><div class="num">{{ '{:,}'.format(pi.registered) }}</div><div class="lbl">{{ t('dash.inst_reg') }}</div>
         <div class="sub small muted"><bdi>{{ t('pg.today')|replace('{n}', pi.spark.today|string) }}</bdi> · <bdi>{{ t('pg.week')|replace('{n}', pi.spark.week|string) }}</bdi></div></div>
+      {% endif %}
       <div class="card pi-kpi"><div class="num">{{ pi.rows_with }}</div><div class="lbl">{{ t('home.stat_states') }}</div>
         <div class="sub small muted"><bdi>{{ t('dash.of')|replace('{n}', pi.rows_with|string)|replace('{total}', pi.rows|string) }}</bdi></div></div>
       <div class="card pi-kpi"><div class="num">{{ pi.districts }}</div><div class="lbl">{{ t('pi.districts') }}</div></div>

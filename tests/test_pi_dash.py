@@ -27,6 +27,7 @@ def _portal():
                     (f"KTS5-HEI-{n:05d}", name, itype, state, district, f"name:{name.lower()}|{state.lower()}", status, utcnow(), utcnow()))
         set_setting("hei.public", "1")
         set_setting("join.on", "1")
+        set_setting("institutions.registered", "1")   # the card, hidden since 1.2.164 (tests/test_1107.py)
     return app
 
 
