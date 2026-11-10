@@ -8,15 +8,18 @@
   {# while the students' registration is hidden (reg.public, 1.2.147): no count of student delegates; the squares count the
      institutions registered #}
   {% set sp = students_public() %}
+  {# the number of institutions registered hidden too (institutions.registered, 1.2.168): the squares count the Participating
+     Institutions selected #}
+  {% set show_reg = get_setting('institutions.registered') == '1' %}
   <span class="eyebrow">{{ t('nav.programme') }}</span>
   <h1>{{ t('dash.title') }}</h1>
-  <p class="dim" style="max-width:80ch">{{ t('dash.intro') }}</p>
+  <p class="dim" style="max-width:80ch">{{ t('dash.intro' if sp or show_reg else 'dash.intro_sel') }}</p>
   <p><a class="btn sm secondary" href="{{ url_for('public.progress') }}">📈 {{ t('pg.link') }}</a></p>
   <p class="small muted dash-time">{{ t('dash.updated')|replace('{time}', now) }}</p>
 
   <div class="grid grid-3 dash-kpis">
     <div class="card stat"><div class="num">{{ '{:,}'.format(total.to_select) }}</div><div class="lbl">{{ t('dash.to_select') }}</div></div>
-    <div class="card stat indigo"><div class="num">{{ '{:,}'.format(total.inst_reg) }}</div><div class="lbl">{{ t('dash.inst_reg') }}</div></div>
+    {% if show_reg %}<div class="card stat indigo"><div class="num">{{ '{:,}'.format(total.inst_reg) }}</div><div class="lbl">{{ t('dash.inst_reg') }}</div></div>{% endif %}
     <div class="card stat accent"><div class="num">{{ '{:,}'.format(total.inst_sel) }}</div><div class="lbl">{{ t('dash.inst_sel') }}</div></div>
     <div class="card stat"><div class="num">{{ '{:,}'.format(total.assessed) }}</div><div class="lbl">{{ t('dash.assessed') }}</div></div>
     {% if sp %}<div class="card stat kumkum"><div class="num">{{ '{:,}'.format(total.registered) }}</div><div class="lbl">{{ t('home.stat_apps') }}</div><div class="sub small muted"><bdi>{{ of(total.registered, total.to_select) }}</bdi></div></div>
@@ -24,18 +27,18 @@
   </div>
 
   <section class="card dash-map" aria-labelledby="dash-grid-h">
-    <h2 id="dash-grid-h">{% if sp %}{{ t('dash.grid_title') }}{% else %}{{ t('dash.inst_reg') }} · {{ t('dash.to_select') }}{% endif %}</h2>
+    <h2 id="dash-grid-h">{% if sp %}{{ t('dash.grid_title') }}{% else %}{{ t('dash.inst_reg' if show_reg else 'dash.inst_sel') }} · {{ t('dash.to_select') }}{% endif %}</h2>
     <p class="small muted">{{ t('dash.grid_note') }}</p>
     <ul class="dash-grid">
       {% for r in states if r.grid %}
       <li style="grid-row:{{ r.grid[0] + 1 }};grid-column:{{ r.grid[1] + 1 }}">
-        {% set n = r.registered if sp else r.inst_reg %}
-        <a class="dash-tile {{ r.shade if sp else r.inst_shade }}" href="#d-{{ r.grid[2] }}">
+        {% set n = r.registered if sp else (r.inst_reg if show_reg else r.inst_sel) %}
+        <a class="dash-tile {{ r.shade if sp else (r.inst_shade if show_reg else r.sel_shade) }}" href="#d-{{ r.grid[2] }}">
           <b dir="ltr">{{ r.grid[2] }}</b>
           <span class="dash-n" dir="ltr">{{ n }}{% if r.to_select %}/{{ r.to_select }}{% endif %}</span>
           <span class="dash-tip" role="tooltip"><b>{{ nodal_label(r.state) }}</b>
-            <span>{{ t('home.stat_apps') if sp else t('dash.inst_reg') }}: <bdi>{% if r.to_select %}{{ of(n, r.to_select) }}{% else %}{{ n }} · {{ t('dash.no_number') }}{% endif %}</bdi></span>
-            <span>{{ t('dash.inst_sel') }}: <bdi>{{ r.inst_sel }}</bdi></span>
+            <span>{{ t('home.stat_apps') if sp else t('dash.inst_reg' if show_reg else 'dash.inst_sel') }}: <bdi>{% if r.to_select %}{{ of(n, r.to_select) }}{% else %}{{ n }} · {{ t('dash.no_number') }}{% endif %}</bdi></span>
+            {% if sp or show_reg %}<span>{{ t('dash.inst_sel') }}: <bdi>{{ r.inst_sel }}</bdi></span>{% endif %}
             {% if sp %}<span>{{ t('dash.verified') }}: <bdi>{{ r.verified }}</bdi></span>{% endif %}</span>
         </a>
       </li>
@@ -66,7 +69,7 @@
     <h2 id="dash-table-h">{{ t('dash.table_title') }}</h2>
     <div class="table-wrap"><table class="table dash-table">
       <thead><tr><th scope="col">{{ t('reg.state') }}</th><th scope="col" class="num">{{ t('dash.to_select') }}</th>
-        <th scope="col" class="num">{{ t('dash.inst_reg') }}</th><th scope="col" class="num">{{ t('dash.inst_sel') }}</th>
+        {% if show_reg %}<th scope="col" class="num">{{ t('dash.inst_reg') }}</th>{% endif %}<th scope="col" class="num">{{ t('dash.inst_sel') }}</th>
         <th scope="col" class="num">{{ t('dash.assessed') }}</th>{% if sp %}<th scope="col" class="num">{{ t('home.stat_apps') }}</th>
         <th scope="col" class="num">{{ t('dash.verified') }}</th>{% endif %}</tr></thead>
       <tbody>
@@ -74,14 +77,14 @@
         <tr{% if r.grid %} id="st-{{ r.grid[2] }}"{% endif %}>
           <th scope="row">{% if r.grid %}<a href="#d-{{ r.grid[2] }}">{{ nodal_label(r.state) }}</a>{% else %}{{ nodal_label(r.state) }}{% endif %}</th>
           <td class="num">{{ r.to_select if r.to_select else '–' }}</td>
-          <td class="num">{{ r.inst_reg }}</td><td class="num">{{ r.inst_sel }}</td><td class="num">{{ r.assessed }}</td>
+          {% if show_reg %}<td class="num">{{ r.inst_reg }}</td>{% endif %}<td class="num">{{ r.inst_sel }}</td><td class="num">{{ r.assessed }}</td>
           {% if sp %}<td class="num">{{ r.registered }}{% if r.share is not none %}<span class="dash-meter" aria-hidden="true"><span style="width:{{ r.share }}%"></span></span>{% endif %}</td>
           <td class="num">{{ r.verified }}</td>{% endif %}
         </tr>
         {% endfor %}
       </tbody>
       <tfoot><tr><th scope="row">{{ t('dash.total') }}</th><td class="num">{{ '{:,}'.format(total.to_select) }}</td>
-        <td class="num">{{ '{:,}'.format(total.inst_reg) }}</td><td class="num">{{ '{:,}'.format(total.inst_sel) }}</td>
+        {% if show_reg %}<td class="num">{{ '{:,}'.format(total.inst_reg) }}</td>{% endif %}<td class="num">{{ '{:,}'.format(total.inst_sel) }}</td>
         <td class="num">{{ '{:,}'.format(total.assessed) }}</td>{% if sp %}<td class="num">{{ '{:,}'.format(total.registered) }}</td>
         <td class="num">{{ '{:,}'.format(total.verified) }}</td>{% endif %}</tr></tfoot>
     </table></div>

@@ -90,7 +90,8 @@ def test_the_pages_show_the_days_of_the_letter():
     client = app.test_client()
     guide = client.get("/how-to-take-part?lang=en").get_data(as_text=True)
     assert "15 Nov 2026" in guide and "17 Nov 2026" in guide and "19 Nov 2026" in guide and "20 Nov 2026" in guide
-    assert "10 Nov 2026" not in guide and "11 Nov 2026" not in guide
+    main = guide[guide.index("<main"):guide.index("</main>")]   # not the foot, which names the day of the release
+    assert "10 Nov 2026" not in main and "11 Nov 2026" not in main
     nodal = client.get("/nodal-institutions?lang=en").get_data(as_text=True)
     assert ">50<" in nodal and ">300<" in nodal and ">1,000</th>" in nodal and ">350<" not in nodal and ">150<" not in nodal
     schedule = client.get("/schedule?lang=en").get_data(as_text=True)

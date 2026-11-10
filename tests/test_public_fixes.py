@@ -995,16 +995,16 @@ def test_version_of_style_sheet_and_script():
     for path in TEMPLATES:
         for name, version in re.findall(r"filename='((?:css|js)/portal\.(?:css|js))'\) \}\}\?v=(\d+)", path.read_text(encoding="utf-8")):
             linked.setdefault(path.relative_to(ROOT / "templates").as_posix(), []).append((name, version))
-    expected = {name: [("css/portal.css", "51"), ("js/portal.js", "24")]
+    expected = {name: [("css/portal.css", "52"), ("js/portal.js", "24")]
                 for name in ("base.html", "candidate/exam_paper.html", "console/base.html")}
     # the certificate has a style sheet of its own and the script for its print button
     expected["public/certificate.html"] = [("js/portal.js", "24")]
     expected["public/letter.html"] = [("js/portal.js", "24")]
     # the pages of the classroom quiz have a frame of their own, with the style sheet and the script of the portal
-    expected["quiz/layout.html"] = [("css/portal.css", "51"), ("js/portal.js", "24")]
+    expected["quiz/layout.html"] = [("css/portal.css", "52"), ("js/portal.js", "24")]
     assert linked == expected
     for path in TEMPLATES:
-        assert not re.search(r"portal\.css'\) \}\}(?!\?v=51\")", path.read_text(encoding="utf-8")), path
+        assert not re.search(r"portal\.css'\) \}\}(?!\?v=52\")", path.read_text(encoding="utf-8")), path
         assert not re.search(r"portal\.js'\) \}\}(?!\?v=24\")", path.read_text(encoding="utf-8")), path
 
 
@@ -1068,7 +1068,8 @@ def test_alt_texts_use_keys_that_exist():
     # 1.2.158: the nomination by the Institutional Coordinator (12) and the step of the presentation video (2)
     # 1.2.161: the new order of the menu - the Students' Engagement Programme and its Multilingual Study Materials (2)
     # 1.2.164: the study books in Konkani (Devanagari) and Manipuri (Meitei Mayek) to come (1)
-    assert len(CATALOG["en"]) == 1500
+    # 1.2.168: four texts without the institutions registered (4)
+    assert len(CATALOG["en"]) == 1504
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1100,7 +1101,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.167" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.168" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

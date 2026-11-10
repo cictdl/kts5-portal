@@ -4,21 +4,28 @@
 {# The board of the State/UT pages (1.2.142): every row of Annexure-I, the emptiest first, with the institutions registered
    against the number to be selected; each row opens its page (kts/drive.py). Counts only. #}
 {% from "public/_hub.html" import chip as chip_of %}
+{# while the number of institutions registered is hidden (institutions.registered, 1.2.168): each row by name, with the number to be
+   selected alone #}
+{% set show_reg = get_setting('institutions.registered') == '1' %}
 <div class="wrap section join">
   <span class="eyebrow">{{ t('site.name') }}</span>
   <h1>{{ t('join.board_title') }}</h1>
-  <p class="dim" style="max-width:80ch">{{ t('join.board_note') }}</p>
-  <p class="small muted join-meta">{{ chip_of(chip) }} <span>{{ t('dash.updated')|replace('{time}', as_of) }}</span></p>
+  <p class="dim" style="max-width:80ch">{{ t('join.board_note' if show_reg else 'join.board_note_plain') }}</p>
+  <p class="small muted join-meta">{{ chip_of(chip) }}{% if show_reg %} <span>{{ t('dash.updated')|replace('{time}', as_of) }}</span>{% endif %}</p>
   <ul class="jb">
     {% for r in rows %}
     <li><a class="jb-row" href="{{ url_for('public.join_state', code=r.code, lang=lang if lang != 'en' else None) }}">
       <span class="jb-code" dir="ltr">{{ r.code|upper }}</span>
       <span class="jb-name">{{ r.label }}</span>
+      {% if show_reg %}
       <span class="jb-n"><bdi>{{ t('dash.of')|replace('{n}', '{:,}'.format(r.reg))|replace('{total}', '{:,}'.format(r.n)) }}</bdi></span>
       <span class="jb-bar" aria-hidden="true"><i style="width:{{ [100, (100 * r.reg / r.n)|round(1) if r.n else 0]|min }}%"></i></span>
+      {% else %}
+      <span class="jb-n"><bdi dir="ltr">{{ '{:,}'.format(r.n) }}</bdi></span>
+      {% endif %}
     </a></li>
     {% endfor %}
-    <li class="jb-total"><span class="jb-name">{{ t('dash.total') }}</span><span class="jb-n"><bdi>{{ t('dash.of')|replace('{n}', '{:,}'.format(total.reg))|replace('{total}', '{:,}'.format(total.n)) }}</bdi></span></li>
+    <li class="jb-total"><span class="jb-name">{{ t('dash.total') }}</span><span class="jb-n">{% if show_reg %}<bdi>{{ t('dash.of')|replace('{n}', '{:,}'.format(total.reg))|replace('{total}', '{:,}'.format(total.n)) }}</bdi>{% else %}<bdi dir="ltr">{{ '{:,}'.format(total.n) }}</bdi>{% endif %}</span></li>
   </ul>
 </div>
 {% endblock %}

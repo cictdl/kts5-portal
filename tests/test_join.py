@@ -28,6 +28,8 @@ def _portal():
     from kts import drive
     from kts.db import execute, set_setting, utcnow
     app = make_app(ADMIN_PASSWORD=None)
+    with app.app_context():
+        set_setting("institutions.registered", "1")   # the institutions registered shown (hidden by default since 1.2.168, tests/test_1110.py)
     rows = [("Presidency College", "Tamil Nadu", "accepted"), ("Loyola College", "Tamil Nadu", "pending"),
             ("Declined College", "Tamil Nadu", "declined"), ("JNRM Port Blair", "Andaman and Nicobar Islands", "accepted"),
             ("Identified Only College", "Tamil Nadu", "identified"), ("Secret Test College", "Tamil Nadu", "accepted")]

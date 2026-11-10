@@ -51,7 +51,7 @@ def test_hidden_on_the_public_pages():
     # the dashboard counts the institutions; the progress page has no ring, stage or line of the student delegates
     dash = _get(client, "/dashboard?lang=en")
     assert "Student delegates registered" not in dash and "Verified by the Nodal Officers" not in dash
-    assert '<h2 id="dash-grid-h">Institutions registered · To be selected</h2>' in dash
+    assert '<h2 id="dash-grid-h">Participating Institutions selected · To be selected</h2>' in dash   # since 1.2.168
     prog = _get(client, "/progress?lang=en")
     assert "Student delegates registered" not in prog and 'data-k="unregistered"' not in prog and 'data-line="app"' not in prog
     data = json.loads(_get(client, "/progress.json?lang=en"))

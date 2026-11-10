@@ -104,7 +104,7 @@ def test_the_two_figures_are_hidden_and_come_back():
     app = _app(**{"hei.public": "1", "nodal.officers_public": "1"})
     client = app.test_client()
     page = _get(client, "/institutions?lang=en")
-    kpis = page[page.index('<div class="pi-kpis'):page.index('<div class="pi-two">')]
+    kpis = page[page.index('<div class="pi-kpis'):page.index('<div class="pi-two')]
     assert 'class="pi-kpis n3"' in kpis and 'class="lbl">Institutions registered</div>' not in kpis
     assert kpis.count('class="card pi-kpi') == 3
     rings_page = _get(client, "/nodal-institutions?lang=en")
@@ -114,7 +114,7 @@ def test_the_two_figures_are_hidden_and_come_back():
     # the Console's switches bring them back
     on = _app(**{"hei.public": "1", "nodal.officers_public": "1", "institutions.registered": "1", "nodal.covered": "1"}).test_client()
     page = _get(on, "/institutions?lang=en")
-    kpis = page[page.index('<div class="pi-kpis'):page.index('<div class="pi-two">')]
+    kpis = page[page.index('<div class="pi-kpis'):page.index('<div class="pi-two')]
     assert '<div class="pi-kpis">' in kpis and 'class="lbl">Institutions registered</div>' in kpis
     rings_page = _get(on, "/nodal-institutions?lang=en")
     rings = rings_page[rings_page.index('class="prog-rings no-rings'):rings_page.index('class="no-steps-h"')]

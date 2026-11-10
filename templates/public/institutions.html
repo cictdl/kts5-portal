@@ -27,7 +27,7 @@
         <div class="sub small muted"><bdi>{{ t('dash.of')|replace('{n}', pi.rows_with|string)|replace('{total}', pi.rows|string) }}</bdi></div></div>
       <div class="card pi-kpi"><div class="num">{{ pi.districts }}</div><div class="lbl">{{ t('pi.districts') }}</div></div>
     </div>
-    <div class="pi-two">
+    <div class="pi-two{{ '' if show_reg else ' one' }}">
       <section class="card pi-types" aria-labelledby="pi-types-h">
         <h3 id="pi-types-h">{{ t('reg.college_type') }}</h3>
         {% if pi.types %}
@@ -35,23 +35,25 @@
         <ul class="pi-legend">{% for k in pi.types %}<li><i class="pi-sw c{{ loop.index0 % 8 }}" aria-hidden="true"></i><span>{{ t('opt.ctype.%d' % k.n) if k.n else k.name }}</span><b>{{ k.count }}</b><span class="muted small">{{ k.pct }}%</span></li>{% endfor %}</ul>
         {% else %}<p class="small muted">{{ t('hei.empty') }}</p>{% endif %}
       </section>
+      {% if show_reg %}
       <section class="card pi-trend" aria-labelledby="pi-trend-h">
         <h3 id="pi-trend-h">{{ t('pg.momentum_title') }}</h3>
         <div class="pi-trend-head"><b>{{ t('pg.m_inst') }}</b><span class="small muted"><bdi>{{ t('pg.today')|replace('{n}', pi.spark.today|string) }}</bdi> · <bdi>{{ t('pg.week')|replace('{n}', pi.spark.week|string) }}</bdi></span></div>
         <svg viewBox="0 0 300 64" preserveAspectRatio="none" aria-hidden="true"><polygon class="area" points="{{ pi.spark.area }}"/><polyline class="line" points="{{ pi.spark.points }}"/></svg>
         <div class="pi-axis small muted" dir="ltr"><span>{{ pi.days[0]|date }}</span><span>{{ pi.days[-1]|date }}</span></div>
       </section>
+      {% endif %}
     </div>
     <section class="card pi-states" aria-labelledby="pi-states-h">
-      <h3 id="pi-states-h">{{ t('pi.states_title') }}</h3>
-      <p class="pi-key small"><span><i class="pi-sw sel" aria-hidden="true"></i>{{ t('dash.inst_sel') }}</span><span><i class="pi-sw reg" aria-hidden="true"></i>{{ t('dash.inst_reg') }}</span></p>
+      <h3 id="pi-states-h">{{ t('pi.states_title' if show_reg else 'pi.states_title_sel') }}</h3>
+      <p class="pi-key small"><span><i class="pi-sw sel" aria-hidden="true"></i>{{ t('dash.inst_sel') }}</span>{% if show_reg %}<span><i class="pi-sw reg" aria-hidden="true"></i>{{ t('dash.inst_reg') }}</span>{% endif %}</p>
       <ol class="pi-rows">
         {% for r in pi.states %}
         {% set href = '#' ~ r.anchor if r.anchor else (url_for('public.join_state', code=r.code) if r.code and get_setting('join.on') == '1' else '') %}
         <li>{% if href %}<a class="pi-row" href="{{ href }}">{% else %}<span class="pi-row">{% endif %}
           <span class="pi-name">{{ nodal_label(r.state) }}</span>
-          <span class="pi-bar" aria-hidden="true"><span class="pi-reg" style="width:{{ r.reg_share }}%"></span><span class="pi-sel" style="width:{{ r.share }}%"></span></span>
-          <span class="pi-n"><bdi dir="ltr"><b>{{ r.selected }}</b>/{{ r.to_select }}</bdi>{% if r.registered > r.selected %} <span class="pi-regn small muted"><i class="pi-sw reg" aria-hidden="true"></i><span class="visually-hidden">{{ t('dash.inst_reg') }}: </span><bdi dir="ltr">{{ r.registered }}</bdi></span>{% endif %}</span>
+          <span class="pi-bar" aria-hidden="true">{% if show_reg %}<span class="pi-reg" style="width:{{ r.reg_share }}%"></span>{% endif %}<span class="pi-sel" style="width:{{ r.share }}%"></span></span>
+          <span class="pi-n"><bdi dir="ltr"><b>{{ r.selected }}</b>/{{ r.to_select }}</bdi>{% if show_reg and r.registered > r.selected %} <span class="pi-regn small muted"><i class="pi-sw reg" aria-hidden="true"></i><span class="visually-hidden">{{ t('dash.inst_reg') }}: </span><bdi dir="ltr">{{ r.registered }}</bdi></span>{% endif %}</span>
         {% if href %}</a>{% else %}</span>{% endif %}</li>
         {% endfor %}
       </ol>

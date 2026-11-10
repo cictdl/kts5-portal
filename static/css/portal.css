@@ -1166,6 +1166,7 @@ footer.site .bottom .wrap { display: flex; justify-content: space-between; gap: 
 .banner.reg-open .banner-date { color: #ffd27a; }
 @media (max-width: 599px) { .banner.reg-open .banner-date { margin: 6px 0 0 8px; } }
 /* At a glance with three cards, the Nodal Officers with two rings (1.2.164) */
+.pi .pi-two.one { grid-template-columns: minmax(0, 1fr); }   /* without the line of the registrations (1.2.168) */
 .pi .pi-kpis.n3 { grid-template-columns: 1.35fr 1fr 1fr; }
 .no-status .prog-rings.n2 { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 760px; }
 @media (max-width: 899px) { .pi .pi-kpis.n3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .pi .pi-kpis.n3 .pi-ring { grid-column: 1 / -1; } }

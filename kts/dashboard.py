@@ -94,6 +94,8 @@ def figures():
         row["shade"] = shade(row["registered"], row["to_select"])
         # the institutions registered against the number, for the squares while the students' registration is hidden (1.2.147)
         row["inst_shade"] = shade(row["inst_reg"], row["to_select"])
+        # the Participating Institutions selected against the number, while the institutions registered are hidden too (1.2.168)
+        row["sel_shade"] = shade(row["inst_sel"], row["to_select"])
         row["share"] = min(100, round(100 * row["registered"] / row["to_select"])) if row["to_select"] else None
         states.append(row)
     total = {f: sum(r[f] for r in states) for f in FIELDS}
@@ -251,9 +253,28 @@ def _pipeline():
             "milestones": milestones, "today": today.isoformat(), "as_of": now_ist().strftime("%H:%M")}
 
 
-def pipeline_json(t):
-    """The figures of the page as its script expects them (portal.js): the texts in the language of the visitor, `t` being i18n.t."""
+def pipeline_view(show_registered=True):
+    """
+    The pipeline as the public page shows it. While the number of institutions registered is hidden (institutions.registered,
+    1.2.168) it is without the stage of the registrations, their day-by-day line and the counts that would give the number away;
+    the bar of each remaining stage is then measured against the first of them, the Participating Institutions selected.
+    """
     p = pipeline()
+    if show_registered:
+        return p
+    stages = [dict(s) for s in p["stages"] if s["key"] != "registered"]
+    first = stages[0]["n"] or 1
+    for i, s in enumerate(stages):
+        s["width"] = min(100.0, round(100 * s["n"] / first, 1))
+        if i == 0:
+            s["pct"] = 100
+    counts = {k: v for k, v in p["counts"].items() if k not in ("registered", "pending", "reserve")}
+    return dict(p, stages=stages, counts=counts, series={k: v for k, v in p["series"].items() if k != "inst"})
+
+
+def pipeline_json(t, show_registered=True):
+    """The figures of the page as its script expects them (portal.js): the texts in the language of the visitor, `t` being i18n.t."""
+    p = pipeline_view(show_registered)
     c = p["counts"]
     flat = {k: v for k, v in c.items()}
     flat.update({f"st_{s['key']}": s["n"] for s in p["stages"]})

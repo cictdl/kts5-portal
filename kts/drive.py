@@ -108,8 +108,10 @@ def share(row, lang, settings, ph):
         message = title(row, lang, settings, ph) + " " + link
         subject = title(row, lang, settings, ph)
     else:
-        message = (text("join.share_msg", lang).replace("{n}", f"{row['n']:,}").replace("{state}", label)
-                   .replace("{reg}", f"{row['reg']:,}").replace("{date}", when).replace("{link}", link))
+        # without the number registered while it is hidden on the public pages (institutions.registered, 1.2.168)
+        shown = settings.get("institutions.registered") == "1"
+        message = (text("join.share_msg" if shown else "join.share_msg_plain", lang).replace("{n}", f"{row['n']:,}")
+                   .replace("{state}", label).replace("{reg}", f"{row['reg']:,}").replace("{date}", when).replace("{link}", link))
         subject = text("join.share_subject", lang).replace("{state}", label).replace("{date}", when)
     return {"text": message, "subject": subject, "link": link, "wa": "https://wa.me/?text=" + quote(message, safe=""),
             "mail": "mailto:?subject=" + quote(subject, safe="") + "&body=" + quote(message, safe="")}

@@ -24,6 +24,8 @@ def _at(app, day, monkeypatch):
 def _portal():
     from kts.db import execute, set_setting, utcnow
     app = make_app(ADMIN_PASSWORD=None)
+    with app.app_context():
+        set_setting("institutions.registered", "1")   # the institutions registered shown (hidden by default since 1.2.168, tests/test_1110.py)
     rows = [("Government Arts College", "Coimbatore", "Tamil Nadu", "accepted", "C-12345"),
             ("PSG College of Arts and Science", "Coimbatore", "Tamil Nadu", "accepted", ""),
             ("Maharaja's College", "Ernakulam", "Kerala", "accepted", ""),

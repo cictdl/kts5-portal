@@ -457,6 +457,8 @@ def join_board():
     settings, lang = all_settings(), get_lang()
     rows = [dict(r, label=HEI.label_of(r["state"], lang)) for r in DRIVE.table().values()]
     rows.sort(key=lambda r: ((r["reg"] / r["n"]) if r["n"] else 9, -r["n"], r["label"]))
+    if settings.get("institutions.registered") != "1":   # the registrations hidden (1.2.168): by name, not the emptiest first
+        rows.sort(key=lambda r: r["label"])
     total = {"reg": sum(r["reg"] for r in rows), "n": sum(r["n"] for r in rows)}
     today = now_ist().date()
     chip = FINDER.days_chip(FINDER._day(settings, "hei.end"), today, lang) if DRIVE.phase(settings, today) == "recruit" else None
@@ -1637,7 +1639,9 @@ def progress():
     """The progress of the institutions (1.2.138): an infographic of counts, never a name (kts/dashboard.py pipeline)."""
     if get_setting("dashboard.public") != "1":
         abort(404)
-    return render_template("public/progress.html", p=D.pipeline(), now=now_ist().strftime("%H:%M"))
+    # without the institutions registered while they are hidden (1.2.168)
+    return render_template("public/progress.html", p=D.pipeline_view(get_setting("institutions.registered") == "1"),
+                           now=now_ist().strftime("%H:%M"))
 
 
 @bp.route("/progress.json")
@@ -1645,7 +1649,7 @@ def progress_json():
     """The figures of /progress for its script, which asks every minute; the texts in the language of the visitor."""
     if get_setting("dashboard.public") != "1":
         abort(404)
-    data = D.pipeline_json(t)
+    data = D.pipeline_json(t, get_setting("institutions.registered") == "1")
     if get_setting("reg.public") != "1":   # the students' registration hidden (1.2.147)
         hidden = ("delegates", "verified", "app_registered", "unregistered", "not_registered", "app_today", "app_week")
         data["flat"] = {k: v for k, v in data["flat"].items() if not any(h in k for h in hidden)}

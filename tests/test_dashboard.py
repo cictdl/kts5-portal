@@ -25,6 +25,7 @@ def _portal():
     app = make_app(ADMIN_PASSWORD=None)
     with app.app_context():   # the students' registration shown (hidden by default since 1.2.147)
         from kts.db import set_setting as _set
+        _set("institutions.registered", "1")   # the institutions registered shown (hidden by default since 1.2.168, tests/test_1110.py)
         _set("reg.public", "1")
     tn = _inst(app, "Presidency College", state="Tamil Nadu")
     _student(app, tn, "Student One", tested=True)

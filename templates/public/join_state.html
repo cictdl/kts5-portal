@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ heading }}{% endblock %}
-{% block description %}{% if ph == 'recruit' %}{{ t('dash.inst_reg') }}: {{ t('dash.of')|replace('{n}', '{:,}'.format(row.reg))|replace('{total}', '{:,}'.format(row.n)) }}{% if chip %} · {{ chip[1] }}{% endif %}{% else %}{{ heading }}{% endif %}{% endblock %}
+{% block description %}{% if ph == 'recruit' and get_setting('institutions.registered') == '1' %}{{ t('dash.inst_reg') }}: {{ t('dash.of')|replace('{n}', '{:,}'.format(row.reg))|replace('{total}', '{:,}'.format(row.n)) }}{% if chip %} · {{ chip[1] }}{% endif %}{% else %}{{ heading }}{% endif %}{% endblock %}
 {% block content %}
 {# The page of a row of Annexure-I for the registration of institutions (1.2.142, kts/drive.py): the live number against the
    number to be selected, the button to register, what to have ready, the Nodal Institution, the message to forward. Counts only. #}
@@ -32,6 +32,9 @@
   {% if ph == 'recruit' %}
   <div class="join-grid">
     <div>
+      {# the live number only while it is shown on the public pages (institutions.registered, 1.2.168) #}
+      {% set show_reg = get_setting('institutions.registered') == '1' %}
+      {% if show_reg %}
       {% set count = t('dash.inst_reg') ~ ': ' ~ t('dash.of')|replace('{n}', '{:,}'.format(row.reg))|replace('{total}', '{:,}'.format(row.n)) %}
       <p class="join-count"><b class="join-big"><bdi dir="ltr">{{ '{:,}'.format(row.reg) }}</bdi></b> <span>{{ count }}</span></p>
       {% if row.n %}
@@ -41,9 +44,10 @@
       <div class="jm-bar" role="img" aria-label="{{ count }}"><i style="width:{{ [100, (100 * row.reg / row.n)|round(1)]|min }}%"></i></div>
       {% endif %}
       {% endif %}
-      <p class="small muted join-meta">{{ chip_of(chip) }}{% if row.week %} <span>{{ t('pg.week')|replace('{n}', row.week|string) }}</span> ·{% endif %} <span>{{ t('dash.updated')|replace('{time}', as_of) }}</span></p>
-      {% if row.reg == 0 %}<p class="join-first">{{ t('join.first')|replace('{state}', label) }}</p>
-      {% elif row.reg > row.n %}<p class="join-over">{{ t('join.over')|replace('{n}', '{:,}'.format(row.n)) }}</p>{% endif %}
+      {% endif %}
+      <p class="small muted join-meta">{{ chip_of(chip) }}{% if show_reg and row.week %} <span>{{ t('pg.week')|replace('{n}', row.week|string) }}</span> ·{% endif %}{% if show_reg %} <span>{{ t('dash.updated')|replace('{time}', as_of) }}</span>{% endif %}</p>
+      {% if show_reg and row.reg == 0 %}<p class="join-first">{{ t('join.first')|replace('{state}', label) }}</p>
+      {% elif show_reg and row.reg > row.n %}<p class="join-over">{{ t('join.over')|replace('{n}', '{:,}'.format(row.n)) }}</p>{% endif %}
       <p><a class="btn saffron join-cta" href="{{ reg_url }}">{{ t('hei.cta') }}</a></p>
       <section class="card join-ready"><h2>{{ t('join.ready_t') }}</h2><p class="small" style="margin:0">{{ t('join.ready') }}</p></section>
       <section class="card join-how">

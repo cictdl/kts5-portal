@@ -798,7 +798,9 @@ DEFAULT_SETTINGS = {
     # the figures CICT asked to hide on 7 November 2026 ("Hide the above said two graphs"): the card "Institutions registered"
     # (with today and the last 7 days) of At a glance on /institutions, and on the home page too (1.2.165: "at home page hide 258
     # Institutions registered"), and the ring "Participating Institutions under a Nodal Officer" on /nodal-institutions (1.2.164);
-    # '1' shows each again
+    # '1' shows each again. Since 1.2.168 (10 November 2026: "hide institutions registered", "Everywhere public") the number of
+    # institutions registered is on no public page while institutions.registered is '0': /progress and its JSON, /institutions,
+    # /dashboard, /join, /my-college; the Console keeps every figure
     "institutions.registered": "0",
     "nodal.covered": "0",
     # the public dashboard KTS 5.0 by State/UT (1.2.122, kts/dashboard.py)

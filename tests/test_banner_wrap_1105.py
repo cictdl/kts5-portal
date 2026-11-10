@@ -32,4 +32,4 @@ def test_the_button_of_the_band_wraps_on_a_phone():
 
 def test_the_pages_ask_for_the_new_stylesheet():
     page = make_app(ADMIN_PASSWORD=None).test_client().get("/in-the-news?lang=ta").get_data(as_text=True)
-    assert '<link rel="stylesheet" href="/static/css/portal.css?v=51">' in page   # 50 since 1.2.161, 51 since 1.2.164
+    assert '<link rel="stylesheet" href="/static/css/portal.css?v=52">' in page   # 50 since 1.2.161, 51 since 1.2.164, 52 since 1.2.168

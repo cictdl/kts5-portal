@@ -1498,5 +1498,9 @@
   "reg.nom_english_note": "Fill in this form in English only: write the student's name, address and institution in English letters (A-Z), as in the college records.",
   "nav.sep": "Students' Engagement Programme",
   "nav.study_ml": "Multilingual Study Materials",
-  "syl.soon": "Konkani (Devanagari script) and Manipuri (Meitei Mayek script) content will be added soon."
+  "syl.soon": "Konkani (Devanagari script) and Manipuri (Meitei Mayek script) content will be added soon.",
+  "pi.states_title_sel": "Each row of Annexure-I: the Participating Institutions selected, against the number to be selected",
+  "join.board_note_plain": "Each row of Annexure-I, with the number of institutions to be selected. Open a State/UT for its page, its link and its poster.",
+  "join.share_msg_plain": "Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom, the Students' Engagement Programme of the Ministry of Education: {n} colleges and universities of {state} are to be selected. Register yours by {date}: {link}",
+  "dash.intro_sel": "Where the programme stands in each State/UT: the Participating Institutions selected and the students who took an institution's online test, against the number each State/UT is to select (Annexure-I of the D.O. letter of the Ministry of Education)."
 }
