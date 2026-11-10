@@ -1164,7 +1164,7 @@ def examination():
     settings = all_settings()
     start, end, is_open = exam_window(settings)
     return render_template("public/examination.html", settings=settings, start=start, end=end,
-                           is_open=is_open, dates=_key_dates(settings), syllabus_langs=[b["lang"] for b in syllabus_books()])
+                           is_open=is_open, dates=_key_dates(settings), syllabus_langs=[b["stream"] for b in syllabus_books()])
 
 
 @bp.route("/merit-list")
@@ -1471,8 +1471,10 @@ def news():
 # Thirukkural" in Tamil and in translation, static/syllabus/KTS5-Thirukkural-Payilvom-<lang>.pdf, as data/syllabus.json lists
 # them (tools/add_syllabus.py adds a language)
 def syllabus_books():
-    """The books of data/syllabus.json whose PDF is there: [{lang, pages, translator, file, thumb, kb}], in the order CICT
-    asked for (kural.syllabus_rank, 3 Nov 2026): Hindi, Sanskrit, Gujarati, Bengali, Kannada, Telugu, the others, English, Tamil."""
+    """The books of data/syllabus.json whose PDF is there: [{lang, pages, translator, file, thumb, kb, stream}], in the order CICT
+    asked for (kural.syllabus_rank, 3 Nov 2026): Hindi, Sanskrit, Gujarati, Bengali, Kannada, Telugu, the others, English, Tamil.
+    `stream` names the book: the language, or the stream of its script where the book says so ("script", 1.2.169: the Kashmiri
+    book is in the Perso-Arabic script, ksn)."""
     rows = sorted(json.loads((current_app.config["DATA_DIR"] / "syllabus.json").read_text(encoding="utf-8")),
                   key=lambda r: K.syllabus_rank(r["lang"]))
     folder = Path(current_app.static_folder) / "syllabus"
@@ -1482,7 +1484,7 @@ def syllabus_books():
         pdf = folder / f"{name}.pdf"
         if pdf.exists():
             books.append({**r, "file": f"syllabus/{name}.pdf", "thumb": f"syllabus/thumbs/{name}.jpg",
-                          "kb": max(1, pdf.stat().st_size // 1024)})
+                          "kb": max(1, pdf.stat().st_size // 1024), "stream": r.get("script") or r["lang"]})
     return books
 
 
@@ -1493,7 +1495,8 @@ def syllabus():
     books = syllabus_books()
     lang = get_lang()
     mine = any(b["lang"] == lang for b in books)
-    return render_template("public/syllabus.html", books=books, mine=mine, yours=lang if mine else None, settings=all_settings())
+    return render_template("public/syllabus.html", books=books, mine=mine, yours=lang if mine else None, settings=all_settings(),
+                           yours_stream=next((b["stream"] for b in books if b["lang"] == lang), lang))
 
 
 # the posters and charts (1.2.67): four A3 PDFs in each language of the portal, static/posters/KTS5-poster-<n>-<lang>.pdf,

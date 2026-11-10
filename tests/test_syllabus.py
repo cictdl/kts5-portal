@@ -27,7 +27,9 @@ def test_each_book_has_its_pdf_and_cover():
     # Tamil, English, Hindi, Kannada and Marathi in 1.2.98; Bengali, Maithili and Odia in 1.2.114 (with the new editions of
     # the Hindi and the Marathi book); Gujarati, Santali and Telugu in 1.2.120; in the order CICT asked for since 1.2.143;
     # Assamese, Konkani, Malayalam, Manipuri, Nepali, Sindhi and Urdu in 1.2.144
-    assert [b["lang"] for b in BOOKS] == ["hi", "gu", "bn", "kn", "te", "as", "kok", "mai", "ml", "mni", "mr", "ne", "or", "sat", "sd", "ur", "en", "ta"]
+    # Bodo, Dogri, Kashmiri and Punjabi in 1.2.169
+    assert [b["lang"] for b in BOOKS] == ["hi", "gu", "bn", "kn", "te", "as", "brx", "doi", "ks", "kok", "mai", "ml", "mni", "mr", "ne", "or", "pa",
+                                          "sat", "sd", "ur", "en", "ta"]
     for b in BOOKS:
         assert b["lang"] in K.ORIENTATION_LANGS and b["pages"] > 40
         name = f"KTS5-Thirukkural-Payilvom-{b['lang']}"
@@ -35,7 +37,8 @@ def test_each_book_has_its_pdf_and_cover():
         assert pdf.read_bytes()[:5] == b"%PDF-" and pdf.stat().st_size < 3_000_000, b["lang"]
         assert thumb.read_bytes()[:3] == b"\xff\xd8\xff" and thumb.stat().st_size < 60_000, b["lang"]
         # the Tamil book is the original; each translation names its translator
-        assert bool(b["translator"]) == (b["lang"] != "ta"), b["lang"]
+        # (the cover of the Bodo book names the translator of the Hindi book: no name on its card until CICT confirms it, 1.2.169)
+        assert bool(b["translator"]) == (b["lang"] not in ("ta", "brx")), b["lang"]
 
 
 def test_the_page_offers_the_books_in_cicts_order():
@@ -59,13 +62,13 @@ def test_the_page_offers_the_books_in_cicts_order():
     assert "The original, in Tamil" in books and "61 pages · PDF" in books
     assert 'href="/static/syllabus/KTS5-Thirukkural-Payilvom-hi.pdf" download' in books
     assert "The study book is not yet available in your language" not in page
-    # a language without its book yet (Punjabi): told so, the books in the same order, none framed, no link
-    punjabi = _page(client, "/syllabus?lang=pa")
+    # a language without its book yet (Sanskrit, the only one since 1.2.169): told so, the books in the same order, none framed, no link
+    punjabi = _page(client, "/syllabus?lang=sa")
     from kts.i18n import CATALOG
-    assert str(escape(CATALOG["pa"]["syl.not_yet"])) in punjabi
+    assert str(escape(CATALOG["sa"]["syl.not_yet"])) in punjabi
     p_books = punjabi[punjabi.index('id="books"'):]
     assert p_books.index("Payilvom-hi.pdf") < p_books.index("Payilvom-gu.pdf") < p_books.index("Payilvom-mr.pdf") < p_books.index("Payilvom-en.pdf") < p_books.index("Payilvom-ta.pdf")
-    assert 'href="#book-' not in punjabi and str(escape(CATALOG["pa"]["syl.yours"])) not in p_books and "border:2px solid var(--saffron)" not in p_books
+    assert 'href="#book-' not in punjabi and str(escape(CATALOG["sa"]["syl.yours"])) not in p_books and "border:2px solid var(--saffron)" not in p_books
     # in Hindi, the Hindi book first and framed
     hindi = _page(client, "/syllabus?lang=hi")
     h_books = hindi[hindi.index('id="books"'):]
@@ -127,7 +130,7 @@ def test_the_books_added_on_3_november():
     # 108 couplets of the Garland in each; the slips found went to CICT
     import fitz
     by_lang = {b["lang"]: b for b in BOOKS}
-    assert len(BOOKS) == 18
+    assert len(BOOKS) >= 18   # 22 since 1.2.169 (tests/test_syllabus_1110.py)
     assert {k: (by_lang[k]["pages"], by_lang[k]["translator"]) for k in ("as", "kok", "ml", "mni", "ne", "sd", "ur", "mr")} == {
         "as": (92, "Dr. B. Vijayakumar"), "kok": (82, "Shwetha Pai"), "ml": (85, "Dr. N. Manoharan"), "mni": (91, "Dr. Soibam Rebika Devi"),
         "ne": (77, "Dr. Sunita dahal"), "sd": (78, "Dr. M. L. Nathani"), "ur": (82, "پروفیسر ڈاکٹر امان اللہ ایم بی"),

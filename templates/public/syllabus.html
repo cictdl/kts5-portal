@@ -10,14 +10,14 @@
   {# the two books to come (1.2.164, CICT, 7 November 2026) #}
   <div class="card flat syl-soon" style="margin-top:12px;max-width:78ch"><p class="small" style="margin:0"><b>{{ t('syl.soon') }}</b></p></div>
   {# the books in the order CICT asked for (3 Nov 2026); the visitor's own one framed where it stands, and this link to it #}
-  {% if yours %}<p class="small" style="margin:12px 0 0"><a href="#book-{{ yours }}">⬇ {{ t('syl.yours') }}: <span lang="{{ yours|langtag }}">{{ yours|langnative }}</span></a></p>{% endif %}
+  {% if yours %}<p class="small" style="margin:12px 0 0"><a href="#book-{{ yours }}">⬇ {{ t('syl.yours') }}: <span lang="{{ yours_stream|langtag }}">{{ yours_stream|langnative }}</span></a></p>{% endif %}
   <div class="grid grid-3" style="margin-top:16px" id="books">
     {% for b in books %}
-    <div class="card syl-book" id="book-{{ b.lang }}" lang="{{ b.lang|langtag }}"{% if b.lang == yours %} style="border:2px solid var(--saffron)"{% endif %}>
+    <div class="card syl-book" id="book-{{ b.lang }}" lang="{{ b.stream|langtag }}"{% if b.lang == yours %} style="border:2px solid var(--saffron)"{% endif %}>
       {% if b.lang == yours %}<span class="pill saffron" style="justify-self:start">{{ t('syl.yours') }}</span>{% endif %}
-      <a href="{{ url_for('static', filename=b.file) }}" target="_blank" rel="noopener"><img src="{{ url_for('static', filename=b.thumb) }}" alt="{{ t('syl.cover') }} · {{ b.lang|langnative }}" width="360" height="480" loading="lazy" style="display:block;width:100%;max-width:260px;height:auto;margin:10px auto;border-radius:8px;border:1px solid var(--border)"></a>
-      <h3 style="margin:0">{{ b.lang|langnative }}{% if (b.lang|langnative) != (b.lang|langname) %} <span class="dim" style="font-weight:500">· {{ b.lang|langname }}</span>{% endif %}</h3>
-      <p class="small dim" style="margin:6px 0 0">{% if b.translator %}{{ t('syl.translator') }}: <bdi>{{ b.translator }}</bdi>{% else %}{{ t('syl.original') }}{% endif %}</p>
+      <a href="{{ url_for('static', filename=b.file) }}" target="_blank" rel="noopener"><img src="{{ url_for('static', filename=b.thumb) }}" alt="{{ t('syl.cover') }} · {{ b.stream|langnative }}" width="360" height="480" loading="lazy" style="display:block;width:100%;max-width:260px;height:auto;margin:10px auto;border-radius:8px;border:1px solid var(--border)"></a>
+      <h3 style="margin:0">{{ b.stream|langnative }}{% if (b.stream|langnative) != (b.stream|langname) %} <span class="dim" style="font-weight:500">· {{ b.stream|langname }}</span>{% endif %}</h3>
+      <p class="small dim" style="margin:6px 0 0">{% if b.translator %}{{ t('syl.translator') }}: <bdi>{{ b.translator }}</bdi>{% elif b.lang == 'ta' %}{{ t('syl.original') }}{% endif %}</p>
       <p class="small muted" style="margin:2px 0 10px">{{ t('syl.pages')|replace('{n}', b.pages) }} · PDF · {{ b.kb }} KB</p>
       <div class="btn-row"><a class="btn sm saffron" href="{{ url_for('static', filename=b.file) }}" download>⬇ {{ t('common.download') }} (PDF)</a><a class="btn sm secondary" href="{{ url_for('static', filename=b.file) }}" target="_blank" rel="noopener">{{ t('syl.open') }}</a></div>
     </div>

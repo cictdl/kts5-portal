@@ -3,7 +3,10 @@ Add a translation of the study book "Thirukkural Payilvom" (the syllabus of the 
 the portal: the PDF goes to static/syllabus/KTS5-Thirukkural-Payilvom-<lang>.pdf, the thumbnail of its cover to
 static/syllabus/thumbs/, and a line to data/syllabus.json; the page /syllabus then offers it. Needs PyMuPDF and Pillow.
 
-    python tools/add_syllabus.py LANG BOOK.pdf "Name of the translator"
+    python tools/add_syllabus.py LANG BOOK.pdf "Name of the translator" [SCRIPT]
+
+SCRIPT (1.2.169): the stream of the portal's Thirukkural in the script of the book, where the book is not in the script of the
+portal's own stream of LANG - "ksn" for a Kashmiri book in the Perso-Arabic script; the page then names the book by it.
 """
 import json
 import shutil
@@ -18,6 +21,7 @@ sys.path.insert(0, str(ROOT))
 from kts.kural import ORIENTATION_LANGS, syllabus_rank  # noqa: E402
 
 lang, src, translator = sys.argv[1], Path(sys.argv[2]), (sys.argv[3] if len(sys.argv) > 3 else "")
+script = sys.argv[4] if len(sys.argv) > 4 else ""
 assert lang in ORIENTATION_LANGS, f"{lang} is not a language of the portal"
 folder = ROOT / "static" / "syllabus"
 name = f"KTS5-Thirukkural-Payilvom-{lang}"
@@ -29,7 +33,7 @@ pix = page.get_pixmap(matrix=fitz.Matrix(zoom, zoom))
 Image.frombytes("RGB", (pix.width, pix.height), pix.samples).save(folder / "thumbs" / f"{name}.jpg", quality=85, optimize=True)
 data_file = ROOT / "data" / "syllabus.json"
 rows = [r for r in json.loads(data_file.read_text(encoding="utf-8")) if r["lang"] != lang]
-rows.append({"lang": lang, "pages": len(doc), "translator": translator})
+rows.append({"lang": lang, "pages": len(doc), "translator": translator, **({"script": script} if script else {})})
 rows.sort(key=lambda r: syllabus_rank(r["lang"]))  # the order CICT asked for (3 Nov 2026), as the page shows them
 data_file.write_text("[\n" + ",\n".join("  " + json.dumps(r, ensure_ascii=False) for r in rows) + "\n]\n", encoding="utf-8")
 print(name, len(doc), "pages,", (folder / f"{name}.pdf").stat().st_size // 1024, "KB")

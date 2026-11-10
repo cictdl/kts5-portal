@@ -666,9 +666,9 @@ def test_templates_print_streams_through_the_filter():
                                 "public/nodal_institutions.html"}}   # the language of the sample letter (1.2.137)
     assert set(printed) - set(plain) == {"stream|langtag", "info.code|langtag", "shown|langtag", "kotd_lang|langtag",
                                          "qlang|langtag", "body_lang|langtag", "v.title_lang|langtag",
-                                         "b.lang|langtag", "c|langtag", "p.shown.lang|langtag", "v.lang|langtag",
+                                         "b.stream|langtag", "c|langtag", "p.shown.lang|langtag", "v.lang|langtag",
                                          "p.quote_lang|langtag",   # the posts on social media on the news page (1.2.141)
-                                         "yours|langtag",   # the link to the visitor's own study book (1.2.143)
+                                         "yours_stream|langtag",   # the link to the visitor's own study book (1.2.143), by the stream of its script (1.2.169)
                                          "kts_banner.lang|langtag",   # the banner of the home page (1.2.145)
                                          "r.lang|langtag"}   # the language of a student selected on merit, in the Console (1.2.157)
 
@@ -1101,7 +1101,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.168" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.169" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 
