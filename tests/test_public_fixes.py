@@ -1101,7 +1101,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.169" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.170" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 
