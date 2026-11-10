@@ -734,7 +734,8 @@ DEFAULT_SETTINGS = {
     "backup.keep": "28",
     # the participating institutions (1.2.41, kts/heis.py)
     "hei.open": "1",
-    "hei.end": "2026-11-15",
+    # 18 November 2026 since 1.2.171 (CICT, 10 November 2026); 15 November in the D.O. letter of 31 October
+    "hei.end": "2026-11-18",
     "hei.max_per_state": "0",
     # the revised D.O. letter (26 October 2026): the Nodal Institution selects only the number of Participating Institutions
     # that Annexure-I prescribes for its State/UT (data/nodal_heis.json), between the close of registration and this day
@@ -847,7 +848,7 @@ RETIRED_DEFAULTS = {
     # on 22 October 2026 (1.2.95): registration 22-29 October, and every later date a week on
     "launch.at": ["2026-10-14T17:00"],
     "launch.until": ["2026-10-22"],
-    "hei.end": ["2026-10-21", "2026-10-29", "2026-11-10"],
+    "hei.end": ["2026-10-21", "2026-10-29", "2026-11-10", "2026-11-15"],
     "hei.select_end": ["2026-11-15"],
     "orientation.by": ["2026-12-10"],
     "camp.from": ["2026-10-15"],
@@ -960,6 +961,9 @@ for _key, _days in (("hei_reg", ("2026-11-10T00:00", None)), ("hei_select", ("20
                     ("internship", ("2026-12-12T00:00", None)), ("research", ("2026-12-12T00:00", "2027-01-11T00:00")),
                     ("papers", ("2027-01-11T00:00", None))):
     RETIRED_EVENT_DAYS.setdefault(_key, []).append(_days)
+
+# the registration of institutions up to 18 November 2026, not 15 (CICT, 10 November 2026, 1.2.171); the steps after it stay
+RETIRED_EVENT_DAYS["hei_reg"].append(("2026-11-15T00:00", None))
 
 # Steps of the timeline that the revised D.O. letter (26 October 2026) no longer has: (title, starts_at, ends_at) as the
 # portal put them in. Each is taken off the schedule once (published = 0), where it still holds them; nothing is deleted.

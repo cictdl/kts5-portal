@@ -70,7 +70,7 @@ def test_the_figures():
     assert all(s["to_select"] for s in p["states"]) and "Lakshadweep" not in {s["state"] for s in p["states"]}
     # the milestones, in order, with at most one 'next'
     keys = [m["key"] for m in p["milestones"]]
-    assert keys == ["hei_reg", "hei_select", "assess", "reg_close", "selection", "inauguration", "valedictory", "live", "internship", "papers"]
+    assert keys == ["hei_select", "hei_reg", "assess", "reg_close", "selection", "inauguration", "valedictory", "live", "internship", "papers"]
     assert [m["starts"] for m in p["milestones"]] == sorted(m["starts"] for m in p["milestones"])
     statuses = [m["status"] for m in p["milestones"]]
     assert statuses.count("next") <= 1 and set(statuses) <= {"done", "current", "next", "upcoming"}

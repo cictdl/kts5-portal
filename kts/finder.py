@@ -125,8 +125,8 @@ def hub(settings, lang):
     reg_end, verify_end = _day(settings, "reg.end"), _day(settings, "verify.end")
     select_start = None
     if hei_end and select_end:
-        from datetime import timedelta
-        select_start = hei_end + timedelta(days=1) if hei_end + timedelta(days=1) <= select_end else select_end
+        first = HEI.selection_start(settings)   # the day after the registration, or the schedule's (1.2.171)
+        select_start = date.fromisoformat(first) if first else select_end
     window = HEI.window(settings)
     words_ = {"hei_end": long_day(hei_end, lang), "select": span(select_start, select_end, lang), "camp_to": long_day(camp_to, lang),
               "reg_end": long_day(reg_end, lang), "verify_end": long_day(verify_end, lang), "select_end": long_day(select_end, lang)}

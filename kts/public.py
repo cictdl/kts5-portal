@@ -286,8 +286,8 @@ def key_dates_box(settings=None):
     hei_end, select_end = day("hei.end"), day("hei.select_end")
     select_from = None
     if hei_end and select_end:
-        after = date.fromordinal(date.fromisoformat(hei_end).toordinal() + 1).isoformat()
-        select_from = after if after < select_end else None
+        first = HEI.selection_start(s)   # the day after the registration, or the schedule's first day of selection (1.2.171)
+        select_from = first if first and first < select_end else None
     groups = [
         {"title": "kd.g1", "rows": [row("kd.reg", hei_end, prefix="kd.upto"),
                                     row("kd.select", select_from or select_end, select_end if select_from else None),

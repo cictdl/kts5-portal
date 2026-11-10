@@ -28,7 +28,7 @@ with_covered, label_of, unit_name).
 """
 import json
 import re
-from datetime import date
+from datetime import date, timedelta
 
 from flask import current_app
 
@@ -138,6 +138,26 @@ def phone_digits(value):
     elif len(digits) == 11 and digits.startswith("0"):
         digits = digits[1:]
     return digits if len(digits) == 10 and digits[0] != "0" else ""
+
+
+def selection_start(settings):
+    """
+    The first day of the selection by the Nodal Institutions (YYYY-MM-DD): the day after the last date of registration
+    (hei.end) while that is not after hei.select_end; else the first day of the step of the schedule "hei_select"
+    (data/timeline.json, as the Console keeps it), if it is before hei.select_end. Since 1.2.171 the registration (18
+    November) runs past the selection (16-17 November). None without the two settings or such a day.
+    """
+    end, select_end = (settings.get("hei.end") or "")[:10], (settings.get("hei.select_end") or "")[:10]
+    if not (end and select_end):
+        return None
+    after = (date.fromisoformat(end) + timedelta(days=1)).isoformat()
+    if after <= select_end:
+        return after
+    seeds = json.loads((current_app.config["DATA_DIR"] / "timeline.json").read_text(encoding="utf-8"))
+    title = next((e["title"] for e in seeds if e["key"] == "hei_select"), None)
+    row = query("SELECT starts_at FROM events WHERE title = ? AND published = 1", (title,), one=True) if title else None
+    first = (row["starts_at"] or "")[:10] if row else ""
+    return first if first and first < select_end else None
 
 
 def window(settings):

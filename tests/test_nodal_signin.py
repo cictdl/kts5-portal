@@ -52,7 +52,7 @@ def test_what_the_mail_says():
     assert subject == f"{SUBJECT} (Kerala and Lakshadweep)"
     assert body.startswith("Dear Dr. New Officer,\n\nYour account as Nodal Officer for Kerala and Lakshadweep on the KTS 5.0 portal ")
     assert "was created on 27 October 2026 and the temporary password was mailed to this address; the account has not been signed in to yet." in body
-    assert "• The institutions of Kerala and Lakshadweep register on the portal up to 15 November 2026: 2 registered so far, 1 awaiting your decision." in body
+    assert "• The institutions of Kerala and Lakshadweep register on the portal up to 18 November 2026: 2 registered so far, 1 awaiting your decision." in body
     assert "• The Nodal Institution selects the 21 Participating Institutions that Annexure-I prescribes by 17 November 2026, with a reserve list, in the Console (Institutions)." in body
     assert ("• Each selected institution nominates one student by 20 November 2026; the Nodal Officers verify the nominations by 5 December 2026. "
             "2 application(s) await your verification already.") in body

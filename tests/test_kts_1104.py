@@ -139,7 +139,7 @@ def test_the_key_dates():
         box = box[:box.index("</div>\n</div>") if "</div>\n</div>" in box else 6000]
         text = re.sub(r"<[^>]+>", "|", box)
         for line in ("KTS 5.0 – Key dates", "Registration and selection", "Online programme", "Research and submission",
-                     "Up to 15 Nov 2026", "Last date for the registration of institutions",
+                     "Up to 18 Nov 2026", "Last date for the registration of institutions",
                      "16 Nov 2026 – 17 Nov 2026", "Selection of the Participating Institutions by the Nodal Institutions",
                      "By 19 Nov 2026", "Thirukkural assessment of the interested students by each Participating Institution",
                      "20 Nov 2026", "Each Participating Institution nominates one student on merit through the CICT portal",
@@ -152,7 +152,7 @@ def test_the_key_dates():
             assert f"|{line}|" in text, (path, line)
     # in a language other than English the days read as numbers
     page = _get(client, "/?lang=hi")
-    assert "15-11-2026" in page and "16-11-2026 – 17-11-2026" in page
+    assert "18-11-2026" in page and "16-11-2026 – 17-11-2026" in page
 
 
 def test_the_schedule_without_the_central_online_test():
