@@ -44,8 +44,9 @@ def test_the_figures():
     assert '<div class="num">4</div><div class="lbl">Participating institutions</div>' in pi and "<bdi>4 of 1,000</bdi>" in pi
     assert '<text x="60" y="67" text-anchor="middle" class="pct">0%</text>' in pi
     assert '<div class="num">6</div><div class="lbl">Institutions registered</div>' in pi
-    # the rows reached: Tamil Nadu and Kerala-and-Lakshadweep of the 31; three districts (Chennai once, Coimbatore, Kavaratti)
-    assert '<div class="num">2</div><div class="lbl">States and UTs</div>' in pi and "<bdi>2 of 31</bdi>" in pi
+    # the States/UTs reached: Tamil Nadu and Lakshadweep of the 36 (1.2.174; the rows of Annexure-I, of 31, before); three
+    # districts (Chennai once, Coimbatore, Kavaratti)
+    assert '<div class="num">2</div><div class="lbl">States and UTs</div>' in pi and "<bdi>2 of 36</bdi>" in pi
     assert '<div class="num">3</div><div class="lbl">Districts reached</div>' in pi
     # the types: Government college 2 (50%), then the others by count
     legend = re.findall(r"<li><i class=\"pi-sw c\d\" aria-hidden=\"true\"></i><span>([^<]+)</span><b>(\d+)</b><span class=\"muted small\">(\d+)%</span></li>", pi)

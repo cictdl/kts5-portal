@@ -1075,7 +1075,7 @@ def backups():
 # ---- the participating institutions of the States/UTs (1.2.41, kts/heis.py) ----------------------------------
 
 def _inst_filters(scope):
-    f = {k: (request.args.get(k) or "").strip() for k in ("state", "status", "q", "unregistered")}
+    f = {k: (request.args.get(k) or "").strip() for k in ("state", "status", "q", "unregistered", "unmarked")}
     sql, args = " FROM institutions i WHERE 1=1", []
     if scope is not None:
         sql += f" AND i.state IN ({','.join('?' * len(scope))})" if scope else " AND 0"
@@ -1089,6 +1089,8 @@ def _inst_filters(scope):
         args.append(f["status"])
     if f["unregistered"]:   # selected, on the reserve list or declined before they registered (1.2.173)
         sql += " AND i." + HEI.UNREGISTERED_SQL.replace(" AND ", " AND i.")
+    if f["unmarked"]:       # selected or on the reserve list without the marks of Annexure-V (1.2.174)
+        sql += " AND i." + HEI.UNMARKED_SQL.replace(" AND ", " AND i.")
     if f["q"]:
         sql += " AND (i.name LIKE ? OR i.ref LIKE ? OR i.aishe_code LIKE ? OR i.head_email LIKE ? OR i.coord_email LIKE ? OR i.district LIKE ?)"
         args += [f"%{f['q']}%"] * 6
@@ -1119,9 +1121,16 @@ def institutions():
         action = request.form.get("action")
         note = (request.form.get("note") or "").strip()[:500]
         # an institution identified by the Nodal Institution is selected once it has registered with its invitation (1.2.173)
-        if action in ("accept", "reserve") and row["status"] == "identified":
+        if action in ("accept", "reserve") and (row["status"] == "identified"
+                                                or (HEI.never_registered(row) and not HEI.busy_reason(row))):
+            again = "Invite again" if row["status"] == "identified" else "↩ Back to invited"
             flash(f"{row['name']} has not completed its registration yet: it is selected, or put on the reserve list, once it has "
-                  f"registered with its invitation, on its marks of Annexure-V (Invite again mails the link once more).", "error")
+                  f"registered with its invitation, on its marks of Annexure-V ({again} mails the link once more).", "error")
+            return redirect(back)
+        # selected, or put on the reserve list, on the marks of the Evaluation Committee (Annexure-V), recorded first (1.2.174)
+        if action in ("accept", "reserve") and row["sop_total"] is None:
+            flash(f"{row['name']}: record the marks of the Evaluation Committee first (Marks, Annexure-V). An institution is selected, "
+                  f"or put on the reserve list, on its marks.", "error")
             return redirect(back)
         # selected, put on the reserve list or declined before it registered: back to identified, invited again (1.2.173)
         if action == "reinvite":
@@ -1144,7 +1153,8 @@ def institutions():
                           f"AND status = 'accepted' AND id != ?", (*group, row["id"]), one=True)["n"]
             if cap and taken >= cap:
                 flash(f"{HEI.label_of(row['state'], 'en')} has {taken} accepted institutions: that is the number Annexure-I prescribes for it "
-                      f"(Settings › Participating institutions).", "error")
+                      f"(Settings › Participating institutions). The others may be placed on the reserve list, which has no upper limit.",
+                      "error")
                 return redirect(back)
             status = "accepted"
         elif action == "reserve":
@@ -1202,6 +1212,11 @@ def institutions():
     for r in query("SELECT state, COUNT(*) AS n" + s_sql + " AND " + HEI.UNREGISTERED_SQL + " GROUP BY state", s_args):
         unit = HEI.nodal_state_of(r["state"])
         stray[unit] = stray.get(unit, 0) + r["n"]
+    # selected or on the reserve list without the marks of Annexure-V (before 1.2.174), by the row of Annexure-I
+    unmarked = {}
+    for r in query("SELECT state, COUNT(*) AS n" + s_sql + " AND " + HEI.UNMARKED_SQL + " GROUP BY state", s_args):
+        unit = HEI.nodal_state_of(r["state"])
+        unmarked[unit] = unmarked.get(unit, 0) + r["n"]
     states = scope if scope is not None else _states()
     units = list(dict.fromkeys(HEI.nodal_state_of(s) for s in states))
     allocation = {h["state"]: h.get("allocation", 0) for h in _nodal_heis()}
@@ -1211,7 +1226,8 @@ def institutions():
                            summary=summary, allocation=allocation, scope=scope, stray=[(u, stray[u]) for u in units if stray.get(u)],
                            can_decide=has_perm(user, "hei.decide"), window=HEI.window(settings),
                            reg_end=settings.get("reg.end"), assess_to=settings.get("camp.to"), hei_end=settings.get("hei.end"),
-                           select_end=settings.get("hei.select_end"), reserve={s: HEI.reserve_of(s) for s in units},
+                           select_end=settings.get("hei.select_end"), unmarked=[(u, unmarked[u]) for u in units if unmarked.get(u)],
+                           reserve_public=settings.get("hei.public") == "1" and settings.get("hei.reserve_public") == "1",
                            sop_max=sum(m for _k, _c, m, *_ in HEI.SOP), benchmark=HEI.SOP_BENCHMARK,
                            marks={r["id"]: HEI.sop_marks(r) for r in rows[:INST_ROWS_SHOWN]}, order=request.args.get("order", ""))
 
@@ -1249,7 +1265,7 @@ def institution_marks(iid):
             return redirect(url_for("admin.institutions", state=row["state"], order="marks"))
     return render_template("console/institution_marks.html", row=row, marks=marks, errors=errors, note=note, sop=HEI.SOP,
                            legacy=HEI.sop_legacy(row),
-                           benchmark=HEI.SOP_BENCHMARK, allocation=HEI.allocation_of(row["state"]), reserve=HEI.reserve_of(row["state"]))
+                           benchmark=HEI.SOP_BENCHMARK, allocation=HEI.allocation_of(row["state"]))
 
 
 @bp.route("/institutions/evaluation.xlsx")
@@ -1257,8 +1273,8 @@ def institution_marks(iid):
 def institutions_evaluation():
     """
     The evaluation sheet of Annexure-V, State/UT by State/UT: every registered institution with the marks of the committee, ranked
-    by the total and the tie-breaks, with the number Annexure-I prescribes and the reserve list it suggests, for the committee to
-    sign and the competent authority to approve (1.2.111).
+    by the total and the tie-breaks, with the number Annexure-I prescribes, for the committee to sign and the competent authority
+    to approve (1.2.111). An institution of the reserve list has its place in that list, which has no upper limit (1.2.174).
     """
     scope = state_scope(_user())
     sql, args = "SELECT * FROM institutions WHERE status != 'identified'", []
@@ -1266,31 +1282,36 @@ def institutions_evaluation():
         sql += f" AND state IN ({','.join('?' * len(scope))})" if scope else " AND 0"
         args += scope
     if request.args.get("state"):
-        # the row of Annexure-I: a State with the Union Territory paired with it, ranked together (1.2.155)
-        covered = HEI.with_covered([request.args["state"]])
+        # the row of Annexure-I: a State with the Union Territory paired with it, ranked together (1.2.155); asked for the
+        # Union Territory, the sheet is that of the row too, so that the ranks are those of the row (1.2.174)
+        covered = HEI.with_covered([HEI.nodal_state_of(request.args["state"])])
         sql += f" AND state IN ({','.join('?' * len(covered))})"
         args += covered
     rows = query(sql, args)
     nodal = {s: h["name"] for h in _nodal_heis() for s in HEI.group_of(h["state"])}   # a paired Union Territory: its State's (1.2.135)
-    headers = (["State/UT", "Nodal HEI", "Number to be selected (Annexure-I)", "Reserve list (up to 20%)", "Rank", "Name of Institution",
+    headers = (["State/UT", "Nodal HEI", "Number to be selected (Annexure-I)", "Rank", "Name of Institution",
                 "Reference", "District/City", "Type", "AISHE/Institution Code", "Registered on"]
                + [f"{criterion} (max {most})" for _k, criterion, most, *_ in HEI.SOP]
                + ["Total (100)", f"Benchmark {HEI.SOP_BENCHMARK}", "Status", "Remarks of the committee"])
     data, ranks = [], {}
+    # the place of an institution in the reserve list of its row of Annexure-I, as the website gives it: whatever the sheet holds
+    place = {x["id"]: n for _unit, items in HEI.reserve_by_unit(_states()) for n, x in enumerate(items, start=1)}
     for r in sorted(rows, key=lambda r: (HEI.nodal_state_of(r["state"]), HEI.sop_order(r))):
         marks = HEI.sop_marks(r)
         unit = HEI.nodal_state_of(r["state"])   # a paired Union Territory is ranked with its State (1.2.135)
         ranks[unit] = ranks.get(unit, 0) + 1
         scored = r["sop_total"] is not None
         status = {"accepted": "selected", "reserve": "reserve list"}.get(r["status"], r["status"])
-        data.append((r["state"], nodal.get(r["state"], ""), HEI.allocation_of(r["state"]) or "", HEI.reserve_of(r["state"]) or "",
+        if r["id"] in place:   # one without marks (before 1.2.174) has no place yet
+            status = f"reserve list {place[r['id']]}"
+        data.append((r["state"], nodal.get(r["state"], ""), HEI.allocation_of(r["state"]) or "",
                      ranks[unit] if scored else "", r["name"], r["ref"], r["district"], r["itype"], r["aishe_code"],
                      (r["created_at"] or "")[:10])
                     + tuple(marks.get(k, "") for k, *_ in HEI.SOP)
                     + (r["sop_total"] if scored else "", ("yes" if r["sop_total"] >= HEI.SOP_BENCHMARK else "no") if scored else "",
                        status, r["sop_note"] or ""))
     audit("institutions_evaluation_exported", "institution", None, detail={"rows": len(data)}, user=_user(), ip=client_ip())
-    return Response(xlsx_bytes(headers, data, "Evaluation (Annexure-V)", text_cols=(9,)),
+    return Response(xlsx_bytes(headers, data, "Evaluation (Annexure-V)", text_cols=(8,)),
                     mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     headers={"Content-Disposition": "attachment; filename=KTS5-evaluation-sheet-Annexure-V.xlsx"})
 
@@ -1984,6 +2005,7 @@ SETTING_GROUPS = [
         ("hei.select_end", "Last date for the Nodal Institutions to select the Participating Institutions (YYYY-MM-DD)", "date"),
         ("hei.max_per_state", "Otherwise: institutions accepted in one State/UT at most, the same for all (0: no limit)", "number"),
         ("hei.public", "Show the participating institutions on the website, State/UT by State/UT", "bool"),
+        ("hei.reserve_public", "Show the reserve list of each State/UT on the same page, in the order of the marks of Annexure-V (the marks themselves are not shown)", "bool"),
         ("join.on", "Show the State/UT pages for the registration of institutions (/join), with their links and A4 posters", "bool"),
         ("nodal.officers_public", "Show the Nodal Officer of each State/UT (name, designation, e-mail and phone of the active Nodal Officer accounts) on the Nodal HEIs and Partners pages", "bool"),
         ("hei.orientation", "Pre-assessment orientation session by CICT for the institutions: date, time and link, shown on the institutions' page (empty: nothing)", "text")]),

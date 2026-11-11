@@ -743,6 +743,8 @@ DEFAULT_SETTINGS = {
     "hei.cap_annexure": "1",
     "hei.select_end": "2026-11-19",   # 19 November since the Ministry's revision of 10 November 2026 (1.2.172; 16-17 before)
     "hei.public": "1",
+    # the reserve list of each row of Annexure-I on /institutions, in the order of the marks, without them (1.2.174)
+    "hei.reserve_public": "1",
     # the State/UT pages for the registration of institutions, /join (1.2.142)
     "join.on": "1",
     # the Nodal Officer of each Nodal HEI, with the contact details given for the account, on the public pages (1.2.70)

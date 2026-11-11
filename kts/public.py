@@ -347,8 +347,9 @@ def home():
     # while the students' registration is hidden: the institutions at a glance (1.2.148), counted as the dashboard counts them
     inst_stats = None
     if settings.get("stats.public") == "1" and settings.get("reg.public") != "1":
-        row = query("SELECT SUM(status = 'accepted') AS sel, COUNT(*) AS reg, COUNT(DISTINCT state) AS s FROM institutions "
-                    "WHERE status != 'identified'", one=True)
+        # the States/UTs: those that have a Participating Institution, as /institutions counts them (1.2.174)
+        row = query("SELECT SUM(status = 'accepted') AS sel, COUNT(*) AS reg, COUNT(DISTINCT CASE WHEN status = 'accepted' THEN state END) AS s "
+                    "FROM institutions WHERE status != 'identified'", one=True)
         inst_stats = {"selected": row["sel"] or 0, "registered": row["reg"], "states": row["s"]}
     k = K.daily()
     kotd_lang, kotd_dir = _stream()
@@ -956,7 +957,14 @@ def institutions():
     ref = _states()
     groups = HEI.accepted_by_state(ref["all_states"])
     nodal = {s: n["name"] for n in nodal_heis() for s in HEI.group_of(n["state"])}   # a paired Union Territory: its State's (1.2.135)
+    # the reserve list of each row of Annexure-I, in the order of the marks of Annexure-V, without the marks (1.2.174)
+    reserve = []
+    if settings.get("hei.reserve_public") == "1":
+        reserve = [(unit, HEI.label_of(unit), "reserve-" + state_anchor(unit)[3:], items)
+                   for unit, items in HEI.reserve_by_unit(ref["all_states"])]
+    reserve_at = {s: (anchor, len(items)) for unit, _label, anchor, items in reserve for s in HEI.group_of(unit)}
     return render_template("public/institutions.html", groups=groups, nodal=nodal, ref=ref, state_anchor=state_anchor,
+                           reserve=reserve, reserve_at=reserve_at,
                            total=sum(len(items) for _state, items in groups), window=HEI.window(settings),
                            settings=settings, most=HEI.max_per_state(), pi=_institutions_at_a_glance(groups, ref))
 
@@ -998,7 +1006,11 @@ def _institutions_at_a_glance(groups, ref):
     return {"selected": selected, "registered": fig["total"]["inst_reg"], "to_select": to_select,
             "share": round(share, 4), "pct": round(100 * share), "offset": round(326.73 * (1 - share), 2),
             "rows_with": sum(1 for r in annex if r["inst_sel"]), "rows": len(annex),
-            "districts": len({(state, (h["district"] or "").strip().lower()) for state, h in accepted if (h["district"] or "").strip()}),
+            # the States and Union Territories that have a Participating Institution, of the 36: a Union Territory paired in
+            # Annexure-I counts as itself (1.2.174; the rows of Annexure-I, of 31, before)
+            "states_with": len(listed), "states_all": len(ref["all_states"]),
+            # a district once, whatever its spelling (1.2.174)
+            "districts": HEI.districts_reached((state, h["district"]) for state, h in accepted),
             "types": type_rows, "spark": inst, "days": series["days"], "states": rows, "now": now_ist().strftime("%H:%M")}
 
 

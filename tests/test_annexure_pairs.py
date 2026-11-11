@@ -45,7 +45,7 @@ def test_the_rows_of_annexure_i():
         assert HEI.with_covered(["Lakshadweep", "Kerala"]) == ["Lakshadweep", "Kerala"]
         assert (HEI.allocation_of("Lakshadweep"), HEI.allocation_of("Chandigarh"), HEI.allocation_of("Ladakh")) == (21, 21, 11)
         assert (HEI.allocation_of("Dadra and Nagar Haveli and Daman and Diu"), HEI.allocation_of("Andaman and Nicobar Islands")) == (50, 50)
-        assert (HEI.cap_of("Lakshadweep"), HEI.reserve_of("Ladakh"), HEI.reserve_of("Andaman and Nicobar Islands")) == (21, 2, 10)
+        assert (HEI.cap_of("Lakshadweep"), HEI.cap_of("Ladakh"), HEI.cap_of("Andaman and Nicobar Islands")) == (21, 11, 50)
         assert HEI.label_of("Lakshadweep", "en") == HEI.label_of("Kerala", "en") == "Kerala and Lakshadweep"
         assert HEI.label_of("Gujarat", "en") == "Gujarat and Dadra and Nagar Haveli and Daman and Diu" and HEI.label_of("Goa", "en") == "Goa"
         assert HEI.label_of("Kerala", "ta") == "கேரளா மற்றும் லட்சத்தீவு" and HEI.label_of("Kerala", "hi") == "केरल और लक्षद्वीप"
@@ -146,6 +146,8 @@ def test_a_union_territory_institution_goes_to_the_nodal_institution_of_its_stat
     page = officer.get("/console/institutions").get_data(as_text=True)
     assert "You see the institutions of <b>Kerala and Lakshadweep</b>" in page and "Kavaratti Arts College" in page
     assert 'href="/console/institutions?state=Kerala">Kerala and Lakshadweep</a>' in page and "Lakshadweep</a>" not in page.replace("Kerala and Lakshadweep</a>", "")
+    from test_institutions import _marked
+    _marked(app)   # selected on its marks of Annexure-V (1.2.174)
     r = officer.post("/console/institutions", data={"_csrf": _token(officer), "id": row["id"], "action": "accept"}, follow_redirects=True)
     assert "Kerala and Lakshadweep has 21 accepted institutions: that is the number Annexure-I prescribes for it" in r.get_data(as_text=True)
     with app.app_context():

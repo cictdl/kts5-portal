@@ -73,8 +73,8 @@ SOP = [("readiness", "1. Institutional readiness", 20,
         "(iv) Commerce, Management, Law, Education, Medical/Allied and other professional disciplines.",
         "Programme/course information", (2, 5, 7, 10))]
 SOP_BENCHMARK = 60
-# the reserve list: ordinarily up to 20 per cent of the prescribed allocation
-RESERVE_SHARE = 20
+# selected, or on the reserve list, without the marks of Annexure-V: before 1.2.174, which asks for the marks first
+UNMARKED_SQL = "status IN ('accepted', 'reserve') AND sop_total IS NULL"
 
 
 def _recorded(row):
@@ -103,16 +103,117 @@ def sop_marks(row):
 
 
 def sop_order(row):
-    """The order of Annexure-V, best first: the total, then the tie-breaks of its paragraph 4, then the earlier registration."""
+    """
+    The order of Annexure-V, best first: the total, then the tie-breaks of its paragraph 4, then the earlier registration; then
+    the reference, so that institutions equal in all of these have one order wherever they are listed (1.2.174).
+    """
     marks = sop_marks(row)
     return (-(row["sop_total"] if row["sop_total"] is not None else -1), -marks.get("readiness", 0), -marks.get("academic", 0),
-            -marks.get("geography", 0), row["created_at"] or "")
+            -marks.get("geography", 0), row["created_at"] or "", row["id"])
 
 
-def reserve_of(state):
-    """The reserve list that Annexure-V suggests for the State/UT: ordinarily up to 20 per cent of its allocation (at least one); 0 without one."""
-    n = allocation_of(state)
-    return max(1, n * RESERVE_SHARE // 100) if n else 0
+def reserve_by_unit(states):
+    """
+    The reserve lists, one for each row of Annexure-I in the order of `states`: [(State/UT of the row, [institutions])], each in
+    the order of the marks of Annexure-V (sop_order), a paired Union Territory with its State. A reserve list has no upper limit
+    (CICT, 11 November 2026, 1.2.174; ordinarily up to 20 per cent of the number of Annexure-I before). An institution put on
+    the reserve list before 1.2.174 without marks has no place in that order: it is in the list once its marks are recorded.
+    """
+    by = {}
+    for r in query("SELECT * FROM institutions WHERE status = 'reserve' AND sop_total IS NOT NULL"):
+        by.setdefault(nodal_state_of(r["state"]), []).append(r)
+    units = list(dict.fromkeys(nodal_state_of(s) for s in states))
+    return [(u, sorted(by[u], key=sop_order)) for u in units if u in by]
+
+
+# ---- the districts reached (1.2.174) ---------------------------------------------------------------------------------------------
+# An institution writes its district as it likes: "Kachchh", "Kutch", "Kachchh (Bhuj)", "Vadodra", "BANGALORE URBAN". To count the
+# districts, two spellings of one name are brought to one key: the words that do not name the district are left out, a name the
+# district is also known by gives its present one, and of each word the letters stay without their vowels, the h of an aspirate
+# and a doubled letter (Thiruvallur, Tiruvalur: trvlr).
+DISTRICT_NOISE = {"district", "distt", "dist", "dt", "city", "town", "urban", "the", "and", "ji"}
+# the words that tell two districts of one name apart: a name with one of them is never taken for the district of its other
+# words (Bengaluru Rural, Mumbai Suburban, Kanpur Dehat, North 24 Parganas; Rae Bareli is not Bareilly)
+DISTRICT_APART = {"north", "south", "east", "west", "central", "upper", "lower", "new", "old", "rural", "suburban", "metropolitan",
+                  "metro", "dehat", "purba", "purbi", "purvi", "paschim", "pashchim", "paschimi", "uttar", "uttara", "dakshin", "dakshina",
+                  "sub", "suburb", "suburbs", "rae"}
+DISTRICT_NAMES = {
+    "sas": "mohali", "metro": "metropolitan", "pargana": "parganas", "pgs": "parganas", "anantapur": "anantapuramu",
+    "ananthapur": "anantapuramu", "anantpur": "anantapuramu", "gayaji": "gaya", "sub": "suburban", "suburb": "suburban",
+    "suburbs": "suburban",
+    "pondicherry": "puducherry", "pondy": "puducherry", "kutch": "kachchh", "kachh": "kachchh", "gulbarga": "kalaburagi",
+    "bangalore": "bengaluru", "banglore": "bengaluru", "mysore": "mysuru", "belgaum": "belagavi", "shimoga": "shivamogga",
+    "bellary": "ballari", "tumkur": "tumakuru", "trichy": "tiruchirappalli", "tiruchi": "tiruchirappalli", "tanjore": "thanjavur",
+    "tuticorin": "thoothukudi", "madras": "chennai", "bombay": "mumbai", "calcutta": "kolkata", "baroda": "vadodara", "poona": "pune",
+    "gurgaon": "gurugram", "allahabad": "prayagraj", "faizabad": "ayodhya", "trivandrum": "thiruvananthapuram",
+    "calicut": "kozhikode", "quilon": "kollam", "alleppey": "alappuzha", "palghat": "palakkad", "trichur": "thrissur",
+    "cannanore": "kannur", "cochin": "ernakulam", "kochi": "ernakulam", "balasore": "baleshwar", "vizag": "visakhapatnam",
+    "benares": "varanasi", "banaras": "varanasi", "kashi": "varanasi", "nasik": "nashik", "aurangabad": "sambhajinagar",
+    "osmanabad": "dharashiv", "ahmednagar": "ahilyanagar", "hoshangabad": "narmadapuram"}
+
+
+def _once(s):
+    return re.sub(r"(.)\1+", r"\1", s)
+
+
+def _district_word(word):
+    kept = []
+    for ch in word.replace("w", "v"):
+        if ch == "h" and kept and kept[-1] not in "aeiou":
+            continue
+        kept.append(ch)
+    s = "".join(kept)
+    return _once(s[:1] + re.sub(r"[aeiouy]", "", s[1:]))
+
+
+def _district_aside(match):
+    """What stays of a parenthesis: itself when it only tells two districts apart ("(Metro)", "(North)", "(Rural)"), else nothing."""
+    words = [DISTRICT_NAMES.get(w, w) for w in re.findall(r"[a-z]+", match.group(1)) if w not in DISTRICT_NOISE]
+    return " %s " % match.group(1) if words and all(w in DISTRICT_APART for w in words) else " "
+
+
+def district_words(text):
+    """The words that name a district, as an institution wrote it, each with its key: [(word, key)]; [] when it names none."""
+    text = (text or "").lower()
+    words = re.findall(r"[a-z]+", re.sub(r"\((.*?)\)", _district_aside, text)) or re.findall(r"[a-z]+", text)
+    words = [DISTRICT_NAMES.get(w, w) for w in words if w not in DISTRICT_NOISE]
+    return list(dict.fromkeys((w, _district_word(w)) for w in words))
+
+
+def districts_reached(places):
+    """
+    The number of districts among (State/UT, district as written) pairs. Two spellings of one district count once. A name written
+    with another beside it ("Kachchh Bhuj", "Kanpur Nagar") is the district of its first words when the State/UT has that one on
+    its own, or of its other words when they are written there letter for letter ("Sri Muktsar Sahib", "Muktsar"); never when a
+    word tells two districts apart (Bengaluru Rural, Mumbai Suburban, Kanpur Dehat).
+    """
+    by = {}
+    for state, text in places:
+        words = district_words(text)
+        if words:
+            by.setdefault(state, []).append(words)
+    total = 0
+    for entries in by.values():
+        spelt = {"".join(w for w, _k in ws) for ws in entries}
+        found = set()
+        for ws in entries:
+            key = _once("".join(k for _w, k in ws))
+            if len(ws) > 1 and not any(w in DISTRICT_APART for w, _k in ws):
+                for n in range(len(ws) - 1, 0, -1):   # the first words, the longest run first: as the State/UT has them written
+                    word = "".join(w for w, _k in ws[:n])
+                    if len(word) >= 5 and word in spelt:   # by the letters, not the key: Baloda Bazar is not Balod
+                        key = _once("".join(k for _w, k in ws[:n]))
+                        break
+                else:   # another run of its words: only as the State/UT has it written, letter for letter
+                    runs = [ws[i:j] for i in range(1, len(ws)) for j in range(i + 1, len(ws) + 1)]
+                    for run in sorted(runs, key=len, reverse=True):
+                        word = "".join(w for w, _k in run)
+                        if len(word) >= 6 and word in spelt:
+                            key = _once("".join(k for _w, k in run))
+                            break
+            found.add(key)
+        total += len(found)
+    return total
 # what an institution writes, in English, as the student does
 # Annexure-IV of the D.O. letter of 9 October 2026: the Institutional Coordinator and the Faculty Supervisor/Guide, each with
 # name, designation, mobile and e-mail (1.2.46)
@@ -327,8 +428,8 @@ def key_of(data):
 
 
 def duplicate(data, exclude_id=None):
-    """An application of the same institution that is pending or accepted."""
-    return query("SELECT * FROM institutions WHERE inst_key = ? AND status IN ('identified', 'pending', 'accepted') AND id != ?",
+    """An application of the same institution that is identified, pending, selected or on the reserve list (the last since 1.2.174)."""
+    return query("SELECT * FROM institutions WHERE inst_key = ? AND status IN ('identified', 'pending', 'accepted', 'reserve') AND id != ?",
                  (key_of(data), exclude_id or 0), one=True)
 
 
@@ -385,7 +486,10 @@ def mail_decision(row):
         body = (f"Dear Sir/Madam,\n\nThe Nodal Institution of {unit_name(row['state'])} has placed your institution in the reserve list of the "
                 f"Participating Institutions of Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom, in accordance with the Standard "
                 f"Operating Procedure. If a selected institution withdraws, does not respond or does not nominate its student, the "
-                f"next institution of the reserve list may be included; you will then receive another mail.\n\nReference: {row['ref']}\n"
+                f"next institution of the reserve list may be included; you will then receive another mail."
+                + (f" The reserve list is published on the portal, State/UT by State/UT, in the order of the marks: "
+                   f"{base}/institutions#reserve" if get_setting("hei.public") == "1" and get_setting("hei.reserve_public") == "1" else "")
+                + f"\n\nReference: {row['ref']}\n"
                 f"\nFor any question, please write to the Nodal Officer of your State/UT or to CICT.\n\nCentral Institute of Classical Tamil, Chennai")
     elif row["status"] == "accepted":
         subject = f"KTS 5.0: {row['name']} is a Participating Institution"

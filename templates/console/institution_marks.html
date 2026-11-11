@@ -11,7 +11,8 @@
   recommended qualifying benchmark {{ benchmark }}. Only the applications found eligible after scrutiny are marked. The institutions of
   {{ row.state }} are ranked by the total; in a tie, by institutional readiness, then academic engagement with the Thirukkural, then wider
   geographical representation, then the earlier complete registration. Annexure-I prescribes <b>{{ allocation or '–' }}</b> Participating
-  Institutions for {{ row.state }}{% if reserve %}, with a reserve list of ordinarily up to <b>{{ reserve }}</b>{% endif %}.</p>
+  Institutions for {{ row.state }}; the others, in the order of their marks, form the reserve list, which has no upper limit. An institution is
+  selected, or put on the reserve list, once its marks are recorded here, with <b>Select</b> or <b>Reserve list</b> in the list of the institutions.</p>
 {% if legacy %}<div class="alert warning" style="max-width:980px">Marks recorded on the six criteria of the letter of 26 October 2026:
   {% for k, v in legacy.items() %}{{ k }} {{ v }}{{ ' · ' if not loop.last }}{% endfor %}. They no longer count: please record the marks on the five
   criteria of the letter of 31 October 2026 below.</div>{% endif %}

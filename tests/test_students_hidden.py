@@ -87,7 +87,8 @@ def test_at_a_glance_counts_the_institutions():
     glance = glance[:glance.index("</section>")]
     cards = [(n.strip(), l) for n, l in __import__("re").findall(r'<div class="num">([^<]+)</div><div class="lbl">([^<]+)</div>', glance)]
     # "Institutions registered" hidden since 1.2.165 (tests/test_1107b.py)
-    assert cards == [("2", "Participating institutions"), ("3", "States and UTs"), ("22", "Languages of the Thirukkural")]
+    # the States/UTs: those of the Participating Institutions, Tamil Nadu and Kerala (1.2.174; those of a registration before)
+    assert cards == [("2", "Participating institutions"), ("2", "States and UTs"), ("22", "Languages of the Thirukkural")]
     assert "Student delegates registered" not in glance and "Colleges represented" not in glance
     # in every language, the portal's own words
     from kts.i18n import CATALOG

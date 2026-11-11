@@ -86,6 +86,8 @@ def test_an_identified_institution_is_selected_once_it_has_registered():
     _apply(client, invite=alpha["invite_token"], name="Alpha College Pune", state="Maharashtra", aishe_code="",
            coord_email="alpha@maha.example", head_email="head@alpha.example")
     assert _row(app, alpha["id"])["status"] == "pending"
+    from test_institutions import _marked
+    _marked(app)   # and, since 1.2.174, on its marks of Annexure-V
     officer.post("/console/institutions", data={"_csrf": _token(officer), "id": alpha["id"], "action": "accept"})
     assert _row(app, alpha["id"])["status"] == "accepted"
 
@@ -119,6 +121,8 @@ def test_one_institution_back_to_invited():
            coord_email="c@gamma.example")
     with app.app_context():
         gamma = query("SELECT * FROM institutions WHERE name = 'Gamma College Pune'", one=True)
+    from test_institutions import _marked
+    _marked(app)
     officer.post("/console/institutions", data={"_csrf": _token(officer), "id": gamma["id"], "action": "accept"})
     assert officer.post("/console/institutions", data={"_csrf": _token(officer), "id": gamma["id"], "action": "reinvite"}).status_code == 400
     assert officer.post("/console/institutions", data={"_csrf": _token(officer), "id": alpha["id"], "action": "reinvite"}).status_code == 400

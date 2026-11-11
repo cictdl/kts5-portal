@@ -32,8 +32,8 @@ def test_the_five_criteria_of_annexure_v():
                        "geography": (5, 10, 15, 20), "diversity_type": (5, 10), "diversity_disc": (2, 5, 7, 10)}
     app = make_app(ADMIN_PASSWORD=None)
     with app.app_context():
-        # ordinarily up to 20 per cent of the allocation, at least one
-        assert (HEI.reserve_of("Kerala"), HEI.reserve_of("Uttar Pradesh"), HEI.reserve_of("Puducherry"), HEI.reserve_of("Goa")) == (4, 60, 1, 1)
+        # the reserve list has no upper limit (1.2.174; ordinarily up to 20 per cent of the allocation before)
+        assert not hasattr(HEI, "reserve_of") and not hasattr(HEI, "RESERVE_SHARE")
 
 
 def test_the_committee_records_the_marks_and_they_rank_the_institutions():
@@ -106,6 +106,8 @@ def test_the_final_list_in_the_format_of_annexure_ii():
     with app.app_context():
         sid = query("SELECT id FROM institutions WHERE name = 'Selected College'", one=True)["id"]
     officer = _nodal(app, "nodal.kerala8@tests.example", ["Kerala"])
+    from test_institutions import _marked
+    _marked(app)   # selected on its marks of Annexure-V (1.2.174)
     officer.post("/console/institutions", data={"_csrf": _token(officer), "id": sid, "action": "accept"})
     listing = _get(officer, "/console/institutions?state=Kerala")
     assert ">Excel (Annexure-II)</a>" in listing and ">Excel (all institutions)</a>" in listing

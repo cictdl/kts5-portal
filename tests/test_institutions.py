@@ -37,6 +37,21 @@ def _app():
     return app
 
 
+def _marked(app, total=70):
+    """
+    The marks of the Evaluation Committee recorded for every registered institution that has none: since 1.2.174 an institution
+    is selected, or put on the reserve list, only on its marks of Annexure-V (tests/test_reserve_1111.py).
+    """
+    import json as _json
+    from kts.db import execute
+    marks = {"readiness": 15, "outreach": 15, "academic": 15, "geography": 10, "diversity_type": 10, "diversity_disc": 5}
+    assert sum(marks.values()) == 70
+    marks["readiness"] += total - 70
+    with app.app_context():
+        execute("UPDATE institutions SET sop_scores = ?, sop_total = ? WHERE sop_total IS NULL AND status != 'identified'",
+                (_json.dumps(marks), total))
+
+
 def test_an_institution_applies_and_the_nodal_officer_accepts_it():
     from kts.db import query
     app = _app()
@@ -62,6 +77,7 @@ def test_an_institution_applies_and_the_nodal_officer_accepts_it():
     # the Nodal Officer of Kerala accepts it
     page = officer.get("/console/institutions").get_data(as_text=True)
     assert "Government Arts College Thrissur" in page and "pending" in page
+    _marked(app)
     r = officer.post("/console/institutions", data={"_csrf": _token(officer), "id": str(row["id"]), "action": "accept"})
     assert r.status_code == 302
     with app.app_context():
@@ -87,6 +103,7 @@ def test_a_nodal_officer_decides_for_their_state_only_and_the_most_is_kept():
         ids = {r["name"]: r["id"] for r in query("SELECT id, name FROM institutions")}
         set_setting("hei.cap_annexure", "0")    # the number of Annexure-I (1.2.110) off: the limit for all States/UTs
         set_setting("hei.max_per_state", "1")   # 0, the default since 1.2.43, is no limit
+    _marked(app)
     officer = _nodal(app, "nodal.kerala@tests.example", ["Kerala"])
     page = officer.get("/console/institutions").get_data(as_text=True)
     assert "College One" in page and "College Three" not in page
@@ -228,6 +245,7 @@ def test_each_state_accepts_at_most_its_number_of_annexure_i():
     with app.app_context():
         rid = query("SELECT id FROM institutions WHERE name = 'College Twenty-two'", one=True)["id"]
     officer = _nodal(app, "nodal.kerala2@tests.example", ["Kerala"])
+    _marked(app)
     r = officer.post("/console/institutions", data={"_csrf": _token(officer), "id": rid, "action": "accept"}, follow_redirects=True)
     assert "Kerala and Lakshadweep has 21 accepted institutions: that is the number Annexure-I prescribes for it" in r.get_data(as_text=True)
     with app.app_context():
@@ -251,7 +269,7 @@ def test_the_marks_of_annexure_v_rank_the_institutions_and_the_reserve_list():
         ids = {r["name"]: r["id"] for r in query("SELECT id, name FROM institutions")}
         assert [k for k, *_ in HEI.SOP] == ["readiness", "outreach", "academic", "geography", "diversity_type", "diversity_disc"]
         assert sum(m for _k, _c, m, *_ in HEI.SOP) == 100 and HEI.SOP_BENCHMARK == 60
-        assert (HEI.reserve_of("Kerala"), HEI.reserve_of("Uttar Pradesh"), HEI.reserve_of("Puducherry"), HEI.reserve_of("Ladakh")) == (4, 60, 1, 2)
+        assert not hasattr(HEI, "reserve_of")   # the reserve list has no upper limit (1.2.174; up to 20 per cent before)
     officer = _nodal(app, "nodal.kerala3@tests.example", ["Kerala"])
     page = officer.get(f"/console/institutions/{ids['College Beta']}/marks").get_data(as_text=True)
     assert "Institutional readiness" in page and "5B. Disciplinary diversity" in page and '<select name="readiness"' in page
@@ -285,9 +303,11 @@ def test_the_marks_of_annexure_v_rank_the_institutions_and_the_reserve_list():
         assert "placed your institution in the reserve list" in mail
     page = officer.get("/console/institutions?state=Kerala").get_data(as_text=True)
     assert '<span class="pill saffron">reserve list</span>' in page and '<span class="pill green">selected</span>' in page
-    # the reserve list is not among the Participating Institutions of the website
+    # the reserve list is not among the Participating Institutions of the website: it has its own list below them (1.2.174)
     public = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    assert "College Beta" in public and "College Alpha" not in public
+    selected, reserve = public[:public.index('<h2 id="reserve"')], public[public.index('<h2 id="reserve"'):]
+    assert "College Beta" in selected and "College Alpha" not in selected
+    assert "College Alpha" in reserve and "College Beta" not in reserve and "College Gamma" not in reserve
     officer.post("/console/institutions", data={"_csrf": _token(officer), "id": ids["College Beta"], "action": "decline", "note": "Withdrew"})
     officer.post("/console/institutions", data={"_csrf": _token(officer), "id": ids["College Alpha"], "action": "accept"})
     with app.app_context():
@@ -299,9 +319,9 @@ def test_the_marks_of_annexure_v_rank_the_institutions_and_the_reserve_list():
     from openpyxl import load_workbook
     ws = load_workbook(io.BytesIO(r.data)).active
     values = [[c.value for c in row] for row in ws.iter_rows()]
-    assert values[0][:5] == ["State/UT", "Nodal HEI", "Number to be selected (Annexure-I)", "Reserve list (up to 20%)", "Rank"]
-    assert [(v[4], v[5], v[17]) for v in values[1:]] == [(1, "College Beta", 70), (2, "College Alpha", 70), (3, "College Gamma", 50)]
-    assert values[1][2] == 21 and values[1][3] == 4 and values[3][18] == "no"
+    assert values[0][:5] == ["State/UT", "Nodal HEI", "Number to be selected (Annexure-I)", "Rank", "Name of Institution"]
+    assert [(v[3], v[4], v[16]) for v in values[1:]] == [(1, "College Beta", 70), (2, "College Alpha", 70), (3, "College Gamma", 50)]
+    assert values[1][2] == 21 and values[3][17] == "no" and values[0][8] == "AISHE/Institution Code"
     # a Nodal Officer of another State/UT sees none of them
     other = _nodal(app, "nodal.assam3@tests.example", ["Assam"])
     assert other.get(f"/console/institutions/{ids['College Gamma']}/marks").status_code == 404

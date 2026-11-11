@@ -48,6 +48,8 @@ def _accepted(app, **changes):
     admin = _staff(app, f"admin{len(changes)}@tests.example", "superadmin")
     with app.app_context():
         iid = query("SELECT id FROM institutions ORDER BY id DESC LIMIT 1", one=True)["id"]
+    from test_institutions import _marked
+    _marked(app)   # selected on its marks of Annexure-V (1.2.174)
     admin.post("/console/institutions", data={"_csrf": _token(admin), "id": str(iid), "action": "accept"})
     with app.app_context():
         return query("SELECT * FROM institutions WHERE id = ?", (iid,), one=True)
