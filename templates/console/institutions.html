@@ -23,6 +23,20 @@
     <td class="num">{{ c.get('declined', 0) }}</td></tr>
   {% endif %}{% endfor %}</tbody>
 </table></div>
+{% if can_decide and stray %}
+{# selected, on the reserve list or declined before they registered (1.2.173) #}
+<div class="card" id="unregistered" style="margin-bottom:16px;border-left:4px solid var(--saffron)">
+  <h3 style="margin-top:0">Selected before they registered</h3>
+  <p class="small dim" style="margin:0 0 8px">These institutions were identified and invited by the Nodal Institution, and then selected, put on the reserve list or declined before they completed their registration. <b>↩ Back to invited</b> returns them to <i>identified · invited</i>: each receives the invitation again with a new link, completes its registration, and is then selected on its own, on its marks of Annexure-V. One that has switched on its online assessment, has students or a selected student stays as it is.</p>
+  {% for s, n in stray %}
+  <form method="post" action="{{ url_for('admin.institutions_back_to_invited') }}" class="btn-row" style="margin:0 0 6px">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="state" value="{{ s }}">
+    <span><b>{{ labels.get(s, s) }}</b>: <a href="{{ url_for('admin.institutions', state=s, unregistered=1) }}">{{ n }} institution(s)</a></span>
+    <button class="btn xs" data-confirm="Return the {{ n }} institution(s) of {{ labels.get(s, s) }} selected before they registered to identified · invited? Each is invited again by e-mail.">↩ Back to invited: all {{ n }}</button>
+  </form>
+  {% endfor %}
+</div>
+{% endif %}
 {% if can_decide %}
 <div class="card" style="margin-bottom:16px">
   <h3 style="margin-top:0">Invite institutions to register (a list)</h3>
@@ -50,11 +64,12 @@
   <thead><tr><th>Institution</th><th>Head of the Institution</th><th>Coordinator · Faculty Supervisor/Guide</th><th>Status · marks (Annexure-V)</th><th>Assessment · selected student</th>{% if can_decide %}<th></th>{% endif %}</tr></thead>
   <tbody>{% for r in rows %}
   <tr><td><b>{{ r.name }}</b><div class="small muted">{{ r.ref }} · {{ r.state }} · {{ r.district }} · {{ r.itype }}{% if r.aishe_code %} · AISHE {{ r.aishe_code }}{% endif %}</div>
-      <div class="small muted">{{ 'identified' if r.status == 'identified' else 'applied' }} {{ r.created_at|datetime }}</div></td>
+      <div class="small muted">{{ 'identified' if r.status == 'identified' or (r.invited_by and not r.head_name) else 'applied' }} {{ r.created_at|datetime }}</div></td>
     <td>{% if r.head_name %}{{ r.head_name }}<div class="small muted">{{ r.head_designation }}<br>{{ r.head_email }} · {{ r.head_phone }}</div>{% else %}<span class="muted">–</span>{% endif %}</td>
     <td>{{ r.coord_name }}<div class="small muted">{% if r.coord_designation %}{{ r.coord_designation }}<br>{% endif %}{{ r.coord_email }} · {{ r.coord_mobile }}</div>
       {% if r.guide_name %}<div class="small" style="margin-top:6px"><b>Guide:</b> {{ r.guide_name }}<div class="muted">{{ r.guide_designation }}<br>{{ r.guide_email }} · {{ r.guide_mobile }}</div></div>{% endif %}</td>
     <td>{% if r.status == 'accepted' %}<span class="pill green">selected</span>{% elif r.status == 'reserve' %}<span class="pill saffron">reserve list</span>{% elif r.status == 'identified' %}<span class="pill grey">identified · invited</span>{% elif r.status == 'declined' %}<span class="pill red">declined</span>{% if r.decision_note %}<div class="small muted">{{ r.decision_note }}</div>{% endif %}{% else %}<span class="pill saffron">pending</span>{% endif %}
+      {% if r.status != 'identified' and r.invited_by and not r.head_name %}<div class="small" style="color:var(--red,#b42318)">not registered yet</div>{% endif %}
       <div class="small" style="margin-top:6px">{% if r.sop_total is not none %}<b>{{ r.sop_total }}</b>/100{% if r.sop_total < benchmark %} <span class="muted">(below {{ benchmark }})</span>{% endif %}
         <span class="muted">· {% for k, v in marks.get(r.id, {}).items() %}{{ v }}{% if not loop.last %}+{% endif %}{% endfor %}</span>{% else %}<span class="muted">not marked yet</span>{% endif %}</div></td>
     <td class="small">{% if r.status == 'accepted' %}{% if r.test_on %}online {{ r.test_from|date }} – {{ r.test_to|date }}: {{ r.assessed }} of {{ r.students }} students{% else %}no online assessment{% endif %}
@@ -62,11 +77,13 @@
     {% if can_decide %}<td><form method="post" class="btn-row" style="margin:0;flex-wrap:wrap">
       <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="id" value="{{ r.id }}">
       {% if r.status == 'identified' %}<button class="btn xs ghost" name="action" value="invite">Invite again</button>{% endif %}
-      {% if r.status != 'accepted' %}<button class="btn xs" name="action" value="accept">✓ Select</button>{% endif %}
+      {# an institution only identified is selected once it has registered (1.2.173) #}
+      {% if r.status not in ('accepted', 'identified') %}<button class="btn xs" name="action" value="accept">✓ Select</button>{% endif %}
       {% if r.status not in ('reserve', 'identified') %}<button class="btn xs ghost" name="action" value="reserve">Reserve list</button>{% endif %}
       {% if r.status != 'declined' %}<input type="text" name="note" placeholder="Remark (sent with a decline)" maxlength="500" style="max-width:190px">
         <button class="btn xs danger" name="action" value="decline" data-confirm="Decline {{ r.name }}? The institution is informed by mail.">✗ Decline</button>{% endif %}
-      {% if r.status in ('accepted', 'reserve', 'declined') %}<button class="btn xs ghost" name="action" value="pending">Undo</button>{% endif %}
+      {% if r.status in ('accepted', 'reserve', 'declined') and r.invited_by and not r.head_name %}<button class="btn xs" name="action" value="reinvite" data-confirm="Return {{ r.name }} to identified · invited? It is invited again by e-mail to complete its registration.">↩ Back to invited</button>
+      {% elif r.status in ('accepted', 'reserve', 'declined') %}<button class="btn xs ghost" name="action" value="pending">Undo</button>{% endif %}
       {% if r.status != 'identified' %}<a class="btn xs ghost" href="{{ url_for('admin.institution_marks', iid=r.id) }}">Marks</a>{% endif %}
       <a class="btn xs ghost" href="{{ url_for('admin.institution_edit', iid=r.id) }}">Edit</a>
     </form></td>{% endif %}</tr>

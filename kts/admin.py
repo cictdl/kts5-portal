@@ -1075,7 +1075,7 @@ def backups():
 # ---- the participating institutions of the States/UTs (1.2.41, kts/heis.py) ----------------------------------
 
 def _inst_filters(scope):
-    f = {k: (request.args.get(k) or "").strip() for k in ("state", "status", "q")}
+    f = {k: (request.args.get(k) or "").strip() for k in ("state", "status", "q", "unregistered")}
     sql, args = " FROM institutions i WHERE 1=1", []
     if scope is not None:
         sql += f" AND i.state IN ({','.join('?' * len(scope))})" if scope else " AND 0"
@@ -1087,6 +1087,8 @@ def _inst_filters(scope):
     if f["status"]:
         sql += " AND i.status = ?"
         args.append(f["status"])
+    if f["unregistered"]:   # selected, on the reserve list or declined before they registered (1.2.173)
+        sql += " AND i." + HEI.UNREGISTERED_SQL.replace(" AND ", " AND i.")
     if f["q"]:
         sql += " AND (i.name LIKE ? OR i.ref LIKE ? OR i.aishe_code LIKE ? OR i.head_email LIKE ? OR i.coord_email LIKE ? OR i.district LIKE ?)"
         args += [f"%{f['q']}%"] * 6
@@ -1116,6 +1118,25 @@ def institutions():
             abort(404)
         action = request.form.get("action")
         note = (request.form.get("note") or "").strip()[:500]
+        # an institution identified by the Nodal Institution is selected once it has registered with its invitation (1.2.173)
+        if action in ("accept", "reserve") and row["status"] == "identified":
+            flash(f"{row['name']} has not completed its registration yet: it is selected, or put on the reserve list, once it has "
+                  f"registered with its invitation, on its marks of Annexure-V (Invite again mails the link once more).", "error")
+            return redirect(back)
+        # selected, put on the reserve list or declined before it registered: back to identified, invited again (1.2.173)
+        if action == "reinvite":
+            if row["status"] == "identified" or not HEI.never_registered(row):
+                abort(400)
+            busy = HEI.busy_reason(row)
+            if busy:
+                flash(f"{row['name']} stays as it is: {busy}.", "error")
+                return redirect(back)
+            HEI.back_to_invited(row)
+            audit("institution_reinvited", "institution", row["id"], detail={"ref": row["ref"], "was": row["status"]}, user=user,
+                  ip=client_ip())
+            flash(f"{row['name']}: back to identified · invited; the invitation to complete its registration is mailed again to "
+                  f"{row['coord_email']}.", "success")
+            return redirect(back)
         if action == "accept":
             cap = HEI.cap_of(row["state"])
             group = HEI.group_of(row["state"])   # a paired Union Territory and its State share the number (1.2.135)
@@ -1176,13 +1197,18 @@ def institutions():
             c["testing"] += r["testing"] or 0
             c["winners"] += r["winners"] or 0
             c["registered"] += r["registered"] or 0
+    # selected, on the reserve list or declined before they registered (1.2.173), by the row of Annexure-I
+    stray = {}
+    for r in query("SELECT state, COUNT(*) AS n" + s_sql + " AND " + HEI.UNREGISTERED_SQL + " GROUP BY state", s_args):
+        unit = HEI.nodal_state_of(r["state"])
+        stray[unit] = stray.get(unit, 0) + r["n"]
     states = scope if scope is not None else _states()
     units = list(dict.fromkeys(HEI.nodal_state_of(s) for s in states))
     allocation = {h["state"]: h.get("allocation", 0) for h in _nodal_heis()}
     settings = all_settings()
     return render_template("console/institutions.html", rows=rows[:INST_ROWS_SHOWN], more=len(rows) > INST_ROWS_SHOWN, f=f,
                            states=states, units=units, labels={u: HEI.label_of(u, "en") for u in units},
-                           summary=summary, allocation=allocation, scope=scope,
+                           summary=summary, allocation=allocation, scope=scope, stray=[(u, stray[u]) for u in units if stray.get(u)],
                            can_decide=has_perm(user, "hei.decide"), window=HEI.window(settings),
                            reg_end=settings.get("reg.end"), assess_to=settings.get("camp.to"), hei_end=settings.get("hei.end"),
                            select_end=settings.get("hei.select_end"), reserve={s: HEI.reserve_of(s) for s in units},
@@ -1532,6 +1558,37 @@ def _annexure_columns(rows):
                    "mobile": next((j for j, h in enumerate(heads) if "mobile" in h or "phone" in h), None),
                    "state": next((j for j, h in enumerate(heads) if "state" in h), None)}
     return None
+
+
+@bp.route("/institutions/back-to-invited", methods=["POST"])
+@login_required("hei.decide")
+def institutions_back_to_invited():
+    """
+    Every institution of a row of Annexure-I that its Nodal Institution identified and that was selected, put on the reserve list
+    or declined before it completed its registration goes back to 'identified', each invited again by mail with a new link (1.2.173;
+    the Nodal Institution of Maharashtra, 11 November 2026). One with a selected student, students or its online assessment on stays.
+    """
+    user = _user()
+    scope = state_scope(user)
+    state = (request.form.get("state") or "").strip()
+    members = [s for s in (HEI.group_of(state) if state in _states() else []) if scope is None or s in scope]
+    if not members:
+        abort(404)
+    rows = query(f"SELECT * FROM institutions WHERE state IN ({','.join('?' * len(members))}) AND {HEI.UNREGISTERED_SQL} "
+                 "ORDER BY name COLLATE NOCASE", members)
+    back, kept = [], []
+    for row in rows:
+        busy = HEI.busy_reason(row)
+        if busy:
+            kept.append(f"{row['name']} ({busy})")
+            continue
+        HEI.back_to_invited(row)
+        back.append(row["ref"])
+    label = HEI.label_of(state, "en")
+    audit("institutions_reinvited", "institution", None, detail={"state": label, "back": back, "kept": kept}, user=user, ip=client_ip())
+    flash(f"{label}: {len(back)} institution(s) back to identified · invited, each invited again by mail"
+          + (f"; {len(kept)} stay as they are: " + "; ".join(kept) if kept else "") + ".", "success" if back else "error")
+    return redirect(url_for("admin.institutions", state=HEI.nodal_state_of(state), status="identified"))
 
 
 @bp.route("/institutions/identified", methods=["POST"])

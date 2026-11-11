@@ -28,11 +28,12 @@ with_covered, label_of, unit_name).
 """
 import json
 import re
+import secrets
 from datetime import date, timedelta
 
 from flask import current_app
 
-from .db import get_setting, query
+from .db import execute, get_setting, query, utcnow
 from .utils import college_key, now_ist, send_later, send_mail
 
 # identified: in the list of the Nodal Institution (Annexure-II), invited, not yet registered (1.2.43); accepted: a selected
@@ -158,6 +159,41 @@ def selection_start(settings):
     row = query("SELECT starts_at FROM events WHERE title = ? AND published = 1", (title,), one=True) if title else None
     first = (row["starts_at"] or "")[:10] if row else ""
     return first if first and first < select_end else None
+
+
+def never_registered(row):
+    """
+    An institution that its Nodal Institution identified (the uploaded list, 1.2.43) and that has not completed its registration:
+    it has no Head of the Institution, which the registration form asks for (1.2.173).
+    """
+    return bool(row["invited_by"]) and not (row["head_name"] or "").strip()
+
+
+# the institutions selected, put on the reserve list or declined before they registered, in SQL (1.2.173)
+UNREGISTERED_SQL = "status != 'identified' AND invited_by IS NOT NULL AND head_name = ''"
+
+
+def busy_reason(row):
+    """Why an institution cannot go back to invited: its selected student, its students, its online assessment (1.2.173); '' if none."""
+    if row["application_id"] or row["winner_id"]:
+        return "it has a selected student"
+    if query("SELECT 1 FROM campus_students WHERE institution_id = ? LIMIT 1", (row["id"],), one=True):
+        return "students have joined its assessment"
+    if row["test_on"]:
+        return "its online assessment is switched on"
+    return ""
+
+
+def back_to_invited(row):
+    """
+    The institution goes back to 'identified', invited again by mail with a new link, as when its Nodal Institution first invited
+    it; the decision on it is cleared (1.2.173). Gives the row as it is now.
+    """
+    execute("UPDATE institutions SET status = 'identified', invite_token = ?, decision_note = '', decided_by = NULL, decided_at = NULL, "
+            "updated_at = ? WHERE id = ?", (secrets.token_urlsafe(18), utcnow(), row["id"]))
+    fresh = query("SELECT * FROM institutions WHERE id = ?", (row["id"],), one=True)
+    mail_invited(fresh)
+    return fresh
 
 
 def window(settings):
