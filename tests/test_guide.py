@@ -22,7 +22,7 @@ def site():
     from kts.db import set_setting
     app = make_app(ADMIN_PASSWORD=None)
     with app.app_context():
-        set_setting("reg.end", "2026-11-20")
+        set_setting("reg.end", "2026-11-24")
     return app.test_client()
 
 
@@ -37,11 +37,11 @@ def test_the_three_parts_with_their_dates_and_links(site):
     for heading in ("How to take part", "For students", "For participating institutions", "For Nodal Officers of the States/UTs"):
         assert heading in page
     # the dates of the settings in the steps
-    assert "ask its Head to register it by 18 Nov 2026;" in page and "<b>Your nomination by 20 Nov 2026</b>" in page
-    assert "By 19 Nov 2026, your institution assesses" in page and "Between 22 Oct 2026" not in page
+    assert "ask its Head to register it by 18 Nov 2026;" in page and "<b>Your nomination by 24 Nov 2026</b>" in page
+    assert "By 23 Nov 2026, your institution assesses" in page and "Between 22 Oct 2026" not in page
     # the Nodal Officers accept the institutions up to the last day of the selection (the revised D.O. letter, 1.2.110)
-    assert "and select the number that Annexure-I prescribes, with a reserve list, by 17 Nov 2026." in page
-    assert "Selection of the Participating Institutions by the Nodal Institutions</div><div class=\"val\">17 Nov 2026</div>" in page
+    assert "and select the number that Annexure-I prescribes, with a reserve list, by 19 Nov 2026." in page
+    assert "Selection of the Participating Institutions by the Nodal Institutions</div><div class=\"val\">19 Nov 2026</div>" in page
     assert "50 questions in 30 minutes" in page
     assert "<b>Verify the registered students by 05 Dec 2026</b>" in page
     assert not any(p in page for p in PLACEHOLDERS)

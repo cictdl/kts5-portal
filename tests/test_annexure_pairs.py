@@ -114,7 +114,7 @@ def test_the_live_circular_takes_the_pairs_once():
         body = query("SELECT body FROM notices WHERE title = ?", (TITLE,), one=True)["body"]
         assert query("SELECT value FROM settings WHERE key = 'migrate.annex1_pairs.notice'", one=True)["value"] == "1"
     assert "7. Gujarat and Dadra and Nagar Haveli and Daman and Diu: Central University of Gujarat (50)" in body
-    assert "12. Kerala and Lakshadweep: Central University of Kerala (21)" in body and "up to 15 November 2026" in body
+    assert "12. Kerala and Lakshadweep: Central University of Kerala (21)" in body and "up to 18 November 2026" in body
     conn = sqlite3.connect(str(app.config["DATABASE"]))
     conn.execute("UPDATE notices SET body = 'CICT wrote this.' WHERE title = ?", (TITLE,))
     conn.execute("DELETE FROM settings WHERE key = 'migrate.annex1_pairs.notice'")

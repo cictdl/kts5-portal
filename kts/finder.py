@@ -110,8 +110,8 @@ def days_chip(d, today, lang):
 
 
 def span(a, b, lang):
-    """16–17 November 2026, or 28 November – 12 December 2026."""
-    if not a or not b:
+    """16–17 November 2026, or 28 November – 12 December 2026; one day alone (19 November 2026, 1.2.172) when they are the same."""
+    if not a or not b or a == b:
         return long_day(a or b, lang)
     if (a.year, a.month) == (b.year, b.month):
         return f"{a.day}–{long_day(b, lang)}"

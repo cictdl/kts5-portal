@@ -29,7 +29,7 @@ def _portal():
     from kts.db import execute, set_setting
     app = make_app(ADMIN_PASSWORD=None)
     with app.app_context():
-        set_setting("reg.end", "2026-11-20")   # the tests' portal keeps registration open far ahead
+        set_setting("reg.end", "2026-11-24")   # the tests' portal keeps registration open far ahead
     return app
 
 
@@ -63,9 +63,9 @@ def test_the_letter_of_tamil_nadu_in_english():
     assert "Dr. T. N. Officer, Nodal Officer · Registrar · nodal.tn@cutn.example · 9444000001" in doc
     assert "The Ministry has designated Central University of Tamil Nadu as the Nodal Higher Educational Institution for Tamil Nadu and Andaman and Nicobar Islands, to select 50 Participating Institutions" in doc
     # the dates of the settings, in words
-    for when in ("Assess your students by 19 November 2026.", "Nominate one student on merit by 20 November 2026.",
+    for when in ("Assess your students by 23 November 2026.", "Nominate one student on merit by 24 November 2026.",
                  "28 November – 12 December 2026 at Varanasi", "The one-month research and academic engagement, 15 December 2026 – 14 January 2027.",
-                 "an academic orientation by 14 December 2026", "By 14 January 2027 the article", "By 19 November 2026"):
+                 "an academic orientation by 14 December 2026", "By 14 January 2027 the article", "By 23 November 2026"):
         assert when in doc, when
     assert "kts.cict.in/institution/login" in doc and "kts.cict.in/static/KTS5-nomination-form.pdf" in doc and "youtu.be/" in doc
     assert "registrar@cict.in" in doc and "At a glance" in doc and "Yours faithfully," in doc and "Nodal Officer, KTS 5.0 – Tamil Nadu and Andaman and Nicobar Islands" in doc
@@ -96,7 +96,7 @@ def test_without_an_officer_and_in_tamil_and_urdu():
     # Tamil: the row of Annexure-I and the months in Tamil, the picture of the language
     r, z, doc = _letter(client, "Tamil Nadu", "ta")
     assert r.headers["Content-Disposition"].endswith("KTS5-letter-tamil-nadu-ta.docx")
-    assert "தமிழ்நாடு மற்றும் அந்தமான் நிக்கோபார் தீவுகள்" in doc and f"19 {text('month.11', 'ta')} 2026" in doc
+    assert "தமிழ்நாடு மற்றும் அந்தமான் நிக்கோபார் தீவுகள்" in doc and f"23 {text('month.11', 'ta')} 2026" in doc
     assert z.read("word/media/art.png") == (ROOT / "static" / "img" / "letter" / "ta.png").read_bytes()
     assert 'w:cs="Nirmala UI"' in doc and "<w:bidi/>" not in doc
     # Urdu: right to left

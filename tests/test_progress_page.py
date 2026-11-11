@@ -25,7 +25,7 @@ def _portal():
         from kts.db import set_setting as _set
         _set("institutions.registered", "1")   # the institutions registered shown (hidden by default since 1.2.168, tests/test_1110.py)
         _set("reg.public", "1")
-        _set("reg.end", "2026-11-20")   # the nomination, among the milestones (1.2.155); the tests' portal keeps it far ahead
+        _set("reg.end", "2026-11-24")   # the nomination, among the milestones (1.2.155); the tests' portal keeps it far ahead
     tn = _inst(app, "Presidency College", state="Tamil Nadu", test_on=1)
     sid = _student(app, tn, "Student One", tested=True)
     _student(app, tn, "Student Two", tested=True)
@@ -70,7 +70,7 @@ def test_the_figures():
     assert all(s["to_select"] for s in p["states"]) and "Lakshadweep" not in {s["state"] for s in p["states"]}
     # the milestones, in order, with at most one 'next'
     keys = [m["key"] for m in p["milestones"]]
-    assert keys == ["hei_select", "hei_reg", "assess", "reg_close", "selection", "inauguration", "valedictory", "live", "internship", "papers"]
+    assert keys == ["hei_reg", "hei_select", "assess", "reg_close", "selection", "inauguration", "valedictory", "live", "internship", "papers"]
     assert [m["starts"] for m in p["milestones"]] == sorted(m["starts"] for m in p["milestones"])
     statuses = [m["status"] for m in p["milestones"]]
     assert statuses.count("next") <= 1 and set(statuses) <= {"done", "current", "next", "upcoming"}

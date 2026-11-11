@@ -39,7 +39,7 @@ def test_the_moment_and_the_phases():
     s = dict(DEFAULT_SETTINGS)
     # the launch of 22 October 2026 (1.2.95): registration from 22 October, to 20 November since the revised D.O. letter (1.2.110)
     assert s["launch.on"] == "1" and s["launch.at"] == "2026-10-22T12:00" and s["launch.until"] == "2026-10-29"
-    assert s["reg.start"] == "2026-10-22" and s["reg.end"] == "2026-11-20"
+    assert s["reg.start"] == "2026-10-22" and s["reg.end"] == "2026-11-24"   # the nomination on 24 November since 1.2.172
     assert launch_at(s).isoformat() == "2026-10-22T12:00:00+05:30"
     assert launch_phase(s, _at(22, 11, 59)) == "before" and launch_phase(s, _at(22, 12)) == "after"
     assert launch_phase(s, _at(29, 23, 59)) == "after" and launch_phase(s, _at(30)) is None
@@ -55,9 +55,9 @@ def test_registration_opens_at_the_launch(monkeypatch):
     assert registration_state(s) == "not_yet"
     _clock(monkeypatch, _at(22, 12))
     assert registration_state(s) == "open"
-    _clock(monkeypatch, _at(20, 23, 59, month=11))
+    _clock(monkeypatch, _at(24, 23, 59, month=11))
     assert registration_state(s) == "open"
-    _clock(monkeypatch, _at(21, month=11))
+    _clock(monkeypatch, _at(25, month=11))
     assert registration_state(s) == "closed"
     # a database that kept the day of the timeline of 8 October 2026, or the day first set for the launch, takes the day of
     # the launch
@@ -141,7 +141,7 @@ def test_the_launch_postponed(monkeypatch):
     # after registration has really closed, its last day is named
     with app.app_context():
         set_setting("launch.on", "0")
-    _clock(monkeypatch, _at(21, 10, month=11))
+    _clock(monkeypatch, _at(25, 10, month=11))
     assert "Registrations closed on" in app.test_client().get("/register?lang=en").get_data(as_text=True)
 
 
@@ -358,7 +358,7 @@ def test_the_notice_of_before_the_launch_says_that_it_took_place():
     # (1.2.95), dated the day it changes; one that CICT has changed stays as it is
     from kts.db import LAUNCH_NOTICE, RETIRED_LAUNCH_NOTICES, execute, init_db, query
     assert "launched the web portal" in LAUNCH_NOTICE[1] and "on 22 October 2026" in LAUNCH_NOTICE[1]
-    assert "by 20 November 2026" in LAUNCH_NOTICE[1] and "will launch" not in LAUNCH_NOTICE[1]
+    assert "on 24 November 2026" in LAUNCH_NOTICE[1] and "will launch" not in LAUNCH_NOTICE[1]
     app = make_app(ADMIN_PASSWORD=None)
     old_title, old_body = RETIRED_LAUNCH_NOTICES[0]
     with app.app_context():

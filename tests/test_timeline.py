@@ -20,7 +20,7 @@ NAMES = ("INSTANCE_DIR", "DATABASE", "UPLOAD_DIR")
 # registration opens with the launch of the registration portal, set for 14 October 2026 (1.2.69) and held on 22 October (1.2.95);
 # the steps after it are those of the revised D.O. letter of 26 October 2026 (Annexure-III D, 1.2.110)
 # the letter of 31 October 2026 (1.2.133): the orientation (14 December) and the engagement (15 December) after the valedictory
-ORDER = ["circular", "hei_list", "reg_open*", "hei_select", "hei_reg", "assess", "reg_close*", "selection", "inauguration*",
+ORDER = ["circular", "hei_list", "reg_open*", "hei_reg", "hei_select", "assess", "reg_close*", "selection", "inauguration*",
          "valedictory*", "live", "internship", "research", "papers"]
 KEYS = ["timeline." + name.rstrip("*") for name in ORDER]
 
@@ -99,26 +99,27 @@ def test_the_dates_of_the_timeline_are_the_defaults():
     # register up to 15 November, the Nodal Institutions select them on 16 and 17 November, each selected one assesses its
     # students by 19 November and nominates its student by 20 November, verification up to 5 December, the one-month
     # engagement from 15 December 2026 to 14 January 2027
-    assert DEFAULT_SETTINGS["reg.start"] == "2026-10-22" and DEFAULT_SETTINGS["reg.end"] == "2026-11-20"
+    assert DEFAULT_SETTINGS["reg.start"] == "2026-10-22" and DEFAULT_SETTINGS["reg.end"] == "2026-11-24"   # 1.2.172
     # registration up to 18 November since 1.2.171 (CICT, 10 November 2026), the selection unchanged
-    assert DEFAULT_SETTINGS["hei.end"] == "2026-11-18" and DEFAULT_SETTINGS["hei.select_end"] == "2026-11-17"
-    assert DEFAULT_SETTINGS["camp.to"] == "2026-11-19" and DEFAULT_SETTINGS["verify.end"] == "2026-12-05"
+    assert DEFAULT_SETTINGS["hei.end"] == "2026-11-18" and DEFAULT_SETTINGS["hei.select_end"] == "2026-11-19"
+    assert DEFAULT_SETTINGS["camp.to"] == "2026-11-23" and DEFAULT_SETTINGS["verify.end"] == "2026-12-05"
     # the central online test of CICT, 10 November 00:00 to 20 November 23:59 (1.2.120)
     assert (DEFAULT_SETTINGS["exam.date"], DEFAULT_SETTINGS["exam.date_to"]) == ("2026-11-10", "2026-11-20")
     assert (DEFAULT_SETTINGS["exam.start_time"], DEFAULT_SETTINGS["exam.end_time"]) == ("00:00", "23:59")
     assert DEFAULT_SETTINGS["letter.date"] == "2026-12-06" and DEFAULT_SETTINGS["internship.start"] == "2026-12-15"
     assert DEFAULT_SETTINGS["papers.due"] == DEFAULT_SETTINGS["present.due"] == "2027-01-14"
     # the steps of the seed file that the settings name fall on the same days
-    assert (S["hei_reg"]["starts"], S["hei_select"]["starts"], S["hei_select"]["ends"]) == (
-        DEFAULT_SETTINGS["hei.end"], "2026-11-16", DEFAULT_SETTINGS["hei.select_end"])
-    assert S["assess"]["starts"] == DEFAULT_SETTINGS["camp.to"] and DEFAULT_SETTINGS["reg.end"] == "2026-11-20"
-    assert (S["selection"]["starts"], S["selection"]["ends"], S["live"]["starts"]) == ("2026-11-21", DEFAULT_SETTINGS["verify.end"], "2026-12-14")
+    # the Ministry's revision of 10 November 2026 (1.2.172): one day of selection, 19 November
+    assert (S["hei_reg"]["starts"], S["hei_select"]["starts"], S["hei_select"].get("ends")) == (
+        DEFAULT_SETTINGS["hei.end"], DEFAULT_SETTINGS["hei.select_end"], None)
+    assert S["assess"]["starts"] == DEFAULT_SETTINGS["camp.to"] and DEFAULT_SETTINGS["reg.end"] == "2026-11-24"
+    assert (S["selection"]["starts"], S["selection"]["ends"], S["live"]["starts"]) == ("2026-11-25", DEFAULT_SETTINGS["verify.end"], "2026-12-14")
     assert (S["internship"]["starts"], S["research"]["starts"], S["research"]["ends"], S["papers"]["starts"]) == (
         DEFAULT_SETTINGS["internship.start"], DEFAULT_SETTINGS["internship.start"], DEFAULT_SETTINGS["papers.due"], DEFAULT_SETTINGS["papers.due"])
     assert DEFAULT_SETTINGS["kts.start"] == "2026-11-28" and DEFAULT_SETTINGS["kts.end"] == "2026-12-12"
     # the days of the week as the calendar has them
     days = [datetime.fromisoformat(DEFAULT_SETTINGS[key]).strftime("%a") for key in ("reg.start", "reg.end", "exam.date", "kts.start", "kts.end")]
-    assert days == ["Thu", "Fri", "Tue", "Sat", "Sat"]
+    assert days == ["Thu", "Tue", "Tue", "Sat", "Sat"]   # the nomination on Tuesday 24 November since 1.2.172
 
 
 def test_a_database_of_an_earlier_version_receives_the_dates():
@@ -127,7 +128,7 @@ def test_a_database_of_an_earlier_version_receives_the_dates():
         _sql(app, "UPDATE settings SET value = ? WHERE key = ?", (old, key))
     _sql(app, "DELETE FROM settings WHERE key IN ('kts.start', 'kts.end', 'schedule.tentative')")
     settings = _settings(_start(app))
-    assert (settings["reg.start"], settings["reg.end"], settings["exam.date"]) == ("2026-10-22", "2026-11-20", "2026-11-10")
+    assert (settings["reg.start"], settings["reg.end"], settings["exam.date"]) == ("2026-10-22", "2026-11-24", "2026-11-10")
     assert (settings["kts.start"], settings["kts.end"], settings["schedule.tentative"]) == ("2026-11-28", "2026-12-12", "1")
 
 def test_the_live_database_moves_to_the_timeline_of_8_october():
@@ -145,9 +146,9 @@ def test_the_live_database_moves_to_the_timeline_of_8_october():
     again = _start(app)
     settings = _settings(again)
     moved = [settings[k] for k in ("reg.start", "reg.end", "exam.date", "letter.date", "internship.start", "exam.start_time")]
-    assert moved == ["2026-10-22", "2026-11-20", "2026-11-10", "2026-12-06", "2026-12-15", "00:00"]
+    assert moved == ["2026-10-22", "2026-11-24", "2026-11-10", "2026-12-06", "2026-12-15", "00:00"]
     rows = {t: (s, e) for t, s, e in _sql(again, "SELECT title, starts_at, ends_at FROM events")}
-    assert rows[S["selection"]["title"]] == ("2026-11-21T00:00", "2026-12-05T00:00")
+    assert rows[S["selection"]["title"]] == ("2026-11-25T00:00", "2026-12-05T00:00")
     assert rows[S["internship"]["title"]] == ("2026-12-15T00:00", None)
     assert rows[S["papers"]["title"]][0] == "2027-01-08T10:00"
     # an event that the administrator moved away from the old days stays where it was put
@@ -158,14 +159,14 @@ def test_the_live_database_moves_to_the_timeline_of_8_october():
 
 def test_dates_set_by_the_administrator_are_left_alone():
     app = make_app(ADMIN_PASSWORD=None)
-    for key, own in (("reg.start", "2026-10-01"), ("reg.end", "2026-11-20"), ("exam.date", "2026-12-01"), ("kts.end", "2026-12-14")):
+    for key, own in (("reg.start", "2026-10-01"), ("reg.end", "2026-11-21"), ("exam.date", "2026-12-01"), ("kts.end", "2026-12-14")):
         _sql(app, "UPDATE settings SET value = ? WHERE key = ?", (own, key))
     settings = _settings(_start(app))
-    assert (settings["reg.start"], settings["reg.end"], settings["exam.date"]) == ("2026-10-01", "2026-11-20", "2026-12-01")
+    assert (settings["reg.start"], settings["reg.end"], settings["exam.date"]) == ("2026-10-01", "2026-11-21", "2026-12-01")
     assert settings["kts.end"] == "2026-12-14"
 
 
-@pytest.mark.parametrize("day, state", [("2026-10-21", "not_yet"), ("2026-10-22", "open"), ("2026-11-20", "open"), ("2026-11-21", "closed")])
+@pytest.mark.parametrize("day, state", [("2026-10-21", "not_yet"), ("2026-10-22", "open"), ("2026-11-24", "open"), ("2026-11-25", "closed")])
 def test_registration_follows_the_dates(monkeypatch, day, state):
     app = _portal()
     _on(monkeypatch, day)
@@ -206,8 +207,8 @@ def test_the_schedule_shows_the_timeline_in_order(monkeypatch):
     assert past == ""
     places = [upcoming.index("<bdi>" + _text(key) + "</bdi>") for key in KEYS]
     assert places == sorted(places)
-    for day in ("07 Oct 2026", "13 Oct 2026", "22 Oct 2026", "18 Nov 2026", "16 Nov 2026", "– 17 Nov 2026", "19 Nov 2026",
-                "20 Nov 2026", "21 Nov 2026", "– 05 Dec 2026", "28 Nov 2026", "14 Dec 2026", "12 Dec 2026", "15 Dec 2026",
+    for day in ("07 Oct 2026", "13 Oct 2026", "22 Oct 2026", "18 Nov 2026", "19 Nov 2026", "23 Nov 2026",
+                "24 Nov 2026", "25 Nov 2026", "– 05 Dec 2026", "28 Nov 2026", "14 Dec 2026", "12 Dec 2026", "15 Dec 2026",
                 "– 14 Jan 2027", "14 Jan 2027"):
         assert day in upcoming, day
     # a day without a time of day stands alone; the test has the hours of its settings
@@ -218,7 +219,7 @@ def test_the_schedule_shows_the_timeline_in_order(monkeypatch):
 
 def test_what_is_over_moves_to_the_past(monkeypatch):
     app = _portal()
-    _on(monkeypatch, "2026-11-21")
+    _on(monkeypatch, "2026-11-25")
     upcoming, past = _halves(_page(app, "/schedule?lang=en"))
     for key in ("timeline.circular", "timeline.hei_list", "timeline.reg_open", "timeline.hei_reg", "timeline.hei_select",
                 "timeline.assess", "timeline.reg_close"):
@@ -339,7 +340,7 @@ def test_a_new_installation_carries_the_timeline():
     assert all(row[4] == 1 for row in rows)
     assert rows[0][2] == "2026-10-07T00:00" and rows[0][3] is None
     assert rows[1][2:4] == ("2026-10-13T00:00", None)
-    assert rows[[r[0] for r in rows].index(S["selection"]["title"])][2:4] == ("2026-11-21T00:00", "2026-12-05T00:00")
+    assert rows[[r[0] for r in rows].index(S["selection"]["title"])][2:4] == ("2026-11-25T00:00", "2026-12-05T00:00")
 
 
 def test_the_timeline_is_put_in_once():
@@ -393,7 +394,7 @@ def test_the_banner_announces_them_while_they_are_open(monkeypatch):
 
 def test_the_banner_says_so_when_registration_is_closed(monkeypatch):
     app = _portal()
-    _on(monkeypatch, "2026-11-21")
+    _on(monkeypatch, "2026-11-25")
     banner = _banner(_page(app, "/?lang=en"))
     assert _text("reg.closed") in banner and "are open" not in banner
     # also when the administrator has switched the registration off inside the dates, once the portal has been launched
@@ -465,13 +466,13 @@ def test_the_live_database_moves_to_the_dates_of_the_launch():
     again = _start(app)
     settings = _settings(again)
     assert {key: settings[key] for key in old} == {key: DEFAULT_SETTINGS[key] for key in old}
-    assert (settings["reg.start"], settings["reg.end"], settings["launch.at"]) == ("2026-10-22", "2026-11-20", "2026-10-22T12:00")
+    assert (settings["reg.start"], settings["reg.end"], settings["launch.at"]) == ("2026-10-22", "2026-11-24", "2026-10-22T12:00")
     rows = {t: (s, e) for t, s, e in _sql(again, "SELECT title, starts_at, ends_at FROM events")}
     for key in days:
         s = S[key]
         assert rows[s["title"]] == (s["starts"] + "T00:00", s["ends"] + "T00:00" if s.get("ends") else None), key
     assert rows[S["live"]["title"]] == ("2026-11-21T10:00", None)
-    assert rows[S["selection"]["title"]] == ("2026-11-21T00:00", "2026-12-05T00:00")
+    assert rows[S["selection"]["title"]] == ("2026-11-25T00:00", "2026-12-05T00:00")
 
 
 def test_the_live_database_moves_to_the_revised_letter():
@@ -502,7 +503,7 @@ def test_the_live_database_moves_to_the_revised_letter():
     settings = _settings(again)
     assert {key: settings[key] for key in REVISED_DO_DATES} == {key: DEFAULT_SETTINGS[key] for key in REVISED_DO_DATES}
     assert (settings["hei.end"], settings["hei.select_end"], settings["reg.end"], settings["verify.end"], settings["papers.due"]) == (
-        "2026-11-18", "2026-11-17", "2026-11-20", "2026-12-05", "2027-01-14")
+        "2026-11-18", "2026-11-19", "2026-11-24", "2026-12-05", "2027-01-14")
     assert settings["hei.cap_annexure"] == "1"
     rows = {t: (s, e, p) for t, s, e, p in _sql(again, "SELECT title, starts_at, ends_at, published FROM events")}
     for s in SEEDS:

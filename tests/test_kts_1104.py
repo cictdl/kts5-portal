@@ -132,7 +132,7 @@ def test_the_quick_links():
 
 def test_the_key_dates():
     # the tests' portal keeps its registration open to 2030; the live portal has the day of the letter
-    client = _app(reg_end="2026-11-20").test_client()
+    client = _app(reg_end="2026-11-24").test_client()
     for path in ("/", "/schedule", "/guidelines-for-nodal-institutions"):
         page = _get(client, path + "?lang=en")
         box = page[page.index('<div class="kd-box">'):]
@@ -140,9 +140,9 @@ def test_the_key_dates():
         text = re.sub(r"<[^>]+>", "|", box)
         for line in ("KTS 5.0 – Key dates", "Registration and selection", "Online programme", "Research and submission",
                      "Up to 18 Nov 2026", "Last date for the registration of institutions",
-                     "16 Nov 2026 – 17 Nov 2026", "Selection of the Participating Institutions by the Nodal Institutions",
-                     "By 19 Nov 2026", "Thirukkural assessment of the interested students by each Participating Institution",
-                     "20 Nov 2026", "Each Participating Institution nominates one student on merit through the CICT portal",
+                     "19 Nov 2026", "Selection of the Participating Institutions by the Nodal Institutions",
+                     "By 23 Nov 2026", "Thirukkural assessment of the interested students by each Participating Institution",
+                     "24 Nov 2026", "Each Participating Institution nominates one student on merit through the CICT portal",
                      "28 Nov 2026", "Inaugural function of KTS 5.0", "12 Dec 2026", "Valedictory function of KTS 5.0",
                      "All Nodal Institutions, Participating Institutions and nominated students will join online. The joining links will be shared separately.",
                      "All participants will receive a certificate of participation from CICT.",
@@ -152,7 +152,7 @@ def test_the_key_dates():
             assert f"|{line}|" in text, (path, line)
     # in a language other than English the days read as numbers
     page = _get(client, "/?lang=hi")
-    assert "18-11-2026" in page and "16-11-2026 – 17-11-2026" in page
+    assert "18-11-2026" in page and "19-11-2026" in page and "23-11-2026" in page and "16-11-2026" not in page
 
 
 def test_the_schedule_without_the_central_online_test():
@@ -207,7 +207,7 @@ def test_submitting_the_selected_student():
     assert 'Open <a href="/institution/login">Institution login</a> and enter the e-mail address' in page
     assert 'press <b class="ui-name" lang="en" dir="ltr">Select</b> beside the student chosen on merit' in page
     assert 'In <b class="ui-name" lang="en" dir="ltr">Verification queue</b>, open each application' in page
-    assert "by 19 Nov 2026" in page and "with {open_reg}" not in page and "by 05 Dec 2026" in page and "by 17 Nov 2026" in page
+    assert "by 23 Nov 2026" in page and "with {open_reg}" not in page and "by 05 Dec 2026" in page and "by 19 Nov 2026" in page
     assert 'Open <a href="/console/login">Nodal Officer login</a> and sign in' in page
     for code, cat in CATALOGUES.items():
         page = _get(client, f"/how-to-submit-the-student?lang={code}")

@@ -246,8 +246,8 @@ def test_the_guidelines_the_guide_and_the_drive_pages():
     assert "the next eligible institution from the approved reserve list may be included" in page
     assert "Dr. R. Bhuvaneshwari, Registrar, Central Institute of Classical Tamil (CICT), Chennai · registrar@cict.in · 9790325518 / 9965734497" in page
     guide = _get(client, "/how-to-take-part?lang=en")
-    assert "After the nomination" in guide and "By 19 Nov 2026" in guide and "22 Oct 2026" not in guide
-    assert "Assess your students by 19 Nov 2026" in guide
+    assert "After the nomination" in guide and "By 23 Nov 2026" in guide and "22 Oct 2026" not in guide
+    assert "Assess your students by 23 Nov 2026" in guide
     for code, cat in CATALOG.items():
         assert "{" not in re.sub(r"\{(camp_to|hei_end|hei_select_end|date|link|questions|minutes|online_test|switch_on|excel|name|email|phone)\}", "",
                                  " ".join(cat[k] for k in ("guide.s2", "guide.i3_t", "ng.contact", "guide.i7"))), code

@@ -27,10 +27,10 @@ def _pdf_text(path):
 def test_the_nomination_form_has_the_last_day_of_the_revised_letter():
     text = _pdf_text(ROOT / "static" / "KTS5-nomination-form.pdf")
     assert "22 October" not in text and "15 October" not in text
-    assert text.count("20 November 2026") == 2
+    assert text.count("24 November 2026") == 2   # 1.2.172
     # the two lines re-set in 1.2.126 read with plain brackets when copied or read aloud
-    assert "(nomination on or before 20 November 2026)" in text and "PNG (up to 4 MB)" in text
-    assert "https://kts.cict.in/register on or before 20 November 2026" in text
+    assert "(nomination on or before 24 November 2026)" in text and "PNG (up to 4 MB)" in text
+    assert "https://kts.cict.in/register on or before 24 November 2026" in text
 
 
 def test_the_invitation_mail_has_the_days_of_the_sangamam():
@@ -44,7 +44,7 @@ def test_the_invitation_mail_has_the_days_of_the_sangamam():
     for body in bodies:
         assert "15 October" not in body and "15 November" not in body
         assert "(the Sangamam at Varanasi: 28 November 2026 – 12 December 2026)" in body
-        assert "nominates one student on merit on the portal by 20 November 2026" in body
+        assert "nominates one student on merit on the portal by 24 November 2026" in body
         assert "/institutions/register?invite=t0k3n" in body
 
 
@@ -60,9 +60,9 @@ def test_poster_1_has_the_dates_of_the_settings():
         text = _pdf_text(path)
         for old in OLD:
             assert old not in text, (path.name, old)
-        assert "22 Oct – 19 Nov 2026" in text and "28 Nov – 12 Dec 2026" in text, path.name
+        assert "22 Oct – 23 Nov 2026" in text and "28 Nov – 12 Dec 2026" in text, path.name
     english = _pdf_text(ROOT / "static" / "posters" / "KTS5-poster-1-en.pdf")
-    assert "22 October – 19 November 2026" in english
+    assert "22 October – 23 November 2026" in english
 
 
 def test_the_schedule_has_the_central_online_test(monkeypatch):

@@ -40,7 +40,7 @@ def test_what_the_mail_says():
     uid = _account(app, "new.kerala@tests.example", ["Kerala"])
     with app.app_context():
         from kts.db import set_setting
-        set_setting("reg.end", "2026-11-20")   # the tests' portal keeps registration open far ahead
+        set_setting("reg.end", "2026-11-24")   # the tests' portal keeps registration open far ahead
         for n, (name, status) in enumerate((("Kochi College", "accepted"), ("Kannur College", "pending"), ("Listed College", "identified"))):
             execute("INSERT INTO institutions(ref, name, itype, state, district, inst_key, status, created_at, updated_at) "
                     "VALUES(?, ?, 'Government college', 'Kerala', 'Kochi', ?, ?, ?, ?)", (f"KTS5-HEI-7{n:04d}", name, f"name:{name}|kerala", status, utcnow(), utcnow()))
@@ -53,8 +53,8 @@ def test_what_the_mail_says():
     assert body.startswith("Dear Dr. New Officer,\n\nYour account as Nodal Officer for Kerala and Lakshadweep on the KTS 5.0 portal ")
     assert "was created on 27 October 2026 and the temporary password was mailed to this address; the account has not been signed in to yet." in body
     assert "• The institutions of Kerala and Lakshadweep register on the portal up to 18 November 2026: 2 registered so far, 1 awaiting your decision." in body
-    assert "• The Nodal Institution selects the 21 Participating Institutions that Annexure-I prescribes by 17 November 2026, with a reserve list, in the Console (Institutions)." in body
-    assert ("• Each selected institution nominates one student by 20 November 2026; the Nodal Officers verify the nominations by 5 December 2026. "
+    assert "• The Nodal Institution selects the 21 Participating Institutions that Annexure-I prescribes by 19 November 2026, with a reserve list, in the Console (Institutions)." in body
+    assert ("• Each selected institution nominates one student by 24 November 2026; the Nodal Officers verify the nominations by 5 December 2026. "
             "2 application(s) await your verification already.") in body
     assert f"\nSign in: {base}/console/login\nE-mail: new.kerala@tests.example\n" in body
     assert 'Password: the temporary password in the mail "Your KTS 5.0 portal account" of 27 October 2026. The portal asks you to set a password of your own at the first sign-in.' in body

@@ -47,7 +47,9 @@ def texts(lang):
         day = lambda key: L.day_text(L._day(key, get), lang, year=False)  # noqa: E731
         by = lambda s: portal_i18n.text("nl.by", lang).replace("{date}", s)  # noqa: E731
         select_end, hei_end = L._day("hei.select_end", get), L._day("hei.end", get)
-        sel = f"{hei_end.day + 1}–{day('hei.select_end')}" if select_end and hei_end else day("hei.select_end")
+        # the day after the registration up to the end of the selection; one day alone when that is the same day (1.2.172)
+        sel = (f"{hei_end.day + 1}–{day('hei.select_end')}" if select_end and hei_end and (select_end - hei_end).days > 1
+               else day("hei.select_end"))
         # the verification (node 4) has no date in the Ministry's letter of 31 October 2026: none on the picture (1.2.155)
         dates = [sel, by(day("camp.to")), day("reg.end"), "",
                  day("kts.start"), day("kts.end"), by(day("orientation.by")),

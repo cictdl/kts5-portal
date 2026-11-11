@@ -377,7 +377,7 @@ def test_the_letter_in_the_data_and_the_pages():
     assert by["Goa"]["name"] == "NIT Goa" and by["Goa"]["type"] == "nit" and by["Assam"]["name"] == "Assam University"
     # the central test of CICT, closed by the letter, open again in its days from 1.2.120 (10 to 20 November 2026), switched off
     # with the D.O. letter of 31 October 2026 (1.2.155)
-    assert DEFAULT_SETTINGS["exam.open"] == "0" and DEFAULT_SETTINGS["reg.by_institution"] == "1" and DEFAULT_SETTINGS["camp.to"] == "2026-11-19"
+    assert DEFAULT_SETTINGS["exam.open"] == "0" and DEFAULT_SETTINGS["reg.by_institution"] == "1" and DEFAULT_SETTINGS["camp.to"] == "2026-11-23"
     assert "exam.open" not in RETIRED_DEFAULTS and "2026-10-21" in RETIRED_DEFAULTS["reg.end"] and "50" in RETIRED_DEFAULTS["hei.max_per_state"]
     assert set(RETIRED_EVENT_TITLES) == {"selection", "letters", "live", "assess", "internship", "papers", "hei_list"}
     app = make_app(ADMIN_PASSWORD=None)
@@ -412,7 +412,7 @@ def test_the_letter_in_the_data_and_the_pages():
     again = create_app(type("Again", (Config,), {name: app.config[name] for name in ("INSTANCE_DIR", "DATABASE", "UPLOAD_DIR")} | {"ADMIN_PASSWORD": None}))
     conn = sqlite3.connect(str(again.config["DATABASE"]))
     assert conn.execute("SELECT COUNT(*) FROM events WHERE title LIKE 'Consolidation and verification%'").fetchone()[0] == 1
-    assert dict(conn.execute("SELECT key, value FROM settings WHERE key IN ('exam.open', 'reg.end')")) == {"exam.open": "0", "reg.end": "2026-11-20"}
+    assert dict(conn.execute("SELECT key, value FROM settings WHERE key IN ('exam.open', 'reg.end')")) == {"exam.open": "0", "reg.end": "2026-11-24"}
     conn.close()
 
 
