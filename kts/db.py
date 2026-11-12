@@ -740,7 +740,9 @@ DEFAULT_SETTINGS = {
     "hei.max_per_state": "0",
     # the revised D.O. letter (26 October 2026): the Nodal Institution selects only the number of Participating Institutions
     # that Annexure-I prescribes for its State/UT (data/nodal_heis.json), between the close of registration and this day
-    "hei.cap_annexure": "1",
+    # off since 1.2.178 (CICT, 12 November 2026: "accepted institutions ceiling should not be there"); switched off once on a
+    # database of before (migrate.cap_off_1112)
+    "hei.cap_annexure": "0",
     "hei.select_end": "2026-11-19",   # 19 November since the Ministry's revision of 10 November 2026 (1.2.172; 16-17 before)
     "hei.public": "1",
     # the reserve list of each row of Annexure-I on /institutions, in the order of the marks, without them (1.2.174)
@@ -1456,6 +1458,10 @@ def init_db(app):
         for old in old_values:
             conn.execute("UPDATE settings SET value = ?, updated_at = ? WHERE key = ? AND value = ?",
                          (DEFAULT_SETTINGS[key], now, key, old))
+    # no ceiling on the institutions selected (1.2.178): off once; CICT may switch it on again in the Console
+    if not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.cap_off_1112'").fetchone():
+        conn.execute("UPDATE settings SET value = '0', updated_at = ? WHERE key = 'hei.cap_annexure'", (now,))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", ("migrate.cap_off_1112", "1", now))
     if not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.revised_do'").fetchone():
         for key in REVISED_DO_DATES:
             conn.execute("UPDATE settings SET value = ?, updated_at = ? WHERE key = ?", (DEFAULT_SETTINGS[key], now, key))

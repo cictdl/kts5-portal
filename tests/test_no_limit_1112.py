@@ -79,7 +79,7 @@ def test_the_reserve_list_in_the_list_of_its_state():
     assert '<span class="small muted">(3)</span></h2>' in kerala and "3 institutions from 1 States/UTs" in page
     assert 'id="reserve' not in page and CATALOG["en"]["hei.reserve_unmarked"] not in page and "Reserve list" not in page
     pi = page[page.index('<section class="pi"'):page.index('<p><b>')]
-    assert '<div class="num">1</div><div class="lbl">Participating institutions</div>' in pi
+    assert '<div class="num">3</div><div class="lbl">Participating institutions</div>' in pi   # counted together (1.2.178)
     for lang in ("ta", "hi", "bn", "ks", "sat"):
         page = app.test_client().get(f"/institutions?lang={lang}").get_data(as_text=True)
         assert "Unmarked Reserve College" in page and CATALOG[lang]["hei.reserve_unmarked"] not in page, lang

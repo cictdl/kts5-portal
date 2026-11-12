@@ -129,6 +129,7 @@ def test_the_number_of_annexure_i_and_a_reserve_list_without_an_upper_limit():
     app = _app()
     officer = _nodal(app, "nodal.py@tests.example", ["Puducherry"])
     with app.app_context():
+        set_setting("hei.cap_annexure", "1")   # the ceiling, off by default since 1.2.178, switched on in the Console
         assert HEI.cap_of("Puducherry") == 5
     # ten institutions register: any number may; each marked, 100 down to 55
     marks = [(20, 20, 20, 20, 10, 10), (20, 15, 20, 20, 10, 10), (20, 10, 20, 20, 10, 10), (20, 5, 20, 20, 10, 10), (20, 0, 20, 20, 10, 10),
@@ -176,9 +177,9 @@ def test_the_number_of_annexure_i_and_a_reserve_list_without_an_upper_limit():
         (str(n), f"College {c}") for n, c in enumerate("ABCDEFGHIJ", start=1)]
     assert 'id="reserve' not in public and "Reserve list" not in public and "/100" not in public
     assert not any(str(n) in re.sub(r"<[^>]+>", " ", table) for n in (75, 70, 65, 60, 55))
-    # the figures at a glance count the Participating Institutions selected
+    # the figures at a glance count them together (1.2.178)
     pi = public[public.index('<section class="pi"'):public.index('<p><b>')]
-    assert '<div class="num">5</div><div class="lbl">Participating institutions</div>' in pi and "10 institutions from 1 States/UTs" in public
+    assert '<div class="num">10</div><div class="lbl">Participating institutions</div>' in pi and "10 institutions from 1 States/UTs" in public
     # the evaluation sheet: no column of a reserve list "up to 20%"; each institution of the reserve list with its place
     ws = load_workbook(io.BytesIO(officer.get("/console/institutions/evaluation.xlsx?state=Puducherry").data)).active
     values = [[c.value for c in row] for row in ws.iter_rows()]
@@ -198,7 +199,7 @@ def test_the_number_of_annexure_i_and_a_reserve_list_without_an_upper_limit():
     console = officer.get("/console/institutions?state=Puducherry").get_data(as_text=True)
     assert "which has no upper limit (CICT, 11 November 2026):" in console and "is published on the website" not in console
     settings = _staff(app, "admin@tests.example", "superadmin").get("/console/settings").get_data(as_text=True)
-    assert "List the institutions of the reserve list on the same page, in the table of their State/UT" in settings
+    assert "The public pages list the institutions of the reserve list with the Participating Institutions" in settings
     # nor while the page of the Participating Institutions itself is switched off
     with app.app_context():
         set_setting("hei.reserve_public", "1")
@@ -409,18 +410,18 @@ def test_the_states_and_uts_and_the_districts_of_the_pages():
         _insert(app, name, state, district, status, 70)
     page = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
     pi = page[page.index('<section class="pi"'):page.index('class="table-wrap"')]
-    # four States and Union Territories of the 36 (two rows of Annexure-I); four districts (Kachchh once)
-    assert '<div class="num">4</div><div class="lbl">States and UTs</div>' in pi and "<bdi>4 of 36</bdi>" in pi
-    assert '<div class="num">4</div><div class="lbl">Districts reached</div>' in pi
-    # the list holds the institution of the reserve list of Puducherry too (1.2.177); the figures above count only the selected
+    # five States and Union Territories of the 36, with Puducherry of the reserve list (1.2.178); five districts (Kachchh once)
+    assert '<div class="num">5</div><div class="lbl">States and UTs</div>' in pi and "<bdi>5 of 36</bdi>" in pi
+    assert '<div class="num">5</div><div class="lbl">Districts reached</div>' in pi
+    # the list holds the institution of the reserve list of Puducherry too (1.2.177), and the figures count it (1.2.178)
     assert "6 institutions from 5 States/UTs" in page
     states = json.loads((ROOT / "data" / "states.json").read_text(encoding="utf-8"))
     assert (len(states["states"]), len(states["union_territories"])) == (28, 8)
-    # the home page counts the same States/UTs: not Goa, where an institution has only registered
+    # the home page counts the same: the reserve list with them (1.2.178), not Goa, where an institution has only registered
     home = app.test_client().get("/?lang=en").get_data(as_text=True)
     glance = home[home.index("<h2>At a glance</h2>"):]
     cards = re.findall(r'<div class="num">([^<]+)</div><div class="lbl">([^<]+)</div>', glance[:glance.index("</section>")])
-    assert [(n.strip(), label) for n, label in cards][:2] == [("5", "Participating institutions"), ("4", "States and UTs")]
+    assert [(n.strip(), label) for n, label in cards][:2] == [("6", "Participating institutions"), ("5", "States and UTs")]
 
 
 def test_the_texts_in_23_languages():

@@ -81,9 +81,9 @@ def test_the_page():
     client = app.test_client()
     page = client.get("/dashboard?lang=en").get_data(as_text=True)
     assert "<h1>KTS 5.0 by State/UT</h1>" in page and "Live figures, as on " in page
-    # seven cards with the reserve list (1.2.175): four in a row
-    kpis = page[page.index('class="grid grid-4 dash-kpis"'):page.index('class="card dash-map"')]
-    assert re.findall(r'<div class="num">([\d,]+)</div>', kpis) == ["1,000", "4", "3", "0", "2", "2", "1"]
+    # six cards: the reserve list counts with the Participating Institutions, no card of its own (1.2.178)
+    kpis = page[page.index('class="grid grid-3 dash-kpis"'):page.index('class="card dash-map"')]
+    assert re.findall(r'<div class="num">([\d,]+)</div>', kpis) == ["1,000", "4", "3", "2", "2", "1"]
     assert "2 of 1,000" in kpis
     # the squares: Tamil Nadu 2 of 50; Ladakh paired with Jammu and Kashmir (1.2.135); each leads to the block of its State/UT
     assert page.count('class="dash-tile ') == 36

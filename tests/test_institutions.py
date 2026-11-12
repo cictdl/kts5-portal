@@ -234,6 +234,8 @@ def test_each_state_accepts_at_most_its_number_of_annexure_i():
     from kts.db import execute, query, set_setting, utcnow
     app = _app()
     with app.app_context():
+        assert HEI.cap_of("Kerala") == 0           # no ceiling since 1.2.178 (tests/test_reserve_counted_1112.py)
+        set_setting("hei.cap_annexure", "1")      # the ceiling switched on in the Console
         assert (HEI.cap_of("Kerala"), HEI.cap_of("Uttar Pradesh"), HEI.cap_of("Tamil Nadu"), HEI.cap_of("Puducherry")) == (21, 300, 50, 5)
         assert HEI.cap_of("Ladakh") == 11         # paired with Jammu and Kashmir in Annexure-I (1.2.135)
         assert HEI.cap_of("Atlantis") == 0        # a name of no row of Annexure-I: no limit

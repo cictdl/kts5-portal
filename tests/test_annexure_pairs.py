@@ -45,6 +45,8 @@ def test_the_rows_of_annexure_i():
         assert HEI.with_covered(["Lakshadweep", "Kerala"]) == ["Lakshadweep", "Kerala"]
         assert (HEI.allocation_of("Lakshadweep"), HEI.allocation_of("Chandigarh"), HEI.allocation_of("Ladakh")) == (21, 21, 11)
         assert (HEI.allocation_of("Dadra and Nagar Haveli and Daman and Diu"), HEI.allocation_of("Andaman and Nicobar Islands")) == (50, 50)
+        from kts.db import set_setting
+        set_setting("hei.cap_annexure", "1")   # the ceiling, off by default since 1.2.178, switched on in the Console
         assert (HEI.cap_of("Lakshadweep"), HEI.cap_of("Ladakh"), HEI.cap_of("Andaman and Nicobar Islands")) == (21, 11, 50)
         assert HEI.label_of("Lakshadweep", "en") == HEI.label_of("Kerala", "en") == "Kerala and Lakshadweep"
         assert HEI.label_of("Gujarat", "en") == "Gujarat and Dadra and Nagar Haveli and Daman and Diu" and HEI.label_of("Goa", "en") == "Goa"
@@ -148,6 +150,9 @@ def test_a_union_territory_institution_goes_to_the_nodal_institution_of_its_stat
     assert 'href="/console/institutions?state=Kerala">Kerala and Lakshadweep</a>' in page and "Lakshadweep</a>" not in page.replace("Kerala and Lakshadweep</a>", "")
     from test_institutions import _marked
     _marked(app)   # selected on its marks of Annexure-V (1.2.174)
+    with app.app_context():
+        from kts.db import set_setting
+        set_setting("hei.cap_annexure", "1")   # the ceiling, off by default since 1.2.178, switched on in the Console
     r = officer.post("/console/institutions", data={"_csrf": _token(officer), "id": row["id"], "action": "accept"}, follow_redirects=True)
     assert "Kerala and Lakshadweep has 21 accepted institutions: that is the number Annexure-I prescribes for it" in r.get_data(as_text=True)
     with app.app_context():

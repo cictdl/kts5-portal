@@ -64,12 +64,13 @@ def test_the_progress_page():
     assert stages == ["participating", "testing", "selected"]
     # the first stage shown fills its bar and names no percentage; no line of the registrations day by day
     first = page[page.index('<li class="stage stage-participating">'):page.index('<li class="stage stage-testing">')]
-    assert 'data-k="st_participating">4</span>' in first and "st-pct" not in first and 'style="--w:100.0%"' in first
+    # four selected and one on the reserve list, counted together (1.2.178)
+    assert 'data-k="st_participating">5</span>' in first and "st-pct" not in first and 'style="--w:100.0%"' in first
     assert "prog-momentum" not in page and "spark-inst" not in page and "Last 7 days" not in page
     data = json.loads(_get(client, "/progress.json"))
     flat = data["flat"]
     assert not {"registered", "pending", "reserve", "st_registered", "st_participating_pct", "inst_today", "inst_week"} & set(flat)
-    assert flat["participating"] == 4 and flat["st_participating"] == 4
+    assert flat["participating"] == 5 and flat["st_participating"] == 5
     assert "st_registered" not in data["widths"] and data["widths"]["st_participating"] == 100.0 and "inst" not in data["series"]
     # nothing in the JSON adds up to the seven registered
     assert 7 not in [v for v in flat.values() if isinstance(v, int)]
@@ -88,9 +89,9 @@ def test_the_participating_institutions():
 def test_the_dashboard_counts_the_participating_institutions():
     page = _main(_get(_app().test_client(), "/dashboard?lang=en"))
     assert "Where the programme stands in each State/UT: the Participating Institutions selected and the students who took" in page
-    # four cards with the reserve list (1.2.175)
-    kpis = page[page.index('class="grid grid-4 dash-kpis"'):page.index('<section class="card dash-map"')]
-    assert re.findall(r'<div class="lbl">([^<]+)</div>', kpis) == ["To be selected", "Participating Institutions selected", "Reserve list",
+    # three cards: the reserve list counts with the Participating Institutions, no card of its own (1.2.178)
+    kpis = page[page.index('class="grid grid-3 dash-kpis"'):page.index('<section class="card dash-map"')]
+    assert re.findall(r'<div class="lbl">([^<]+)</div>', kpis) == ["To be selected", "Participating Institutions selected",
                                                                      "Students who took an institution&#39;s online test"]
     assert '<h2 id="dash-grid-h">Participating Institutions selected · To be selected</h2>' in page
     tn = page[page.index('href="#d-TN"'):]
@@ -98,8 +99,8 @@ def test_the_dashboard_counts_the_participating_institutions():
     assert '<span class="dash-n" dir="ltr">3/50</span>' in tn and "Participating Institutions selected: <bdi>3 of 50</bdi>" in tn
     assert tn.count("Participating Institutions selected") == 1
     head = page[page.index("<thead>"):page.index("</thead>")]
-    # with "Reserve list" and "Marks recorded" (1.2.175)
-    assert head.count("<th ") == 6 and "Participating Institutions selected" in head
+    # with "Marks recorded" (1.2.175); the reserve list counted with the Participating Institutions (1.2.178)
+    assert head.count("<th ") == 5 and "Participating Institutions selected" in head
     row = page[page.index('<tr id="st-TN">'):]
     assert re.findall(r'<td class="num">([^<]*)</td>', row[:row.index("</tr>")]) == ["50", "3", "0"]
 

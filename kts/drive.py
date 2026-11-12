@@ -94,6 +94,10 @@ def table():
     for s in board()["states"]:
         if s["state"] in out:
             out[s["state"]].update(participating=s["participating"], testing=s["testing"], selected=s["selected"])
+    # the institutions of the reserve list count with the Participating Institutions while it is public (1.2.178)
+    for unit, n in HEI.reserve_by_row().items():
+        if unit in out:
+            out[unit]["participating"] += n
     _CACHE.update(at=now, data=out)
     return out
 

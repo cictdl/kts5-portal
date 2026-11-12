@@ -23,6 +23,7 @@ from datetime import date, datetime, timedelta
 from flask import current_app
 
 from .db import get_setting, query
+from .heis import counted_statuses, reserve_by_row
 from .progress import VERIFIED, institutions, nodal_heis
 from .utils import IST, now_ist
 
@@ -72,9 +73,12 @@ def figures():
     """{"states": [one dict per State/UT, those of Annexure-I first in its order], "total": dict}."""
     states_file = json.loads((current_app.config["DATA_DIR"] / "states.json").read_text(encoding="utf-8"))
     allocation = {h["state"]: h["allocation"] for h in nodal_heis()}
+    # the Participating Institutions selected, with those of the reserve list while it is public (1.2.178)
+    counted = counted_statuses()
     counts = {
         "inst_reg": _by_state("SELECT state AS st, COUNT(*) AS n FROM institutions WHERE status != 'identified' GROUP BY state"),
-        "inst_sel": _by_state("SELECT state AS st, COUNT(*) AS n FROM institutions WHERE status = 'accepted' GROUP BY state"),
+        "inst_sel": _by_state("SELECT state AS st, COUNT(*) AS n FROM institutions WHERE status IN (%s) GROUP BY state"
+                              % ",".join("?" * len(counted)), counted),
         "inst_res": _by_state("SELECT state AS st, COUNT(*) AS n FROM institutions WHERE status = 'reserve' GROUP BY state"),
         "inst_dec": _by_state("SELECT state AS st, COUNT(*) AS n FROM institutions WHERE status IN ('accepted', 'reserve') GROUP BY state"),
         "inst_marked": _by_state("SELECT state AS st, COUNT(*) AS n FROM institutions WHERE status IN ('accepted', 'reserve') "
@@ -127,7 +131,12 @@ def details(officers):
         block = found[paired.get(state, state)]
         block["officers"] += [p for p in people if p not in block["officers"]]
     if get_setting("hei.public") == "1":
-        for i in institutions():
+        rows = list(institutions())
+        # the institutions of the reserve list with them, not told apart, while the reserve list is public (1.2.178)
+        if get_setting("hei.reserve_public") == "1":
+            rows += [dict(r, stage="none", app_name=None) for r in query("SELECT * FROM institutions WHERE status = 'reserve'")]
+            rows.sort(key=lambda i: (i["state"] or "", (i["name"] or "").casefold()))
+        for i in rows:
             if i["stage"] == "verified":
                 status = "delegate" if names else "verified"
             else:
@@ -187,12 +196,14 @@ def _pipeline():
     from .progress import board
     today = now_ist().date()
     tot = board()["total"]
+    # the institutions of the reserve list count with the Participating Institutions while it is public (1.2.178)
+    reserve = sum(reserve_by_row().values())
     counts = {
         "annexure": tot["allocation"],
         "registered": _one("SELECT COUNT(*) AS n FROM institutions WHERE status != 'identified'"),
         "pending": _one("SELECT COUNT(*) AS n FROM institutions WHERE status = 'pending'"),
         "reserve": _one("SELECT COUNT(*) AS n FROM institutions WHERE status = 'reserve'"),
-        "participating": tot["participating"], "testing": tot["testing"], "signed_up": tot["signed_up"], "tested": tot["tested"],
+        "participating": tot["participating"] + reserve, "testing": tot["testing"], "signed_up": tot["signed_up"], "tested": tot["tested"],
         "selected": tot["selected"], "app_registered": tot["registered"], "verified": tot["verified"],
         "not_selected": tot["not_selected"], "not_registered": tot["not_registered"],
         "delegates": _one("SELECT COUNT(*) AS n FROM applications WHERE status != 'withdrawn'"),

@@ -348,8 +348,11 @@ def home():
     inst_stats = None
     if settings.get("stats.public") == "1" and settings.get("reg.public") != "1":
         # the States/UTs: those that have a Participating Institution, as /institutions counts them (1.2.174)
-        row = query("SELECT SUM(status = 'accepted') AS sel, COUNT(*) AS reg, COUNT(DISTINCT CASE WHEN status = 'accepted' THEN state END) AS s "
-                    "FROM institutions WHERE status != 'identified'", one=True)
+        # with the institutions of the reserve list while it is public (1.2.178)
+        counted = HEI.counted_statuses()
+        marks = ",".join("?" * len(counted))
+        row = query(f"SELECT SUM(status IN ({marks})) AS sel, COUNT(*) AS reg, COUNT(DISTINCT CASE WHEN status IN ({marks}) THEN state END) AS s "
+                    "FROM institutions WHERE status != 'identified'", counted + counted, one=True)
         inst_stats = {"selected": row["sel"] or 0, "registered": row["reg"], "states": row["s"]}
     k = K.daily()
     kotd_lang, kotd_dir = _stream()
@@ -955,15 +958,13 @@ def institutions():
     if settings.get("hei.public") != "1":
         abort(404)
     ref = _states()
-    # the figures at a glance: the Participating Institutions selected
-    groups = HEI.accepted_by_state(ref["all_states"])
     nodal = {s: n["name"] for n in nodal_heis() for s in HEI.group_of(n["state"])}   # a paired Union Territory: its State's (1.2.135)
     # the list: with the institutions of the reserve list, in the table of their State/UT, not told apart (1.2.177; a list of
     # their own in 1.2.174-1.2.176)
     listed = HEI.accepted_by_state(ref["all_states"], reserve=settings.get("hei.reserve_public") == "1")
     return render_template("public/institutions.html", groups=listed, nodal=nodal, ref=ref, state_anchor=state_anchor,
                            total=sum(len(items) for _state, items in listed), window=HEI.window(settings),
-                           settings=settings, most=HEI.max_per_state(), pi=_institutions_at_a_glance(groups, ref))
+                           settings=settings, most=HEI.max_per_state(), pi=_institutions_at_a_glance(listed, ref))   # the list counted (1.2.178)
 
 
 def _institutions_at_a_glance(groups, ref):
@@ -1778,7 +1779,8 @@ def _nodal_table():
     """
     heis = nodal_heis()
     now = {}
-    for r in query("SELECT state, COUNT(*) AS n FROM institutions WHERE status = 'accepted' GROUP BY state"):
+    counted = HEI.counted_statuses()   # with the reserve list while it is public (1.2.178)
+    for r in query(f"SELECT state, COUNT(*) AS n FROM institutions WHERE status IN ({','.join('?' * len(counted))}) GROUP BY state", counted):
         now[HEI.nodal_state_of(r["state"])] = now.get(HEI.nodal_state_of(r["state"]), 0) + r["n"]
     officers = _nodal_officers_by_state()
     rows = [dict(h, label=HEI.label_of(h["state"]), now=now.get(h["state"], 0), anchor=state_anchor(h["state"]), code=DRIVE.code_of(h["state"]),

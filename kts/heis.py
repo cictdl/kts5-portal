@@ -417,6 +417,26 @@ def mail_invited(row):
                   f"Central Institute of Classical Tamil, Chennai")
 
 
+def counted_statuses():
+    """
+    The statuses that the public pages count as Participating Institutions: 'accepted', and 'reserve' while the reserve list is
+    public (hei.reserve_public), not told apart (1.2.178; CICT, 12 November 2026: "no separate reserve list. add with the
+    selected institutions"). The Console, the reminders and the mails keep the two apart.
+    """
+    return ("accepted", "reserve") if get_setting("hei.reserve_public") == "1" else ("accepted",)
+
+
+def reserve_by_row():
+    """{State/UT of a row of Annexure-I: the institutions of its reserve list} while the reserve list is public, else {} (1.2.178)."""
+    if get_setting("hei.reserve_public") != "1":
+        return {}
+    out = {}
+    for r in query("SELECT state, COUNT(*) AS n FROM institutions WHERE status = 'reserve' GROUP BY state"):
+        unit = nodal_state_of(r["state"])
+        out[unit] = out.get(unit, 0) + r["n"]
+    return out
+
+
 def accepted_by_state(states, reserve=False):
     """
     The accepted institutions, State/UT by State/UT in the order of `states`: [(state, [rows])]. With reserve, those of the

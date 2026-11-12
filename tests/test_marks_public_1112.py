@@ -49,8 +49,9 @@ def test_the_figures_of_the_marks():
     with app.app_context():
         data = figures()
     by = {r["state"]: r for r in data["states"]}
-    # Tamil Nadu with the Union Territory paired with it: three selected and one on the reserve list, one of them marked
-    assert (by["Tamil Nadu"]["inst_sel"], by["Tamil Nadu"]["inst_dec"], by["Tamil Nadu"]["inst_marked"]) == (3, 4, 1)
+    # Tamil Nadu with the Union Territory paired with it: three selected and one on the reserve list, counted together (1.2.178),
+    # one of them marked
+    assert (by["Tamil Nadu"]["inst_sel"], by["Tamil Nadu"]["inst_dec"], by["Tamil Nadu"]["inst_marked"]) == (4, 4, 1)
     assert (by["Kerala"]["inst_dec"], by["Kerala"]["inst_marked"]) == (1, 1)
     # registered and marked but not yet selected, only identified, declined: none of them counts
     assert [(by[s]["inst_dec"], by[s]["inst_marked"]) for s in ("Goa", "Bihar", "Assam")] == [(0, 0)] * 3
@@ -62,8 +63,8 @@ def test_the_dashboard_says_marks_recorded_for_each_state():
     page = app.test_client().get("/dashboard?lang=en").get_data(as_text=True)
     head = page[page.index("<thead>"):page.index("</thead>")]
     heads = re.findall(r"<th[^>]*>([^<]+)</th>", head)
-    assert heads[heads.index("Participating Institutions selected") + 2] == "Marks recorded"   # after the reserve list
-    assert '<td class="num">3</td>' in _row(page, "TN") and '<td class="num dash-marks"><bdi>1 of 4</bdi></td>' in _row(page, "TN")
+    assert heads[heads.index("Participating Institutions selected") + 1] == "Marks recorded"
+    assert '<td class="num">4</td>' in _row(page, "TN") and '<td class="num dash-marks"><bdi>1 of 4</bdi></td>' in _row(page, "TN")
     assert '<td class="num dash-marks"><bdi>1 of 1</bdi></td>' in _row(page, "KL")
     for code in ("GA", "BR", "AS"):
         assert '<td class="num dash-marks">–</td>' in _row(page, code), code
@@ -78,8 +79,9 @@ def test_the_dashboard_says_marks_recorded_for_each_state():
     assert "Marks recorded" not in tile[:tile.index("</a>")]
     summary = page[page.index('id="d-TN"'):]
     assert "· Marks recorded: <bdi>1 of 4</bdi>" in summary[:summary.index("</summary>")]
-    # counts only: the page names no institution that it did not name before
-    for name in ("TN Reserve College", "Goa Pending College", "Bihar Identified College", "Assam Declined College"):
+    # counts only: the page names no institution that it did not name before (the reserve list with the selected, 1.2.178)
+    assert "TN Reserve College" in page
+    for name in ("Goa Pending College", "Bihar Identified College", "Assam Declined College"):
         assert name not in page, name
     assert "80" not in _row(page, "TN") and "/100" not in page
 
@@ -102,37 +104,33 @@ def test_the_figure_follows_the_console():
     assert '<bdi>3 of 5</bdi>' in page[page.index("<tfoot>"):page.index("</tfoot>")]
 
 
-def test_the_reserve_list_in_the_total():
-    # CICT, 12 November 2026: "The reserve list should also be added to the total" - the dashboard, State/UT by State/UT and in all
+def test_the_reserve_list_counted_with_the_selected():
+    # CICT, 12 November 2026: "The reserve list should also be added to the total" (1.2.175: a card and a column of its own), then
+    # "no separate reserve list. add with the selected institutions" (1.2.178: counted with the Participating Institutions)
     from kts.dashboard import figures
     app = _portal()
     with app.app_context():
         data = figures()
     by = {r["state"]: r for r in data["states"]}
-    assert (by["Tamil Nadu"]["inst_res"], by["Kerala"]["inst_res"], data["total"]["inst_res"]) == (1, 0, 1)
+    assert (by["Tamil Nadu"]["inst_sel"], by["Kerala"]["inst_sel"], data["total"]["inst_sel"]) == (4, 1, 5)
     page = app.test_client().get("/dashboard?lang=en").get_data(as_text=True)
-    kpis = page[page.index('class="grid grid-4 dash-kpis"'):page.index('<section class="card dash-map"')]
+    kpis = page[page.index('class="grid grid-3 dash-kpis"'):page.index('<section class="card dash-map"')]
     assert re.findall(r'<div class="num">([\d,]+)</div><div class="lbl">([^<]+)</div>', kpis) == [
-        ("1,000", "To be selected"), ("4", "Participating Institutions selected"), ("1", "Reserve list"),
-        ("0", "Students who took an institution&#39;s online test")]
-    head = page[page.index("<thead>"):page.index("</thead>")]
-    heads = re.findall(r"<th[^>]*>([^<]+)</th>", head)
-    assert heads[heads.index("Participating Institutions selected"):][:3] == ["Participating Institutions selected", "Reserve list", "Marks recorded"]
-    assert '<td class="num dash-res">1</td>' in _row(page, "TN") and '<td class="num dash-res">0</td>' in _row(page, "KL")
-    assert '<td class="num dash-res">1</td>' in page[page.index("<tfoot>"):page.index("</tfoot>")]
+        ("1,000", "To be selected"), ("5", "Participating Institutions selected"), ("0", "Students who took an institution&#39;s online test")]
+    assert "Reserve list" not in page and "dash-res" not in page
     tile = page[page.index('href="#d-TN"'):]
-    assert "Reserve list: <bdi>1</bdi>" in tile[:tile.index("</a>")]
-    tile = page[page.index('href="#d-KL"'):]
-    assert "Reserve list" not in tile[:tile.index("</a>")]
+    assert '<span class="dash-n" dir="ltr">4/50</span>' in tile[:tile.index("</a>")]
     summary = page[page.index('id="d-TN"'):]
-    assert "· Reserve list: 1" in summary[:summary.index("</summary>")]
-    assert "TN Reserve College" not in page   # counts only
-    # the reserve list kept off the website: off the dashboard too
+    summary = summary[:summary.index("</details>")]
+    assert "Participating Institutions selected: 4" in summary and "TN Reserve College" in summary   # its name with the others
+    assert '<td class="num">4</td>' in _row(page, "TN") and '<td class="num">5</td>' in page[page.index("<tfoot>"):page.index("</tfoot>")]
+    # the reserve list kept off the public pages: only the institutions selected
     from kts.db import set_setting
     with app.app_context():
         set_setting("hei.reserve_public", "0")
+        assert {r["state"]: r for r in figures()["states"]}["Tamil Nadu"]["inst_sel"] == 3
     page = app.test_client().get("/dashboard?lang=en").get_data(as_text=True)
-    assert "Reserve list" not in page and "dash-res" not in page and 'class="grid grid-3 dash-kpis"' in page
+    assert "TN Reserve College" not in page and '<td class="num">3</td>' in _row(page, "TN")
 
 
 def test_the_setting_takes_it_off_the_page():
@@ -144,8 +142,8 @@ def test_the_setting_takes_it_off_the_page():
     page = app.test_client().get("/dashboard?lang=en").get_data(as_text=True)
     assert "Marks recorded" not in page and "dash-marks" not in page
     head = page[page.index("<thead>"):page.index("</thead>")]
-    assert head.count("<th ") == 5   # with the reserve list
-    assert re.findall(r'<td class="num">([^<]*)</td>', _row(page, "TN")) == ["50", "3", "0"]
+    assert head.count("<th ") == 4
+    assert re.findall(r'<td class="num">([^<]*)</td>', _row(page, "TN")) == ["50", "4", "0"]
     settings = _staff(app, "admin@tests.example", "superadmin").get("/console/settings").get_data(as_text=True)
     assert "Marks recorded: N of M" in settings
     # and the dashboard itself switched off is not there at all

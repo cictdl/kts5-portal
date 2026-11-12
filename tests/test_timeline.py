@@ -504,7 +504,7 @@ def test_the_live_database_moves_to_the_revised_letter():
     assert {key: settings[key] for key in REVISED_DO_DATES} == {key: DEFAULT_SETTINGS[key] for key in REVISED_DO_DATES}
     assert (settings["hei.end"], settings["hei.select_end"], settings["reg.end"], settings["verify.end"], settings["papers.due"]) == (
         "2026-11-18", "2026-11-19", "2026-11-24", "2026-12-05", "2027-01-14")
-    assert settings["hei.cap_annexure"] == "1"
+    assert settings["hei.cap_annexure"] == "0"   # no ceiling since 1.2.178
     rows = {t: (s, e, p) for t, s, e, p in _sql(again, "SELECT title, starts_at, ends_at, published FROM events")}
     for s in SEEDS:
         assert rows[s["title"]] == (s["starts"] + "T00:00", s["ends"] + "T00:00" if s.get("ends") else None, 1), s["key"]
