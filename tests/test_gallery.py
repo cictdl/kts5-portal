@@ -152,7 +152,8 @@ def test_kts5_in_the_news():
         assert data[:3] == b"\xff\xd8\xff" and len(data) < 400_000 and b"Exif" not in data[:200]
     client = make_app(ADMIN_PASSWORD=None).test_client()
     page = client.get("/gallery?lang=en").get_data(as_text=True)
-    assert page.count('<figure class="photo">') == 15 and "15 photographs" in page   # 11 since 1.2.141, 15 since 1.2.159
+    # 11 since 1.2.141, 15 since 1.2.159, 20 since 1.2.183 (Thiruvalluvar on stamps and coins)
+    assert page.count('<figure class="photo">') == 20 and "20 photographs" in page
     assert page.index("<bdi>KTS 5.0 in the news</bdi>") < page.index("<bdi>Launch of the KTS 5.0 web portal and registration</bdi>")
     news = client.get("/gallery?lang=en&album=KTS+5.0+in+the+news").get_data(as_text=True)
     assert news.count('<figure class="photo">') == 9 and "Classical text Thirukkural to take centre stage" in news   # 9 since 1.2.159

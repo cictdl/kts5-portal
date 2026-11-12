@@ -80,7 +80,8 @@ def test_the_banner_on_the_home_page():
                            "Lexicon entries", "Tamil Audio Lexicon entries"]
     numbers = [int(t[1]) for t in tiles]
     assert numbers[:7] == [23, 1330, 1359, numbers[3], 22, 92, numbers[6]] and numbers[3] >= 217 and numbers[6] >= 253
-    assert numbers[8:18] == [156, 57, 44, 22, 15, 7, 6, 46, 49, 15]   # the gallery 15 since 1.2.159, the lectures 46 since 1.2.166
+    # the gallery 15 since 1.2.159, 20 since 1.2.183; the lectures 46 since 1.2.166
+    assert numbers[8:18] == [156, 57, 44, 22, 15, 7, 6, 46, 49, 20]
     assert numbers[18:] == [865, 100000, 41, 15, 133, 17, 108655, 275262, 6758, 59170]
     hrefs = [t[0] for t in tiles]
     assert hrefs[:8] == ["/about", "/thirukkural", "/thirukkural", "/resources", "/syllabus", "/posters",
