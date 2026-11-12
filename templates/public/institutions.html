@@ -8,7 +8,8 @@
   <p class="small dim" style="max-width:72ch">{{ t('hei.any_number') }}</p>
   <p><a href="{{ url_for('public.nodal_institutions') }}">{{ t('nodal.title') }} →</a></p>
   {% if window == 'open' %}<p><a class="btn saffron" href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a>
-    {% if settings.get('hei.end') %}<span class="pill green" style="margin-inline-start:8px">{{ t('hei.last_date') }}: {{ settings['hei.end']|date }}</span>{% endif %}</p>{% endif %}
+    {% if settings.get('hei.end') %}<span class="pill green" style="margin-inline-start:8px">{{ t('hei.last_date') }}: {{ settings['hei.end']|date }}</span>{% endif %}
+    <span class="pill green hei-no-limit" style="margin-inline-start:8px;white-space:normal">{{ t('hei.no_limit') }}</span></p>{% endif %}
   {# the Participating Institutions at a glance (1.2.149): the figures of the dashboard, then the list #}
   <section class="pi" aria-labelledby="pi-h">
     <div class="pi-head"><h2 id="pi-h">{{ t('home.stats') }}</h2><span class="small muted"><i class="pi-live" aria-hidden="true"></i>{{ t('dash.updated')|replace('{time}', pi.now) }}</span></div>
@@ -85,7 +86,7 @@
   {% if reserve %}
   {# the reserve list of each row of Annexure-I, in the order of the marks of Annexure-V, without the marks (1.2.174) #}
   <h2 id="reserve" style="margin-top:36px">{{ t('hei.reserve_h') }}</h2>
-  <p class="small dim" style="max-width:72ch">{{ t('hei.reserve_intro') }}</p>
+  <p class="small dim" style="max-width:72ch">{{ t('hei.reserve_intro') }}{% if reserve_unmarked %} {{ t('hei.reserve_unmarked') }}{% endif %}</p>
   {% for unit, label, anchor, items in reserve %}
   <h3 id="{{ anchor }}" style="margin-top:20px">{{ label }} <span class="small muted">({{ items|length }})</span></h3>
   <div class="table-wrap"><table class="table reserve-list">

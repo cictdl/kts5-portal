@@ -1071,7 +1071,8 @@ def test_alt_texts_use_keys_that_exist():
     # 1.2.168: four texts without the institutions registered (4)
     # 1.2.174: any number of institutions may register; the reserve list, its heading and its words (3)
     # 1.2.175: "Marks recorded" on the dashboard KTS 5.0 by State/UT and the sentence under its table (2)
-    assert len(CATALOG["en"]) == 1509
+    # 1.2.176: "Any number of institutions of a State/UT may register."; the reserve list without marks yet (2)
+    assert len(CATALOG["en"]) == 1511
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1103,7 +1104,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.175" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.176" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

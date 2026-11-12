@@ -7,7 +7,7 @@
   <p class="lead dim" style="max-width:76ch">{{ t('nodal.intro') }}</p>
   <div class="btn-row" style="margin:0 0 18px">
     {% if public_list %}<a class="btn" href="{{ url_for('public.institutions') }}">{{ t('hei.list_link') }}</a>{% endif %}
-    {% if window == 'open' %}<a class="btn saffron" href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a>{% endif %}
+    {% if window == 'open' %}<a class="btn saffron" href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a><span class="pill green hei-no-limit" style="white-space:normal">{{ t('hei.no_limit') }}</span>{% endif %}
     <a class="btn ghost" href="{{ url_for('campus.login') }}">{{ t('camp.login_title') }}</a>
   </div>
   {# the Nodal Officers on the portal (1.2.139): how many rows of Annexure-I have one, how an officer is added, a one-page report #}

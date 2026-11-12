@@ -48,7 +48,7 @@
       <p class="small muted join-meta">{{ chip_of(chip) }}{% if show_reg and row.week %} <span>{{ t('pg.week')|replace('{n}', row.week|string) }}</span> ·{% endif %}{% if show_reg %} <span>{{ t('dash.updated')|replace('{time}', as_of) }}</span>{% endif %}</p>
       {% if show_reg and row.reg == 0 %}<p class="join-first">{{ t('join.first')|replace('{state}', label) }}</p>
       {% elif show_reg and row.reg > row.n %}<p class="join-over">{{ t('join.over')|replace('{n}', '{:,}'.format(row.n)) }}</p>{% endif %}
-      <p><a class="btn saffron join-cta" href="{{ reg_url }}">{{ t('hei.cta') }}</a></p>
+      <p><a class="btn saffron join-cta" href="{{ reg_url }}">{{ t('hei.cta') }}</a> <span class="pill green hei-no-limit" style="white-space:normal">{{ t('hei.no_limit') }}</span></p>
       <section class="card join-ready"><h2>{{ t('join.ready_t') }}</h2><p class="small" style="margin:0">{{ t('join.ready') }}</p></section>
       <section class="card join-how">
         <p style="margin:0">{{ t('hub.i_open')|replace('{select}', words.select)|replace('{camp_to}', words.camp_to)|replace('{reg_end}', words.reg_end) }}</p>
