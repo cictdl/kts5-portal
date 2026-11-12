@@ -1162,6 +1162,8 @@
   "dash.total": "All States/UTs",
   "dash.link": "KTS 5.0 by State/UT",
   "dash.of": "{n} of {total}",
+  "dash.marks": "Marks recorded",
+  "dash.marks_note": "Marks recorded: of the institutions that the Nodal Institution has selected or placed on its reserve list, those whose marks under the Standard Operating Procedure (Annexure-V) are recorded on the portal.",
   "dash.details_title": "Each State/UT: its Nodal Officer, its Participating Institutions and their student delegates",
   "dash.details_note": "The name of a student delegate is shown once the Nodal Officer has verified the student, with the institution, as the students agreed on registering; no other detail of a student is shown.",
   "dash.delegate": "Student delegate: {name}",

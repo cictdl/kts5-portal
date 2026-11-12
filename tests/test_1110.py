@@ -88,8 +88,9 @@ def test_the_participating_institutions():
 def test_the_dashboard_counts_the_participating_institutions():
     page = _main(_get(_app().test_client(), "/dashboard?lang=en"))
     assert "Where the programme stands in each State/UT: the Participating Institutions selected and the students who took" in page
-    kpis = page[page.index('class="grid grid-3 dash-kpis"'):page.index('<section class="card dash-map"')]
-    assert re.findall(r'<div class="lbl">([^<]+)</div>', kpis) == ["To be selected", "Participating Institutions selected",
+    # four cards with the reserve list (1.2.175)
+    kpis = page[page.index('class="grid grid-4 dash-kpis"'):page.index('<section class="card dash-map"')]
+    assert re.findall(r'<div class="lbl">([^<]+)</div>', kpis) == ["To be selected", "Participating Institutions selected", "Reserve list",
                                                                      "Students who took an institution&#39;s online test"]
     assert '<h2 id="dash-grid-h">Participating Institutions selected · To be selected</h2>' in page
     tn = page[page.index('href="#d-TN"'):]
@@ -97,7 +98,8 @@ def test_the_dashboard_counts_the_participating_institutions():
     assert '<span class="dash-n" dir="ltr">3/50</span>' in tn and "Participating Institutions selected: <bdi>3 of 50</bdi>" in tn
     assert tn.count("Participating Institutions selected") == 1
     head = page[page.index("<thead>"):page.index("</thead>")]
-    assert head.count("<th ") == 4 and "Participating Institutions selected" in head
+    # with "Reserve list" and "Marks recorded" (1.2.175)
+    assert head.count("<th ") == 6 and "Participating Institutions selected" in head
     row = page[page.index('<tr id="st-TN">'):]
     assert re.findall(r'<td class="num">([^<]*)</td>', row[:row.index("</tr>")]) == ["50", "3", "0"]
 

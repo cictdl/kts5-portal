@@ -40,7 +40,10 @@ GRID = {
     "Lakshadweep": (6, 0, "LD"), "Kerala": (6, 1, "KL"), "Tamil Nadu": (6, 2, "TN"), "Puducherry": (6, 3, "PY"),
     "Andaman and Nicobar Islands": (6, 5, "AN"),
 }
-FIELDS = ("inst_reg", "inst_sel", "assessed", "registered", "verified")
+# inst_res (1.2.175): the institutions on the reserve list of the Nodal Institution; inst_dec, inst_marked: the institutions
+# selected or placed on the reserve list, and those of them whose marks of Annexure-V are recorded; their difference is the
+# number of the Console's card "Selected without marks" (heis.UNMARKED_SQL)
+FIELDS = ("inst_reg", "inst_sel", "assessed", "registered", "verified", "inst_res", "inst_dec", "inst_marked")
 
 
 def shade(registered, to_select):
@@ -72,6 +75,10 @@ def figures():
     counts = {
         "inst_reg": _by_state("SELECT state AS st, COUNT(*) AS n FROM institutions WHERE status != 'identified' GROUP BY state"),
         "inst_sel": _by_state("SELECT state AS st, COUNT(*) AS n FROM institutions WHERE status = 'accepted' GROUP BY state"),
+        "inst_res": _by_state("SELECT state AS st, COUNT(*) AS n FROM institutions WHERE status = 'reserve' GROUP BY state"),
+        "inst_dec": _by_state("SELECT state AS st, COUNT(*) AS n FROM institutions WHERE status IN ('accepted', 'reserve') GROUP BY state"),
+        "inst_marked": _by_state("SELECT state AS st, COUNT(*) AS n FROM institutions WHERE status IN ('accepted', 'reserve') "
+                                 "AND sop_total IS NOT NULL GROUP BY state"),
         "assessed": _by_state("SELECT i.state AS st, COUNT(*) AS n FROM campus_attempts t JOIN campus_students s ON s.id = t.student_id "
                               "JOIN institutions i ON i.id = s.institution_id WHERE t.status IN ('submitted', 'expired') GROUP BY i.state"),
         "registered": _by_state("SELECT COALESCE(NULLIF(college_state, ''), state) AS st, COUNT(*) AS n FROM applications "

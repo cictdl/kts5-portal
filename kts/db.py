@@ -745,6 +745,9 @@ DEFAULT_SETTINGS = {
     "hei.public": "1",
     # the reserve list of each row of Annexure-I on /institutions, in the order of the marks, without them (1.2.174)
     "hei.reserve_public": "1",
+    # an institution is selected, or put on the reserve list, only once its marks of Annexure-V are recorded (1.2.174); off since
+    # 1.2.175, CICT, 12 November 2026: "marks will be added later stage"
+    "hei.marks_first": "0",
     # the State/UT pages for the registration of institutions, /join (1.2.142)
     "join.on": "1",
     # the Nodal Officer of each Nodal HEI, with the contact details given for the account, on the public pages (1.2.70)
@@ -812,6 +815,9 @@ DEFAULT_SETTINGS = {
     "dashboard.public": "1",
     # its student delegates by name, once verified (1.2.124)
     "dashboard.names": "1",
+    # "Marks recorded: N of M" for each State/UT: the institutions selected or on the reserve list whose marks of Annexure-V
+    # are recorded (1.2.175; CICT, 12 November 2026)
+    "dashboard.marks": "1",
     "site.draft_note_on": "1",
     "home.pm_on": "1",
     "home.pm_quote": "Kashi Tamil Sangamam furthers the spirit of \u2018Ek Bharat, Shreshtha Bharat\u2019.",

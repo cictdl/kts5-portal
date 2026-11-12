@@ -46,6 +46,7 @@ def _app():
     with app.app_context():
         set_setting("hei.end", "2099-12-31")
         set_setting("join.on", "1")
+        set_setting("hei.marks_first", "1")   # the rule of 1.2.174, off by default since 1.2.175 (tests/test_marks_public_1112.py)
     return app
 
 
@@ -223,16 +224,16 @@ def test_the_reserve_list_of_a_row_of_annexure_i():
     for iid in (kochi, island):
         _act(officer, iid, "reserve")
     _act(admin, goa, "reserve")
-    # on the reserve list before 1.2.174, without marks: it has no place in the order of the marks, and is not in the list yet
+    # on the reserve list without marks: it has no place in the order of the marks, it comes after the others unnumbered (1.2.175)
     old = _insert(app, "Old Reserve College", "Kerala", "Kollam", "reserve")
     public = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
     assert "No institution has been accepted yet." in public    # the reserve lists are there before any selection
     reserve = public[public.index('<h2 id="reserve"'):]
     assert reserve.index('id="reserve-goa"') < reserve.index('id="reserve-kerala"')   # the rows in the order of the States/UTs
     kerala = reserve[reserve.index('id="reserve-kerala"'):]
-    assert ">Kerala and Lakshadweep <span" in kerala[:200] and '<span class="small muted">(2)</span>' in kerala[:200]
-    assert re.findall(r'<td lang="en" dir="ltr">([^<]+)</td>', kerala) == ["Kavaratti College", "Kochi College"]
-    assert "Old Reserve College" not in public
+    assert ">Kerala and Lakshadweep <span" in kerala[:200] and '<span class="small muted">(3)</span>' in kerala[:200]
+    assert re.findall(r'<td class="num">([^<]+)</td><td lang="en" dir="ltr">([^<]+)</td>', kerala) == [
+        ("1", "Kavaratti College"), ("2", "Kochi College"), ("–", "Old Reserve College")]
     assert '<span lang="en" dir="ltr">Kavaratti</span> <span class="small muted">· Lakshadweep</span>' in kerala
     assert '<span lang="en" dir="ltr">Ernakulam</span></td>' in kerala
     # the evaluation sheet gives the places of the website, also when it is asked for the Union Territory alone
@@ -272,9 +273,9 @@ def test_institutions_selected_without_marks_stay_and_are_named():
     listed = listed[listed.index('<table class="table institutions">'):]
     assert "Early College" in listed and "Waiting College" in listed and "Marked College" not in listed
     assert "appears in the list of the website once its marks are recorded" in card
-    # nothing changes for them: selected, and on the website; the one of the reserve list is in its list once it has marks
+    # nothing changes for them: selected, and on the website; the one of the reserve list is in its list, unnumbered (1.2.175)
     public = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    assert "Early College" in public and "Waiting College" not in public and 'id="reserve"' not in public
+    assert "Early College" in public and '<td class="num">–</td><td lang="en" dir="ltr">Waiting College</td>' in public
     # CICT sees every State/UT; once the marks are recorded the card is gone
     admin = _staff(app, "admin@tests.example", "superadmin")
     console = admin.get("/console/institutions").get_data(as_text=True)

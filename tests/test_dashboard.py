@@ -68,7 +68,10 @@ def test_the_figures():
     assert tn["shade"] == "b1" and tn["share"] == 4
     assert (by["Kerala"]["inst_reg"], by["Kerala"]["inst_sel"], by["Kerala"]["shade"]) == (1, 0, "b0")
     assert by["Goa"]["inst_reg"] == 0 and "Ladakh" not in by and by["Jammu and Kashmir"]["to_select"] == 11
-    assert data["total"] == {"to_select": 1000, "inst_reg": 4, "inst_sel": 3, "assessed": 2, "registered": 2, "verified": 1}
+    # inst_res, inst_dec, inst_marked: none on the reserve list, the three selected, none of them marked (1.2.175,
+    # tests/test_marks_public_1112.py)
+    assert data["total"] == {"to_select": 1000, "inst_reg": 4, "inst_sel": 3, "assessed": 2, "registered": 2, "verified": 1,
+                             "inst_res": 0, "inst_dec": 3, "inst_marked": 0}
     assert [shade(n, 100) for n in (0, 1, 25, 26, 50, 51, 75, 76, 140)] == ["b0", "b1", "b1", "b2", "b2", "b3", "b3", "b4", "b4"]
     assert shade(3, None) == "nb"
 
@@ -78,8 +81,9 @@ def test_the_page():
     client = app.test_client()
     page = client.get("/dashboard?lang=en").get_data(as_text=True)
     assert "<h1>KTS 5.0 by State/UT</h1>" in page and "Live figures, as on " in page
-    kpis = page[page.index('class="grid grid-3 dash-kpis"'):page.index('class="card dash-map"')]
-    assert re.findall(r'<div class="num">([\d,]+)</div>', kpis) == ["1,000", "4", "3", "2", "2", "1"]
+    # seven cards with the reserve list (1.2.175): four in a row
+    kpis = page[page.index('class="grid grid-4 dash-kpis"'):page.index('class="card dash-map"')]
+    assert re.findall(r'<div class="num">([\d,]+)</div>', kpis) == ["1,000", "4", "3", "0", "2", "2", "1"]
     assert "2 of 1,000" in kpis
     # the squares: Tamil Nadu 2 of 50; Ladakh paired with Jammu and Kashmir (1.2.135); each leads to the block of its State/UT
     assert page.count('class="dash-tile ') == 36

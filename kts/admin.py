@@ -1128,7 +1128,7 @@ def institutions():
                   f"registered with its invitation, on its marks of Annexure-V ({again} mails the link once more).", "error")
             return redirect(back)
         # selected, or put on the reserve list, on the marks of the Evaluation Committee (Annexure-V), recorded first (1.2.174)
-        if action in ("accept", "reserve") and row["sop_total"] is None:
+        if action in ("accept", "reserve") and row["sop_total"] is None and get_setting("hei.marks_first") == "1":
             flash(f"{row['name']}: record the marks of the Evaluation Committee first (Marks, Annexure-V). An institution is selected, "
                   f"or put on the reserve list, on its marks.", "error")
             return redirect(back)
@@ -1228,6 +1228,7 @@ def institutions():
                            reg_end=settings.get("reg.end"), assess_to=settings.get("camp.to"), hei_end=settings.get("hei.end"),
                            select_end=settings.get("hei.select_end"), unmarked=[(u, unmarked[u]) for u in units if unmarked.get(u)],
                            reserve_public=settings.get("hei.public") == "1" and settings.get("hei.reserve_public") == "1",
+                           marks_first=settings.get("hei.marks_first") == "1",
                            sop_max=sum(m for _k, _c, m, *_ in HEI.SOP), benchmark=HEI.SOP_BENCHMARK,
                            marks={r["id"]: HEI.sop_marks(r) for r in rows[:INST_ROWS_SHOWN]}, order=request.args.get("order", ""))
 
@@ -1265,7 +1266,8 @@ def institution_marks(iid):
             return redirect(url_for("admin.institutions", state=row["state"], order="marks"))
     return render_template("console/institution_marks.html", row=row, marks=marks, errors=errors, note=note, sop=HEI.SOP,
                            legacy=HEI.sop_legacy(row),
-                           benchmark=HEI.SOP_BENCHMARK, allocation=HEI.allocation_of(row["state"]))
+                           benchmark=HEI.SOP_BENCHMARK, allocation=HEI.allocation_of(row["state"]),
+                           marks_first=get_setting("hei.marks_first") == "1")
 
 
 @bp.route("/institutions/evaluation.xlsx")
@@ -1295,7 +1297,8 @@ def institutions_evaluation():
                + ["Total (100)", f"Benchmark {HEI.SOP_BENCHMARK}", "Status", "Remarks of the committee"])
     data, ranks = [], {}
     # the place of an institution in the reserve list of its row of Annexure-I, as the website gives it: whatever the sheet holds
-    place = {x["id"]: n for _unit, items in HEI.reserve_by_unit(_states()) for n, x in enumerate(items, start=1)}
+    place = {x["id"]: n for _unit, items in HEI.reserve_by_unit(_states()) for n, x in enumerate(items, start=1)
+             if x["sop_total"] is not None}
     for r in sorted(rows, key=lambda r: (HEI.nodal_state_of(r["state"]), HEI.sop_order(r))):
         marks = HEI.sop_marks(r)
         unit = HEI.nodal_state_of(r["state"])   # a paired Union Territory is ranked with its State (1.2.135)
@@ -1984,6 +1987,7 @@ SETTING_GROUPS = [
               ("menu.assessment", "Show “Institution-level assessment” in the menu and in the quick links of the footer (the page /examination works either way, with the links to it from the pages of the institutions, the guide and the study material)", "bool"),
               ("dashboard.public", "Public dashboard KTS 5.0 by State/UT (/dashboard): the live counts of each State/UT, its Nodal Officers and its Participating Institutions", "bool"),
               ("dashboard.names", "The dashboard names the student delegate of each Participating Institution once the Nodal Officer has verified the student (name and institution only, as the students agreed on registering)", "bool"),
+              ("dashboard.marks", "The dashboard says, for each State/UT, for how many of the institutions selected or placed on the reserve list the marks of Annexure-V are recorded (“Marks recorded: N of M”; counts only)", "bool"),
               ("site.visitors", "Show the count of visitors in the footer of every page", "bool"),
               ("site.draft_note_on", "Show the note “this translation is a draft” in interface languages that are not yet reviewed", "bool")]),
     ("Home page", [("home.pm_on", "Show the Prime Minister's photograph and quotation", "bool"),
@@ -2006,6 +2010,7 @@ SETTING_GROUPS = [
         ("hei.max_per_state", "Otherwise: institutions accepted in one State/UT at most, the same for all (0: no limit)", "number"),
         ("hei.public", "Show the participating institutions on the website, State/UT by State/UT", "bool"),
         ("hei.reserve_public", "Show the reserve list of each State/UT on the same page, in the order of the marks of Annexure-V (the marks themselves are not shown)", "bool"),
+        ("hei.marks_first", "An institution is selected, or put on the reserve list, only once the marks of Annexure-V are recorded for it (off: the marks may be recorded at a later stage)", "bool"),
         ("join.on", "Show the State/UT pages for the registration of institutions (/join), with their links and A4 posters", "bool"),
         ("nodal.officers_public", "Show the Nodal Officer of each State/UT (name, designation, e-mail and phone of the active Nodal Officer accounts) on the Nodal HEIs and Partners pages", "bool"),
         ("hei.orientation", "Pre-assessment orientation session by CICT for the institutions: date, time and link, shown on the institutions' page (empty: nothing)", "text")]),

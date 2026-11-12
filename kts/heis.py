@@ -117,13 +117,16 @@ def reserve_by_unit(states):
     The reserve lists, one for each row of Annexure-I in the order of `states`: [(State/UT of the row, [institutions])], each in
     the order of the marks of Annexure-V (sop_order), a paired Union Territory with its State. A reserve list has no upper limit
     (CICT, 11 November 2026, 1.2.174; ordinarily up to 20 per cent of the number of Annexure-I before). An institution put on
-    the reserve list before 1.2.174 without marks has no place in that order: it is in the list once its marks are recorded.
+    the reserve list without marks (the marks may be recorded at a later stage, 1.2.175) has no place in that order: it comes
+    after those that have marks, in the order of the names, and takes its place once its marks are recorded.
     """
     by = {}
-    for r in query("SELECT * FROM institutions WHERE status = 'reserve' AND sop_total IS NOT NULL"):
+    for r in query("SELECT * FROM institutions WHERE status = 'reserve'"):
         by.setdefault(nodal_state_of(r["state"]), []).append(r)
     units = list(dict.fromkeys(nodal_state_of(s) for s in states))
-    return [(u, sorted(by[u], key=sop_order)) for u in units if u in by]
+    return [(u, sorted((r for r in by[u] if r["sop_total"] is not None), key=sop_order)
+             + sorted((r for r in by[u] if r["sop_total"] is None), key=lambda r: ((r["name"] or "").casefold(), r["id"])))
+            for u in units if u in by]
 
 
 # ---- the districts reached (1.2.174) ---------------------------------------------------------------------------------------------

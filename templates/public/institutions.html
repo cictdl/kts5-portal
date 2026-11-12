@@ -92,7 +92,7 @@
     <thead><tr><th class="num">#</th><th>{{ t('hei.col_name') }}</th><th>{{ t('reg.college_district') }}</th><th>{{ t('reg.college_type') }}</th></tr></thead>
     <tbody>{% for h in items %}
     {% set ti = ref.college_types.index(h.itype) + 1 if h.itype in ref.college_types else 0 %}
-    <tr><td class="num">{{ loop.index }}</td><td lang="en" dir="ltr">{{ h.name }}</td><td><span lang="en" dir="ltr">{{ h.district }}</span>{% if h.state != unit %} <span class="small muted">· {{ place(h.state) }}</span>{% endif %}</td>
+    <tr><td class="num">{{ loop.index if h.sop_total is not none else '–' }}</td><td lang="en" dir="ltr">{{ h.name }}</td><td><span lang="en" dir="ltr">{{ h.district }}</span>{% if h.state != unit %} <span class="small muted">· {{ place(h.state) }}</span>{% endif %}</td>
       <td>{{ t('opt.ctype.%d' % ti) if ti else h.itype }}</td></tr>
     {% endfor %}</tbody>
   </table></div>
