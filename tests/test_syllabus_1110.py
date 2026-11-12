@@ -13,7 +13,8 @@ from conftest import make_app
 
 ROOT = Path(__file__).resolve().parents[1]
 BOOKS = json.loads((ROOT / "data" / "syllabus.json").read_text(encoding="utf-8"))
-NEW = {"brx": (68, "", "(Bodo)"), "doi": (76, "डॉ. सुषमा रानी राजपूत", "(DOGRI)"), "ks": (62, "ڈاکٹر زرگر عادل احمد", "(Kashmiri)"),
+# Dogri: the edition of 12 November 2026, 77 pages (1.2.181)
+NEW = {"brx": (68, "", "(Bodo)"), "doi": (77, "डॉ. सुषमा रानी राजपूत", "(DOGRI)"), "ks": (62, "ڈاکٹر زرگر عادل احمد", "(Kashmiri)"),
        "pa": (65, "ਸੁਖਦੀਪ ਸੌਂਧੀ", "(Punjabi)")}
 
 
