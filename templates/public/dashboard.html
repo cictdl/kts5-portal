@@ -17,7 +17,7 @@
   {% set cards = 3 + (1 if show_reg else 0) + (2 if sp else 0) %}
   <span class="eyebrow">{{ t('nav.programme') }}</span>
   <h1>{{ t('dash.title') }}</h1>
-  <p class="dim" style="max-width:80ch">{{ t('dash.intro' if sp or show_reg else 'dash.intro_plain') }}</p>
+  <p class="dim" style="max-width:80ch">{{ t('dash.intro' if sp else 'dash.intro_plain') }}</p>
   <p><a class="btn sm secondary" href="{{ url_for('public.progress') }}">📈 {{ t('pg.link') }}</a></p>
   <p class="small muted dash-time">{{ t('dash.updated')|replace('{time}', now) }}</p>
 
@@ -31,18 +31,19 @@
   </div>
 
   <section class="card dash-map" aria-labelledby="dash-grid-h">
-    <h2 id="dash-grid-h">{% if sp %}{{ t('dash.grid_title') }}{% else %}{{ t('dash.inst_reg' if show_reg else 'dash.inst_sel') }}{% endif %}</h2>
-    <p class="small muted">{{ t('dash.grid_note' if sp or show_reg else 'dash.grid_note_plain') }}</p>
+    <h2 id="dash-grid-h">{% if sp %}{{ t('dash.grid_title') }}{% else %}{{ t('dash.inst_sel') }}{% endif %}</h2>
+    <p class="small muted">{{ t('dash.grid_note' if sp else 'dash.grid_note_plain') }}</p>
     <ul class="dash-grid">
       {% for r in states if r.grid %}
       <li style="grid-row:{{ r.grid[0] + 1 }};grid-column:{{ r.grid[1] + 1 }}">
-        {% set n = r.registered if sp else (r.inst_reg if show_reg else r.inst_sel) %}
-        <a class="dash-tile {{ r.shade if sp else (r.inst_shade if show_reg else r.cnt_shade) }}" href="#d-{{ r.grid[2] }}">
+        {# the Participating Institutions, also while the institutions registered are shown (1.2.180): no number to measure them by #}
+        {% set n = r.registered if sp else r.inst_sel %}
+        <a class="dash-tile {{ r.shade if sp else r.cnt_shade }}" href="#d-{{ r.grid[2] }}">
           <b dir="ltr">{{ r.grid[2] }}</b>
           <span class="dash-n" dir="ltr">{{ n }}</span>
           <span class="dash-tip" role="tooltip"><b>{{ nodal_label(r.state) }}</b>
-            <span>{{ t('home.stat_apps') if sp else t('dash.inst_reg' if show_reg else 'dash.inst_sel') }}: <bdi>{{ n }}</bdi></span>
-            {% if sp or show_reg %}<span>{{ t('dash.inst_sel') }}: <bdi>{{ r.inst_sel }}</bdi></span>{% endif %}
+            <span>{{ t('home.stat_apps') if sp else t('dash.inst_sel') }}: <bdi>{{ n }}</bdi></span>
+            {% if sp %}<span>{{ t('dash.inst_sel') }}: <bdi>{{ r.inst_sel }}</bdi></span>{% elif show_reg %}<span>{{ t('dash.inst_reg') }}: <bdi>{{ r.inst_reg }}</bdi></span>{% endif %}
             {% if show_marks and r.inst_dec %}<span>{{ t('dash.marks') }}: <bdi>{{ of(r.inst_marked, r.inst_dec) }}</bdi></span>{% endif %}
             {% if sp %}<span>{{ t('dash.verified') }}: <bdi>{{ r.verified }}</bdi></span>{% endif %}</span>
         </a>

@@ -47,7 +47,7 @@
       {% endif %}
     </div>
     <section class="card pi-states" aria-labelledby="pi-states-h">
-      <h3 id="pi-states-h">{{ t('pi.states_title' if show_reg else 'pi.states_title_plain') }}</h3>
+      <h3 id="pi-states-h">{{ t('pi.states_title_plain') }}</h3>
       <p class="pi-key small"><span><i class="pi-sw sel" aria-hidden="true"></i>{{ t('dash.inst_sel') }}</span>{% if show_reg %}<span><i class="pi-sw reg" aria-hidden="true"></i>{{ t('dash.inst_reg') }}</span>{% endif %}</p>
       <ol class="pi-rows">
         {% for r in pi.states %}

@@ -139,11 +139,14 @@ def test_the_console_switch_brings_every_one_back():
     assert flat["registered"] == 7 and flat["st_registered"] == 7
     assert "pi-trend" in _get(client, "/institutions?lang=en")
     dash = _main(_get(client, "/dashboard?lang=en"))
-    assert '<h2 id="dash-grid-h">Institutions registered</h2>' in dash and "the institutions registered and selected" in dash
-    assert "3 of 50" in _main(_get(client, "/join?lang=en"))
+    # the squares count the Participating Institutions in both modes, without a number of the State/UT (1.2.180)
+    assert '<h2 id="dash-grid-h">Participating Institutions selected</h2>' in dash and "against the number" not in dash
+    assert "Institutions registered: <bdi>3</bdi>" in dash
+    board = _main(_get(client, "/join?lang=en"))
+    assert "3 of 50" not in board and '<span class="jb-n"><bdi dir="ltr">3</bdi></span>' in board
     tn = _main(_get(client, "/join/tn?lang=en"))
     # the message to forward has no number since 1.2.179, the figure of the page shows the institutions registered
-    assert "Institutions registered: 3 of 50" in tn and "may register, in any number" in tn
+    assert "Institutions registered: 3</span>" in tn and "may register, in any number" in tn and "of 50" not in tn
 
 
 def test_the_new_texts_in_every_language():

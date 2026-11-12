@@ -10,16 +10,18 @@
 <div class="wrap section join">
   <span class="eyebrow">{{ t('site.name') }}</span>
   <h1>{{ t('join.board_title') }}</h1>
-  <p class="dim" style="max-width:80ch">{{ t('join.board_note' if show_reg else 'join.board_note_nonum') }}</p>
+  <p class="dim" style="max-width:80ch">{{ t('join.board_note_nonum') }}</p>
   <p class="small muted join-meta">{{ chip_of(chip) }}{% if show_reg %} <span>{{ t('dash.updated')|replace('{time}', as_of) }}</span>{% endif %}</p>
+  {# the number registered of each row against the row with the most, no number to be selected (1.2.180) #}
+  {% set top_reg = (rows|map(attribute='reg')|max) if rows else 0 %}
   <ul class="jb">
     {% for r in rows %}
     <li><a class="jb-row" href="{{ url_for('public.join_state', code=r.code, lang=lang if lang != 'en' else None) }}">
       <span class="jb-code" dir="ltr">{{ r.code|upper }}</span>
       <span class="jb-name">{{ r.label }}</span>
       {% if show_reg %}
-      <span class="jb-n"><bdi>{{ t('dash.of')|replace('{n}', '{:,}'.format(r.reg))|replace('{total}', '{:,}'.format(r.n)) }}</bdi></span>
-      <span class="jb-bar" aria-hidden="true"><i style="width:{{ [100, (100 * r.reg / r.n)|round(1) if r.n else 0]|min }}%"></i></span>
+      <span class="jb-n"><bdi dir="ltr">{{ '{:,}'.format(r.reg) }}</bdi></span>
+      <span class="jb-bar" aria-hidden="true"><i style="width:{{ (100 * r.reg / top_reg)|round(1) if top_reg else 0 }}%"></i></span>
       {% endif %}
     </a></li>
     {% endfor %}

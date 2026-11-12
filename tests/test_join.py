@@ -70,10 +70,11 @@ def test_the_page_of_a_row(monkeypatch):
     # registered: Presidency, Loyola, Declined, Secret and the A&N college (folded into the row); not the one only identified
     # no number to be selected in the title (1.2.179)
     assert "<h1>Tamil Nadu and Andaman and Nicobar Islands: register your college or university for KTS 5.0</h1>" in page
-    assert '<b class="join-big"><bdi dir="ltr">5</bdi></b> <span>Institutions registered: 5 of 50</span>' in page
-    assert page.count('<i class="jm-sq') == 50 and page.count('<i class="jm-sq on">') == 5
+    # the number registered, without the number to be selected (1.2.180)
+    assert '<b class="join-big"><bdi dir="ltr">5</bdi></b> <span>Institutions registered: 5</span>' in page
+    assert "jm-sq" not in page and "of 50" not in page
     assert '<span class="hub-chip ok">12 days left</span>' in page and "Live figures, as on 10:00 IST" in page
-    assert '<meta name="description" content="Institutions registered: 5 of 50 · 12 days left">' in page
+    assert '<meta name="description" content="Institutions registered: 5 · 12 days left">' in page
     # a paired row: the button carries via=join and no State/UT
     assert 'class="btn saffron join-cta" href="/institutions/register?via=join"' in page
     assert "Have this ready before you start" in page and "Central University of Tamil Nadu" in page
@@ -93,12 +94,14 @@ def test_the_meter_the_first_and_the_over(monkeypatch):
     _clock(monkeypatch, 3)
     client = app.test_client()
     up = client.get("/join/up?lang=en").get_data(as_text=True)
-    assert 'class="jm-bar"' in up and "jm-sq" not in up and 'href="/institutions/register?state=Uttar+Pradesh&amp;via=join"' in up
+    # no meter of the number to be selected since 1.2.180
+    assert 'class="jm-bar"' not in up and "jm-sq" not in up and 'href="/institutions/register?state=Uttar+Pradesh&amp;via=join"' in up
     od = client.get("/join/od?lang=en").get_data(as_text=True)
     assert "No college or university of Odisha has registered yet. Be the first." in od
     sk = client.get("/join/sk?lang=en").get_data(as_text=True)
-    assert "the Nodal Institution selects 5 on merit and keeps a reserve list" in sk and "full" not in sk.split('id="main"')[1].split("</main>")[0].lower()
-    assert sk.count('<i class="jm-sq on">') == 5
+    # no "selects 5 on merit": no number to be selected of a State/UT (1.2.180)
+    assert "selects 5 on merit" not in sk and "full" not in sk.split('id="main"')[1].split("</main>")[0].lower()
+    assert "Institutions registered: 6</span>" in sk   # six registered, more than its number of five
 
 
 def test_the_phases(monkeypatch):
