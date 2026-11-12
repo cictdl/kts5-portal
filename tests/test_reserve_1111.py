@@ -153,8 +153,8 @@ def test_the_number_of_annexure_i_and_a_reserve_list_without_an_upper_limit():
     with app.app_context():
         mail = query("SELECT body FROM outbox WHERE to_addr = 'coord@collegeh.example' ORDER BY id DESC", one=True)["body"]
     assert "placed your institution in the reserve list" in mail
-    assert "The reserve list is published on the portal, State/UT by State/UT, in the order of the marks: " in mail
-    assert "/institutions#reserve\n\nReference: KTS5-HEI-" in mail
+    assert "Your institution is listed on the portal with the institutions of your State/UT: " in mail
+    assert "/institutions\n\nReference: KTS5-HEI-" in mail and "#reserve" not in mail
     # the Console: no share of the number beside the count, in the words above the table or on the page of the marks
     console = officer.get("/console/institutions?state=Puducherry").get_data(as_text=True)
     summary = console[console.index("<tbody>"):console.index("</tbody>")]
@@ -166,17 +166,19 @@ def test_the_number_of_annexure_i_and_a_reserve_list_without_an_upper_limit():
     page = officer.get(f"/console/institutions/{ids['F']}/marks").get_data(as_text=True)
     assert "form the reserve list, which has no upper limit" in page and "ordinarily up to" not in page
     assert "with <b>Select</b> or <b>Reserve list</b> in the list of the institutions" in page
-    # the website: the reserve list under the Participating Institutions, in the order of the marks, without them
+    # the website: the reserve list in the table of its State/UT with the Participating Institutions, by name, not told apart,
+    # without the marks (1.2.177; a list of its own in 1.2.174-1.2.176)
     public = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    selected, reserve = public[:public.index('<h2 id="reserve"')], public[public.index('<h2 id="reserve"'):]
-    assert all(f"College {c}<" in selected for c in "ABCDE") and not any(f"College {c}<" in selected for c in "FGHIJ")
-    assert '<a href="#reserve">Reserve list ↓</a>' in selected and '<a href="#reserve-puducherry">Reserve list (5) ↓</a>' in selected
-    assert '<h3 id="reserve-puducherry" style="margin-top:20px">Puducherry <span class="small muted">(5)</span></h3>' in reserve
-    listed = re.findall(r'<tr><td class="num">(\d+)</td><td lang="en" dir="ltr">(College [A-J])</td>', reserve)
-    assert listed == [("1", "College F"), ("2", "College G"), ("3", "College H"), ("4", "College I"), ("5", "College J")]
-    text = re.sub(r"<[^>]+>", " ", reserve[:reserve.index("</table>")])
-    assert not any(str(n) in text for n in (75, 70, 65, 60, 55)) and "/100" not in reserve
-    assert "in the order of their marks under the Standard Operating Procedure (Annexure-V)" in reserve
+    table = public[public.index('<h2 id="st-puducherry"'):]
+    table = table[:table.index("</table>")]
+    assert '<h2 id="st-puducherry" style="margin-top:28px">Puducherry <span class="small muted">(10)</span></h2>' in public
+    assert re.findall(r'<tr><td class="num">(\d+)</td><td lang="en" dir="ltr">(College [A-J])</td>', table) == [
+        (str(n), f"College {c}") for n, c in enumerate("ABCDEFGHIJ", start=1)]
+    assert 'id="reserve' not in public and "Reserve list" not in public and "/100" not in public
+    assert not any(str(n) in re.sub(r"<[^>]+>", " ", table) for n in (75, 70, 65, 60, 55))
+    # the figures at a glance count the Participating Institutions selected
+    pi = public[public.index('<section class="pi"'):public.index('<p><b>')]
+    assert '<div class="num">5</div><div class="lbl">Participating institutions</div>' in pi and "10 institutions from 1 States/UTs" in public
     # the evaluation sheet: no column of a reserve list "up to 20%"; each institution of the reserve list with its place
     ws = load_workbook(io.BytesIO(officer.get("/console/institutions/evaluation.xlsx?state=Puducherry").data)).active
     values = [[c.value for c in row] for row in ws.iter_rows()]
@@ -187,7 +189,7 @@ def test_the_number_of_annexure_i_and_a_reserve_list_without_an_upper_limit():
     with app.app_context():
         set_setting("hei.reserve_public", "0")
     public = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    assert 'id="reserve"' not in public and "College F" not in public and "Reserve list" not in public and "College A<" in public
+    assert "College F" not in public and "College A<" in public and "(5)</span></h2>" in public
     _act(officer, ids["J"], "pending")
     _act(officer, ids["J"], "reserve")
     with app.app_context():
@@ -196,7 +198,7 @@ def test_the_number_of_annexure_i_and_a_reserve_list_without_an_upper_limit():
     console = officer.get("/console/institutions?state=Puducherry").get_data(as_text=True)
     assert "which has no upper limit (CICT, 11 November 2026):" in console and "is published on the website" not in console
     settings = _staff(app, "admin@tests.example", "superadmin").get("/console/settings").get_data(as_text=True)
-    assert "Show the reserve list of each State/UT on the same page" in settings
+    assert "List the institutions of the reserve list on the same page, in the table of their State/UT" in settings
     # nor while the page of the Participating Institutions itself is switched off
     with app.app_context():
         set_setting("hei.reserve_public", "1")
@@ -227,15 +229,13 @@ def test_the_reserve_list_of_a_row_of_annexure_i():
     # on the reserve list without marks: it has no place in the order of the marks, it comes after the others unnumbered (1.2.175)
     old = _insert(app, "Old Reserve College", "Kerala", "Kollam", "reserve")
     public = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    assert "No institution has been accepted yet." in public    # the reserve lists are there before any selection
-    reserve = public[public.index('<h2 id="reserve"'):]
-    assert reserve.index('id="reserve-goa"') < reserve.index('id="reserve-kerala"')   # the rows in the order of the States/UTs
-    kerala = reserve[reserve.index('id="reserve-kerala"'):]
-    assert ">Kerala and Lakshadweep <span" in kerala[:200] and '<span class="small muted">(3)</span>' in kerala[:200]
+    # the institutions of the reserve list are listed before any selection, each in the table of its own State/UT (1.2.177)
+    assert "4 institutions from 3 States/UTs" in public and '<p class="alert info">No institution has been accepted yet.</p>' not in public
+    assert public.index('id="st-goa"') < public.index('id="st-kerala"') < public.index('id="st-lakshadweep"')
+    kerala = public[public.index('id="st-kerala"'):public.index('id="st-lakshadweep"')]
     assert re.findall(r'<td class="num">([^<]+)</td><td lang="en" dir="ltr">([^<]+)</td>', kerala) == [
-        ("1", "Kavaratti College"), ("2", "Kochi College"), ("–", "Old Reserve College")]
-    assert '<span lang="en" dir="ltr">Kavaratti</span> <span class="small muted">· Lakshadweep</span>' in kerala
-    assert '<span lang="en" dir="ltr">Ernakulam</span></td>' in kerala
+        ("1", "Kochi College"), ("2", "Old Reserve College")]
+    assert "Kavaratti College" in public[public.index('id="st-lakshadweep"'):]
     # the evaluation sheet gives the places of the website, also when it is asked for the Union Territory alone
     from openpyxl import load_workbook
     for asked in ("Kerala", "Lakshadweep"):
@@ -243,16 +243,14 @@ def test_the_reserve_list_of_a_row_of_annexure_i():
         rows = [[c.value for c in row] for row in ws.iter_rows()][1:]
         assert [(v[4], v[3], v[18]) for v in rows] == [("Kavaratti College", 1, "reserve list 1"), ("Kochi College", 2, "reserve list 2"),
                                                        ("Old Reserve College", None, "reserve list")], asked
-    # its marks recorded, the old one takes its place in the list
+    # its marks recorded, the old one takes its place in the evaluation sheet; the website lists by name, as before
     _mark(officer, old, (10, 15, 15, 10, 10, 5))   # 65
-    kerala = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    kerala = kerala[kerala.index('id="reserve-kerala"'):]
-    assert re.findall(r'<td lang="en" dir="ltr">([^<]+)</td>', kerala) == ["Kavaratti College", "Kochi College", "Old Reserve College"]
+    ws = load_workbook(io.BytesIO(officer.get("/console/institutions/evaluation.xlsx?state=Kerala").data)).active
+    assert [[c.value for c in row] for row in ws.iter_rows()][3][18] == "reserve list 3"
     # in the languages of the portal
     for code in ("ta", "hi", "ur", "sat"):
         page = app.test_client().get(f"/institutions?lang={code}").get_data(as_text=True)
-        assert CATALOG[code]["hei.reserve_h"] in page and CATALOG[code]["hei.any_number"] in page, code
-        assert CATALOG[code]["hei.reserve_intro"] in page, code
+        assert CATALOG[code]["hei.any_number"] in page and "Old Reserve College" in page, code
     assert old
 
 
@@ -275,7 +273,7 @@ def test_institutions_selected_without_marks_stay_and_are_named():
     assert "appears in the list of the website once its marks are recorded" in card
     # nothing changes for them: selected, and on the website; the one of the reserve list is in its list, unnumbered (1.2.175)
     public = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    assert "Early College" in public and '<td class="num">–</td><td lang="en" dir="ltr">Waiting College</td>' in public
+    assert "Early College" in public and "Waiting College" in public   # in the list of Maharashtra (1.2.177)
     # CICT sees every State/UT; once the marks are recorded the card is gone
     admin = _staff(app, "admin@tests.example", "superadmin")
     console = admin.get("/console/institutions").get_data(as_text=True)
@@ -291,7 +289,7 @@ def test_institutions_selected_without_marks_stay_and_are_named():
         assert sorted(r["status"] for r in query("SELECT status FROM institutions WHERE state = 'Maharashtra'")) == [
             "accepted", "accepted", "reserve"]
     public = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    assert "Waiting College" in public[public.index('<h2 id="reserve"'):]
+    assert "Waiting College" in public[public.index('id="st-maharashtra"'):]
 
 
 def test_institutions_equal_in_everything_have_one_order_everywhere():
@@ -304,8 +302,6 @@ def test_institutions_equal_in_everything_have_one_order_everywhere():
     for name, state in names:
         _insert(app, name, state, "Kollam", "reserve", 70, created=day)
     wanted = [name for name, _state in names]
-    public = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    assert re.findall(r'<td lang="en" dir="ltr">([^<]+)</td>', public[public.index('id="reserve-kerala"'):]) == wanted
     officer = _nodal(app, "nodal.kl@tests.example", ["Kerala"])
     console = officer.get("/console/institutions?state=Kerala&order=marks").get_data(as_text=True)
     console = console[console.index('<table class="table institutions">'):]
@@ -416,7 +412,8 @@ def test_the_states_and_uts_and_the_districts_of_the_pages():
     # four States and Union Territories of the 36 (two rows of Annexure-I); four districts (Kachchh once)
     assert '<div class="num">4</div><div class="lbl">States and UTs</div>' in pi and "<bdi>4 of 36</bdi>" in pi
     assert '<div class="num">4</div><div class="lbl">Districts reached</div>' in pi
-    assert "5 institutions from 4 States/UTs" in page
+    # the list holds the institution of the reserve list of Puducherry too (1.2.177); the figures above count only the selected
+    assert "6 institutions from 5 States/UTs" in page
     states = json.loads((ROOT / "data" / "states.json").read_text(encoding="utf-8"))
     assert (len(states["states"]), len(states["union_territories"])) == (28, 8)
     # the home page counts the same States/UTs: not Goa, where an institution has only registered

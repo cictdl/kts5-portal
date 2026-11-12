@@ -303,11 +303,9 @@ def test_the_marks_of_annexure_v_rank_the_institutions_and_the_reserve_list():
         assert "placed your institution in the reserve list" in mail
     page = officer.get("/console/institutions?state=Kerala").get_data(as_text=True)
     assert '<span class="pill saffron">reserve list</span>' in page and '<span class="pill green">selected</span>' in page
-    # the reserve list is not among the Participating Institutions of the website: it has its own list below them (1.2.174)
+    # the reserve list is in the list of the website with the Participating Institutions, not told apart (1.2.177)
     public = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    selected, reserve = public[:public.index('<h2 id="reserve"')], public[public.index('<h2 id="reserve"'):]
-    assert "College Beta" in selected and "College Alpha" not in selected
-    assert "College Alpha" in reserve and "College Beta" not in reserve and "College Gamma" not in reserve
+    assert "College Beta" in public and "College Alpha" in public and "College Gamma" not in public and 'id="reserve"' not in public
     officer.post("/console/institutions", data={"_csrf": _token(officer), "id": ids["College Beta"], "action": "decline", "note": "Withdrew"})
     officer.post("/console/institutions", data={"_csrf": _token(officer), "id": ids["College Alpha"], "action": "accept"})
     with app.app_context():

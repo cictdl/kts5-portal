@@ -196,23 +196,22 @@ def test_the_marks_may_come_later():
     with app.app_context():
         assert {r["name"]: r["status"] for r in query("SELECT name, status FROM institutions")} == {
             "Selected College": "accepted", "Zeta College": "reserve", "Alpha College": "reserve", "Marked College": "reserve"}
-    # the website: the one with marks numbered, then the others without a number, by name, and the sentence that says so
+    # the website: all four in the list of Puducherry, by name, with or without marks (1.2.177)
     public = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    reserve = public[public.index('<h2 id="reserve"'):]
-    assert re.findall(r'<td class="num">([^<]+)</td><td lang="en" dir="ltr">([^<]+)</td>', reserve) == [
-        ("1", "Marked College"), ("–", "Alpha College"), ("–", "Zeta College")]
+    assert re.findall(r'<td class="num">([^<]+)</td><td lang="en" dir="ltr">([^<]+)</td>', public) == [
+        ("1", "Alpha College"), ("2", "Marked College"), ("3", "Selected College"), ("4", "Zeta College")]
     # the evaluation sheet: a place only for the one with marks
     ws = load_workbook(BytesIO(officer.get("/console/institutions/evaluation.xlsx?state=Puducherry").data)).active
     rows = {v[4]: v[18] for v in [[c.value for c in row] for row in ws.iter_rows()][1:]}
     assert rows == {"Marked College": "reserve list 1", "Alpha College": "reserve list", "Zeta College": "reserve list",
                     "Selected College": "selected"}
-    # once all have marks, all are numbered, in the order of the marks
+    # once all have marks, the evaluation sheet gives each its place, in the order of the marks
     for name, readiness in (("Zeta College", "20"), ("Alpha College", "10")):
         officer.post(f"/console/institutions/{ids[name]}/marks", data=dict(marks, readiness=readiness, _csrf=_token(officer), note=""))
-    public = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    reserve = public[public.index('<h2 id="reserve"'):]
-    assert re.findall(r'<td class="num">([^<]+)</td><td lang="en" dir="ltr">([^<]+)</td>', reserve) == [
-        ("1", "Zeta College"), ("2", "Marked College"), ("3", "Alpha College")]
+    ws = load_workbook(BytesIO(officer.get("/console/institutions/evaluation.xlsx?state=Puducherry").data)).active
+    rows = {v[4]: v[18] for v in [[c.value for c in row] for row in ws.iter_rows()][1:]}
+    assert rows == {"Zeta College": "reserve list 1", "Marked College": "reserve list 2", "Alpha College": "reserve list 3",
+                    "Selected College": "selected"}
     # the rule of 1.2.174 when CICT switches it on
     with app.app_context():
         set_setting("hei.marks_first", "1")

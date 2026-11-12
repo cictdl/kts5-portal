@@ -417,9 +417,14 @@ def mail_invited(row):
                   f"Central Institute of Classical Tamil, Chennai")
 
 
-def accepted_by_state(states):
-    """The accepted institutions, State/UT by State/UT in the order of `states`: [(state, [rows])]."""
-    rows = query("SELECT * FROM institutions WHERE status = 'accepted' ORDER BY name COLLATE NOCASE")
+def accepted_by_state(states, reserve=False):
+    """
+    The accepted institutions, State/UT by State/UT in the order of `states`: [(state, [rows])]. With reserve, those of the
+    reserve list too, in the same list, in the order of the names, not told apart (the list of /institutions since 1.2.177;
+    CICT, 12 November 2026: "The reserve list also should be added to the registered list. No separate reserve list needed").
+    """
+    statuses = ("accepted", "reserve") if reserve else ("accepted",)
+    rows = query(f"SELECT * FROM institutions WHERE status IN ({','.join('?' * len(statuses))}) ORDER BY name COLLATE NOCASE", statuses)
     by = {}
     for r in rows:
         by.setdefault(r["state"], []).append(r)
@@ -490,8 +495,8 @@ def mail_decision(row):
                 f"Participating Institutions of Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom, in accordance with the Standard "
                 f"Operating Procedure. If a selected institution withdraws, does not respond or does not nominate its student, the "
                 f"next institution of the reserve list may be included; you will then receive another mail."
-                + (f" The reserve list is published on the portal, State/UT by State/UT, in the order of the marks: "
-                   f"{base}/institutions#reserve" if get_setting("hei.public") == "1" and get_setting("hei.reserve_public") == "1" else "")
+                + (f" Your institution is listed on the portal with the institutions of your State/UT: {base}/institutions"
+                   if get_setting("hei.public") == "1" and get_setting("hei.reserve_public") == "1" else "")
                 + f"\n\nReference: {row['ref']}\n"
                 f"\nFor any question, please write to the Nodal Officer of your State/UT or to CICT.\n\nCentral Institute of Classical Tamil, Chennai")
     elif row["status"] == "accepted":

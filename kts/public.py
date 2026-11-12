@@ -955,19 +955,14 @@ def institutions():
     if settings.get("hei.public") != "1":
         abort(404)
     ref = _states()
+    # the figures at a glance: the Participating Institutions selected
     groups = HEI.accepted_by_state(ref["all_states"])
     nodal = {s: n["name"] for n in nodal_heis() for s in HEI.group_of(n["state"])}   # a paired Union Territory: its State's (1.2.135)
-    # the reserve list of each row of Annexure-I, in the order of the marks of Annexure-V, without the marks (1.2.174)
-    reserve = []
-    if settings.get("hei.reserve_public") == "1":
-        reserve = [(unit, HEI.label_of(unit), "reserve-" + state_anchor(unit)[3:], items)
-                   for unit, items in HEI.reserve_by_unit(ref["all_states"])]
-    reserve_at = {s: (anchor, len(items)) for unit, _label, anchor, items in reserve for s in HEI.group_of(unit)}
-    # an institution of the reserve list without marks yet: unnumbered, after the others (1.2.175), and a sentence says so (1.2.176)
-    reserve_unmarked = any(h["sop_total"] is None for _unit, _label, _anchor, items in reserve for h in items)
-    return render_template("public/institutions.html", groups=groups, nodal=nodal, ref=ref, state_anchor=state_anchor,
-                           reserve=reserve, reserve_at=reserve_at, reserve_unmarked=reserve_unmarked,
-                           total=sum(len(items) for _state, items in groups), window=HEI.window(settings),
+    # the list: with the institutions of the reserve list, in the table of their State/UT, not told apart (1.2.177; a list of
+    # their own in 1.2.174-1.2.176)
+    listed = HEI.accepted_by_state(ref["all_states"], reserve=settings.get("hei.reserve_public") == "1")
+    return render_template("public/institutions.html", groups=listed, nodal=nodal, ref=ref, state_anchor=state_anchor,
+                           total=sum(len(items) for _state, items in listed), window=HEI.window(settings),
                            settings=settings, most=HEI.max_per_state(), pi=_institutions_at_a_glance(groups, ref))
 
 

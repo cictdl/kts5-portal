@@ -62,23 +62,32 @@ def test_no_label_while_registration_is_closed():
     assert "hei-no-limit" not in page
 
 
-def test_the_sentence_under_the_reserve_list():
-    sentence = ("An institution whose marks are not yet recorded is listed after the others, without a number and in alphabetical "
-                "order; it takes its place in the order of the marks once they are recorded.")
+def test_the_reserve_list_in_the_list_of_its_state():
+    # CICT, 12 November 2026: "The reserve list also should be added to the registered list. No separate reserve list needed",
+    # chose the same table, no tag (1.2.177): the sentence of 1.2.176 under a separate list is gone with it
+    from kts.db import set_setting
+    from kts.i18n import CATALOG
     app = _app()
+    _insert(app, "Selected Kochi College", "Kerala", "accepted", 80)
     _insert(app, "Marked Reserve College", "Kerala", "reserve", 70)
-    page = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    assert '<h2 id="reserve"' in page and sentence not in page
     _insert(app, "Unmarked Reserve College", "Kerala", "reserve")
     page = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    reserve = page[page.index('<h2 id="reserve"'):]
-    assert sentence in reserve[:reserve.index("<table")]
-    assert re.findall(r'<td class="num">([^<]+)</td><td lang="en" dir="ltr">([^<]+)</td>', reserve) == [
-        ("1", "Marked Reserve College"), ("–", "Unmarked Reserve College")]
-    from kts.i18n import CATALOG
+    kerala = page[page.index('<h2 id="st-kerala"'):]
+    kerala = kerala[:kerala.index("</table>")]
+    assert re.findall(r'<td class="num">([^<]+)</td><td lang="en" dir="ltr">([^<]+)</td>', kerala) == [
+        ("1", "Marked Reserve College"), ("2", "Selected Kochi College"), ("3", "Unmarked Reserve College")]
+    assert '<span class="small muted">(3)</span></h2>' in kerala and "3 institutions from 1 States/UTs" in page
+    assert 'id="reserve' not in page and CATALOG["en"]["hei.reserve_unmarked"] not in page and "Reserve list" not in page
+    pi = page[page.index('<section class="pi"'):page.index('<p><b>')]
+    assert '<div class="num">1</div><div class="lbl">Participating institutions</div>' in pi
     for lang in ("ta", "hi", "bn", "ks", "sat"):
         page = app.test_client().get(f"/institutions?lang={lang}").get_data(as_text=True)
-        assert CATALOG[lang]["hei.reserve_unmarked"] in page, lang
+        assert "Unmarked Reserve College" in page and CATALOG[lang]["hei.reserve_unmarked"] not in page, lang
+    # the reserve list kept off the website: only the Participating Institutions
+    with app.app_context():
+        set_setting("hei.reserve_public", "0")
+    page = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
+    assert "Selected Kochi College" in page and "Reserve College" not in page and "1 institutions from 1 States/UTs" in page
 
 
 def test_the_two_texts_in_23_languages():

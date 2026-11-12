@@ -2009,7 +2009,7 @@ SETTING_GROUPS = [
         ("hei.select_end", "Last date for the Nodal Institutions to select the Participating Institutions (YYYY-MM-DD)", "date"),
         ("hei.max_per_state", "Otherwise: institutions accepted in one State/UT at most, the same for all (0: no limit)", "number"),
         ("hei.public", "Show the participating institutions on the website, State/UT by State/UT", "bool"),
-        ("hei.reserve_public", "Show the reserve list of each State/UT on the same page, in the order of the marks of Annexure-V (the marks themselves are not shown)", "bool"),
+        ("hei.reserve_public", "List the institutions of the reserve list on the same page, in the table of their State/UT with the Participating Institutions (not told apart), and count them on the dashboard", "bool"),
         ("hei.marks_first", "An institution is selected, or put on the reserve list, only once the marks of Annexure-V are recorded for it (off: the marks may be recorded at a later stage)", "bool"),
         ("join.on", "Show the State/UT pages for the registration of institutions (/join), with their links and A4 posters", "bool"),
         ("nodal.officers_public", "Show the Nodal Officer of each State/UT (name, designation, e-mail and phone of the active Nodal Officer accounts) on the Nodal HEIs and Partners pages", "bool"),

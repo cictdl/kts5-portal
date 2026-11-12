@@ -65,7 +65,6 @@
   {% if groups %}
   <p><b>{{ t('hei.count')|replace('{n}', total|string)|replace('{states}', groups|length|string) }}</b></p>
   <p class="small">{% for state, items in groups %}<a href="#{{ state_anchor(state) }}">{{ place(state) }}</a> ({{ items|length }}){{ ' · ' if not loop.last }}{% endfor %}</p>
-  {% if reserve %}<p class="small"><a href="#reserve">{{ t('hei.reserve_h') }} ↓</a></p>{% endif %}
   {% for state, items in groups %}
   {% set gi = loop.index %}
   <h2 id="{{ state_anchor(state) }}" style="margin-top:28px">{{ place(state) }} <span class="small muted">({{ items|length }})</span></h2>
@@ -78,26 +77,9 @@
       <td>{{ t('opt.ctype.%d' % ti) if ti else h.itype }}</td></tr>
     {% endfor %}</tbody>
   </table></div>
-  {% if reserve_at.get(state) %}<p class="small" style="margin:6px 0 0"><a href="#{{ reserve_at[state][0] }}">{{ t('hei.reserve_h') }} ({{ reserve_at[state][1] }}) ↓</a></p>{% endif %}
   {% endfor %}
   {% else %}
   <p class="alert info">{{ t('hei.empty') }}</p>
-  {% endif %}
-  {% if reserve %}
-  {# the reserve list of each row of Annexure-I, in the order of the marks of Annexure-V, without the marks (1.2.174) #}
-  <h2 id="reserve" style="margin-top:36px">{{ t('hei.reserve_h') }}</h2>
-  <p class="small dim" style="max-width:72ch">{{ t('hei.reserve_intro') }}{% if reserve_unmarked %} {{ t('hei.reserve_unmarked') }}{% endif %}</p>
-  {% for unit, label, anchor, items in reserve %}
-  <h3 id="{{ anchor }}" style="margin-top:20px">{{ label }} <span class="small muted">({{ items|length }})</span></h3>
-  <div class="table-wrap"><table class="table reserve-list">
-    <thead><tr><th class="num">#</th><th>{{ t('hei.col_name') }}</th><th>{{ t('reg.college_district') }}</th><th>{{ t('reg.college_type') }}</th></tr></thead>
-    <tbody>{% for h in items %}
-    {% set ti = ref.college_types.index(h.itype) + 1 if h.itype in ref.college_types else 0 %}
-    <tr><td class="num">{{ loop.index if h.sop_total is not none else '–' }}</td><td lang="en" dir="ltr">{{ h.name }}</td><td><span lang="en" dir="ltr">{{ h.district }}</span>{% if h.state != unit %} <span class="small muted">· {{ place(h.state) }}</span>{% endif %}</td>
-      <td>{{ t('opt.ctype.%d' % ti) if ti else h.itype }}</td></tr>
-    {% endfor %}</tbody>
-  </table></div>
-  {% endfor %}
   {% endif %}
 </div>
 {% endblock %}
