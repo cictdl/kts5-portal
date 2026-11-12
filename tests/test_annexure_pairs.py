@@ -73,10 +73,10 @@ def test_the_public_pages_name_the_row_as_the_letter_does():
                   "Tamil Nadu and Andaman and Nicobar Islands", "Jammu and Kashmir and Ladakh"):
         assert f"<td>{label}</td>" in page, label
     assert "<td>Lakshadweep</td>" not in page and "<td>Kerala</td>" not in page and page.count('<td lang="en" dir="ltr">') == 31
-    # the Lakshadweep institution counts with Kerala's number
+    # the Lakshadweep institution counts with Kerala; no column of the number to be selected (1.2.179)
     row = page.split("<td>Kerala and Lakshadweep</td>")[1].split("</tr>")[0]
-    assert '<td class="num"><b>21</b></td>' in row and ("#st-kerala\">1</a></td>" in row or '<td class="num">1</td>' in row)
-    assert ">1,000</th>" in page
+    assert '<td class="num"><b>21</b></td>' not in row and ("#st-kerala\">1</a></td>" in row or '<td class="num">1</td>' in row)
+    assert ">1,000</th>" not in page
     tamil = client.get("/nodal-institutions?lang=ta").get_data(as_text=True)
     assert "<td>கேரளா மற்றும் லட்சத்தீவு</td>" in tamil and "<td>பஞ்சாப் மற்றும் சண்டிகர்</td>" in tamil
     assert "<td>Kerala and Lakshadweep</td>" in client.get("/partners?lang=en").get_data(as_text=True)

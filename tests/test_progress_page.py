@@ -65,8 +65,9 @@ def test_the_figures():
     assert (p["series"]["inst"]["today"], p["series"]["inst"]["week"], p["series"]["app"]["today"]) == (4, 4, 2)
     assert p["series"]["inst"]["values"][-1] == 4 and sum(p["series"]["inst"]["values"][:-1]) == 0
     assert re.fullmatch(r"(\d+(\.\d)?,\d+(\.\d)? ?){21}", p["series"]["inst"]["points"]) and p["series"]["inst"]["area"].startswith("0,64 ")
-    # the rows of Annexure-I furthest ahead: Tamil Nadu first (3 of 50), ten rows, the paired Union Territories within their row
-    assert len(p["states"]) == 10 and p["states"][0]["state"] == "Tamil Nadu" and p["states"][0]["share"] == 6
+    # the rows of Annexure-I with the most: Tamil Nadu first (3, the measure of the others: 1.2.179), ten rows, the paired Union
+    # Territories within their row
+    assert len(p["states"]) == 10 and p["states"][0]["state"] == "Tamil Nadu" and p["states"][0]["share"] == 100
     assert all(s["to_select"] for s in p["states"]) and "Lakshadweep" not in {s["state"] for s in p["states"]}
     # the milestones, in order, with at most one 'next'
     keys = [m["key"] for m in p["milestones"]]
@@ -97,7 +98,7 @@ def test_the_page():
     assert "1 Participating Institutions yet to select their student" in flow and "0 selected students yet to register" in flow
     # the sparklines, the race, the milestones
     assert page.count('<polyline class="line"') == 2 and 'data-k="inst_today">Today: 4</bdi>' in page
-    assert "Tamil Nadu and Andaman and Nicobar Islands" in page and "<bdi dir=\"ltr\">3/50</bdi>" in page
+    assert "Tamil Nadu and Andaman and Nicobar Islands" in page and "<bdi dir=\"ltr\">3</bdi>" in page and "3/50" not in page
     track = page[page.index('class="prog-track"'):]
     assert track.count("<li class=\"ms-") == 10 and ("In " in track or "Now" in track or "Done" in track)
     assert 'href="/dashboard">KTS 5.0 by State/UT →</a>' in page

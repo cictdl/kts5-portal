@@ -47,7 +47,7 @@
       {% endif %}
     </div>
     <section class="card pi-states" aria-labelledby="pi-states-h">
-      <h3 id="pi-states-h">{{ t('pi.states_title' if show_reg else 'pi.states_title_sel') }}</h3>
+      <h3 id="pi-states-h">{{ t('pi.states_title' if show_reg else 'pi.states_title_plain') }}</h3>
       <p class="pi-key small"><span><i class="pi-sw sel" aria-hidden="true"></i>{{ t('dash.inst_sel') }}</span>{% if show_reg %}<span><i class="pi-sw reg" aria-hidden="true"></i>{{ t('dash.inst_reg') }}</span>{% endif %}</p>
       <ol class="pi-rows">
         {% for r in pi.states %}
@@ -55,7 +55,7 @@
         <li>{% if href %}<a class="pi-row" href="{{ href }}">{% else %}<span class="pi-row">{% endif %}
           <span class="pi-name">{{ nodal_label(r.state) }}</span>
           <span class="pi-bar" aria-hidden="true">{% if show_reg %}<span class="pi-reg" style="width:{{ r.reg_share }}%"></span>{% endif %}<span class="pi-sel" style="width:{{ r.share }}%"></span></span>
-          <span class="pi-n"><bdi dir="ltr"><b>{{ r.selected }}</b>/{{ r.to_select }}</bdi>{% if show_reg and r.registered > r.selected %} <span class="pi-regn small muted"><i class="pi-sw reg" aria-hidden="true"></i><span class="visually-hidden">{{ t('dash.inst_reg') }}: </span><bdi dir="ltr">{{ r.registered }}</bdi></span>{% endif %}</span>
+          <span class="pi-n"><bdi dir="ltr"><b>{{ r.selected }}</b></bdi>{% if show_reg and r.registered > r.selected %} <span class="pi-regn small muted"><i class="pi-sw reg" aria-hidden="true"></i><span class="visually-hidden">{{ t('dash.inst_reg') }}: </span><bdi dir="ltr">{{ r.registered }}</bdi></span>{% endif %}</span>
         {% if href %}</a>{% else %}</span>{% endif %}</li>
         {% endfor %}
       </ol>

@@ -63,7 +63,7 @@ def test_counted_together_on_every_public_page():
     page = client.get("/dashboard?lang=en").get_data(as_text=True)
     assert "Reserve list" not in page
     tile = page[page.index('href="#d-PY"'):]
-    assert '<span class="dash-n" dir="ltr">7/5</span>' in tile[:tile.index("</a>")]
+    assert '<span class="dash-n" dir="ltr">7</span>' in tile[:tile.index("</a>")]   # no number of Annexure-I (1.2.179)
     # /institutions at a glance and the home page
     page = client.get("/institutions?lang=en").get_data(as_text=True)
     pi = page[page.index('<section class="pi"'):page.index("<p><b>")]

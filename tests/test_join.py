@@ -68,7 +68,8 @@ def test_the_page_of_a_row(monkeypatch):
     _clock(monkeypatch, 3)
     page = app.test_client().get("/join/tn?lang=en").get_data(as_text=True)
     # registered: Presidency, Loyola, Declined, Secret and the A&N college (folded into the row); not the one only identified
-    assert "<h1>Tamil Nadu and Andaman and Nicobar Islands: 50 colleges and universities to be selected for KTS 5.0</h1>" in page
+    # no number to be selected in the title (1.2.179)
+    assert "<h1>Tamil Nadu and Andaman and Nicobar Islands: register your college or university for KTS 5.0</h1>" in page
     assert '<b class="join-big"><bdi dir="ltr">5</bdi></b> <span>Institutions registered: 5 of 50</span>' in page
     assert page.count('<i class="jm-sq') == 50 and page.count('<i class="jm-sq on">') == 5
     assert '<span class="hub-chip ok">12 days left</span>' in page and "Live figures, as on 10:00 IST" in page
@@ -77,7 +78,8 @@ def test_the_page_of_a_row(monkeypatch):
     assert 'class="btn saffron join-cta" href="/institutions/register?via=join"' in page
     assert "Have this ready before you start" in page and "Central University of Tamil Nadu" in page
     msg = page[page.index('id="join-msg">') + 14:page.index("</blockquote>", page.index('id="join-msg">'))]
-    assert "50 colleges and universities of Tamil Nadu and Andaman and Nicobar Islands are to be selected, and 5 have registered so far" in msg
+    # no number to be selected, nor registered, in the message (1.2.179)
+    assert "colleges and universities of Tamil Nadu and Andaman and Nicobar Islands may register, in any number." in msg and "50" not in msg
     assert "Register yours by 15 November 2026: http://localhost:8905/join/tn" in msg
     assert 'href="https://wa.me/?text=' in page and "/join/tn/poster" in page
     assert 'data-copy="join-msg"' in page and "data-share" in page
@@ -121,7 +123,7 @@ def test_the_poster_and_the_board(monkeypatch):
     client = app.test_client()
     poster = client.get("/join/od/poster?lang=or").get_data(as_text=True)
     assert 'class="jp-qr" src="data:image/png;base64,' in poster and '<p class="jp-url" dir="ltr">localhost:8905/join/od</p>' in poster
-    assert "Odisha: 48 colleges and universities to be selected for KTS 5.0" in poster   # the English line under the Odia
+    assert "Odisha: register your college or university for KTS 5.0" in poster   # the English line under the Odia (1.2.179)
     assert "join-big" not in poster and "data-print" in poster
     board = client.get("/join?lang=en").get_data(as_text=True)
     assert board.count('class="jb-row"') == 31 and "All States/UTs" in board and "Secret Test College" not in board

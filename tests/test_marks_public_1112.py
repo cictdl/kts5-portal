@@ -119,7 +119,7 @@ def test_the_reserve_list_counted_with_the_selected():
         ("1,000", "To be selected"), ("5", "Participating Institutions selected"), ("0", "Students who took an institution&#39;s online test")]
     assert "Reserve list" not in page and "dash-res" not in page
     tile = page[page.index('href="#d-TN"'):]
-    assert '<span class="dash-n" dir="ltr">4/50</span>' in tile[:tile.index("</a>")]
+    assert '<span class="dash-n" dir="ltr">4</span>' in tile[:tile.index("</a>")]   # no number of Annexure-I (1.2.179)
     summary = page[page.index('id="d-TN"'):]
     summary = summary[:summary.index("</details>")]
     assert "Participating Institutions selected: 4" in summary and "TN Reserve College" in summary   # its name with the others
@@ -142,8 +142,8 @@ def test_the_setting_takes_it_off_the_page():
     page = app.test_client().get("/dashboard?lang=en").get_data(as_text=True)
     assert "Marks recorded" not in page and "dash-marks" not in page
     head = page[page.index("<thead>"):page.index("</thead>")]
-    assert head.count("<th ") == 4
-    assert re.findall(r'<td class="num">([^<]*)</td>', _row(page, "TN")) == ["50", "4", "0"]
+    assert head.count("<th ") == 3   # no column of the number to be selected (1.2.179)
+    assert re.findall(r'<td class="num">([^<]*)</td>', _row(page, "TN")) == ["4", "0"]
     settings = _staff(app, "admin@tests.example", "superadmin").get("/console/settings").get_data(as_text=True)
     assert "Marks recorded: N of M" in settings
     # and the dashboard itself switched off is not there at all

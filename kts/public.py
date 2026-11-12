@@ -990,14 +990,17 @@ def _institutions_at_a_glance(groups, ref):
     type_rows = [{"n": ref["college_types"].index(k) + 1 if k in ref["college_types"] else 0, "name": k, "count": c,
                   "pct": round(100 * c / total_types)} for k, c in ordered]
     rows = []
+    # no number to be selected for a row on the public pages (1.2.179): each bar against the row with the most
+    shown = get_setting("institutions.registered") == "1"
+    top = max([r["inst_sel"] for r in annex] + [r["inst_reg"] for r in annex if shown] + [0]) or 1
     for r in annex:
         rows.append({"state": r["state"], "to_select": r["to_select"], "selected": r["inst_sel"], "registered": r["inst_reg"],
-                     "share": min(100, round(100 * r["inst_sel"] / r["to_select"])),
-                     "reg_share": min(100, round(100 * r["inst_reg"] / r["to_select"])),
+                     "share": min(100, round(100 * r["inst_sel"] / top)),
+                     "reg_share": min(100, round(100 * r["inst_reg"] / top)),
                      # a paired row (1.2.135): the list of its State, else of its Union Territory
                      "anchor": next((state_anchor(s) for s in HEI.group_of(r["state"]) if s in listed), None),
                      "code": DRIVE.code_of(r["state"])})
-    rows.sort(key=lambda r: (-r["selected"] / r["to_select"], -r["registered"] / r["to_select"], -r["to_select"]))
+    rows.sort(key=lambda r: (-r["selected"], -r["registered"], r["state"]))
     selected, to_select = fig["total"]["inst_sel"], fig["total"]["to_select"]
     share = min(1, selected / to_select) if to_select else 0
     inst = series["series"]["inst"]

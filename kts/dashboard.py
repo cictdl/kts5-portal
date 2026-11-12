@@ -109,6 +109,11 @@ def figures():
         row["sel_shade"] = shade(row["inst_sel"], row["to_select"])
         row["share"] = min(100, round(100 * row["registered"] / row["to_select"])) if row["to_select"] else None
         states.append(row)
+    # no number to be selected for a State/UT on the public pages (1.2.179): the square of the Participating Institutions is
+    # shaded by its count against the State/UT with the most
+    top = max((r["inst_sel"] for r in states), default=0) or 1
+    for row in states:
+        row["cnt_shade"] = shade(row["inst_sel"], top)
     total = {f: sum(r[f] for r in states) for f in FIELDS}
     total["to_select"] = sum(r["to_select"] or 0 for r in states)
     covered = [{"state": c, "with": s, "grid": GRID[c], "code": GRID[s][2]} for c, s in paired.items() if c in GRID and s in GRID]
@@ -240,11 +245,13 @@ def _pipeline():
     for key, per in by_day.items():
         values = [per[d] for d in days]
         series[key] = dict(_spark(values), values=values, today=values[-1], week=sum(values[-7:]))
-    # the rows of Annexure-I by the share of their Participating Institutions, the ten furthest ahead
+    # the rows of Annexure-I with the most Participating Institutions, the ten first, each measured against the first (1.2.179;
+    # by the share of the number to be selected before)
     rows = [r for r in figures()["states"] if r["to_select"]]
-    rows.sort(key=lambda r: (-r["inst_sel"] / r["to_select"], -r["registered"], r["state"]))
+    rows.sort(key=lambda r: (-r["inst_sel"], -r["registered"], r["state"]))
+    top = rows[0]["inst_sel"] if rows and rows[0]["inst_sel"] else 1
     states = [{"state": r["state"], "to_select": r["to_select"], "inst_sel": r["inst_sel"], "registered": r["registered"], "verified": r["verified"],
-               "share": pct(r["inst_sel"], r["to_select"])} for r in rows[:10]]
+               "share": pct(r["inst_sel"], top)} for r in rows[:10]]
     counts["states_active"] = sum(1 for r in figures()["states"] if r["inst_reg"])
     # the milestones: the days of the programme (data/timeline.json) and of the Sangamam (the settings), with today among them
     marks = []

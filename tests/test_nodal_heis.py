@@ -33,8 +33,8 @@ def test_the_page_shows_them_in_the_language_of_the_reader():
     assert page.count('<td lang="en" dir="ltr">') == 31
     assert '<td lang="en" dir="ltr">Central University of Tamil Nadu</td>' in page
     assert page.index("Central University of Andhra Pradesh") < page.index("Pondicherry University")
-    # the columns of Annexure-I: the number to be selected in place of the type of institution (1.2.45, 1.2.110)
-    assert "Number of Participating HEIs to be selected" in page and "<td>Central University</td>" not in page
+    # the columns of Annexure-I: no type of institution (1.2.45), and no number to be selected since 1.2.179
+    assert "Number of Participating HEIs to be selected" not in page and "<td>Central University</td>" not in page
     assert "How the programme reaches the institutions" in page and "nominates one student on merit with one Faculty Supervisor/Guide" in page
     # the names of the States follow the language of the page; the names of the institutions stay in English
     tamil = client.get("/partners?lang=ta").get_data(as_text=True)
@@ -58,10 +58,11 @@ def test_the_list_has_a_page_of_its_own_with_the_allocation():
     page = client.get("/nodal-institutions?lang=en").get_data(as_text=True)
     assert "State/UT-wise list of Nodal Higher Educational Institutions" in page
     assert page.count('<td lang="en" dir="ltr">') == 31 and "Central University of Tamil Nadu" in page
-    assert "Number of Participating HEIs to be selected" in page and ">1,000</th>" in page
-    assert "Registration does not by itself confer selection." in page and "tentative" not in page
+    # no number to be selected of a State/UT, nor the note on those numbers (1.2.179)
+    assert "Number of Participating HEIs to be selected" not in page and ">1,000</th>" not in page
+    assert "The figures above indicate" not in page and "tentative" not in page
     kerala = page.split("Central University of Kerala")[1].split("</tr>")[0]
-    assert '<td class="num"><b>21</b></td>' in kerala and 'href="/institutions#st-kerala">1</a>' in kerala
+    assert '<td class="num"><b>21</b></td>' not in kerala and 'href="/institutions#st-kerala">1</a>' in kerala
     # the page of the participating institutions has the anchor, and a link back
     assert 'id="st-kerala"' in client.get("/institutions?lang=en").get_data(as_text=True)
     assert 'href="/nodal-institutions"' in client.get("/institutions?lang=en").get_data(as_text=True)
@@ -71,6 +72,6 @@ def test_the_list_has_a_page_of_its_own_with_the_allocation():
     # Register opens the registration of institutions while the students' registration is hidden (1.2.147)
     assert '<a href="/institutions/register" class="active" aria-haspopup="true">' in page
     assert "/nodal-institutions" in client.get("/sitemap?lang=en").get_data(as_text=True)
-    # the partners page shows the same table
+    # the partners page shows the same table, without the number to be selected (1.2.179)
     partners = client.get("/partners?lang=en").get_data(as_text=True)
-    assert "Number of Participating HEIs to be selected" in partners and ">1,000</th>" in partners
+    assert "Central University of Kerala" in partners and "Number of Participating HEIs to be selected" not in partners

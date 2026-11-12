@@ -68,7 +68,8 @@ def test_the_rows_of_annexure_i():
     assert any(href == "/join/up" for href, _name in rows)
     tn = pi[pi.index('<span class="pi-name">Tamil Nadu'):]
     tn = tn[:tn.index("</li>")]
-    assert '<bdi dir="ltr"><b>3</b>/50</bdi>' in tn and 'class="pi-sel" style="width:6%"' in tn
+    # its count, measured against the row with the most, without its number of Annexure-I (1.2.179)
+    assert '<bdi dir="ltr"><b>3</b></bdi>' in tn and 'class="pi-sel" style="width:100%"' in tn
     # no institution named in the infographic
     for name in ("Presidency", "Loyola", "Declined", "Only Identified"):
         assert name not in pi

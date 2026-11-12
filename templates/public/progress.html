@@ -58,13 +58,13 @@
   </section>
   {% endif %}
 
-  {# the rows of Annexure-I furthest ahead #}
+  {# the rows of Annexure-I with the most Participating Institutions (1.2.179; the furthest ahead of their number before) #}
   <section class="card prog-states" aria-labelledby="prog-st-h">
-    <h2 id="prog-st-h">{{ t('pg.states_title') }}</h2>
+    <h2 id="prog-st-h">{{ t('pg.states_title_plain') }}</h2>
     {% if p.states %}
     <ol class="prog-race">
       {% for s in p.states %}
-      <li><span class="rc-lbl">{{ nodal_label(s.state) }}</span><span class="rc-bar"><span style="--w:{{ s.share }}%"></span></span><span class="rc-n"><bdi dir="ltr">{{ s.inst_sel }}/{{ s.to_select }}</bdi></span></li>
+      <li><span class="rc-lbl">{{ nodal_label(s.state) }}</span><span class="rc-bar"><span style="--w:{{ s.share }}%"></span></span><span class="rc-n"><bdi dir="ltr">{{ s.inst_sel }}</bdi></span></li>
       {% endfor %}
     </ol>
     {% else %}<p class="small muted">{{ t('dash.no_inst') }}</p>{% endif %}

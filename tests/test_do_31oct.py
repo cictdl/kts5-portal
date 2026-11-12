@@ -93,7 +93,8 @@ def test_the_pages_show_the_days_of_the_letter():
     main = guide[guide.index("<main"):guide.index("</main>")]   # not the foot, which names the day of the release
     assert "10 Nov 2026" not in main and "11 Nov 2026" not in main
     nodal = client.get("/nodal-institutions?lang=en").get_data(as_text=True)
-    assert ">50<" in nodal and ">300<" in nodal and ">1,000</th>" in nodal and ">350<" not in nodal and ">150<" not in nodal
+    # no number to be selected of a State/UT on the public pages (1.2.179): the table has no column of it
+    assert ">300<" not in nodal and ">1,000</th>" not in nodal and "Number of Participating HEIs to be selected" not in nodal
     schedule = client.get("/schedule?lang=en").get_data(as_text=True)
     for day in ("18 Nov 2026", "19 Nov 2026", "23 Nov 2026", "25 Nov 2026", "14 Dec 2026", "15 Dec 2026", "– 14 Jan 2027"):
         assert day in schedule, day

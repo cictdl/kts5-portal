@@ -85,9 +85,10 @@ def test_the_page():
     kpis = page[page.index('class="grid grid-3 dash-kpis"'):page.index('class="card dash-map"')]
     assert re.findall(r'<div class="num">([\d,]+)</div>', kpis) == ["1,000", "4", "3", "2", "2", "1"]
     assert "2 of 1,000" in kpis
-    # the squares: Tamil Nadu 2 of 50; Ladakh paired with Jammu and Kashmir (1.2.135); each leads to the block of its State/UT
+    # the squares: Tamil Nadu 2, without its number of Annexure-I (1.2.179); Ladakh paired with Jammu and Kashmir (1.2.135); each
+    # leads to the block of its State/UT
     assert page.count('class="dash-tile ') == 36
-    assert ('<a class="dash-tile b1" href="#d-TN">\n          <b dir="ltr">TN</b>\n          <span class="dash-n" dir="ltr">2/50</span>') in page
+    assert ('<a class="dash-tile b1" href="#d-TN">\n          <b dir="ltr">TN</b>\n          <span class="dash-n" dir="ltr">2</span>') in page
     assert ('<a class="dash-tile cv" href="#d-JK">\n          <b dir="ltr">LA</b>\n          <span class="dash-n" dir="ltr">→ JK</span>') in page
     assert "Counted with Jammu and Kashmir, as paired in Annexure-I" in page and "Union Territory counted with another row of Annexure-I" in page
     assert "No number in Annexure-I" not in page
@@ -95,7 +96,7 @@ def test_the_page():
     table = page[page.index('class="table dash-table"'):page.index('class="dash-details"')]
     assert table.count("<tr id=\"st-") == 31 and '<th scope="row"><a href="#d-TN">Tamil Nadu and Andaman and Nicobar Islands</a></th>' in table
     row = table[table.index('<tr id="st-TN">'):table.index("</tr>", table.index('<tr id="st-TN">'))]
-    assert re.findall(r'<td class="num">(\d+|–)', row) == ["50", "3", "3", "2", "2", "1"]
+    assert re.findall(r'<td class="num">(\d+|–)', row) == ["3", "3", "2", "2", "1"]   # no column of the number (1.2.179)
 
 
 def test_the_block_of_each_state():

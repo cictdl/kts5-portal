@@ -17,7 +17,7 @@
   {% set cards = 3 + (1 if show_reg else 0) + (2 if sp else 0) %}
   <span class="eyebrow">{{ t('nav.programme') }}</span>
   <h1>{{ t('dash.title') }}</h1>
-  <p class="dim" style="max-width:80ch">{{ t('dash.intro' if sp or show_reg else 'dash.intro_sel') }}</p>
+  <p class="dim" style="max-width:80ch">{{ t('dash.intro' if sp or show_reg else 'dash.intro_plain') }}</p>
   <p><a class="btn sm secondary" href="{{ url_for('public.progress') }}">📈 {{ t('pg.link') }}</a></p>
   <p class="small muted dash-time">{{ t('dash.updated')|replace('{time}', now) }}</p>
 
@@ -31,17 +31,17 @@
   </div>
 
   <section class="card dash-map" aria-labelledby="dash-grid-h">
-    <h2 id="dash-grid-h">{% if sp %}{{ t('dash.grid_title') }}{% else %}{{ t('dash.inst_reg' if show_reg else 'dash.inst_sel') }} · {{ t('dash.to_select') }}{% endif %}</h2>
-    <p class="small muted">{{ t('dash.grid_note') }}</p>
+    <h2 id="dash-grid-h">{% if sp %}{{ t('dash.grid_title') }}{% else %}{{ t('dash.inst_reg' if show_reg else 'dash.inst_sel') }}{% endif %}</h2>
+    <p class="small muted">{{ t('dash.grid_note' if sp or show_reg else 'dash.grid_note_plain') }}</p>
     <ul class="dash-grid">
       {% for r in states if r.grid %}
       <li style="grid-row:{{ r.grid[0] + 1 }};grid-column:{{ r.grid[1] + 1 }}">
         {% set n = r.registered if sp else (r.inst_reg if show_reg else r.inst_sel) %}
-        <a class="dash-tile {{ r.shade if sp else (r.inst_shade if show_reg else r.sel_shade) }}" href="#d-{{ r.grid[2] }}">
+        <a class="dash-tile {{ r.shade if sp else (r.inst_shade if show_reg else r.cnt_shade) }}" href="#d-{{ r.grid[2] }}">
           <b dir="ltr">{{ r.grid[2] }}</b>
-          <span class="dash-n" dir="ltr">{{ n }}{% if r.to_select %}/{{ r.to_select }}{% endif %}</span>
+          <span class="dash-n" dir="ltr">{{ n }}</span>
           <span class="dash-tip" role="tooltip"><b>{{ nodal_label(r.state) }}</b>
-            <span>{{ t('home.stat_apps') if sp else t('dash.inst_reg' if show_reg else 'dash.inst_sel') }}: <bdi>{% if r.to_select %}{{ of(n, r.to_select) }}{% else %}{{ n }} · {{ t('dash.no_number') }}{% endif %}</bdi></span>
+            <span>{{ t('home.stat_apps') if sp else t('dash.inst_reg' if show_reg else 'dash.inst_sel') }}: <bdi>{{ n }}</bdi></span>
             {% if sp or show_reg %}<span>{{ t('dash.inst_sel') }}: <bdi>{{ r.inst_sel }}</bdi></span>{% endif %}
             {% if show_marks and r.inst_dec %}<span>{{ t('dash.marks') }}: <bdi>{{ of(r.inst_marked, r.inst_dec) }}</bdi></span>{% endif %}
             {% if sp %}<span>{{ t('dash.verified') }}: <bdi>{{ r.verified }}</bdi></span>{% endif %}</span>
@@ -73,7 +73,7 @@
   <section class="dash-table-sec" aria-labelledby="dash-table-h">
     <h2 id="dash-table-h">{{ t('dash.table_title') }}</h2>
     <div class="table-wrap"><table class="table dash-table">
-      <thead><tr><th scope="col">{{ t('reg.state') }}</th><th scope="col" class="num">{{ t('dash.to_select') }}</th>
+      <thead><tr><th scope="col">{{ t('reg.state') }}</th>
         {% if show_reg %}<th scope="col" class="num">{{ t('dash.inst_reg') }}</th>{% endif %}<th scope="col" class="num">{{ t('dash.inst_sel') }}</th>
         {% if show_marks %}<th scope="col" class="num">{{ t('dash.marks') }}</th>{% endif %}
         <th scope="col" class="num">{{ t('dash.assessed') }}</th>{% if sp %}<th scope="col" class="num">{{ t('home.stat_apps') }}</th>
@@ -82,7 +82,6 @@
         {% for r in states %}
         <tr{% if r.grid %} id="st-{{ r.grid[2] }}"{% endif %}>
           <th scope="row">{% if r.grid %}<a href="#d-{{ r.grid[2] }}">{{ nodal_label(r.state) }}</a>{% else %}{{ nodal_label(r.state) }}{% endif %}</th>
-          <td class="num">{{ r.to_select if r.to_select else '–' }}</td>
           {% if show_reg %}<td class="num">{{ r.inst_reg }}</td>{% endif %}<td class="num">{{ r.inst_sel }}</td>
           {% if show_marks %}<td class="num dash-marks">{% if r.inst_dec %}<bdi>{{ of(r.inst_marked, r.inst_dec) }}</bdi>{% else %}–{% endif %}</td>{% endif %}
           <td class="num">{{ r.assessed }}</td>
@@ -91,7 +90,7 @@
         </tr>
         {% endfor %}
       </tbody>
-      <tfoot><tr><th scope="row">{{ t('dash.total') }}</th><td class="num">{{ '{:,}'.format(total.to_select) }}</td>
+      <tfoot><tr><th scope="row">{{ t('dash.total') }}</th>
         {% if show_reg %}<td class="num">{{ '{:,}'.format(total.inst_reg) }}</td>{% endif %}<td class="num">{{ '{:,}'.format(total.inst_sel) }}</td>
         {% if show_marks %}<td class="num dash-marks">{% if total.inst_dec %}<bdi>{{ of(total.inst_marked, total.inst_dec) }}</bdi>{% else %}–{% endif %}</td>{% endif %}
         <td class="num">{{ '{:,}'.format(total.assessed) }}</td>{% if sp %}<td class="num">{{ '{:,}'.format(total.registered) }}</td>
@@ -107,7 +106,7 @@
     {% for r in states %}{% set d = details.get(r.state) %}
     {% if d and (r.to_select or d.institutions) %}
     <details class="card dash-state"{% if r.grid %} id="d-{{ r.grid[2] }}"{% endif %}>
-      <summary><b>{{ nodal_label(r.state) }}</b> <span class="small muted">· {{ t('dash.inst_sel') }}: {{ r.inst_sel }}{% if show_marks and r.inst_dec %} · {{ t('dash.marks') }}: <bdi>{{ of(r.inst_marked, r.inst_dec) }}</bdi>{% endif %}{% if sp %} · {{ t('home.stat_apps') }}: {{ r.registered }}{% endif %}{% if r.to_select %} · {{ t('dash.to_select') }}: {{ r.to_select }}{% endif %}</span></summary>
+      <summary><b>{{ nodal_label(r.state) }}</b> <span class="small muted">· {{ t('dash.inst_sel') }}: {{ r.inst_sel }}{% if show_marks and r.inst_dec %} · {{ t('dash.marks') }}: <bdi>{{ of(r.inst_marked, r.inst_dec) }}</bdi>{% endif %}{% if sp %} · {{ t('home.stat_apps') }}: {{ r.registered }}{% endif %}</span></summary>
       <div class="dash-state-body">
         {% if d.nodal %}<p class="small"><b>{{ t('nodal.col_hei') }}:</b> <span lang="en" dir="ltr">{{ d.nodal }}</span></p>{% endif %}
         {% if d.officers %}

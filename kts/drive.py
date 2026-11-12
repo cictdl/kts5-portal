@@ -114,20 +114,21 @@ def share(row, lang, settings, ph):
     else:
         # without the number registered while it is hidden on the public pages (institutions.registered, 1.2.168)
         shown = settings.get("institutions.registered") == "1"
-        message = (text("join.share_msg" if shown else "join.share_msg_plain", lang).replace("{n}", f"{row['n']:,}")
-                   .replace("{state}", label).replace("{reg}", f"{row['reg']:,}").replace("{date}", when).replace("{link}", link))
+        # no number to be selected for a State/UT (1.2.179): any number may register
+        message = text("join.share_msg_nonum", lang).replace("{state}", label).replace("{date}", when).replace("{link}", link)
         subject = text("join.share_subject", lang).replace("{state}", label).replace("{date}", when)
     return {"text": message, "subject": subject, "link": link, "wa": "https://wa.me/?text=" + quote(message, safe=""),
             "mail": "mailto:?subject=" + quote(subject, safe="") + "&body=" + quote(message, safe="")}
 
 
 def title(row, lang, settings, ph):
-    """The heading of the page: the number to be selected, or, while the institutions assess, the two last days."""
+    """The heading of the page: the call to register (the number to be selected up to 1.2.178), or, while the institutions assess, the two last days."""
     from .finder import long_day
     if ph == "assess":
         return (text("hub.i_shut_t", lang).replace("{camp_to}", long_day(_day(settings, "camp.to"), lang))
                 .replace("{reg_end}", long_day(_day(settings, "reg.end"), lang)))
-    return text("join.title", lang).replace("{state}", HEI.label_of(row["state"], lang)).replace("{n}", f"{row['n']:,}")
+    # no number to be selected for a State/UT (1.2.179)
+    return text("join.title_plain", lang).replace("{state}", HEI.label_of(row["state"], lang))
 
 
 def register_url(row):

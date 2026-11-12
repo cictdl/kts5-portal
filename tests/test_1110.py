@@ -80,10 +80,10 @@ def test_the_participating_institutions():
     page = _get(_app().test_client(), "/institutions?lang=en")
     pi = page[page.index('<section class="pi"'):page.index('class="table-wrap"')]
     assert 'class="pi-two one"' in pi and "pi-trend" not in pi and "pi-regn" not in pi and 'class="pi-reg"' not in pi
-    assert '<h3 id="pi-states-h">Each row of Annexure-I: the Participating Institutions selected, against the number to be selected</h3>' in pi
+    assert '<h3 id="pi-states-h">Each row of Annexure-I: the Participating Institutions selected</h3>' in pi   # no number (1.2.179)
     assert pi.count('class="pi-sw sel"') == 1 and 'class="pi-sw reg"' not in pi
-    # the Participating Institutions selected stay: Tamil Nadu 3 of its 50
-    assert re.search(r'<b>3</b>/50</bdi>', pi)
+    # the Participating Institutions selected stay: Tamil Nadu 3 (without its 50, 1.2.179)
+    assert re.search(r'<b>3</b></bdi>', pi) and "/50</bdi>" not in pi
 
 
 def test_the_dashboard_counts_the_participating_institutions():
@@ -93,22 +93,23 @@ def test_the_dashboard_counts_the_participating_institutions():
     kpis = page[page.index('class="grid grid-3 dash-kpis"'):page.index('<section class="card dash-map"')]
     assert re.findall(r'<div class="lbl">([^<]+)</div>', kpis) == ["To be selected", "Participating Institutions selected",
                                                                      "Students who took an institution&#39;s online test"]
-    assert '<h2 id="dash-grid-h">Participating Institutions selected · To be selected</h2>' in page
+    assert '<h2 id="dash-grid-h">Participating Institutions selected</h2>' in page   # no number of a State/UT (1.2.179)
     tn = page[page.index('href="#d-TN"'):]
     tn = tn[:tn.index("</a>")]
-    assert '<span class="dash-n" dir="ltr">3/50</span>' in tn and "Participating Institutions selected: <bdi>3 of 50</bdi>" in tn
+    assert '<span class="dash-n" dir="ltr">3</span>' in tn and "Participating Institutions selected: <bdi>3</bdi>" in tn
     assert tn.count("Participating Institutions selected") == 1
     head = page[page.index("<thead>"):page.index("</thead>")]
-    # with "Marks recorded" (1.2.175); the reserve list counted with the Participating Institutions (1.2.178)
-    assert head.count("<th ") == 5 and "Participating Institutions selected" in head
+    # with "Marks recorded" (1.2.175); the reserve list counted with the Participating Institutions (1.2.178); no column of the
+    # number to be selected (1.2.179)
+    assert head.count("<th ") == 4 and "Participating Institutions selected" in head
     row = page[page.index('<tr id="st-TN">'):]
-    assert re.findall(r'<td class="num">([^<]*)</td>', row[:row.index("</tr>")]) == ["50", "3", "0"]
+    assert re.findall(r'<td class="num">([^<]*)</td>', row[:row.index("</tr>")]) == ["3", "0"]   # no column of the number (1.2.179)
 
 
 def test_the_state_pages_of_the_drive():
     client = _app().test_client()
     board = _main(_get(client, "/join?lang=en"))
-    assert "Each row of Annexure-I, with the number of institutions to be selected. Open a State/UT" in board
+    assert "Each row of Annexure-I. Open a State/UT for its page, its link and its poster." in board   # no number (1.2.179)
     assert "jb-bar" not in board and " of " not in board[board.index('<ul class="jb">'):]
     names = re.findall(r'<span class="jb-name">([^<]+)</span>', board)
     assert names[:-1] == sorted(names[:-1]) and names[-1] == "All States/UTs" and len(names) == 32
@@ -117,10 +118,10 @@ def test_the_state_pages_of_the_drive():
     main = _main(page)
     assert "join-count" not in main and "jm-sq" not in main and "jm-bar" not in main and "join-first" not in main and "join-over" not in main
     assert ">Register your institution</a>" in main and "Have this ready before you start" in main
-    # the message to forward: the number to be selected, not the number registered
+    # the message to forward: neither the number to be selected (1.2.179) nor the number registered
     msg = main[main.index('id="join-msg">'):main.index("</blockquote>")]
-    assert ("50 colleges and universities of Tamil Nadu and Andaman and Nicobar Islands are to be selected. Register yours by"
-            in msg and "registered" not in msg)
+    assert ("colleges and universities of Tamil Nadu and Andaman and Nicobar Islands may register, in any number. Register yours by"
+            in msg and "registered" not in msg and "50" not in msg)
     assert "%7Breg%7D" not in main and "{reg}" not in main
 
 
@@ -138,10 +139,11 @@ def test_the_console_switch_brings_every_one_back():
     assert flat["registered"] == 7 and flat["st_registered"] == 7
     assert "pi-trend" in _get(client, "/institutions?lang=en")
     dash = _main(_get(client, "/dashboard?lang=en"))
-    assert '<h2 id="dash-grid-h">Institutions registered · To be selected</h2>' in dash and "the institutions registered and selected" in dash
+    assert '<h2 id="dash-grid-h">Institutions registered</h2>' in dash and "the institutions registered and selected" in dash
     assert "3 of 50" in _main(_get(client, "/join?lang=en"))
     tn = _main(_get(client, "/join/tn?lang=en"))
-    assert "Institutions registered: 3 of 50" in tn and "and 3 have registered so far" in tn
+    # the message to forward has no number since 1.2.179, the figure of the page shows the institutions registered
+    assert "Institutions registered: 3 of 50" in tn and "may register, in any number" in tn
 
 
 def test_the_new_texts_in_every_language():
