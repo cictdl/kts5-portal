@@ -24,8 +24,10 @@ def test_tamil_is_among_the_languages():
 
 
 def test_a_student_can_choose_tamil():
+    from conftest import as_coordinator
     app = make_app(ADMIN_PASSWORD=None)
-    page = app.test_client().get("/register?lang=en").get_data(as_text=True)
+    coord = app.test_client()   # the form of the Institutional Coordinator, signed in (1.2.182)
+    page = coord.get(f"/register?token={as_coordinator(app, coord)}&lang=en").get_data(as_text=True)
     select = page.split('id="pref_lang"')[1].split("</select>")[0]
     assert select.count("<option value=") == 24      # the empty choice and the 23 languages
     assert '<option value="ta"' in select

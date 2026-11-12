@@ -171,16 +171,16 @@ def test_registration_follows_the_dates(monkeypatch, day, state):
     app = _portal()
     _on(monkeypatch, day)
     page = _page(app, "/register?lang=en")
-    assert ('name="full_name"' in page) == (state == "open")
+    # no form for a student in any state since 1.2.182: while open, the Institutional Coordinator submits the nomination
+    assert 'name="full_name"' not in page
+    assert ("Your Institutional Coordinator submits your nomination" in page) == (state == "open")
     if state == "not_yet":
         assert _text("reg.not_yet") + " 22 Oct 2026" in page
-    # the button of the hero is there while registration is open - and shown (reg.public, hidden by default since 1.2.147)
-    assert '<a class="btn saffron" href="/register">' not in _page(app, "/?lang=en")
-    with app.app_context():   # the students' registration shown (hidden by default since 1.2.147)
+    # no "Apply now" on the home page, even with the students' pages shown (1.2.182)
+    with app.app_context():
         from kts.db import set_setting as _set
         _set("reg.public", "1")
-    home = _page(app, "/?lang=en")
-    assert ('<a class="btn saffron" href="/register">' in home) == (state == "open")
+    assert '<a class="btn saffron" href="/register">' not in _page(app, "/?lang=en")
 
 
 # ---- the timeline on the schedule page -------------------------------------------------------------

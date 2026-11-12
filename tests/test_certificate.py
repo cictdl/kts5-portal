@@ -24,14 +24,16 @@ def empty_limiter():
 
 
 def _registered(app, n=1, ip="198.51.100.60"):
-    """A student registers through the form: (client of the student, application row)."""
+    """A student nominated through the form, by the Institutional Coordinator since 1.2.182: (client, application row)."""
+    from conftest import as_coordinator
     client = app.test_client()
-    client.get("/register")
+    link = as_coordinator(app, client, college_name="Government College Thrissur", college_state="Kerala")
+    client.get(f"/register?token={link}")
     with client.session_transaction() as s:
         token = s["_csrf"]
         s["_captcha"] = "7"
     form = {
-        "_csrf": token, "full_name": f"Student Certificate {n}", "gender": "F", "dob": "2004-05-06", "category": "General",
+        "_csrf": token, "token": link, "full_name": f"Student Certificate {n}", "gender": "F", "dob": "2004-05-06", "category": "General",
         "mobile": f"98760{n:05d}", "email": f"cert{n}@tests.example", "state": "Kerala",
         "college_name": "Government College Thrissur", "college_type": "Government college", "college_state": "Kerala",
         "course_level": "Undergraduate", "year_of_study": "2nd year", "pref_lang": "hi", "declare_true": "1",

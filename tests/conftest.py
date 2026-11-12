@@ -97,3 +97,29 @@ def app():
 def client(app):
     with app.test_client() as c:
         yield c
+
+
+def as_coordinator(app, client, college_name="Government College Thrissur", college_state="Kerala", college_type="Government college",
+                   aishe_code="", district="Thrissur"):
+    """
+    Since 1.2.182 only the Institutional Coordinator, signed in on the institution's page, fills in /register (CICT, 12 November 2026:
+    "Not student directly but the institution can"). Signs the client in as the coordinator of a new accepted institution of this name,
+    which has selected its student, and gives the token of its form: the tests of the form made before 1.2.182 post with it.
+    """
+    import secrets
+    from kts.db import execute, utcnow
+    n = secrets.token_hex(5)
+    email = f"coord.{n}@tests.example"
+    with app.app_context():
+        iid = execute("INSERT INTO institutions(ref, name, itype, state, district, aishe_code, inst_key, status, head_name, coord_name, "
+                      "coord_email, created_at, updated_at) VALUES(?, ?, ?, ?, ?, ?, ?, 'accepted', 'Dr. Head', 'Coordinator', ?, ?, ?)",
+                      (f"KTS5-HEI-T{n}", college_name, college_type, college_state, district, aishe_code, f"tests:{n}", email,
+                       utcnow(), utcnow()))
+        sid = execute("INSERT INTO campus_students(institution_id, name, email, mobile, roll_no, course, lang, source, created_at, ip) "
+                      "VALUES(?, 'Selected Student', ?, '9000000000', '', '', 'en', 'entered', ?, '')", (iid, f"s.{n}@tests.example", utcnow()))
+        token = secrets.token_urlsafe(24)
+        execute("UPDATE institutions SET winner_id = ?, reg_token = ? WHERE id = ?", (sid, token, iid))
+    with client.session_transaction() as s:
+        s["inst_id"] = iid
+        s["inst_email"] = email
+    return token

@@ -52,7 +52,10 @@ def test_the_link_only_while_institutions_register():
 
 
 def test_the_students_closed_registration_page():
+    # the nomination open: the Institutional Coordinator submits it, no student (1.2.182), and the institutions still register
     page = _app().test_client().get("/register?lang=en").get_data(as_text=True)
-    assert "<h2>Registration is now open for Participating Institutions.</h2>" in page and '<a class="btn saffron" href="/institutions/register">Register your institution</a>' in page
+    assert "<h1>Nomination of the selected student</h1>" in page and "Your Institutional Coordinator submits your nomination on the portal." in page
+    assert '<a class="btn saffron" href="/institution/login">Institution login</a>' in page and 'name="full_name"' not in page
+    assert '<a class="btn secondary" href="/institutions/register">Register your institution</a>' in page
     page = _app(hei_open="0").test_client().get("/register?lang=en").get_data(as_text=True)
-    assert "<h2>Registration is now open for Participating Institutions.</h2>" in page and '<a class="btn saffron" href="/institutions/register">' not in page
+    assert "Your Institutional Coordinator submits your nomination" in page and 'href="/institutions/register">' not in page.split('id="main"')[1].split("</main>")[0]

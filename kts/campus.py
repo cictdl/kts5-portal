@@ -19,8 +19,8 @@ merit, and registers that student's details on the portal. CICT consolidates the
   bank, in the language chosen, the same page and the same scoring), and sees the result when
   camp.show_score is on. The coordinator sees every student, ranked by score and time.
 * The winner: the coordinator selects a student of the list, or enters one assessed in another way.
-  The portal mails the student (and the coordinator) a personal registration link, the only way to
-  /register while reg.by_institution is on; the institution of the application is fixed by it, and
+  The coordinator, signed in, submits the nomination with the link of the institution, the only way to
+  /register since 1.2.182 (no student fills in the form); the institution of the application is fixed by it, and
   the score of the online assessment goes with the application (exam_sessions), so that the status
   page, the selection and the merit list work as before.
 """

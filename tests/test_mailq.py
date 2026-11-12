@@ -201,7 +201,8 @@ def test_a_registration_does_not_wait_for_the_mail_server(server):
     app.config["RATE_REGISTER_PER_HOUR"] = 50
     assert _register(app, 1).status_code == 302
     assert server.sent == [] and server.logins == 0
-    assert [r["status"] for r in _rows(app)] == ["queued"]
+    # the mail to the student and the one to the Institutional Coordinator who submitted the nomination (1.2.182)
+    assert [r["status"] for r in _rows(app)] == ["queued", "queued"]
 
 
 def test_the_console_shows_the_queue_and_pauses_it(server):

@@ -93,7 +93,7 @@ def test_the_guide_is_found_from_the_menu_the_home_page_and_the_sitemap(site):
     home = _page(site, "/")
     assert home.count('href="/how-to-take-part"') >= 2   # the menu and the button of the hero
     assert 'href="/how-to-take-part"' in _page(site, "/examination")
-    assert 'href="/how-to-take-part#students"' in _page(site, "/register")
+    assert 'class="btn" href="/how-to-take-part"' in _page(site, "/register")   # no form for a student since 1.2.182
     assert 'href="/how-to-take-part"' in _page(site, "/sitemap")
     assert "/how-to-take-part" in site.get("/sitemap.xml").get_data(as_text=True)
 

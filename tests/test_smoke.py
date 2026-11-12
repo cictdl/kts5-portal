@@ -43,12 +43,15 @@ def test_daily_calendar_csv(client):
     assert r.data.count(b"\n") >= 200
 
 
-def test_register_and_status(client):
+def test_register_and_status(app, client):
+    from conftest import as_coordinator
+    # submitted by the Institutional Coordinator, signed in, since 1.2.182 (no student fills in the form)
+    link = as_coordinator(app, client)
     token = _csrf(client)
     with client.session_transaction() as s:
         s["_captcha"] = "7"
     form = {
-        "_csrf": token, "full_name": "Test Student", "gender": "F", "dob": "2004-05-06", "category": "General",
+        "_csrf": token, "token": link, "full_name": "Test Student", "gender": "F", "dob": "2004-05-06", "category": "General",
         "mobile": "9876543210", "email": "test.student@example.edu", "state": "Kerala", "college_name": "Government College Thrissur",
         "college_type": "Government college", "college_state": "Kerala", "course_level": "Undergraduate", "year_of_study": "2nd year",
         "pref_lang": "hi", "declare_true": "1", "declare_participate": "1", "declare_consent": "1", "captcha": "7",
@@ -67,6 +70,7 @@ def test_register_and_status(client):
     form["idproof"] = (io.BytesIO(_png_bytes()), "id.png")
     form["nomination"] = (io.BytesIO(_png_bytes()), "nomination.png")
     form["mobile"] = "9876543211"
+    form["token"] = as_coordinator(app, client)   # another institution: the form of the first is used
     r = client.post("/register", data=form, content_type="multipart/form-data")
     assert r.status_code == 400
     # status check

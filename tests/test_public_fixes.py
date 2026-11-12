@@ -244,14 +244,12 @@ def _files(app):
 
 
 def _register(app, n, ip="198.51.100.40", photo=PNG, idproof=PNG, **changed):
-    """One application, complete and correct unless something is changed."""
+    """One application, complete and correct unless something is changed; submitted by the Institutional Coordinator of an
+    institution of that name, signed in, since 1.2.182 (no student fills in the form)."""
+    from conftest import as_coordinator
     client = app.test_client()
-    client.get("/register")
-    with client.session_transaction() as s:
-        token = s["_csrf"]
-        s["_captcha"] = "7"
     form = {
-        "_csrf": token, "full_name": f"Student {n}", "gender": "F", "dob": "2004-05-06", "category": "General",
+        "full_name": f"Student {n}", "gender": "F", "dob": "2004-05-06", "category": "General",
         "mobile": f"98765{n:05d}", "email": f"student{n}@tests.example", "state": "Kerala",
         "college_name": "Government College Thrissur", "college_type": "Government college", "college_state": "Kerala",
         "course_level": "Undergraduate", "year_of_study": "2nd year", "pref_lang": "hi", "declare_true": "1",
@@ -267,6 +265,14 @@ def _register(app, n, ip="198.51.100.40", photo=PNG, idproof=PNG, **changed):
     form.update(changed)
     if form.get("nomination") is None:
         del form["nomination"]
+    link = as_coordinator(app, client, college_name=form.get("college_name", ""), college_state=form.get("college_state", ""),
+                          college_type=form.get("college_type", ""), aishe_code=form.get("aishe_code", ""),
+                          district=form.get("college_district", "Thrissur"))
+    client.get(f"/register?token={link}")
+    with client.session_transaction() as s:
+        s["_captcha"] = "7"
+        form.update(_csrf=s["_csrf"], token=link)
+    form.update({k: v for k, v in changed.items() if k in ("_csrf", "captcha")})
     return client.post("/register", data=form, content_type="multipart/form-data", environ_base={"REMOTE_ADDR": ip})
 
 
@@ -1105,7 +1111,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.181" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.182" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

@@ -255,8 +255,16 @@ def test_the_assessment_closed_outside_its_days_or_switched_off():
 
 
 def _register_with(app, link, **changes):
+    """The form of the link of the institution, filled in by its Institutional Coordinator, signed in: since 1.2.182 no student
+    fills it in (CICT, 12 November 2026: "Not student directly but the institution can")."""
+    from kts.db import query
     client = app.test_client()
     token_value = link.split("token=")[1]
+    with app.app_context():
+        inst = query("SELECT * FROM institutions WHERE reg_token = ?", (token_value,), one=True)
+    if inst is not None:
+        with client.session_transaction() as s:
+            s["inst_id"], s["inst_email"] = inst["id"], inst["coord_email"]
     page = client.get(f"/register?token={token_value}&lang=en").get_data(as_text=True)
     with client.session_transaction() as s:
         token = s["_csrf"]
@@ -280,10 +288,11 @@ def test_the_selected_student_registers_with_the_link_of_the_institution():
     client, _r = _signup(app, "abcd1234")
     client.post("/assessment/abcd1234/start", data={"_csrf": _token(client)})
     client.post("/assessment/abcd1234/submit", data={"_csrf": _token(client), "answers": "{}"})
-    # without a link: the form, with the participating institutions to choose from (1.2.47)
+    # without a link: no form for a student, the Institutional Coordinator submits the nomination (1.2.182; the choice of the
+    # institution of 1.2.47 is gone)
     page = app.test_client().get("/register?lang=en").get_data(as_text=True)
-    assert "Only the student whom a participating institution has selected" in page and 'name="full_name"' in page
-    assert 'data-hei-pick' in page and f'<option value="{inst["id"]}" lang="en"' in page and 'name="college_name"' not in page
+    assert "Your Institutional Coordinator submits your nomination on the portal." in page and 'name="full_name"' not in page
+    assert 'data-hei-pick' not in page
     r = app.test_client().get("/register?token=nonsense&lang=en")
     assert "This registration link is not valid" in r.get_data(as_text=True)
     # the coordinator selects the student
@@ -298,9 +307,12 @@ def test_the_selected_student_registers_with_the_link_of_the_institution():
     # 1.2.158: the student is informed, without the link; the coordinator submits the nomination from the institution's page
     assert "you are selected by" in mail["subject"] and "/register?token=" not in mail["body"]
     assert "Submit the nomination" in _mails(app, inst["coord_email"])[-1]["body"]
-    # the form comes with the institution fixed and the student filled in
+    # the link opened by the student: no form (1.2.182)
+    student = app.test_client().get(f"/register?token={link.split('token=')[1]}&lang=en").get_data(as_text=True)
+    assert 'name="full_name"' not in student and "Your Institutional Coordinator submits your nomination" in student
+    # the coordinator's form comes with the institution fixed and the student filled in
     form, r = _register_with(app, link)
-    assert "from your registration link" in form and inst["name"] in form and 'value="Priya Student"' in form
+    assert "The nominating institution" in form and inst["name"] in form and 'value="Priya Student"' in form
     # the Faculty Supervisor/Guide of the institution comes filled in (1.2.46)
     assert 'value="Dr. C. Guide"' in form and 'value="guide@gac.example"' in form
     assert 'name="college_name"' not in form
@@ -313,7 +325,7 @@ def test_the_selected_student_registers_with_the_link_of_the_institution():
     assert inst2["application_id"] == a["id"]
     # the score of the online assessment goes with the application
     assert session_row is not None and session_row["status"] == "submitted" and a["exam_score"] == session_row["score"]
-    assert "has registered" in _mails(app, inst["coord_email"])[-1]["subject"]
+    assert "the nomination of Priya Student is submitted" in _mails(app, inst["coord_email"])[-1]["subject"]
     # the link works once
     r = app.test_client().get(f"/register?token={link.split('token=')[1]}&lang=en")
     assert "This registration link is not valid" in r.get_data(as_text=True)
@@ -426,9 +438,9 @@ def test_a_wide_table_does_not_widen_the_page():
 
 
 def _register_direct(app, inst_id, **changes):
-    """The registration at /register without the link: the student chooses the institution."""
+    """The registration at /register without the link, the student choosing the institution (1.2.47; refused since 1.2.182)."""
     client = app.test_client()
-    client.get("/register?lang=en")
+    client.get("/candidate/login?lang=en")   # a page with a form, for the token of the session: /register has none for a student
     with client.session_transaction() as s:
         token = s["_csrf"]
         s["_captcha"] = "7"
@@ -444,14 +456,12 @@ def _register_direct(app, inst_id, **changes):
     return client.post("/register", data=form, content_type="multipart/form-data")
 
 
-def test_the_selected_student_registers_without_the_link():
-    """1.2.47: at /register the student chooses the institution; only the student it selected is taken, once."""
+def test_no_student_registers_without_the_link():
+    """1.2.47 let the selected student register at /register choosing the institution; since 1.2.182 (CICT, 12 November 2026: "Not
+    student directly but the institution can") nobody but the Institutional Coordinator fills in the form: refused, nothing stored."""
     from kts.db import query
     app = _portal()
     inst = _assessing(app)
-    # the institution has selected nobody yet
-    r = _register_direct(app, inst["id"])
-    assert r.status_code == 400 and "has not yet selected its student" in r.get_data(as_text=True)
     client, _r = _signup(app, "abcd1234")
     client.post("/assessment/abcd1234/start", data={"_csrf": _token(client)})
     client.post("/assessment/abcd1234/submit", data={"_csrf": _token(client), "answers": "{}"})
@@ -459,21 +469,11 @@ def test_the_selected_student_registers_without_the_link():
     with app.app_context():
         sid = query("SELECT id FROM campus_students", one=True)["id"]
     coord.post("/institution/winner", data={"_csrf": token, "action": "select", "student_id": str(sid)})
-    # another student of the institution is refused
-    r = _register_direct(app, inst["id"], email="other@student.example", mobile="9123456799", full_name="Other Student")
-    assert r.status_code == 400 and "do not match the student selected by your institution" in r.get_data(as_text=True)
-    # no institution chosen
-    r = _register_direct(app, "")
-    assert r.status_code == 400 and "This field is required." in r.get_data(as_text=True)
-    # the selected student, by the mobile number alone (the e-mail written differently)
-    r = _register_direct(app, inst["id"], email="Priya.S@student.example")
-    assert r.status_code == 302, r.get_data(as_text=True)[:1500]
+    # the selected student herself, with the details the coordinator gave
+    r = _register_direct(app, inst["id"])
+    page = r.get_data(as_text=True)
+    assert r.status_code == 403 and "Your Institutional Coordinator submits your nomination" in page and 'name="full_name"' not in page
     with app.app_context():
-        a = query("SELECT * FROM applications", one=True)
-        again = query("SELECT * FROM institutions WHERE id = ?", (inst["id"],), one=True)
-        session_row = query("SELECT * FROM exam_sessions WHERE application_id = ?", (a["id"],), one=True)
-    assert (a["institution_id"], a["college_name"], a["college_state"]) == (inst["id"], inst["name"], "Kerala")
-    assert again["application_id"] == a["id"] and session_row is not None and a["exam_score"] == session_row["score"]
-    # once
-    r = _register_direct(app, inst["id"], email="priya@student.example", mobile="9123456780")
-    assert r.status_code == 400 and "has already registered" in r.get_data(as_text=True)
+        assert query("SELECT COUNT(*) AS n FROM applications", one=True)["n"] == 0
+        assert query("SELECT application_id FROM institutions WHERE id = ?", (inst["id"],), one=True)["application_id"] is None
+    assert not [p for p in app.config["UPLOAD_DIR"].rglob("*") if p.is_file()]

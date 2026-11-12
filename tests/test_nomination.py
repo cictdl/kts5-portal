@@ -40,9 +40,11 @@ def test_the_supervisor_and_the_nomination_form_are_required():
 
 
 def test_the_form_tells_the_nomination_and_offers_the_blank_form():
+    from conftest import as_coordinator
     app = make_app(ADMIN_PASSWORD=None)
     client = app.test_client()
-    page = client.get("/register?lang=en").get_data(as_text=True)
+    # the form of the Institutional Coordinator, signed in (no student fills it in since 1.2.182)
+    page = client.get(f"/register?token={as_coordinator(app, client)}&lang=en").get_data(as_text=True)
     assert "Each selected Participating Institution assesses its students, selects one on merit" in page
     assert "5 · Faculty Supervisor/Guide" in page and "(optional)" not in page.split("5 · Faculty Supervisor/Guide")[1].split("6 ·")[0]
     assert 'name="nomination"' in page and 'data-max="4194304"' in page
@@ -54,12 +56,14 @@ def test_the_form_tells_the_nomination_and_offers_the_blank_form():
 
 
 def test_the_registration_page_offers_the_form_before_and_while_it_is_open():
+    from conftest import as_coordinator
     from kts.db import set_setting
     app = make_app(ADMIN_PASSWORD=None)
     client = app.test_client()
     link = 'href="/static/KTS5-nomination-form.pdf" download>Download the nomination form (PDF)</a>'
-    # open: at the top of the page, and again at the upload of step 6
-    page = client.get("/register?lang=en").get_data(as_text=True)
+    # open: at the top of the form of the Institutional Coordinator (1.2.182), and again at the upload of step 6
+    coord = app.test_client()
+    page = coord.get(f"/register?token={as_coordinator(app, coord)}&lang=en").get_data(as_text=True)
     assert page.count('href="/static/KTS5-nomination-form.pdf" download') == 2 and link in page
     assert page.index(link) < page.index('name="full_name"')
     # before registration opens: the waiting page offers it, so the institutions can sign it in time

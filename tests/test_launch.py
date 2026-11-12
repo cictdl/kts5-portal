@@ -126,8 +126,9 @@ def test_the_launch_postponed(monkeypatch):
     assert client.get(f"/notices/{nid}").status_code == 404
     assert "opening of registration" not in client.get("/schedule?lang=en").get_data(as_text=True)
     register = client.get("/register?lang=en").get_data(as_text=True)
-    # registration opens after the launch, which has no date yet (1.2.76)
-    assert "Registration is now open for Participating Institutions." in register and "Registrations closed on" not in register
+    # registration opens after the launch, which has no date yet (1.2.76); while the nomination is open, the Institutional Coordinator
+    # submits it, no student (1.2.182)
+    assert "Your Institutional Coordinator submits your nomination" in register and "Registrations closed on" not in register
     assert client.get("/launch").status_code == 200          # the stage screen stays, for the day
     # switched on again with a new moment: everything is back, for that day
     with app.app_context():

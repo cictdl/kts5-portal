@@ -56,7 +56,8 @@ def test_the_institution_nominates_its_student_while_registration_is_off():
     inst, link, coord = _selected(app)
     form, r = _register_with(app, link)
     # the form, with the institution fixed and the student filled in, and the nomination is stored
-    assert 'name="full_name"' in form and "from your registration link" in form and inst["name"] in form and 'value="Priya Student"' in form
+    # filled in by the Institutional Coordinator, signed in (no student since 1.2.182)
+    assert 'name="full_name"' in form and "The nominating institution" in form and inst["name"] in form and 'value="Priya Student"' in form
     assert r.status_code == 302, r.get_data(as_text=True)[:1500]
     with app.app_context():
         a = query("SELECT * FROM applications", one=True)
@@ -73,19 +74,21 @@ def test_the_links_close_with_the_setting_or_after_the_last_day():
     from kts.db import set_setting
     app = _portal()
     _live_like(app)
-    _inst, link, _coord = _selected(app)
-    assert 'name="full_name"' in app.test_client().get(_path(link)).get_data(as_text=True)
+    _inst, link, coord = _selected(app)
+    # the form of the Institutional Coordinator, signed in; never a student's (1.2.182)
+    assert 'name="full_name"' in coord.get(_path(link)).get_data(as_text=True)
+    assert 'name="full_name"' not in app.test_client().get(_path(link)).get_data(as_text=True)
     with app.app_context():
         set_setting("nominate.open", "0")
-    assert 'name="full_name"' not in app.test_client().get(_path(link)).get_data(as_text=True)
+    assert 'name="full_name"' not in coord.get(_path(link)).get_data(as_text=True)
     with app.app_context():
         set_setting("nominate.open", "1")
         set_setting("reg.end", "2020-01-01")
-    page = app.test_client().get(_path(link)).get_data(as_text=True)
+    page = coord.get(_path(link)).get_data(as_text=True)
     assert 'name="full_name"' not in page
     with app.app_context():
         set_setting("reg.end", "2099-12-31")
-    assert 'name="full_name"' in app.test_client().get(_path(link)).get_data(as_text=True)
+    assert 'name="full_name"' in coord.get(_path(link)).get_data(as_text=True)
 
 
 def test_the_strip_and_the_key_dates_point_to_the_nomination():

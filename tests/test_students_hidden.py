@@ -65,7 +65,7 @@ def test_shown_again():
     client = _app("1").test_client()
     home = _get(client, "/?lang=en")
     menu = home.split('id="primary-menu"')[1].split('class="has-sub"')[1].split("</ul></li>")[0]
-    assert menu.startswith('><a href="/register"') and '<a href="/register">Student registration</a>' in menu
+    assert menu.startswith('><a href="/register"') and '<a href="/register">Nomination of the selected student</a>' in menu   # 1.2.182
     assert 'href="/status"' in home and "Registration window" in home
     assert "Student delegates registered" in _get(client, "/dashboard?lang=en") and "Student delegates registered" in _get(client, "/progress?lang=en")
     assert "8905/register</loc>" in _get(client, "/sitemap.xml")

@@ -99,13 +99,22 @@ def test_the_coordinator_submits_the_nomination_on_the_same_form():
     assert ">Submit the presentation video</a>" in home
 
 
-def test_a_link_mailed_to_a_student_before_keeps_the_students_form():
+def test_a_student_with_the_link_has_no_form():
+    """Since 1.2.182 (CICT, 12 November 2026: "Not student directly but the institution can"): a link mailed to a student before
+    1.2.158, or passed on by the coordinator, opens no form without the coordinator signed in, and a form sent with it stores nothing."""
+    from kts.db import query
     app = _portal()
-    _inst, _coord, _page, link = _selected(app)
-    page, data = _form(app.test_client(), link)
-    assert "<h1>Student registration</h1>" in page and f"Registration of the student selected by {NAME}" in page
-    assert "I declare that the information given above is true and that I am a bona fide student" in page
-    assert "On behalf of the institution" not in page and ">Submit application</button>" in page
+    inst, _coord, _page, link = _selected(app)
+    student = app.test_client()
+    student.get("/candidate/login")   # a page with a form, for the token of the session
+    page, data = _form(student, link)
+    assert "<h1>Nomination of the selected student</h1>" in page and 'name="full_name"' not in page
+    assert "Your Institutional Coordinator submits your nomination on the portal." in page and 'href="/institution/login"' in page
+    r = student.post("/register", data=data, content_type="multipart/form-data")
+    assert r.status_code == 403 and "Your Institutional Coordinator submits your nomination" in r.get_data(as_text=True)
+    with app.app_context():
+        assert query("SELECT COUNT(*) AS n FROM applications", one=True)["n"] == 0
+        assert query("SELECT application_id FROM institutions WHERE id = ?", (inst["id"],), one=True)["application_id"] is None
 
 
 def test_the_form_of_the_coordinator_in_another_language():

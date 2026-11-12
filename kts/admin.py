@@ -2015,7 +2015,6 @@ SETTING_GROUPS = [
         ("nodal.officers_public", "Show the Nodal Officer of each State/UT (name, designation, e-mail and phone of the active Nodal Officer accounts) on the Nodal HEIs and Partners pages", "bool"),
         ("hei.orientation", "Pre-assessment orientation session by CICT for the institutions: date, time and link, shown on the institutions' page (empty: nothing)", "text")]),
     ("The assessment by the institutions and the nomination of their students (D.O. letter of 31 October 2026)", [
-        ("reg.by_institution", "Students register only with the link that the portal sends when their institution selects them (off: anybody may register, as before 1.2.43)", "bool"),
         ("camp.on", "The portal offers the participating institutions its online assessment (the question bank, in the language of each student)", "bool"),
         ("camp.from", "Institution-level assessments from (YYYY-MM-DD)", "date"),
         ("camp.to", "Institution-level assessments complete by (YYYY-MM-DD)", "date"),

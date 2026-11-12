@@ -77,7 +77,7 @@
       <li class="has-sub"><a href="{{ url_for('public.register') if students_public() else url_for('public.hei_register') }}" class="{{ 'active' if ep.startswith('public.register') or ep.startswith('public.hei_') or ep in ('public.institutions', 'public.nodal_institutions', 'public.guide', 'public.guide_institutions', 'public.merit') }}" aria-haspopup="true">{{ t('nav.register') }}</a>
         <ul class="sub">
           <li><a href="{{ url_for('public.guide') }}">{{ t('guide.title') }}</a></li>
-          {% if students_public() %}<li><a href="{{ url_for('public.register') }}">{{ t('reg.title') }}</a></li>{% endif %}
+          {% if students_public() %}<li><a href="{{ url_for('public.register') }}">{{ t('reg.nom_title') }}</a></li>{% endif %}
           <li><a href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a></li>
           <li><a href="{{ url_for('public.institutions') }}">{{ t('nav.institutions') }}</a></li>
           {% if get_setting('merit.published') == '1' %}<li><a href="{{ url_for('public.merit') }}">{{ t('nav.merit') }}</a></li>{% endif %}
@@ -167,7 +167,7 @@
     <div>
       <h4>{{ t('site.quick_links') }}</h4>
       <ul>
-        {% if students_public() %}<li><a href="{{ url_for('public.register') }}">{{ t('nav.register') }}</a></li>
+        {% if students_public() %}<li><a href="{{ url_for('public.register') }}">{{ t('reg.nom_title') }}</a></li>
         <li><a href="{{ url_for('public.status') }}">{{ t('nav.status') }}</a></li>{% else %}<li><a href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a></li>{% endif %}
         <li><a href="{{ url_for('public.nodal_institutions') }}">{{ t('nav.nodal') }}</a></li>
         <li><a href="{{ url_for('public.institutions') }}">{{ t('nav.institutions') }}</a></li>

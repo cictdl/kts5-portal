@@ -1,11 +1,17 @@
 {% extends "base.html" %}
-{% block title %}{{ t('reg.title') }}{% endblock %}
+{% block title %}{{ t('reg.nom_title') }}{% endblock %}
 {% block content %}
 <div class="wrap-narrow section">
   <span class="eyebrow">{{ t('reg.subtitle') }}</span>
-  <h1>{{ t('reg.title') }}</h1>
+  <h1>{{ t('reg.nom_title') }}</h1>
   <div class="card kumkum">
-    {% if state == 'not_yet' %}
+    {% if by_institution %}
+      {# the nomination open: the Institutional Coordinator submits it, signed in on the institution's page; no student (1.2.182) #}
+      {% if token_bad %}<p class="alert error"><b>{{ t('reg.token_bad') }}</b></p>{% endif %}
+      <h2>{{ t('guide.s4_t')|replace('{reg_end}', dates.reg_end|date) }}</h2>
+      <p>{{ t('guide.s4') }}</p>
+      <p class="btn-row" style="margin:0 0 14px"><a class="btn saffron" href="{{ url_for('campus.login') }}">{{ t('nav.inst_login') }}</a>{% if hei_window() == 'open' %}<a class="btn secondary" href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a>{% endif %}</p>
+    {% elif state == 'not_yet' %}
       <h2>{{ t('reg.not_yet') }} {{ dates.reg_start|date }}</h2>
       <p class="dim">{{ t('reg.intro') }}</p>
       <p class="stipend-note" style="margin:0 0 14px"><span class="amt">₹10,000</span><span>{{ t('home.stipend') }}</span></p>

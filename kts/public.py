@@ -29,7 +29,7 @@ from . import search as S
 from .i18n import get_lang, offered, t
 from .utils import (DOC_EXT, IMAGE_EXT, age_on, check_captcha, client_ip, college_key, csv_bytes,
                     IST, exam_window, file_folder, fmt_date, limiter, make_app_no, new_captcha, now_ist, plain_english,
-                    launch_at, qr_data_uri, registration_state, safe_int, save_upload, send_mail, valid_email, valid_mobile,
+                    launch_at, qr_data_uri, registration_state, save_upload, send_mail, valid_email, valid_mobile,
                     valid_pincode)
 from .version import RELEASED, VERSION
 
@@ -802,27 +802,6 @@ def _validate(form, files, inst=None):
     return data, errors
 
 
-def _selected_institution(form):
-    """
-    (institution, errors) for a registration without the personal link (1.2.47): the institution chosen in the
-    list, which has selected its student on the portal, and that student is the one registering (the same
-    e-mail address or mobile number as the coordinator gave). One registration for each institution.
-    """
-    inst = query("SELECT * FROM institutions WHERE id = ? AND status = 'accepted'", (safe_int(form.get("institution_id")),), one=True)
-    if inst is None:
-        return None, {"institution_id": t("reg.err_required")}
-    if inst["application_id"]:
-        return None, {"institution_id": t("reg.err_inst_registered")}
-    winner = CAMP.winner_of(inst)
-    if winner is None:
-        return None, {"institution_id": t("reg.err_not_selected_yet")}
-    email = (form.get("email") or "").strip().lower()
-    mobile = (form.get("mobile") or "").strip()
-    if not ((email and email == (winner["email"] or "").lower()) or (mobile and mobile == winner["mobile"])):
-        return None, {"email": t("reg.err_not_the_selected")}
-    return inst, {}
-
-
 def _discard(*saved):
     """Remove what save_upload has stored for a request that is refused after all."""
     folder = Path(current_app.config["UPLOAD_DIR"])
@@ -843,23 +822,24 @@ def register():
     mother = [K.lang_info(c) | {"code": c} for c in ["ta"] + [c for c in K.SCHEDULED if c != "ta"]]
     ctx = dict(settings=settings, state=state, ref=ref, langs=langs, mother=mother,
                dates=_key_dates(settings), data={}, errors={}, inst=None, token="")
-    # since the D.O. letter of 9 October 2026: only the student selected by a participating institution registers,
-    # with the personal link (the institution fixed by it), or here choosing the institution (1.2.47)
+    # the Institutional Coordinator, signed in on the institution's page, submits the nomination of the student the institution has
+    # selected, with the link of the institution (1.2.158, B-3 of the D.O. letter of 31 October 2026). No student fills in the form
+    # since 1.2.182 (CICT, 12 November 2026: "Not student directly but the institution can"): neither with the link, opened without
+    # the coordinator signed in, nor choosing the institution while the students' registration is open (1.2.47)
     token = (request.args.get("token") or request.form.get("token") or "").strip()
     inst = CAMP.registration_token(token)
-    # the Institutional Coordinator, signed in on the institution's page, submits the nomination (1.2.158, B-3 of the D.O. letter of
-    # 31 October 2026); a link mailed to a student before keeps the student's form
     me = CAMP.current_institution() if inst is not None else None
     by_coord = me is not None and me["id"] == inst["id"]
-    # the nomination by the Participating Institutions (1.2.154): the personal link opens the form up to reg.end even while the
-    # students' own registration is switched off or hidden; without a link the registration stays closed
-    if state != "open" and not (inst is not None and nomination_open(settings)):
+    # the nomination open (1.2.154): up to reg.end even while the students' registration is switched off or hidden
+    open_now = state == "open" or nomination_open(settings)
+    if not (by_coord and open_now):
         end = _iso_day(settings.get("reg.end"))
-        ctx["ended"] = bool(end) and end < now_ist().strftime("%Y-%m-%d")
-        return render_template("public/register_closed.html", **ctx)
-    by_inst = settings.get("reg.by_institution") == "1"
-    ctx.update(inst=inst, token=token if inst else "", by_inst=by_inst, token_bad=bool(token) and inst is None, by_coord=by_coord,
-               heis=HEI.accepted_by_state(ref["all_states"]) if by_inst and inst is None else [])
+        # anybody else: the coordinator submits the nomination (before reg.start, the page of the day it opens, as before)
+        ctx.update(ended=bool(end) and end < now_ist().strftime("%Y-%m-%d"), by_institution=open_now and state != "not_yet",
+                   token_bad=bool(token) and inst is None)
+        # a form sent by anybody but the coordinator stores nothing
+        return render_template("public/register_closed.html", **ctx), (403 if request.method == "POST" else 200)
+    ctx.update(inst=inst, token=token, by_inst=False, token_bad=False, by_coord=by_coord, heis=[])
     if inst is not None and request.method == "GET":
         winner = CAMP.winner_of(inst)
         if winner:
@@ -872,12 +852,8 @@ def register():
 
     if request.method == "POST":
         ip = client_ip()
-        pick_errors = {}
-        if inst is None and by_inst:
-            inst, pick_errors = _selected_institution(request.form)
         data, errors = _validate(request.form, request.files, inst)
         data["institution_pick"] = (request.form.get("institution_id") or "").strip()
-        errors.update(pick_errors)
         if not check_captcha(request.form.get("captcha")):
             errors["captcha"] = t("reg.err_captcha")
         if not errors:
