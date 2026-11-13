@@ -1,0 +1,20 @@
+{
+  "name": "குறள் உறியடி · Kural Uriyadi",
+  "short_name": "குறள் உறியடி",
+  "description": "A Thirukkural festival game: a couplet is missing a word and each clay pot carries one. Break the right pot. 1,330 couplets, meanings in 22 languages, free, offline. Central Institute of Classical Tamil.",
+  "id": "./",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6cf8a",
+  "theme_color": "#7a2e12",
+  "lang": "ta",
+  "dir": "ltr",
+  "categories": ["education", "games"],
+  "icons": [
+    { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

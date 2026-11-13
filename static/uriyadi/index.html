@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ta" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>குறள் உறியடி · Kural Uriyadi</title>
+<meta name="description" content="A Thirukkural festival game: a couplet is missing a word, and each clay pot carries one. Break the right pot. 1,330 couplets, meanings in 22 languages. Central Institute of Classical Tamil.">
+<meta name="theme-color" content="#7a2e12">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="stage">
+  <canvas id="scene" aria-hidden="true"></canvas>
+
+  <!-- the game: lamps, score, time, and the palm leaf with the couplet -->
+  <div id="hud" hidden>
+    <div class="hud-row">
+      <div id="lamps" class="lamps" role="img"></div>
+      <span id="streak" class="pill streak" hidden></span>
+      <span id="round" class="pill round"></span>
+      <span class="grow"></span>
+      <span class="score"><small id="score-lbl"></small> <b id="score">0</b></span>
+      <button id="btn-sound" class="icon-btn" type="button"></button>
+      <button id="btn-pause" class="icon-btn" type="button"></button>
+    </div>
+    <div class="timer" aria-hidden="true"><i id="timer-bar"></i></div>
+    <section id="leaf" class="leaf">
+      <div class="leaf-head"><span id="leaf-where"></span><button id="btn-hint" class="hint-btn" type="button"></button></div>
+      <p id="leaf-l1" class="kural" lang="ta"></p>
+      <p id="leaf-l2" class="kural" lang="ta"></p>
+      <p id="leaf-hint" class="hint-line" hidden></p>
+      <p id="leaf-meaning" class="meaning"></p>
+    </section>
+  </div>
+
+  <div id="say" class="say" aria-live="assertive"></div>
+  <!-- the words of the pots as buttons, for the keyboard and screen readers -->
+  <div id="keys" class="sr-only" aria-live="polite"></div>
+
+  <div id="home" class="screen">
+    <div class="panel">
+      <div class="brand">
+        <img src="assets/icon.svg" alt="" width="84" height="84">
+        <h1 lang="ta">குறள் உறியடி</h1>
+        <p class="brand-en" lang="en">Kural Uriyadi</p>
+        <p id="tagline" class="tagline"></p>
+      </div>
+      <div class="modes">
+        <button class="mode" data-mode="festival" type="button"><b></b><span></span><em></em></button>
+        <button class="mode" data-mode="chapters" type="button"><b></b><span></span><em></em></button>
+        <button class="mode" data-mode="k108" type="button"><b></b><span></span><em></em></button>
+      </div>
+      <details class="card" id="how" open>
+        <summary></summary>
+        <ol id="how-list"></ol>
+      </details>
+      <div class="card settings">
+        <h2 id="set-h"></h2>
+        <label><span id="set-ui"></span>
+          <select id="sel-ui"><option value="ta">தமிழ்</option><option value="en">English</option></select></label>
+        <label><span id="set-tr"></span><select id="sel-tr"></select></label>
+        <label><span id="set-aid"></span><select id="sel-aid"></select></label>
+        <label class="check"><input type="checkbox" id="chk-sound"> <span id="set-sound"></span></label>
+        <label class="check"><input type="checkbox" id="chk-voice"> <span id="set-voice"></span></label>
+      </div>
+      <p id="credits" class="credits"></p>
+    </div>
+  </div>
+
+  <div id="chapters" class="screen" hidden>
+    <div class="panel wide">
+      <div class="bar"><button class="btn ghost" data-go="home" type="button"></button><h2 id="ch-h"></h2></div>
+      <div id="ch-list"></div>
+    </div>
+  </div>
+
+  <div id="pause" class="screen dim" hidden>
+    <div class="panel small">
+      <h2 id="pause-h"></h2>
+      <div class="btn-col">
+        <button class="btn" id="btn-resume" type="button"></button>
+        <button class="btn ghost" id="btn-quit" type="button"></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="over" class="screen dim" hidden>
+    <div class="panel">
+      <h2 id="over-h"></h2>
+      <p id="over-stars" class="stars" hidden></p>
+      <div class="result">
+        <div><b id="over-score">0</b><span id="over-score-l"></span></div>
+        <div><b id="over-solved">0</b><span id="over-solved-l"></span></div>
+        <div><b id="over-best">0</b><span id="over-best-l"></span></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="btn-again" type="button"></button>
+        <button class="btn ghost" data-go="home" type="button"></button>
+      </div>
+      <h3 id="over-review-h"></h3>
+      <div id="over-review"></div>
+    </div>
+  </div>
+
+  <div id="loading" class="loading"><span></span></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

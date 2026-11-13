@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Kural Uriyadi">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9b0"/><stop offset="1" stop-color="#ffb463"/></linearGradient>
+    <radialGradient id="pot" cx=".36" cy=".34" r=".8"><stop offset="0" stop-color="#e58a50"/><stop offset=".6" stop-color="#b9562b"/><stop offset="1" stop-color="#8a3a18"/></radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#sky)"/>
+  <path d="M0 92 Q256 122 512 92" fill="none" stroke="#7a5226" stroke-width="12"/>
+  <g fill="#3f8a3c"><path d="M92 100 q-14 34 0 62 q14-28 0-62z"/><path d="M168 106 q-14 34 0 62 q14-28 0-62z"/><path d="M344 106 q-14 34 0 62 q14-28 0-62z"/><path d="M420 100 q-14 34 0 62 q14-28 0-62z"/></g>
+  <g fill="#f59a1b"><circle cx="130" cy="118" r="15"/><circle cx="382" cy="118" r="15"/></g>
+  <path d="M256 108 V196" stroke="#7a5226" stroke-width="9"/>
+  <path d="M256 196 Q150 250 196 372 M256 196 Q362 250 316 372" fill="none" stroke="#5c3c1a" stroke-width="6"/>
+  <ellipse cx="256" cy="312" rx="112" ry="103" fill="url(#pot)"/>
+  <rect x="210" y="196" width="92" height="34" fill="#a84a22"/>
+  <ellipse cx="256" cy="198" rx="62" ry="19" fill="#c96a36"/><ellipse cx="256" cy="198" rx="44" ry="11" fill="#5c2410"/>
+  <path d="M160 268 Q256 312 352 268" fill="none" stroke="#fff8e6" stroke-width="9" stroke-linecap="round"/>
+  <g fill="#fff8e6"><circle cx="180" cy="322" r="9"/><circle cx="218" cy="336" r="9"/><circle cx="256" cy="342" r="9"/><circle cx="294" cy="336" r="9"/><circle cx="332" cy="322" r="9"/></g>
+  <circle cx="256" cy="378" r="11" fill="#c0261c"/>
+  <g stroke-linecap="round"><path d="M96 470 L214 404" stroke="#8a6420" stroke-width="26"/><path d="M96 470 L214 404" stroke="#dcb65c" stroke-width="16"/></g>
+  <g stroke="#c0261c" stroke-width="9" stroke-linecap="round"><path d="M388 392 l34 22"/><path d="M398 352 l44 -4"/><path d="M362 424 l16 38"/></g>
+</svg>

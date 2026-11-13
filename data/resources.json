@@ -466,5 +466,11 @@
    "url": "/syllabus", "featured": 1, "sort_order": 8},
   {"key": "cict-manipuri-dance-katavul-valttu", "title": "திருக்குறள் – மணிப்புரி நடனம்: கடவுள் வாழ்த்து · Tirukkural – Manipuri Dance: Katavul Valttu (God’s Praise)", "category": "video_kural", "lang": "",
    "description": "Verses of the Thirukkural’s first chapter, Katavul Valttu (God’s Praise), set to the graceful, devotional movements of Manipuri dance: a cultural production on the website of the Central Institute of Classical Tamil (MP4 video, 32 minutes, 244.2 MB).",
-   "url": "https://cict.in/videos/Manipuri%20Dance.mp4", "featured": 0, "sort_order": 400}
+   "url": "https://cict.in/videos/Manipuri%20Dance.mp4", "featured": 0, "sort_order": 400},
+  {"key": "kural-uriyadi", "title": "குறள் உறியடி · Kural Uriyadi", "category": "app", "lang": "",
+   "description": "A festival game on the Thirukkural for the students of Kashi Tamil Sangamam: a couplet stands on a palm leaf with one word missing, and each clay pot of the uriyadi carries a word; break the pot with the right word while it hangs low. All 1,330 couplets, chapter by chapter or at random, and the 108 Thirukkural of KTS 5.0 as a set of their own; the meaning in 22 languages, and every Tamil word also in the letters of your own script. Free, no account, in the browser of a phone or a computer.",
+   "url": "/static/uriyadi/index.html", "featured": 1, "sort_order": 9},
+  {"key": "valluvar-pond", "title": "வள்ளுவர் குளம் · Valluvar's Pond", "category": "app", "lang": "",
+   "description": "A 3D fishing game on the Thirukkural made by students (adhavan18 and Md-Shameem-Dev) with the couplets and meanings of this portal: Thiruvalluvar sits by a lotus pond, each fish carries a word, and the fish with the right word completes the couplet. All 1,330 couplets; the hooked word and the couplet are read aloud in Tamil. A student project, not an official release of CICT, hosted by its makers. The first opening downloads about 42 MB; best on a computer, or a recent phone held sideways.",
+   "url": "https://adhavan18.github.io/valluvar-pond/", "featured": 0, "sort_order": 16}
 ]
