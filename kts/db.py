@@ -1109,17 +1109,42 @@ def executemany(sql, rows):
 
 # ---- settings ---------------------------------------------------------------
 
+# The numbers of the pattern of the online assessment: the kind of each and the least it may be (None: more than 0). A stored value
+# that is empty, no number or below the least reads as the built-in one (1.2.187). Until then a field of the Settings page left
+# empty reached a student who pressed Start, or who submitted the answers, as an error, and 0 minutes started an attempt that was
+# over at once (the audit of 13 November 2026); the Settings page no longer saves such a value (kts/admin.py, setting_problem).
+PATTERN_NUMBERS = {"exam.questions": (int, 1), "exam.duration_min": (int, 1), "exam.marks_per_q": (float, None), "exam.negative": (float, 0)}
+
+
+def _in_force(key, value):
+    """The value of a setting as the portal uses it: of the numbers of PATTERN_NUMBERS the built-in one when the stored one cannot be used."""
+    rule = PATTERN_NUMBERS.get(key)
+    if rule is None:
+        return value
+    kind, least = rule
+    text = str(value if value is not None else "").strip()
+    try:
+        number = kind(text)
+    except ValueError:
+        return DEFAULT_SETTINGS[key]
+    if number != number or number in (float("inf"), float("-inf")) or (number <= 0 if least is None else number < least):
+        return DEFAULT_SETTINGS[key]
+    return text
+
+
 def get_setting(key, default=""):
     row = query("SELECT value FROM settings WHERE key = ?", (key,), one=True)
     if row is None:
         return DEFAULT_SETTINGS.get(key, default)
-    return row["value"]
+    return _in_force(key, row["value"])
 
 
 def all_settings():
     data = dict(DEFAULT_SETTINGS)
     for row in query("SELECT key, value FROM settings"):
         data[row["key"]] = row["value"]
+    for key in PATTERN_NUMBERS:
+        data[key] = _in_force(key, data[key])
     return data
 
 

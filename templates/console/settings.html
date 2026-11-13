@@ -12,7 +12,7 @@
         {% if kind == 'bool' %}
           <label>&nbsp;</label><label class="check"><input type="checkbox" name="{{ key }}" value="1" {{ 'checked' if values[key] == '1' }}> {{ label }}</label>
         {% else %}
-          <label for="{{ key }}">{{ label }}</label><input type="{{ 'number' if kind == 'number' else ('date' if kind == 'date' else 'text') }}" id="{{ key }}" name="{{ key }}" value="{{ values[key] }}">
+          <label for="{{ key }}">{{ label }}</label><input type="{{ 'number' if kind == 'number' else ('date' if kind == 'date' else 'text') }}" id="{{ key }}" name="{{ key }}" value="{{ values[key] }}"{% if kind == 'number' %} min="0"{% if key in decimals %} step="any"{% endif %}{% endif %}>
         {% endif %}
         <span class="help"><code>{{ key }}</code></span>
       </div>

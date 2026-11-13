@@ -8,7 +8,7 @@ import json
 import posixpath
 import re
 import secrets
-from datetime import timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 from flask import (Blueprint, Response, abort, current_app, flash, g, redirect, render_template, send_file,
@@ -2080,11 +2080,80 @@ SETTING_GROUPS = [
 ]
 
 
+# What a field of the Settings page may hold (1.2.187). The audit of 13 November 2026 changed every field through the form: each was
+# saved and did what it says, but the form took anything, and a number field of the pattern of the online assessment left empty, or
+# 0 minutes, reached the students of an assessment in progress. A value that changes is looked at first; one that cannot be used is
+# not saved, the field keeps what it had, and the page says which and why. A value that stays as it is, is never looked at: nothing
+# that a database already holds stands in the way of the other fields.
+SETTING_DECIMALS = ("exam.marks_per_q", "exam.negative")      # marks: 2, 0.25
+SETTING_LEAST = {"exam.questions": 1, "exam.duration_min": 1, "practice.questions": 3, "practice.minutes": 1, "quiz.max_players": 1,
+                 "backup.keep": 1, "stipend.amount": 1}
+SETTING_MOST = {"practice.questions": 30, "practice.minutes": 60}
+# a time HH:MM; True: the field may not be left empty
+SETTING_TIMES = {"exam.start_time": True, "exam.end_time": True, "nodal.digest_time": True, "kts.start_time": False}
+SETTING_CHOICES = {"exam.open": ("auto", "1", "0"), "papers.open": ("auto", "1", "0")}
+
+
+def _is_time(value):
+    m = re.fullmatch(r"(\d{1,2}):(\d{2})", value)
+    return bool(m) and int(m.group(1)) < 24 and int(m.group(2)) < 60
+
+
+def setting_problem(key, kind, value):
+    """Why this value cannot be saved in this field of the Settings page; '' when it can."""
+    if kind == "bool":
+        return ""
+    if kind == "number":
+        decimal = key in SETTING_DECIMALS
+        if not re.fullmatch(r"[0-9]+(\.[0-9]+)?" if decimal else r"[0-9]+", value):
+            return "a number is needed, for example 2 or 0.25" if decimal else "a whole number is needed, without a sign, a comma or a point"
+        number = float(value)
+        if key == "exam.marks_per_q" and number <= 0:
+            return "more than 0 is needed"
+        if number < SETTING_LEAST.get(key, 0):
+            return f"{SETTING_LEAST[key]} or more is needed"
+        if number > SETTING_MOST.get(key, number):
+            return f"{SETTING_MOST[key]} at most"
+        return ""
+    if kind == "date":
+        if not value:
+            return ""
+        try:
+            ok = len(value) == 10 and bool(date.fromisoformat(value))
+        except ValueError:
+            ok = False
+        return "" if ok else "a date is needed (YYYY-MM-DD)"
+    if key in SETTING_TIMES:
+        if not value:
+            return "a time is needed (HH:MM)" if SETTING_TIMES[key] else ""
+        return "" if _is_time(value) else "a time is needed (HH:MM, of 24 hours)"
+    if key == "backup.times":      # as kts/backup.py reads them: 02:00 or 2.00, with commas, spaces or semicolons between them
+        parts = [p for p in re.split(r"[,\s;]+", value) if p]
+        if not parts or not all(_is_time(p.replace(".", ":")) for p in parts):
+            return "one or more times are needed (HH:MM, with commas between them); to stop the copies, untick the box above"
+        return ""
+    if key == "launch.at":
+        if not value:
+            return ""
+        try:
+            ok = bool(re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}", value)) and bool(datetime.fromisoformat(value))
+        except ValueError:
+            ok = False
+        return "" if ok else "a day and a time are needed (YYYY-MM-DDTHH:MM)"
+    if key in SETTING_CHOICES:
+        return "" if value in SETTING_CHOICES[key] else "auto, 1 or 0 is needed"
+    if key == "circular.new_days":
+        return "" if re.fullmatch(r"[0-9]+", value) else "a whole number of days is needed (0: never)"
+    if key == "contact.notify":
+        return "" if not value or valid_email(value) else "an e-mail address is needed, or nothing"
+    return ""
+
+
 @bp.route("/settings", methods=["GET", "POST"])
 @login_required("settings")
 def settings_page():
     if request.method == "POST":
-        changed = []
+        changed, refused = [], []
         for _, items in SETTING_GROUPS:
             for key, _label, kind in items:
                 if kind == "bool":
@@ -2092,12 +2161,18 @@ def settings_page():
                 else:
                     value = (request.form.get(key) or "").strip()
                 if value != get_setting(key):
+                    problem = setting_problem(key, kind, value)
+                    if problem:
+                        refused.append((key, problem))
+                        continue
                     set_setting(key, value)
                     changed.append(key)
         audit("settings_changed", "settings", None, detail=changed, user=_user(), ip=client_ip())
         flash(f"Saved {len(changed)} setting(s).", "success")
+        for key, problem in refused:
+            flash(f"Not saved: {key} – {problem}. The field keeps the value it had.", "error")
         return redirect(url_for("admin.settings_page"))
-    return render_template("console/settings.html", groups=SETTING_GROUPS, values=all_settings())
+    return render_template("console/settings.html", groups=SETTING_GROUPS, values=all_settings(), decimals=SETTING_DECIMALS)
 
 
 @bp.route("/audit")
