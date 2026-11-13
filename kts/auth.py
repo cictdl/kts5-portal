@@ -37,6 +37,8 @@ PERMS = {
     # the participating institutions (1.2.41): a Nodal Officer those of their States/UTs only
     "hei.view":      {"superadmin", "admin", "verifier", "viewer", "nodal"},
     "hei.decide":    {"superadmin", "admin", "nodal"},
+    # the invited list of a State/UT removed for good (1.2.188): CICT only
+    "hei.remove":    {"superadmin", "admin"},
     "apps.delete":   {"superadmin", "admin"},
     "exam.manage":   {"superadmin", "admin"},
     "exam.view":     {"superadmin", "admin", "verifier", "viewer"},

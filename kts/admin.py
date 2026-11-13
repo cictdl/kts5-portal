@@ -1221,7 +1221,12 @@ def institutions():
     units = list(dict.fromkeys(HEI.nodal_state_of(s) for s in states))
     allocation = {h["state"]: h.get("allocation", 0) for h in _nodal_heis()}
     settings = all_settings()
+    # the invited list of the State/UT chosen, which CICT may remove (1.2.188)
+    remove_unit = HEI.nodal_state_of(f["state"]) if f["state"] in _states() and has_perm(user, "hei.remove") else ""
+    removable, invited_stay = HEI.invited_counts(remove_unit) if remove_unit else (0, 0)
     return render_template("console/institutions.html", rows=rows[:INST_ROWS_SHOWN], more=len(rows) > INST_ROWS_SHOWN, f=f,
+                           remove_unit=remove_unit, remove_label=HEI.label_of(remove_unit, "en") if remove_unit else "",
+                           removable=removable, invited_stay=invited_stay,
                            states=states, units=units, labels={u: HEI.label_of(u, "en") for u in units},
                            summary=summary, allocation=allocation, scope=scope, stray=[(u, stray[u]) for u in units if stray.get(u)],
                            can_decide=has_perm(user, "hei.decide"), window=HEI.window(settings),
@@ -1613,6 +1618,40 @@ def institutions_back_to_invited():
     flash(f"{label}: {len(back)} institution(s) back to identified · invited, each invited again by mail"
           + (f"; {len(kept)} stay as they are: " + "; ".join(kept) if kept else "") + ".", "success" if back else "error")
     return redirect(url_for("admin.institutions", state=HEI.nodal_state_of(state), status="identified"))
+
+
+@bp.route("/institutions/remove-invited", methods=["POST"])
+@login_required("hei.remove")
+def institutions_remove_invited():
+    """
+    The invited list of a row of Annexure-I is removed for good (1.2.188; CICT, 13 November 2026, of the 4,849 institutions of
+    Maharashtra identified · invited: "how to remove the email list of maharashtra"). Until then an institution of an uploaded list
+    could only be declined, one by one, each with a mail. Every institution of the list that is still identified and on which
+    nothing rests goes (HEI.remove_invited), with the invitations to it that still wait in the mail queue; one that has registered
+    stays. CICT only; the number of institutions is typed to confirm, so that a list that has changed since the page was read is
+    not removed unseen.
+    """
+    user = _user()
+    state = (request.form.get("state") or "").strip()
+    if state not in _states():
+        abort(404)
+    unit = HEI.nodal_state_of(state)
+    label = HEI.label_of(unit, "en")
+    removable, stay = HEI.invited_counts(unit)
+    typed = (request.form.get("confirm") or "").strip().replace(",", "")
+    if not removable:
+        flash(f"There is no invited list to remove for {label}.", "error")
+    elif typed != str(removable):
+        flash(f"Nothing was removed: type {removable} (the number of institutions of the list) to confirm.", "error")
+    else:
+        done = HEI.remove_invited(unit)
+        audit("institutions_invited_removed", "institution", None, detail={"state": label, "removed": done["removed"], "mails": done["mails"],
+                                                                         "stay": stay}, user=user, ip=client_ip())
+        flash(f"{label}: the invited list is removed – {done['removed']:,} institution(s) deleted; {done['mails']:,} invitation(s) that still "
+              f"waited in the mail queue are not sent"
+              + (f"; {stay:,} identified institution(s) stay, because marks, students or a nomination are recorded for them" if stay else "") + ".",
+              "success")
+    return redirect(url_for("admin.institutions", state=unit, status="identified"))
 
 
 @bp.route("/institutions/identified", methods=["POST"])

@@ -26,6 +26,20 @@
     <td class="num">{{ c.get('declined', 0) }}</td></tr>
   {% endif %}{% endfor %}</tbody>
 </table></div>
+{% if remove_unit and removable %}
+{# the invited list of the State/UT chosen, removed for good by CICT (1.2.188) #}
+<div class="card" id="remove-invited" style="margin-bottom:16px;border-left:4px solid var(--red,#b42318)">
+  <h3 style="margin-top:0">Remove the invited list of {{ remove_label }}</h3>
+  <p class="small dim" style="margin:0 0 8px"><b>{{ '{:,}'.format(removable) }}</b> institution(s) of {{ remove_label }} were invited from an uploaded list and have not registered. Removing the list deletes these entries for good: their invitation links stop working, and the invitations to them that still wait in the mail queue are not sent. Nothing else is touched: an institution that has registered, or was selected, stays, and so do the lists of the other States/UTs. An institution of the list can still register on the website while the registration of institutions is open, and a list can be uploaded again.{% if invited_stay %} {{ '{:,}'.format(invited_stay) }} other identified institution(s) of {{ remove_label }} stay, because marks, students or a nomination are recorded for them.{% endif %}
+    To keep a copy first: <a href="{{ url_for('admin.institutions_export', state=remove_unit, status='identified') }}">Excel (this list)</a>.</p>
+  <form method="post" action="{{ url_for('admin.institutions_remove_invited') }}" class="btn-row" style="margin:0" data-confirm="Remove the {{ '{:,}'.format(removable) }} invited institution(s) of {{ remove_label }} for good? This cannot be undone.">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="state" value="{{ remove_unit }}">
+    <label for="remove_confirm" class="small">Type {{ removable }} to confirm</label>
+    <input id="remove_confirm" name="confirm" inputmode="numeric" autocomplete="off" required style="max-width:9em">
+    <button class="btn sm danger" type="submit">Remove the invited list</button>
+  </form>
+</div>
+{% endif %}
 {% if can_decide and stray %}
 {# selected, on the reserve list or declined before they registered (1.2.173) #}
 <div class="card" id="unregistered" style="margin-bottom:16px;border-left:4px solid var(--saffron)">

@@ -33,7 +33,7 @@ from datetime import date, timedelta
 
 from flask import current_app
 
-from .db import execute, get_setting, query, utcnow
+from .db import execute, get_db, get_setting, query, utcnow
 from .utils import college_key, now_ist, send_later, send_mail
 
 # identified: in the list of the Nodal Institution (Annexure-II), invited, not yet registered (1.2.43); accepted: a selected
@@ -298,6 +298,65 @@ def back_to_invited(row):
     fresh = query("SELECT * FROM institutions WHERE id = ?", (row["id"],), one=True)
     mail_invited(fresh)
     return fresh
+
+
+# ---- the invited list removed (1.2.188) -------------------------------------------------------------------------------------------
+# CICT, 13 November 2026, of the 4,849 institutions of Maharashtra identified · invited: "how to remove the email list of
+# maharashtra". An institution of an uploaded list on which nothing rests: identified, never registered (no Head of the
+# Institution), without marks, students, an online assessment, a selected student, a nomination or a presentation.
+REMOVABLE_SQL = ("status = 'identified' AND head_name = '' AND application_id IS NULL AND winner_id IS NULL AND test_on = 0 "
+                 "AND sop_total IS NULL "
+                 "AND NOT EXISTS (SELECT 1 FROM campus_students s WHERE s.institution_id = institutions.id) "
+                 "AND NOT EXISTS (SELECT 1 FROM presentations p WHERE p.institution_id = institutions.id) "
+                 "AND NOT EXISTS (SELECT 1 FROM applications a WHERE a.institution_id = institutions.id)")
+
+
+def invited_counts(state):
+    """
+    Of the row of Annexure-I of this State/UT (a paired Union Territory with its State): the institutions of the invited list that
+    remove_invited would remove, and the identified institutions it would leave.
+    """
+    members = group_of(state)
+    marks = ",".join("?" * len(members))
+    removable = query(f"SELECT COUNT(*) AS n FROM institutions WHERE state IN ({marks}) AND {REMOVABLE_SQL}", members, one=True)["n"]
+    identified = query(f"SELECT COUNT(*) AS n FROM institutions WHERE state IN ({marks}) AND status = 'identified'", members, one=True)["n"]
+    return removable, identified - removable
+
+
+def remove_invited(state):
+    """
+    Removes the invited list of the row of Annexure-I of this State/UT, for good: every institution of REMOVABLE_SQL. Their
+    invitation links stop working (the registration page says so and shows the form), and the invitations to them that still wait
+    in the mail queue are not sent; a mail that went out stays in the record of the outbox. An institution that has registered,
+    or on which anything rests, is not touched. All or nothing. Gives {"removed": institutions, "mails": invitations not sent}.
+    """
+    members = group_of(state)
+    marks = ",".join("?" * len(members))
+    conn = get_db()
+    rows = conn.execute(f"SELECT id, name, invite_token, coord_email, head_email FROM institutions WHERE state IN ({marks}) AND {REMOVABLE_SQL}",
+                        members).fetchall()
+    tokens = {r["invite_token"] for r in rows if r["invite_token"]}
+    invitations = {(address, f"KTS 5.0: {r['name']} is invited to register") for r in rows for address in (r["coord_email"], r["head_email"]) if address}
+    waiting = []
+    for m in conn.execute("SELECT id, to_addr, subject, body FROM outbox WHERE status = 'queued' AND subject LIKE 'KTS 5.0: % is invited to register'").fetchall():
+        link = re.search(r"/institutions/register\?invite=([A-Za-z0-9_-]+)", m["body"])
+        if (link and link.group(1) in tokens) or (m["to_addr"], m["subject"]) in invitations:
+            waiting.append(m["id"])
+    ids = [r["id"] for r in rows]
+    removed = mails = 0
+    try:
+        for i in range(0, len(waiting), 500):
+            part = waiting[i:i + 500]
+            mails += conn.execute(f"DELETE FROM outbox WHERE status = 'queued' AND id IN ({','.join('?' * len(part))})", part).rowcount
+        for i in range(0, len(ids), 500):
+            part = ids[i:i + 500]
+            conn.execute(f"DELETE FROM institution_reminders WHERE institution_id IN ({','.join('?' * len(part))})", part)
+            removed += conn.execute(f"DELETE FROM institutions WHERE id IN ({','.join('?' * len(part))}) AND {REMOVABLE_SQL}", part).rowcount
+    except Exception:
+        conn.rollback()
+        raise
+    conn.commit()
+    return {"removed": removed, "mails": mails}
 
 
 def window(settings):
