@@ -1,12 +1,13 @@
 /* Service worker — குறள் உறியடி · Kural Uriyadi, offline-first.
    shell: network first, the cached copy when offline, so a new version lands on the next open;
    data and fonts: cache first, kept as they are fetched (the chapters played, the language chosen).
-   Raise VERSION when build/build_data.py is run again. */
-const VERSION = 'v1';
+   Raise VERSION when build/build_data.py is run again.
+   The couplets lie in corpus/, not data/: the web server of the KTS portal hides every address with a part named data. */
+const VERSION = 'v2';
 const SHELL = 'ku-shell-' + VERSION;
 const DATA = 'ku-data-' + VERSION;
 const SHELL_URLS = ['./index.html', './app.js', './styles.css', './manifest.json', './assets/fonts.css', './assets/icon.svg',
-  './assets/icon-192.png', './assets/icon-512.png', './assets/favicon-32.png', './data/meta.json', './data/scripts.json'];
+  './assets/icon-192.png', './assets/icon-512.png', './assets/favicon-32.png', './corpus/meta.json', './corpus/scripts.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil((async () => { await (await caches.open(SHELL)).addAll(SHELL_URLS); await self.skipWaiting(); })());
@@ -20,7 +21,7 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if (url.origin !== location.origin || e.request.method !== 'GET') return;
-  if (url.pathname.includes('/data/ch/') || url.pathname.includes('/data/tr/') || url.pathname.includes('/assets/fonts/')) {
+  if (url.pathname.includes('/corpus/ch/') || url.pathname.includes('/corpus/tr/') || url.pathname.includes('/assets/fonts/')) {
     e.respondWith(caches.open(DATA).then(async c => (await c.match(e.request)) || fetch(e.request).then(r => {
       if (r.ok) c.put(e.request, r.clone());
       return r;

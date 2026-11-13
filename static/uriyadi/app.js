@@ -4,7 +4,7 @@
 (() => {
 'use strict';
 
-const VERSION = '1.0.0';
+const VERSION = '1.0.1';
 const LS_KEY = 'kural-uriyadi.v1';
 const KURAL_APP = 'https://cictdl.github.io/index.html/kural-app/#/k/';
 const $ = (s, el) => (el || document).querySelector(s);
@@ -101,11 +101,11 @@ let META = null, SCRIPTS = {};
 const CH = new Map(), TR = new Map();
 const json = async url => { const r = await fetch(url); if (!r.ok) throw new Error(url + ' ' + r.status); return r.json(); };
 async function chapter(n) {
-  if (!CH.has(n)) CH.set(n, json(`data/ch/${String(n).padStart(3, '0')}.json`).catch(e => { CH.delete(n); throw e; }));
+  if (!CH.has(n)) CH.set(n, json(`corpus/ch/${String(n).padStart(3, '0')}.json`).catch(e => { CH.delete(n); throw e; }));
   return CH.get(n);
 }
 async function translation(code) {
-  if (!TR.has(code)) TR.set(code, json(`data/tr/${code}.json`).catch(e => { TR.delete(code); throw e; }));
+  if (!TR.has(code)) TR.set(code, json(`corpus/tr/${code}.json`).catch(e => { TR.delete(code); throw e; }));
   return TR.get(code);
 }
 const stream = code => META.streams.find(s => s.code === code) || META.streams.find(s => s.code === 'en');
@@ -959,7 +959,7 @@ async function boot() {
   loadState();
   $('#loading span').textContent = TEXT[S.ui].loading;
   resize(); requestAnimationFrame(frame);
-  try { [META, SCRIPTS] = await Promise.all([json('data/meta.json'), json('data/scripts.json')]); }
+  try { [META, SCRIPTS] = await Promise.all([json('corpus/meta.json'), json('corpus/scripts.json')]); }
   catch (e) { $('#loading span').textContent = TEXT[S.ui].load_fail; return; }
   if (!S.saved) {       // the first visit: the meaning in the language of the device, where the game has it
     const own = META.streams.find(s => s.code === S.navLang);

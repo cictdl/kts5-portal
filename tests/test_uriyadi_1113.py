@@ -4,8 +4,12 @@ students' game Valluvar's Pond as an entry of the repository (1.2.184; CICT, 13 
 and, of https://adhavan18.github.io/valluvar-pond/, "add this also").
 
 The game carries its own copy of the couplets and the translations (a page of static files reads no other data of the portal): the
-last two tests fail when data/kurals changes, and the game's data is then to be built again (build/build_data.py of the game, and
-VERSION of static/uriyadi/sw.js raised).
+tests of the couplets and of the translations fail when data/kurals changes, and the game's data is then to be built again
+(build/build_data.py of the game, and VERSION of static/uriyadi/sw.js raised).
+
+Its couplets lie in static/uriyadi/corpus/ since 1.2.185: the web server (IIS, web.config) answers 404 for every address with a
+part named "data", and the game of 1.2.184, with static/uriyadi/data/, could not read them on the live site. The last test keeps
+every static file clear of the names and the extensions the web server hides.
 
     python -m pytest tests/test_uriyadi_1113.py -q
 """
@@ -15,6 +19,7 @@ import re
 from conftest import ROOT, make_app
 
 GAME = ROOT / "static" / "uriyadi"
+CORPUS = GAME / "corpus"
 URL = "/static/uriyadi/index.html"
 POND = "https://adhavan18.github.io/valluvar-pond/"
 TAMIL = re.compile(r"[^஀-௿]")
@@ -64,8 +69,8 @@ def test_the_game_is_served_by_the_portal_itself():
     assert sw.status_code == 200 and "javascript" in sw.mimetype
     shell = re.search(r"const SHELL_URLS = \[(.*?)\];", sw.get_data(as_text=True), re.S).group(1)
     urls = re.findall(r"'\./([^']+)'", shell)
-    assert "index.html" in urls and "app.js" in urls and "data/meta.json" in urls and len(urls) >= 10
-    for name in urls + ["assets/apple-touch-icon.png", "assets/icon-maskable-512.png"]:
+    assert "index.html" in urls and "app.js" in urls and "corpus/meta.json" in urls and len(urls) >= 10
+    for name in urls + ["assets/apple-touch-icon.png", "assets/icon-maskable-512.png", "corpus/ch/001.json", "corpus/tr/en.json"]:
         r = client.get("/static/uriyadi/" + name)
         assert r.status_code == 200 and len(r.data) > 300, name
         r.close()
@@ -82,14 +87,14 @@ def test_the_game_is_served_by_the_portal_itself():
 
 
 def test_the_couplets_of_the_game_are_those_of_the_portal():
-    meta = json.loads((GAME / "data" / "meta.json").read_text(encoding="utf-8"))
+    meta = json.loads((CORPUS / "meta.json").read_text(encoding="utf-8"))
     assert len(meta["chapters"]) == 133 and [c["n"] for c in meta["chapters"]] == list(range(1, 134))
     k108 = sorted(int(r["n"]) for r in json.loads((ROOT / "data" / "kural108.json").read_text(encoding="utf-8")))
     assert meta["k108"] == k108 and len(k108) == 108
     seen = 0
     for n in range(1, 134):
         portal = json.loads((ROOT / "data" / "kurals" / f"{n:03d}.json").read_text(encoding="utf-8"))
-        game = json.loads((GAME / "data" / "ch" / f"{n:03d}.json").read_text(encoding="utf-8"))
+        game = json.loads((CORPUS / "ch" / f"{n:03d}.json").read_text(encoding="utf-8"))
         assert game["n"] == n and (meta["chapters"][n - 1]["start"], meta["chapters"][n - 1]["end"]) == (portal["start"], portal["end"])
         assert [k["n"] for k in game["kurals"]] == [int(k["n"]) for k in portal["kurals"]]
         for mine, theirs in zip(game["kurals"], portal["kurals"]):
@@ -104,11 +109,11 @@ def test_the_couplets_of_the_game_are_those_of_the_portal():
 
 
 def test_the_translations_of_the_game_are_those_of_the_portal():
-    meta = json.loads((GAME / "data" / "meta.json").read_text(encoding="utf-8"))
+    meta = json.loads((CORPUS / "meta.json").read_text(encoding="utf-8"))
     codes = [s["code"] for s in meta["streams"]]
     assert len(codes) == 26 and codes[:2] == ["tac", "en"] and {"hi", "bn", "ur", "ksn", "mei", "sat"} <= set(codes)
-    assert sorted(p.stem for p in (GAME / "data" / "tr").glob("*.json")) == sorted(codes)
-    game = {code: json.loads((GAME / "data" / "tr" / f"{code}.json").read_text(encoding="utf-8")) for code in codes}
+    assert sorted(p.stem for p in (CORPUS / "tr").glob("*.json")) == sorted(codes)
+    game = {code: json.loads((CORPUS / "tr" / f"{code}.json").read_text(encoding="utf-8")) for code in codes}
     for n in range(1, 134):
         for k in json.loads((ROOT / "data" / "kurals" / f"{n:03d}.json").read_text(encoding="utf-8"))["kurals"]:
             for code in codes:
@@ -120,3 +125,26 @@ def test_the_translations_of_the_game_are_those_of_the_portal():
                     assert str(k["n"]) not in game[code], (code, k["n"])
     for s in meta["streams"]:
         assert s["count"] == len(game[s["code"]]) >= 1300, s["code"]
+
+
+def test_no_static_file_has_an_address_the_web_server_hides():
+    """IIS answers 404 for an address with a hidden part (hiddenSegments: data, lib, kts, templates ...) or a refused extension,
+    wherever it stands in the address. The other tests ask the application itself and cannot see it: found on the live site on
+    13 November 2026, where /static/uriyadi/data/... was not to be read (1.2.185)."""
+    import xml.etree.ElementTree as ET
+    hidden, refused = set(), set()
+    for name in ("web.config", "deploy/web.config.template"):
+        tree = ET.parse(ROOT / name)
+        hidden |= {e.get("segment").lower() for e in tree.iter("add") if e.get("segment")}
+        refused |= {e.get("fileExtension").lower() for e in tree.iter("add") if e.get("fileExtension") and e.get("allowed") == "false"}
+    assert {"data", "kts", "lib", "uploads", "instance"} <= hidden and ".py" in refused
+    files = [p for p in (ROOT / "static").rglob("*") if p.is_file()]
+    assert len(files) > 400
+    bad = [str(p.relative_to(ROOT)) for p in files
+           if {part.lower() for part in p.relative_to(ROOT).parts} & hidden or p.suffix.lower() in refused]
+    assert not bad, bad[:10]
+    # and the addresses the game asks for by name: in corpus/ and assets/, never in data/
+    script = (GAME / "app.js").read_text(encoding="utf-8") + (GAME / "sw.js").read_text(encoding="utf-8")
+    asked = set(re.findall(r"[`'](?:\./)?(corpus|assets|data)/", script))
+    assert asked == {"corpus", "assets"}, asked
+    assert (CORPUS / "meta.json").is_file() and not (GAME / "data").exists()
