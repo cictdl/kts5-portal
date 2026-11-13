@@ -33,7 +33,7 @@ POSTERS = "/posters"      # the posters and charts (1.2.67)
 SYLLABUS = "/syllabus"    # the study book of the institution-level assessment (1.2.98)
 DANCE = "https://cict.in/videos/Manipuri%20Dance.mp4"     # Tirukkural – Manipuri Dance: Katavul Valttu (1.2.104)
 URIYADI = "/static/uriyadi/index.html"                     # Kural Uriyadi, served by the portal itself (1.2.184)
-POND = "https://adhavan18.github.io/valluvar-pond/"        # Valluvar's Pond, the students' game, where its makers host it (1.2.184)
+POND = "/static/valluvar-pond/index.html"                  # Valluvar's Pond, the students' game, in a frame on a page of the portal (1.2.186)
 ALL = [PLAY, WEB, CORPUS, ARCHIVES, RUN, CROSSWORD, YAPPU, GUIDE, BRIDGE, QUIZ] + SIGN + ISAI + LECTURES + CHANNEL + [POSTERS, SYLLABUS, DANCE,
                                                                                                               URIYADI, POND]
 
@@ -67,7 +67,7 @@ def test_a_new_installation_carries_the_app():
     # seven chosen for the home page, which shows six in the order of sort_order: Kural Bridge first,
     # the Digital Archives in the repository only; the two of the prosody app and the classroom quiz
     # are in the repository only, the quiz first of them
-    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1, 0] + [0] * 44 + [0] * 6 + [0] * 5 + [0] * 88 + [1, 1, 0, 1, 0]      # ... and the two games of 1.2.184
+    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1, 0] + [0] * 44 + [0] * 6 + [0] * 5 + [0] * 88 + [1, 1, 0, 1, 1]      # ... and the two games of 1.2.184 (the second featured since 1.2.186)
     client = app.test_client()
     page = client.get("/resources").get_data(as_text=True)
     for s in SEEDS:

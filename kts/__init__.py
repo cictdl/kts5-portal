@@ -14,6 +14,10 @@ from config import Config
 # The Tolkappiyam recordings (1.2.116), streamed from the portal by other sites and apps: no page, script, sitemap or
 # search result names their folder, and search engines are asked not to list its files.
 UNLISTED = ("/static/audio/tolkappiyam-055ece6df3/",)
+# Valluvar's Pond, the game of two students, is shown on one page of the portal in a frame, from the site of its makers (1.2.186):
+# nothing of the game lies on the portal, and this page alone may hold a frame of that site
+POND_PAGE = "/static/valluvar-pond/index.html"
+POND_HOST = "https://adhavan18.github.io"
 
 
 class _RowNumber(IntegerConverter):
@@ -108,9 +112,10 @@ def create_app(config_object=Config):
         # carry the policy. An SVG picture that is opened by itself is a document of the portal,
         # and an uploaded one may hold a script.
         if resp.mimetype in ("text/html", "image/svg+xml"):
+            frames = "https://www.youtube-nocookie.com" + (" " + POND_HOST if request.path == POND_PAGE else "")
             resp.headers.setdefault("Content-Security-Policy",
                                     "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
-                                    "script-src 'self'; frame-src https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; "
+                                    f"script-src 'self'; frame-src {frames}; object-src 'none'; base-uri 'self'; "
                                     "form-action 'self'; "
                                     "frame-ancestors 'self'")
         if request.path.startswith(("/console", "/candidate", "/hub", "/register", "/status", "/contact", "/quiz")):

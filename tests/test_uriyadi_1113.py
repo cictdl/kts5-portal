@@ -21,7 +21,7 @@ from conftest import ROOT, make_app
 GAME = ROOT / "static" / "uriyadi"
 CORPUS = GAME / "corpus"
 URL = "/static/uriyadi/index.html"
-POND = "https://adhavan18.github.io/valluvar-pond/"
+POND = "/static/valluvar-pond/index.html"      # the students' game, in a frame on a page of the portal since 1.2.186 (tests/test_pond_1113.py)
 TAMIL = re.compile(r"[^஀-௿]")
 
 
@@ -37,7 +37,7 @@ def test_the_two_entries_of_the_repository():
     rows = _rows(app)
     game, pond = rows[URL], rows[POND]
     assert (game["title"], game["category"], game["featured"], game["published"]) == ("குறள் உறியடி · Kural Uriyadi", "app", 1, 1)
-    assert (pond["title"], pond["category"], pond["featured"], pond["published"]) == ("வள்ளுவர் குளம் · Valluvar's Pond", "app", 0, 1)
+    assert (pond["title"], pond["category"], pond["featured"], pond["published"]) == ("வள்ளுவர் குளம் · Valluvar's Pond", "app", 1, 1)
     # the students' game is said to be theirs
     assert "made by students" in pond["description"] and "not an official release of CICT" in pond["description"]
     assert "about 42 MB" in pond["description"]
@@ -47,9 +47,9 @@ def test_the_two_entries_of_the_repository():
     assert r.status_code == 302 and r.headers["Location"] == POND
     page = client.get("/resources?cat=app&lang=en").get_data(as_text=True)
     assert "குறள் உறியடி · Kural Uriyadi" in page and "வள்ளுவர் குளம் · Valluvar&#39;s Pond" in page
-    # on the home page: CICT's own game among the six featured entries, the students' game in the repository only
+    # on the home page: CICT's own game among the six featured entries
     home = client.get("/?lang=en").get_data(as_text=True)
-    assert f'href="/resources/{game["id"]}"' in home and f'href="/resources/{pond["id"]}"' not in home
+    assert f'href="/resources/{game["id"]}"' in home
 
 
 def test_the_game_is_served_by_the_portal_itself():

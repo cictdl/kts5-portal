@@ -1520,6 +1520,17 @@ def init_db(app):
                          ("Thirukkural Payilvom · Study material for the institution-level assessment", "Thirukkural Payilvom · Syllabus for the institution-level assessment"))
             conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)",
                          ("migrate.resource.study_material", "1", now))
+        # Valluvar's Pond plays inside the portal (1.2.186): the entry of 1.2.184, which led to the game on the site of its makers
+        # and was not featured, leads to the page of the portal and is featured; once, and only where the entry is still as it came
+        # (an entry the Console has changed keeps what it was given)
+        if not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.resource.pond_page'").fetchone():
+            pond = next((r for r in json.loads(seed_path.read_text(encoding="utf-8")) if r["key"] == "valluvar-pond"), None)
+            if pond:
+                conn.execute("UPDATE resources SET url = ?, description = ?, featured = ?, sort_order = ?, updated_at = ? "
+                             "WHERE url = 'https://adhavan18.github.io/valluvar-pond/' AND featured = 0 AND sort_order = 16",
+                             (pond["url"], pond["description"], pond.get("featured", 0), pond.get("sort_order", 100), now))
+            conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)",
+                         ("migrate.resource.pond_page", "1", now))
         # the Thirukkural stories of PM eVidya CICT - Tamil, put in among the Thirukkural videos (1.2.93), have a tab of
         # their own (1.2.94): they move to it once; an entry that the Console puts back or elsewhere later stays there
         moved = [r["url"] for r in json.loads(seed_path.read_text(encoding="utf-8")) if r["category"] == "video_pmevidya"]
