@@ -11,7 +11,10 @@
     <div>
       <div class="card accent">
         <h2>{{ t('exam.notice') }}</h2>
-        <p class="dim">{{ t('site.name') }} · {{ t('site.theme') }}. {{ t('exam.shall') }}</p>
+        {# CICT's wording of 16 November 2026 (1.2.195): how the institution assesses its students, and the ready online assessment
+           of the portal, its words a link to the Online Assessment below (public.exam_intro). "The Participating Institutions
+           shall use the portal's online assessment ..." (exam.shall, 1.2.192) stays in the guide of the institutions. #}
+        <p class="dim">{{ t('site.name') }} · {{ t('site.theme') }}. {{ intro }}</p>
         <div class="grid grid-2" style="margin:12px 0">
           {# no tile of the day of the assessments (1.2.150); the students' registration only while shown (reg.public, 1.2.147) #}
           {% if students_public() %}<div class="date-tile"><div class="lbl">📝 {{ t('reg.closes_on') }}</div><div class="val">{{ dates.reg_end|date }}</div></div>{% endif %}

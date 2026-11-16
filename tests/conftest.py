@@ -67,7 +67,9 @@ def make_app(**settings):
         # hidden since 1.2.189: the figures of the online assessment, the table of the dashboard, the percentages. The tests made
         # before look at the pages with all of it shown; tests/test_dashboard_hidden_1116.py looks at them as they are
         # ... and "Marks recorded" on the dashboard, off since 1.2.191 (tests/test_marks_hidden_1116.py)
-        for key in ("figures.assessment", "dashboard.table", "figures.percent", "progress.flow", "dashboard.marks"):
+        # ... and the card "Yet to nominate a Nodal Officer" and the button of the one-page report on the page of the Nodal
+        # Institutions, hidden since 1.2.195 (tests/test_nodal_pending_1116.py)
+        for key in ("figures.assessment", "dashboard.table", "figures.percent", "progress.flow", "dashboard.marks", "nodal.pending", "nodal.report"):
             set_setting(key, "1")
     return app
 

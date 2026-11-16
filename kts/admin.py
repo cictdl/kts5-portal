@@ -2022,6 +2022,8 @@ SETTING_GROUPS = [
               ("home.circular", "Show the newest circular of the Ministry, with its PDF, first in the circular band of the home page (the notice stays under Notices either way)", "bool"),
               ("institutions.registered", "Show the number of institutions registered on the public pages: At a glance (home page, Participating Institutions), the Progress page, the dashboard by State/UT, the State/UT pages of the registration drive and “Find your next step” (the Console always shows it)", "bool"),
               ("nodal.covered", "Show the ring “Participating Institutions under a Nodal Officer” on the page of the Nodal Institutions", "bool"),
+              ("nodal.pending", "Show the card “Yet to nominate a Nodal Officer” on the page of the Nodal Institutions", "bool"),
+              ("nodal.report", "Show the button “Download the one-page report (Word)” on the page of the Nodal Institutions (the Console's link to the report works either way)", "bool"),
               ("events.public", "Show the seminars and workshops of CICT on the public pages: the menu, the cards on the home page and in the Digital repository, the figure in “KTS 5.0 in numbers”, the search and the sitemap (the page /seminars-workshops works either way)", "bool"),
               ("menu.assessment", "Show “Institution-level assessment” in the menu and in the quick links of the footer (the page /examination works either way, with the links to it from the pages of the institutions, the guide and the study material)", "bool"),
               ("dashboard.public", "Public dashboard KTS 5.0 by State/UT (/dashboard): the live counts of each State/UT, its Nodal Officers and its Participating Institutions", "bool"),

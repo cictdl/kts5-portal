@@ -813,6 +813,10 @@ DEFAULT_SETTINGS = {
     # /dashboard, /join, /my-college; the Console keeps every figure
     "institutions.registered": "0",
     "nodal.covered": "0",
+    # the card "Yet to nominate a Nodal Officer" and the button "Download the one-page report (Word)" of the page of the Nodal
+    # Institutions, hidden (1.2.195; CICT, 16 November 2026)
+    "nodal.pending": "0",
+    "nodal.report": "0",
     # the public dashboard KTS 5.0 by State/UT (1.2.122, kts/dashboard.py)
     "dashboard.public": "1",
     # its student delegates by name, once verified (1.2.124)

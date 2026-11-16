@@ -1163,13 +1163,23 @@ def status():
 
 # ---- examination / merit ----------------------------------------------------
 
+def exam_intro():
+    """
+    The paragraph of "The assessment at the institution" (1.2.195; CICT's wording of 16 November 2026): how an institution assesses
+    its students, and the ready online assessment of the portal, whose words - between {a} and {/a} in the text of each language -
+    are a link to the Online Assessment of the page of the institution-level assessment.
+    """
+    link = Markup('<a href="{}#online-assessment">').format(url_for("public.examination"))
+    return ui_text("exam.intro", **{"a": link, "/a": Markup("</a>")})
+
+
 @bp.route("/examination")
 def examination():
     settings = all_settings()
     start, end, is_open = exam_window(settings)
     return render_template("public/examination.html", settings=settings, start=start, end=end,
                            is_open=is_open, dates=_key_dates(settings), syllabus_langs=[b["stream"] for b in syllabus_books()],
-                           oa_steps=online_assessment_steps(settings))
+                           oa_steps=online_assessment_steps(settings), intro=exam_intro())
 
 
 @bp.route("/merit-list")

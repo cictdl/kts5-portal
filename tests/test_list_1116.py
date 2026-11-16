@@ -89,9 +89,9 @@ def test_the_page_of_the_assessment(site):
     # "Online Assessment" under the heading, for "Classroom quiz"; the quiz keeps its place in the menu
     assert '<p class="exam-quiz-link"><a class="btn quiz-cta" href="#online-assessment">🖥 Online Assessment</a></p>' in page
     assert "Classroom quiz" not in page and 'href="/quiz/"' not in page and "Classroom quiz" in whole
-    # the assessment at the institution: what the institutions shall use
+    # the assessment at the institution: CICT's paragraph since 1.2.195 (what the institutions shall use, in 1.2.192 to 1.2.194)
     card = page[page.index("<h2>The assessment at the institution</h2>"):page.index('id="online-assessment"')]
-    assert SHALL in card and "which the institution may use" not in page and "a short written test, an oral interaction" not in page
+    assert SHALL not in page and "which the institution may use" in card and "a short written test, an oral interaction" in card
     assert "30 minutes" in card and "50 objective multiple-choice questions" in card      # the pattern and the guidelines stay
     # the instructions, step by step
     block = page[page.index('<div class="card" id="online-assessment"'):]
@@ -122,8 +122,10 @@ def test_the_texts_in_every_language(site):
         assert "{" not in cat["guide.n3"] + cat["guide.n4"] + cat["exam.shall"] + cat["exam.online_title"], code
         for path in ("/how-to-take-part", "/examination"):
             page = _main(_get(site, f"{path}?lang={code}"))
-            assert str(escape(cat["exam.shall"])) in page and str(escape(cat["exam.online_title"])) in page, (code, path)
-            assert not re.search(r"\{[a-z_]+\}", page), (code, path)
+            # what the institutions shall use: in their guide; the page of the assessment has CICT's paragraph since 1.2.195
+            assert (str(escape(cat["exam.shall"])) in page) == (path == "/how-to-take-part"), (code, path)
+            assert str(escape(cat["exam.online_title"])) in page, (code, path)
+            assert not re.search(r"\{/?[a-z_]+\}", page), (code, path)
         guide = _main(_get(site, f"/how-to-take-part?lang={code}"))
         assert str(escape(cat["guide.n3"])) in guide and str(escape(cat["guide.n4"])) in guide, code
         assert 'id="students"' not in guide and len(re.findall(r'<li style="margin-bottom:12px"><b>', guide)) == 11, code      # 6 + 5 steps
