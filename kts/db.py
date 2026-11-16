@@ -820,6 +820,16 @@ DEFAULT_SETTINGS = {
     # "Marks recorded: N of M" for each State/UT: the institutions selected or on the reserve list whose marks of Annexure-V
     # are recorded (1.2.175; CICT, 12 November 2026)
     "dashboard.marks": "1",
+    # hidden since 1.2.189 (CICT, 16 November 2026, of the dashboard and of /progress: "hide this one", "hide this portion", "hide
+    # all the percentage calculations"); '1' shows each again. The figures of the institutions' online assessment: the students who
+    # took an institution's online test (the card and the column of the dashboard) and the institutions assessing their students
+    # online (the ring and the stage of /progress), with their keys of /progress.json;
+    "figures.assessment": "0",
+    # the table "The figures of each State/UT" of the dashboard;
+    "dashboard.table": "0",
+    # and the percentages: the rings and the percentages of the stages of /progress (the numbers stay), the scale under the map of
+    # the dashboard
+    "figures.percent": "0",
     "site.draft_note_on": "1",
     "home.pm_on": "1",
     "home.pm_quote": "Kashi Tamil Sangamam furthers the spirit of \u2018Ek Bharat, Shreshtha Bharat\u2019.",
@@ -956,6 +966,11 @@ EXT_NOTICE = (
         "(registrar@cict.in, mobile 9790325518 / 9965734497).",
     ]),
 )
+# the line above the timeline of the letter of 31 October: that the Ministry has revised it since (1.2.189), and as it read before
+DO_TIMELINE_LINE = ("Annexure-III, the timeline of this letter, which the Ministry has revised since (registration of institutions up to "
+                    "18 November 2026, selection on 19 November, assessment by 23 November, nomination on 24 November: the D.O. letter "
+                    "of 13 November 2026, among these notices):")
+DO_TIMELINE_LINE_1189 = "Annexure-III, the revised timeline:"
 DO_NOTICE = (
     "D.O. letter of the Ministry of Education, 31 October 2026: Students' Engagement Programme under KTS 5.0 (revised Annexure-I and timeline)",
     "\n".join([
@@ -968,7 +983,7 @@ DO_NOTICE = (
         "Institutions to be selected by each, 1,000 in all. Registration is open to institutions without any State/UT-wise ceiling; "
         "registration does not by itself confer selection.",
         "",
-        "Annexure-III, the revised timeline:",
+        DO_TIMELINE_LINE,
         "• Up to 15 November 2026: registration of interested institutions on this portal; wide outreach by the Nodal Institutions.",
         "• 16–17 November 2026: scrutiny and selection of the Participating Institutions by the Nodal Institutions, as per "
         "Annexure-I, with a reserve list (SOP at Annexure-V).",
@@ -991,6 +1006,47 @@ DO_NOTICE = (
     ]),
 )
 DO_NOTICE_FILE = "notices/KTS5-DO-letter-31-October-2026.pdf"
+# The D.O. letter of the Ministry of Education of 13 November 2026 to the Secretaries in charge of Higher Education of the States and
+# Union Territories, with the revised timeline as its annexure (1.2.189; CICT, 16 November 2026: "check the dates and change. Pin the
+# do letter"): pinned among the notices and circulars with the letter itself. Every day of its annexure is the day the portal has
+# had since the Ministry's e-mail of 10 November (1.2.171, 1.2.172): tests/test_do_13nov_1116.py holds them against each other.
+DO13_NOTICE = (
+    "D.O. letter of the Ministry of Education, 13 November 2026: Students' Engagement Programme under KTS 5.0 (revised timeline)",
+    "\n".join([
+        "D.O. No. 16-2/2026-Skt.I (Pt.) of 13 November 2026 from the Additional Secretary, Department of Higher Education, Ministry of "
+        "Education, to the Secretaries in charge of Higher Education of the States and Union Territories, with copies to the Director "
+        "of CICT and the Vice-Chancellors/Directors of the Nodal Institutions, on the nationwide Students' Engagement Programme of "
+        "Kashi Tamil Sangamam 5.0 (28 November – 12 December 2026, Varanasi; theme: Thirukkural Payilvom – Thirukkural Abhyas Karen). "
+        "The letter with its annexure is attached.",
+        "",
+        "The letter requests the States and Union Territories to advise all their higher educational institutions to register on this "
+        "portal (kts.cict.in) by 18 November 2026 and to ensure the participation of their students.",
+        "",
+        "Under the programme, 1,000 internships are awarded to students of 1,000 selected participating higher educational "
+        "institutions for studying the Thirukkural in a language known to them, one student from each selected institution, each "
+        "with a stipend of Rs. 10,000; these students take part in the inaugural and valedictory functions through virtual mode. "
+        "All other students can take part in an online quiz on the Thirukkural on the MyGov portal (mygov.in). The study and "
+        "resource materials, in text and audio-visual formats, are on this portal in all 22 scheduled Indian languages and in English.",
+        "",
+        "Annexure, the revised timeline:",
+        "• 18 November 2026: registration of institutions on kts.cict.in and outreach.",
+        "• 19 November 2026: scrutiny and selection of the Participating Institutions.",
+        "• 23 November 2026: assessment of the interested students.",
+        "• 24 November 2026: nomination of one student per institution on the CICT portal.",
+        "• 28 November 2026: inaugural function of KTS 5.0 (virtual joining).",
+        "• 12 December 2026: valedictory function of KTS 5.0 (virtual joining).",
+        "• 14 December 2026: academic orientation and access to the study material.",
+        "• 15 December 2026: commencement of the one-month research and academic engagement.",
+        "• 15 December 2026 – 14 January 2027: preparation of the article/research note and the one-hour presentation.",
+        "• 14 January 2027: submission of the article/research note, the activity report and the supporting records; stipend "
+        "(Rs. 10,000) through DBT after verification.",
+        "• Academic review, compilation and recognition: as notified by CICT.",
+        "",
+        "For any clarification: Dr. R. Bhuvaneshwari, Registrar, Central Institute of Classical Tamil (CICT), Chennai, "
+        "registrar@cict.in, mobile 9790325518 / 9965734497.",
+    ]),
+)
+DO13_NOTICE_FILE = "notices/KTS5-DO-letter-13-November-2026.pdf"
 
 # the revised D.O. letter of the Ministry (26 October 2026, Annexure-III D): the days of the steps it keeps, as 1.2.95 put them
 for _key, _days in (("assess", ("2026-10-29T00:00", None)), ("selection", ("2026-10-30T00:00", "2026-10-31T00:00")),
@@ -1709,6 +1765,19 @@ def init_db(app):
                          (body, now, title, body.replace(NODAL_DAYS, NODAL_DAYS_1171)))
         conn.execute("UPDATE notices SET body = ?, updated_at = ? WHERE title = ? AND body = ?",
                      (LAUNCH_NOTICE[1], now, LAUNCH_NOTICE[0], LAUNCH_BODY_1171))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
+
+    # The D.O. letter of 13 November 2026 to the States/UTs, with the revised timeline (1.2.189): pinned among the notices and
+    # circulars with the letter itself (data/notices/), put in once for each database; none is added when a notice with its title
+    # is there already (as when CICT put the letter in itself). The notice of the letter of 31 October says that its timeline has
+    # been revised since, where its text is still the one put in.
+    mark = "seed.notice.do_13nov"
+    if (app.config["DATA_DIR"] / DO13_NOTICE_FILE).is_file() and not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
+        if not conn.execute("SELECT 1 FROM notices WHERE title = ?", (DO13_NOTICE[0],)).fetchone():
+            conn.execute("INSERT INTO notices(title, body, category, lang, pinned, published, attachment, link, created_at, updated_at) "
+                         "VALUES(?,?,'circular','en',1,1,?,'/schedule',?,?)", (DO13_NOTICE[0], DO13_NOTICE[1], DO13_NOTICE_FILE, now, now))
+        conn.execute("UPDATE notices SET body = ?, updated_at = ? WHERE title = ? AND body = ?",
+                     (DO_NOTICE[1], now, DO_NOTICE[0], DO_NOTICE[1].replace(DO_TIMELINE_LINE, DO_TIMELINE_LINE_1189)))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
 
     # The launch of 14 October 2026, 5:00 PM was postponed (1.2.69): on a database that has announced it already (its notice

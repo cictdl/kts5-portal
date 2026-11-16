@@ -63,7 +63,7 @@ def test_the_dashboard_says_marks_recorded_for_each_state():
     page = app.test_client().get("/dashboard?lang=en").get_data(as_text=True)
     head = page[page.index("<thead>"):page.index("</thead>")]
     heads = re.findall(r"<th[^>]*>([^<]+)</th>", head)
-    assert heads[heads.index("Participating Institutions selected") + 1] == "Marks recorded"
+    assert heads[heads.index("Participating Institutions registered") + 1] == "Marks recorded"
     assert '<td class="num">4</td>' in _row(page, "TN") and '<td class="num dash-marks"><bdi>1 of 4</bdi></td>' in _row(page, "TN")
     assert '<td class="num dash-marks"><bdi>1 of 1</bdi></td>' in _row(page, "KL")
     for code in ("GA", "BR", "AS"):
@@ -116,13 +116,13 @@ def test_the_reserve_list_counted_with_the_selected():
     page = app.test_client().get("/dashboard?lang=en").get_data(as_text=True)
     kpis = page[page.index('class="grid grid-3 dash-kpis"'):page.index('<section class="card dash-map"')]
     assert re.findall(r'<div class="num">([\d,]+)</div><div class="lbl">([^<]+)</div>', kpis) == [
-        ("1,000", "To be selected"), ("5", "Participating Institutions selected"), ("0", "Students who took an institution&#39;s online test")]
+        ("1,000", "To be selected"), ("5", "Participating Institutions registered"), ("0", "Students who took an institution&#39;s online test")]
     assert "Reserve list" not in page and "dash-res" not in page
     tile = page[page.index('href="#d-TN"'):]
     assert '<span class="dash-n" dir="ltr">4</span>' in tile[:tile.index("</a>")]   # no number of Annexure-I (1.2.179)
     summary = page[page.index('id="d-TN"'):]
     summary = summary[:summary.index("</details>")]
-    assert "Participating Institutions selected: 4" in summary and "TN Reserve College" in summary   # its name with the others
+    assert "Participating Institutions registered: 4" in summary and "TN Reserve College" in summary   # its name with the others
     assert '<td class="num">4</td>' in _row(page, "TN") and '<td class="num">5</td>' in page[page.index("<tfoot>"):page.index("</tfoot>")]
     # the reserve list kept off the public pages: only the institutions selected
     from kts.db import set_setting

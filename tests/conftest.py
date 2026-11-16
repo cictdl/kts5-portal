@@ -64,6 +64,10 @@ def make_app(**settings):
         # the launch of the registration portal on 14 October 2026 (1.2.69) would close registration until its hour;
         # tests/test_launch.py switches it on
         set_setting("launch.on", "0")
+        # hidden since 1.2.189: the figures of the online assessment, the table of the dashboard, the percentages. The tests made
+        # before look at the pages with all of it shown; tests/test_dashboard_hidden_1116.py looks at them as they are
+        for key in ("figures.assessment", "dashboard.table", "figures.percent"):
+            set_setting(key, "1")
     return app
 
 

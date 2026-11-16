@@ -19,6 +19,10 @@ def _at(app, day, monkeypatch):
     from kts import finder
     from kts.utils import IST
     monkeypatch.setattr(finder, "now_ist", lambda: datetime(day.year, day.month, day.day, 10, 0, tzinfo=IST))
+    # ... and that of kts/heis.py, which says whether the registration of institutions is still open (found on 16 November 2026,
+    # the first day on which the calendar had passed the last day of these tests)
+    from kts import heis
+    monkeypatch.setattr(heis, "now_ist", lambda: datetime(day.year, day.month, day.day, 10, 0, tzinfo=IST))
 
 
 def _portal():
@@ -90,7 +94,7 @@ def test_the_hub_of_the_home_page(monkeypatch):
     # the student: the days left to the assessment, the search, the message to the Principal (hidden until nothing is found)
     assert "<h3>Is your college taking part?</h3><span class=\"hub-chip ok\">16 days left</span>" in hub
     assert 'action="/my-college"' in hub and 'data-hub-find="/my-college.json?lang=en"' in hub
-    assert "Searching the 4 Participating Institutions selected so far" in hub
+    assert "Searching the 4 Participating Institutions registered so far" in hub
     assert '<div class="hub-invite" data-hub-invite hidden>' in hub
     assert "Colleges and universities can still register until 15 November 2026. Send this to your Principal:" in hub
     assert "Colleges and universities register on the KTS 5.0 portal by 15 November 2026: http://localhost:8905/institutions/register The Nodal Institution of the State/UT selects" in hub

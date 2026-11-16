@@ -72,7 +72,8 @@ def test_the_strip_of_the_registration_is_highlighted():
 
 
 def test_the_circular_band():
-    from kts.db import DO_NOTICE, DO_NOTICE_FILE
+    # the newest circular of the Ministry with its letter: that of 13 November 2026 since 1.2.189 (tests/test_do_13nov_1116.py)
+    from kts.db import DO13_NOTICE_FILE as DO_NOTICE_FILE
     app = _app(**LIVE, home_circular="1")   # the line of the newest circular, hidden since 1.2.162 (tests/test_home_circular_1105.py)
     client = app.test_client()
     for code, cat in CATALOGUES.items():
@@ -84,11 +85,11 @@ def test_the_circular_band():
         assert first < band.index('href="/guidelines-for-nodal-institutions"') < band.index('<a class="na-link" href="/nodal-institutions">'), code
         assert f'<span class="na-title">{escape(cat["ng.title"])}</span>' in band and f'<span class="na-title">{escape(cat["nodal.title"])}</span>' in band, code
         assert f'href="/files/{DO_NOTICE_FILE}"' in band, code
-        assert band.index('<span class="na-title" lang="en" dir="ltr">D.O. letter of the Ministry of Education, 31 October 2026</span>') > first, code
+        assert band.index('<span class="na-title" lang="en" dir="ltr">D.O. letter of the Ministry of Education, 13 November 2026</span>') > first, code
     # NEW only while the circular is recent; never with 0
     with app.app_context():
         from kts.db import execute, set_setting
-        execute("UPDATE notices SET created_at = '2026-01-01T00:00:00' WHERE title = ?", (DO_NOTICE[0],))
+        execute("UPDATE notices SET created_at = '2026-01-01T00:00:00' WHERE attachment != ''")
         assert "new-badge" not in _get(client, "/?lang=en")
         set_setting("circular.new_days", "100000")
         assert '<span class="new-badge">NEW</span>' in _get(client, "/?lang=en")
@@ -152,7 +153,9 @@ def test_the_key_dates():
             assert f"|{line}|" in text, (path, line)
     # in a language other than English the days read as numbers
     page = _get(client, "/?lang=hi")
-    assert "18-11-2026" in page and "19-11-2026" in page and "23-11-2026" in page and "16-11-2026" not in page
+    box = page[page.index('<div class="kd-box">'):]
+    box = box[:box.index("</div>\n</div>") if "</div>\n</div>" in box else 6000]
+    assert "18-11-2026" in box and "19-11-2026" in box and "23-11-2026" in box and "16-11-2026" not in box
 
 
 def test_the_schedule_without_the_central_online_test():

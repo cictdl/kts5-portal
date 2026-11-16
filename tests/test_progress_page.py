@@ -90,7 +90,7 @@ def test_the_page():
     # the rings: the figure written, the share for the arc
     assert page.count('class="card prog-ring') == 4 and '<circle class="arc" cx="60" cy="60" r="52" data-ring="participating" style="--share:0.003"/>' in page
     assert '<div class="num" data-count="3" data-k="participating">3</div>' in page and 'data-k="verified_pct">50%</text>' in page
-    assert "Participating Institutions selected" in page and "Institutions assessing their students online" in page
+    assert "Participating Institutions registered" in page and "Institutions assessing their students online" in page
     # the stages
     flow = page[page.index('class="card prog-flow"'):page.index('class="card prog-momentum"')]
     assert "From registration to verification" in flow and flow.count("<li class=\"stage stage-") == 6

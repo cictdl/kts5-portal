@@ -50,7 +50,8 @@ def _main(page):
 def test_no_public_page_gives_the_number():
     client = _app().test_client()
     for path in ("/", "/progress", "/institutions", "/dashboard", "/join", "/join/tn", "/join/kl", "/my-college"):
-        page = _get(client, path + "?lang=en")
+        # "Participating Institutions registered" (1.2.189) is the label of the Participating Institutions, not the hidden number
+        page = _get(client, path + "?lang=en").replace("Participating Institutions registered", "")
         for words in WORDS:
             assert words not in page, (path, words)
     # nor the description of a State/UT page for the search engines and the previews of a shared link
@@ -80,28 +81,28 @@ def test_the_participating_institutions():
     page = _get(_app().test_client(), "/institutions?lang=en")
     pi = page[page.index('<section class="pi"'):page.index('class="table-wrap"')]
     assert 'class="pi-two one"' in pi and "pi-trend" not in pi and "pi-regn" not in pi and 'class="pi-reg"' not in pi
-    assert '<h3 id="pi-states-h">Each row of Annexure-I: the Participating Institutions selected</h3>' in pi   # no number (1.2.179)
+    assert '<h3 id="pi-states-h">Each row of Annexure-I: the Participating Institutions registered</h3>' in pi   # no number (1.2.179)
     assert pi.count('class="pi-sw sel"') == 1 and 'class="pi-sw reg"' not in pi
-    # the Participating Institutions selected stay: Tamil Nadu 3 (without its 50, 1.2.179)
+    # the Participating Institutions registered stay: Tamil Nadu 3 (without its 50, 1.2.179)
     assert re.search(r'<b>3</b></bdi>', pi) and "/50</bdi>" not in pi
 
 
 def test_the_dashboard_counts_the_participating_institutions():
     page = _main(_get(_app().test_client(), "/dashboard?lang=en"))
-    assert "Where the programme stands in each State/UT: the Participating Institutions selected and the students who took" in page
+    assert "Where the programme stands in each State/UT: the Participating Institutions registered and the students who took" in page
     # three cards: the reserve list counts with the Participating Institutions, no card of its own (1.2.178)
     kpis = page[page.index('class="grid grid-3 dash-kpis"'):page.index('<section class="card dash-map"')]
-    assert re.findall(r'<div class="lbl">([^<]+)</div>', kpis) == ["To be selected", "Participating Institutions selected",
+    assert re.findall(r'<div class="lbl">([^<]+)</div>', kpis) == ["To be selected", "Participating Institutions registered",
                                                                      "Students who took an institution&#39;s online test"]
-    assert '<h2 id="dash-grid-h">Participating Institutions selected</h2>' in page   # no number of a State/UT (1.2.179)
+    assert '<h2 id="dash-grid-h">Participating Institutions registered</h2>' in page   # no number of a State/UT (1.2.179)
     tn = page[page.index('href="#d-TN"'):]
     tn = tn[:tn.index("</a>")]
-    assert '<span class="dash-n" dir="ltr">3</span>' in tn and "Participating Institutions selected: <bdi>3</bdi>" in tn
-    assert tn.count("Participating Institutions selected") == 1
+    assert '<span class="dash-n" dir="ltr">3</span>' in tn and "Participating Institutions registered: <bdi>3</bdi>" in tn
+    assert tn.count("Participating Institutions registered") == 1
     head = page[page.index("<thead>"):page.index("</thead>")]
     # with "Marks recorded" (1.2.175); the reserve list counted with the Participating Institutions (1.2.178); no column of the
     # number to be selected (1.2.179)
-    assert head.count("<th ") == 4 and "Participating Institutions selected" in head
+    assert head.count("<th ") == 4 and "Participating Institutions registered" in head
     row = page[page.index('<tr id="st-TN">'):]
     assert re.findall(r'<td class="num">([^<]*)</td>', row[:row.index("</tr>")]) == ["3", "0"]   # no column of the number (1.2.179)
 
@@ -140,7 +141,7 @@ def test_the_console_switch_brings_every_one_back():
     assert "pi-trend" in _get(client, "/institutions?lang=en")
     dash = _main(_get(client, "/dashboard?lang=en"))
     # the squares count the Participating Institutions in both modes, without a number of the State/UT (1.2.180)
-    assert '<h2 id="dash-grid-h">Participating Institutions selected</h2>' in dash and "against the number" not in dash
+    assert '<h2 id="dash-grid-h">Participating Institutions registered</h2>' in dash and "against the number" not in dash
     assert "Institutions registered: <bdi>3</bdi>" in dash
     board = _main(_get(client, "/join?lang=en"))
     assert "3 of 50" not in board and '<span class="jb-n"><bdi dir="ltr">3</bdi></span>' in board

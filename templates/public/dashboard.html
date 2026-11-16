@@ -2,7 +2,8 @@
 {% block title %}{{ t('dash.title') }}{% endblock %}
 {% block content %}
 {# KTS 5.0 by State/UT (1.2.122): the live figures of each State/UT, counts only (kts/dashboard.py). The grid is no map:
-   a square per State/UT placed roughly as on the map; every figure of a square is also in the table below. #}
+   a square per State/UT placed roughly as on the map; every figure of a square is also in the block of its State/UT below,
+   and in the table while that is shown. #}
 {% macro of(n, total) -%}{{ t('dash.of')|replace('{n}', '{:,}'.format(n))|replace('{total}', '{:,}'.format(total)) }}{%- endmacro %}
 <div class="wrap section dash">
   {# while the students' registration is hidden (reg.public, 1.2.147): no count of student delegates; the squares count the
@@ -14,18 +15,25 @@
   {# "Marks recorded: N of M" (dashboard.marks, 1.2.175): of the institutions selected or on the reserve list, those with marks #}
   {% set show_marks = get_setting('dashboard.marks') == '1' %}
   {# the institutions of the reserve list count with the Participating Institutions selected, no card or column of their own (1.2.178) #}
-  {% set cards = 3 + (1 if show_reg else 0) + (2 if sp else 0) %}
+  {# hidden since 1.2.189 (CICT, 16 November 2026), each shown again by its switch of the Console: the students who took an
+     institution's online test (figures.assessment), the table of the States/UTs (dashboard.table), the scale of the map in per
+     cent (figures.percent) #}
+  {% set show_assessed = get_setting('figures.assessment') == '1' %}
+  {% set show_table = get_setting('dashboard.table') == '1' %}
+  {% set show_pct = get_setting('figures.percent') == '1' %}
+  {% set cards = 2 + (1 if show_assessed else 0) + (1 if show_reg else 0) + (2 if sp else 0) %}
   <span class="eyebrow">{{ t('nav.programme') }}</span>
   <h1>{{ t('dash.title') }}</h1>
-  <p class="dim" style="max-width:80ch">{{ t('dash.intro' if sp else 'dash.intro_plain') }}</p>
+  {% if show_assessed %}<p class="dim" style="max-width:80ch">{{ t('dash.intro' if sp else 'dash.intro_plain') }}</p>
+  {% elif not sp %}<p class="dim" style="max-width:80ch">{{ t('dash.intro_inst') }}</p>{% endif %}
   <p><a class="btn sm secondary" href="{{ url_for('public.progress') }}">📈 {{ t('pg.link') }}</a></p>
   <p class="small muted dash-time">{{ t('dash.updated')|replace('{time}', now) }}</p>
 
-  <div class="grid {{ 'grid-4' if cards in (4, 7, 8) else 'grid-3' }} dash-kpis">
+  <div class="grid {{ 'grid-2' if cards == 2 else 'grid-4' if cards in (4, 7, 8) else 'grid-3' }} dash-kpis">
     <div class="card stat"><div class="num">{{ '{:,}'.format(total.to_select) }}</div><div class="lbl">{{ t('dash.to_select') }}</div></div>
     {% if show_reg %}<div class="card stat indigo"><div class="num">{{ '{:,}'.format(total.inst_reg) }}</div><div class="lbl">{{ t('dash.inst_reg') }}</div></div>{% endif %}
     <div class="card stat accent"><div class="num">{{ '{:,}'.format(total.inst_sel) }}</div><div class="lbl">{{ t('dash.inst_sel') }}</div></div>
-    <div class="card stat"><div class="num">{{ '{:,}'.format(total.assessed) }}</div><div class="lbl">{{ t('dash.assessed') }}</div></div>
+    {% if show_assessed %}<div class="card stat"><div class="num">{{ '{:,}'.format(total.assessed) }}</div><div class="lbl">{{ t('dash.assessed') }}</div></div>{% endif %}
     {% if sp %}<div class="card stat kumkum"><div class="num">{{ '{:,}'.format(total.registered) }}</div><div class="lbl">{{ t('home.stat_apps') }}</div><div class="sub small muted"><bdi>{{ of(total.registered, total.to_select) }}</bdi></div></div>
     <div class="card stat green"><div class="num">{{ '{:,}'.format(total.verified) }}</div><div class="lbl">{{ t('dash.verified') }}</div></div>{% endif %}
   </div>
@@ -62,22 +70,23 @@
       {% endfor %}
     </ul>
     <ul class="dash-legend">
-      <li><i class="dash-sw b0"></i><bdi dir="ltr">0%</bdi></li>
+      {% if show_pct %}<li><i class="dash-sw b0"></i><bdi dir="ltr">0%</bdi></li>
       <li><i class="dash-sw b1"></i><bdi dir="ltr">≤ 25%</bdi></li>
       <li><i class="dash-sw b2"></i><bdi dir="ltr">≤ 50%</bdi></li>
       <li><i class="dash-sw b3"></i><bdi dir="ltr">≤ 75%</bdi></li>
-      <li><i class="dash-sw b4"></i><bdi dir="ltr">&gt; 75%</bdi></li>
+      <li><i class="dash-sw b4"></i><bdi dir="ltr">&gt; 75%</bdi></li>{% endif %}
       <li><i class="dash-sw cv"></i>{{ t('dash.paired') }}</li>
     </ul>
   </section>
 
+  {% if show_table %}
   <section class="dash-table-sec" aria-labelledby="dash-table-h">
     <h2 id="dash-table-h">{{ t('dash.table_title') }}</h2>
     <div class="table-wrap"><table class="table dash-table">
       <thead><tr><th scope="col">{{ t('reg.state') }}</th>
         {% if show_reg %}<th scope="col" class="num">{{ t('dash.inst_reg') }}</th>{% endif %}<th scope="col" class="num">{{ t('dash.inst_sel') }}</th>
         {% if show_marks %}<th scope="col" class="num">{{ t('dash.marks') }}</th>{% endif %}
-        <th scope="col" class="num">{{ t('dash.assessed') }}</th>{% if sp %}<th scope="col" class="num">{{ t('home.stat_apps') }}</th>
+        {% if show_assessed %}<th scope="col" class="num">{{ t('dash.assessed') }}</th>{% endif %}{% if sp %}<th scope="col" class="num">{{ t('home.stat_apps') }}</th>
         <th scope="col" class="num">{{ t('dash.verified') }}</th>{% endif %}</tr></thead>
       <tbody>
         {% for r in states %}
@@ -85,7 +94,7 @@
           <th scope="row">{% if r.grid %}<a href="#d-{{ r.grid[2] }}">{{ nodal_label(r.state) }}</a>{% else %}{{ nodal_label(r.state) }}{% endif %}</th>
           {% if show_reg %}<td class="num">{{ r.inst_reg }}</td>{% endif %}<td class="num">{{ r.inst_sel }}</td>
           {% if show_marks %}<td class="num dash-marks">{% if r.inst_dec %}<bdi>{{ of(r.inst_marked, r.inst_dec) }}</bdi>{% else %}–{% endif %}</td>{% endif %}
-          <td class="num">{{ r.assessed }}</td>
+          {% if show_assessed %}<td class="num">{{ r.assessed }}</td>{% endif %}
           {% if sp %}<td class="num">{{ r.registered }}{% if r.share is not none %}<span class="dash-meter" aria-hidden="true"><span style="width:{{ r.share }}%"></span></span>{% endif %}</td>
           <td class="num">{{ r.verified }}</td>{% endif %}
         </tr>
@@ -94,16 +103,19 @@
       <tfoot><tr><th scope="row">{{ t('dash.total') }}</th>
         {% if show_reg %}<td class="num">{{ '{:,}'.format(total.inst_reg) }}</td>{% endif %}<td class="num">{{ '{:,}'.format(total.inst_sel) }}</td>
         {% if show_marks %}<td class="num dash-marks">{% if total.inst_dec %}<bdi>{{ of(total.inst_marked, total.inst_dec) }}</bdi>{% else %}–{% endif %}</td>{% endif %}
-        <td class="num">{{ '{:,}'.format(total.assessed) }}</td>{% if sp %}<td class="num">{{ '{:,}'.format(total.registered) }}</td>
+        {% if show_assessed %}<td class="num">{{ '{:,}'.format(total.assessed) }}</td>{% endif %}{% if sp %}<td class="num">{{ '{:,}'.format(total.registered) }}</td>
         <td class="num">{{ '{:,}'.format(total.verified) }}</td>{% endif %}</tr></tfoot>
     </table></div>
     {% if show_marks %}<p class="small muted dash-marks-note" style="max-width:80ch">{{ t('dash.marks_note') }}</p>{% endif %}
   </section>
+  {% endif %}
 
   {# each State/UT: its Nodal Officers, its Participating Institutions and their student delegates (1.2.124) #}
   <section class="dash-details" aria-labelledby="dash-det-h">
     <h2 id="dash-det-h">{{ t('dash.details_title') }}</h2>
     <p class="small muted" style="max-width:80ch">{{ t('dash.details_note') }}</p>
+    {# what "Marks recorded" counts, here while the table that carried the note is hidden #}
+    {% if show_marks and not show_table %}<p class="small muted dash-marks-note" style="max-width:80ch">{{ t('dash.marks_note') }}</p>{% endif %}
     {% for r in states %}{% set d = details.get(r.state) %}
     {% if d and (r.to_select or d.institutions) %}
     <details class="card dash-state"{% if r.grid %} id="d-{{ r.grid[2] }}"{% endif %}>

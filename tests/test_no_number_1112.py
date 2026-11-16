@@ -41,15 +41,15 @@ def test_the_dashboard():
     kpis = page[page.index("dash-kpis"):page.index('<section class="card dash-map"')]
     assert '<div class="num">1,000</div><div class="lbl">To be selected</div>' in kpis
     # no number of a State/UT: the squares, their notes, the table, the blocks
-    assert "Where the programme stands in each State/UT: the Participating Institutions selected and the students who took an institution&#39;s online test." in page
+    assert "Where the programme stands in each State/UT: the Participating Institutions registered and the students who took an institution&#39;s online test." in page
     assert "against the number" not in page and "No number in Annexure-I" not in page
-    assert '<h2 id="dash-grid-h">Participating Institutions selected</h2>' in page
+    assert '<h2 id="dash-grid-h">Participating Institutions registered</h2>' in page
     assert "the darker the square, the more Participating Institutions it has" in page
     # shaded by the count against the State/UT with the most: Puducherry 7 the darkest, Tamil Nadu 2 of 7 lighter
     assert '<a class="dash-tile b4" href="#d-PY">' in page and '<a class="dash-tile b2" href="#d-TN">' in page
     py = page[page.index('href="#d-PY"'):]
     py = py[:py.index("</a>")]
-    assert '<span class="dash-n" dir="ltr">7</span>' in py and "Participating Institutions selected: <bdi>7</bdi>" in py
+    assert '<span class="dash-n" dir="ltr">7</span>' in py and "Participating Institutions registered: <bdi>7</bdi>" in py
     tn = page[page.index('href="#d-TN"'):]
     assert '<span class="dash-n" dir="ltr">2</span>' in tn[:tn.index("</a>")]
     head = page[page.index("<thead>"):page.index("</thead>")]
@@ -69,7 +69,7 @@ def test_institutions_progress_and_the_state_pages():
     page = client.get("/institutions?lang=en").get_data(as_text=True)
     pi = page[page.index('<section class="pi"'):page.index("<p><b>")]
     assert "<bdi>9 of 1,000</bdi>" in pi                                   # the total stays
-    assert '<h3 id="pi-states-h">Each row of Annexure-I: the Participating Institutions selected</h3>' in pi
+    assert '<h3 id="pi-states-h">Each row of Annexure-I: the Participating Institutions registered</h3>' in pi
     rows = re.findall(r'<span class="pi-name">([^<]+)</span>\s*<span class="pi-bar" aria-hidden="true"><span class="pi-sel" style="width:(\d+)%"></span></span>\s*'
                       r'<span class="pi-n"><bdi dir="ltr"><b>(\d+)</b></bdi>', pi)
     assert rows[:2] == [("Puducherry", "100", "7"), ("Tamil Nadu and Andaman and Nicobar Islands", "29", "2")]
@@ -81,7 +81,7 @@ def test_institutions_progress_and_the_state_pages():
         DRIVE._CACHE["data"] = None
     D._PIPE["data"] = None
     prog = client.get("/progress?lang=en").get_data(as_text=True)
-    assert "The rows of Annexure-I with the most Participating Institutions selected" in prog and "7/5" not in prog
+    assert "The rows of Annexure-I with the most Participating Institutions registered" in prog and "7/5" not in prog
     state = client.get(f"/join/{code}?lang=en").get_data(as_text=True)
     assert "<h1>Puducherry: register your college or university for KTS 5.0</h1>" in state.replace("\n", "") or \
         "Puducherry: register your college or university for KTS 5.0" in state

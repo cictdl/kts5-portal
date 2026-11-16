@@ -7,6 +7,13 @@
    and the bars grow as the page comes into view and the figures refresh every minute from /progress.json (portal.js); every
    figure is written in the page already, for those without scripts and for the search engines. #}
 {% macro of(n, total) -%}{{ t('dash.of')|replace('{n}', '{:,}'.format(n))|replace('{total}', '{:,}'.format(total)) }}{%- endmacro %}
+{# hidden since 1.2.189 (CICT, 16 November 2026), each shown again by its switch of the Console: the institutions assessing their
+   students online, as a ring and as a stage (figures.assessment); the rings themselves and the percentages of the stages
+   (figures.percent) - the numbers stay #}
+{% set show_assessed = get_setting('figures.assessment') == '1' %}
+{% set show_pct = get_setting('figures.percent') == '1' %}
+{% set no_ring = ([] if sp else ['delegates', 'verified']) + ([] if show_assessed else ['testing']) %}
+{% set rings = p.rings|rejectattr('key', 'in', no_ring)|list %}
 <div class="wrap section prog" data-progress="{{ url_for('public.progress_json') }}">
   <span class="eyebrow">{{ t('nav.programme') }}</span>
   <h1>{{ t('pg.title') }}</h1>
@@ -14,11 +21,11 @@
   <p class="small muted prog-time"><span data-k="as_of_text">{{ t('dash.updated')|replace('{time}', now) }}</span> · <span class="prog-live"><i aria-hidden="true"></i>{{ t('pg.live') }}</span></p>
 
   {# the four rings #}
-  <div class="prog-rings">
-    {% for r in p.rings if sp or r.key not in ('delegates', 'verified') %}
+  <div class="prog-rings"{% if rings|length == 1 %} style="grid-template-columns:minmax(0,340px)"{% endif %}>
+    {% for r in rings %}
     <div class="card prog-ring ring-{{ r.key }}">
-      <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="52"/><circle class="arc" cx="60" cy="60" r="52" data-ring="{{ r.key }}" style="--share:{{ r.share }}"/>
-        <text x="60" y="66" text-anchor="middle" class="pct" data-k="{{ r.key }}_pct">{{ r.pct }}%</text></svg>
+      {% if show_pct %}<svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="52"/><circle class="arc" cx="60" cy="60" r="52" data-ring="{{ r.key }}" style="--share:{{ r.share }}"/>
+        <text x="60" y="66" text-anchor="middle" class="pct" data-k="{{ r.key }}_pct">{{ r.pct }}%</text></svg>{% endif %}
       <div class="num" data-count="{{ r.n }}" data-k="{{ r.key }}">{{ '{:,}'.format(r.n) }}</div>
       <div class="lbl">{{ t({'participating': 'dash.inst_sel', 'delegates': 'home.stat_apps', 'verified': 'dash.verified', 'testing': 'pg.r_testing'}[r.key]) }}</div>
       <div class="sub small muted"><bdi data-k="{{ r.key }}_of">{{ of(r.n, r.total) }}</bdi></div>
@@ -30,11 +37,11 @@
   <section class="card prog-flow" aria-labelledby="prog-flow-h">
     <h2 id="prog-flow-h">{{ t('pg.flow_title') }}</h2>
     <ol class="prog-stages">
-      {% for s in p.stages if sp or s.key not in ('app_registered', 'verified') %}
+      {% for s in p.stages if (sp or s.key not in ('app_registered', 'verified')) and (show_assessed or s.key != 'testing') %}
       <li class="stage stage-{{ s.key }}">
         <div class="st-head"><span class="st-n" data-count="{{ s.n }}" data-k="st_{{ s.key }}">{{ '{:,}'.format(s.n) }}</span>
           <span class="st-lbl">{{ t({'registered': 'dash.inst_reg', 'participating': 'dash.inst_sel', 'testing': 'pg.r_testing', 'selected': 'pg.s_selected', 'app_registered': 'home.stat_apps', 'verified': 'dash.verified'}[s.key]) }}</span>
-          {% if not loop.first %}<span class="st-pct small muted" data-k="st_{{ s.key }}_pct">{{ s.pct }}%</span>{% endif %}</div>
+          {% if show_pct and not loop.first %}<span class="st-pct small muted" data-k="st_{{ s.key }}_pct">{{ s.pct }}%</span>{% endif %}</div>
         <div class="st-bar"><span style="--w:{{ s.width }}%" data-bar="st_{{ s.key }}"></span></div>
       </li>
       {% endfor %}

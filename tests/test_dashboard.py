@@ -128,7 +128,7 @@ def test_the_block_of_each_state():
         set_setting("hei.public", "0")
     page = client.get("/dashboard?lang=en").get_data(as_text=True)
     assert "nodal.tn@cutn.example" not in page and "Presidency College" not in page
-    assert page.count("No Participating Institution selected yet") == 31
+    assert page.count("No Participating Institution registered yet") == 31
 
 
 def test_in_every_language_and_where_it_is_found():

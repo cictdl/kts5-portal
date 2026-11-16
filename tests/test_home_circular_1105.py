@@ -49,7 +49,7 @@ def test_the_letter_leaves_the_band():
 
 def test_the_console_brings_it_back():
     from kts.admin import SETTING_GROUPS
-    from kts.db import DO_NOTICE_FILE, set_setting
+    from kts.db import DO13_NOTICE_FILE as DO_NOTICE_FILE, set_setting      # the newest circular: the letter of 13 November (1.2.189)
     site = {k: kind for k, _label, kind in dict(SETTING_GROUPS)["Site"]}
     assert site["home.circular"] == "bool"
     app = _app()
@@ -57,5 +57,5 @@ def test_the_console_brings_it_back():
         set_setting("home.circular", "1")
     band = _band(app.test_client())
     assert band.index('<li class="na-first">') < band.index('href="/guidelines-for-nodal-institutions"')
-    assert '<span class="na-title" lang="en" dir="ltr">D.O. letter of the Ministry of Education, 31 October 2026</span>' in band
+    assert '<span class="na-title" lang="en" dir="ltr">D.O. letter of the Ministry of Education, 13 November 2026</span>' in band
     assert f'href="/files/{DO_NOTICE_FILE}"' in band

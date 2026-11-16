@@ -1647,6 +1647,14 @@ def progress_json():
         data["flat"] = {k: v for k, v in data["flat"].items() if not any(h in k for h in hidden)}
         for part in ("shares", "widths", "series"):
             data[part] = {k: v for k, v in data[part].items() if not any(h in k for h in hidden) and k != "app"}
+    if get_setting("figures.assessment") != "1":   # the figures of the institutions' online assessment hidden (1.2.189)
+        hidden = ("testing", "tested", "signed_up")
+        data["flat"] = {k: v for k, v in data["flat"].items() if not any(h in k for h in hidden)}
+        for part in ("shares", "widths"):
+            data[part] = {k: v for k, v in data[part].items() if not any(h in k for h in hidden)}
+    if get_setting("figures.percent") != "1":      # no percentage, no ring (1.2.189): the numbers and the bars stay
+        data["flat"] = {k: v for k, v in data["flat"].items() if not k.endswith("_pct")}
+        data["shares"] = {}
     return Response(json.dumps(data, ensure_ascii=False), mimetype="application/json",
                     headers={"Cache-Control": "no-store"})
 
