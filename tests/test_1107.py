@@ -78,7 +78,8 @@ def test_the_article_of_not_more_than_10_pages_everywhere():
                 assert cat[key] != en[key], (code, key)
     client = _app().test_client()
     assert "write an article or research note of at least 4 and not more than 10 pages" in _get(client, "/about?lang=en")
-    assert "write an article/research note of at least 4 and not more than 10 pages" in _get(client, "/how-to-take-part?lang=en")
+    # the students' part left "How to take part" in 1.2.192; its text keeps the words
+    assert "write an article/research note of at least 4 and not more than 10 pages" in en["guide.s6"]
     # the institution's page, in English
     from pathlib import Path
     home = (Path(__file__).resolve().parents[1] / "templates" / "campus" / "home.html").read_text(encoding="utf-8")

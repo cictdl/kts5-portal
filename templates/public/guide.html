@@ -1,15 +1,17 @@
 {% extends "base.html" %}
 {% block title %}{% if only %}{{ t('guide.print_head') }}{% else %}{{ t('guide.title') }}{% endif %}{% endblock %}
 {% block content %}
-{# How to take part (1.2.53): the steps of the students, the participating institutions and the Nodal Officers, with the dates of the settings #}
+{# How to take part (1.2.53): the steps of the participating institutions and the Nodal Officers, with the dates of the settings.
+   Since 1.2.192 (CICT, 16 November 2026) without the part of the students and without the institutions' step "Select one student
+   on merit" (guide.i4): the steps are named by their numbers, so that the texts keep their keys. #}
 {% macro g(key) %}{{ t(key)|replace('{hei_end}', settings['hei.end']|date)|replace('{hei_select_end}', settings['hei.select_end']|date)|replace('{camp_from}', settings['camp.from']|date)|replace('{camp_to}', settings['camp.to']|date)|replace('{reg_end}', settings['reg.end']|date)|replace('{verify_end}', settings['verify.end']|date)|replace('{questions}', settings['exam.questions'])|replace('{minutes}', settings['exam.duration_min'])|replace('{email}', settings['contact.email'])|replace('{phone}', settings['contact.phone']) }}{% endmacro %}
-{% set parts = [('students', 's', 6), ('institutions', 'i', 7), ('nodal', 'n', 5)] %}
+{% set parts = [('institutions', 'i', [1, 2, 3, 5, 6, 7]), ('nodal', 'n', [1, 2, 3, 4, 5])] %}
 <div class="wrap section guide-page">
   <span class="eyebrow">{{ t('site.name') }}</span>
   <h1>{% if only %}{{ t('guide.print_head') }}{% else %}{{ t('guide.title') }}{% endif %}</h1>
   <p class="lead dim" style="max-width:78ch">{{ t('guide.intro') }}</p>
   {% if not only %}
-  <div class="res-tabs no-print"><a href="#students">{{ t('guide.for_students') }}</a><a href="#institutions">{{ t('guide.for_institutions') }}</a><a href="#nodal">{{ t('guide.for_nodal') }}</a></div>
+  <div class="res-tabs no-print"><a href="#institutions">{{ t('guide.for_institutions') }}</a><a href="#nodal">{{ t('guide.for_nodal') }}</a></div>
   {% endif %}
   <div class="dates" style="margin:18px 0 8px">
     <div class="date-tile"><div class="lbl">{{ t('guide.date_hei') }}</div><div class="val">{{ settings['hei.end']|date }}</div></div>
@@ -18,12 +20,25 @@
     <div class="date-tile"><div class="lbl">{{ t('guide.date_nominate') }}</div><div class="val">{{ settings['reg.end']|date }}</div></div>
     <div class="date-tile"><div class="lbl">{{ t('guide.date_verify') }}</div><div class="val">{{ settings['verify.end']|date }}</div></div>
   </div>
-  {% for part, letter, count in parts if not only or only == part %}
+  {% for part, letter, steps in parts if not only or only == part %}
   <section id="{{ part }}" class="card guide-part" style="margin-top:18px">
     {% if not only %}<h2 style="margin-top:0">{{ t('guide.for_' ~ part) }}</h2>{% endif %}
     <ol class="guide-steps" style="padding-inline-start:24px;margin:0 0 14px">
-      {% for n in range(1, count + 1) %}
-      <li style="margin-bottom:12px"><b>{{ g('guide.%s%d_t' % (letter, n)) }}</b><p class="dim" style="margin:4px 0 0">{{ g('guide.%s%d' % (letter, n)) }}</p></li>
+      {% for n in steps %}
+      <li style="margin-bottom:12px"><b>{{ g('guide.%s%d_t' % (letter, n)) }}</b>
+        {% if letter == 'i' and n == 3 %}
+        {# the Online Assessment (1.2.192): what the institutions shall use, its link, and how it is done, step by step #}
+        <p class="dim" style="margin:4px 0 8px">{{ t('exam.shall') }} <a href="{{ url_for('public.examination') }}#online-assessment"><b>{{ t('exam.online_title') }}</b> {{ fwd }}</a></p>
+        {% include "public/_online_assessment.html" %}
+        {% else %}<p class="dim" style="margin:4px 0 0">{{ g('guide.%s%d' % (letter, n)) }}</p>{% endif %}
+        {% if letter == 'i' and n == 7 %}
+        {# the days of what follows the nomination (1.2.192: "mention the dates"), from the settings, as the box of the key dates has them #}
+        <ul class="guide-dates small" style="margin:6px 0 0;padding-inline-start:18px">
+          {% for grp in key_dates_box()[1:] %}{% for r in grp.rows if r.d1 %}<li><b><bdi>{% if r.prefix %}{{ t(r.prefix)|replace('{date}', r.d1|date) }}{% elif r.d2 %}{{ r.d1|date }} – {{ r.d2|date }}{% else %}{{ r.d1|date }}{% endif %}</bdi></b> · {{ t(r.label) }}</li>
+          {% endfor %}{% endfor %}
+        </ul>
+        {% endif %}
+      </li>
       {% endfor %}
     </ol>
     <div class="btn-row no-print">

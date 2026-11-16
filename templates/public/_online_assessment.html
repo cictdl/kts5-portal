@@ -1,0 +1,8 @@
+{# The Online Assessment of a Participating Institution, step by step (1.2.192; CICT, 16 November 2026: "give detailed instructions
+   for Online Assessment"): the first four steps of the Institutional Coordinator of "Submitting the selected student on the portal"
+   (public.online_assessment_steps), on the page of the institution-level assessment and in the guide of the institutions. The
+   screens they name are in English: their buttons stand in English, in bold (public.ui_text). #}
+<ol class="hs-steps oa-steps">
+  {% for key, values in oa_steps %}<li><b class="hs-st">{{ t(key ~ '_t') }}</b> <span>{{ ui_text(key, **values) }}</span></li>
+  {% endfor %}
+</ol>

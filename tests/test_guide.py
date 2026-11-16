@@ -34,15 +34,16 @@ def _page(client, path, lang="en"):
 
 def test_the_three_parts_with_their_dates_and_links(site):
     page = _page(site, "/how-to-take-part")
-    for heading in ("How to take part", "For students", "For participating institutions", "For Nodal Officers of the States/UTs"):
+    # no part for students since 1.2.192 (tests/test_list_1116.py)
+    for heading in ("How to take part", "For participating institutions", "For Nodal Officers of the States/UTs"):
         assert heading in page
+    assert "For students" not in page
     # the dates of the settings in the steps
-    assert "ask its Head to register it by 18 Nov 2026;" in page and "<b>Your nomination by 24 Nov 2026</b>" in page
-    assert "By 23 Nov 2026, your institution assesses" in page and "Between 22 Oct 2026" not in page
+    assert "<b>Register your institution by 18 Nov 2026</b>" in page and "<b>Submit the nomination by 24 Nov 2026</b>" in page
+    assert "<b>Assess your students by 23 Nov 2026</b>" in page and "Between 22 Oct 2026" not in page
     # the Nodal Officers accept the institutions up to the last day of the selection (the revised D.O. letter, 1.2.110)
     assert "and select the number that Annexure-I prescribes, with a reserve list, by 19 Nov 2026." in page
     assert "Selection of the Participating Institutions by the Nodal Institutions</div><div class=\"val\">19 Nov 2026</div>" in page
-    assert "50 questions in 30 minutes" in page
     assert "<b>Verify the registered students by 05 Dec 2026</b>" in page
     assert not any(p in page for p in PLACEHOLDERS)
     for href in ('href="/institutions"', 'href="/institutions/register"', 'href="/institution/login"',
@@ -51,7 +52,7 @@ def test_the_three_parts_with_their_dates_and_links(site):
         assert href in page, href
     # the students' registration and status hidden (1.2.147)
     assert 'href="/register"' not in page and 'href="/status"' not in page
-    assert 'href="#students"' in page and 'id="institutions"' in page and 'id="nodal"' in page
+    assert 'href="#students"' not in page and 'id="institutions"' in page and 'id="nodal"' in page
 
 
 @pytest.mark.parametrize("code", CODES)
@@ -70,7 +71,9 @@ def test_every_language_keeps_the_dates(site, code):
 def test_the_guide_of_the_institutions_to_print(site):
     page = _page(site, "/how-to-take-part/institutions")
     assert "<h1>Guide for participating institutions</h1>" in page and "data-print" in page
-    assert "Sign in to the institution&#39;s page" in page and "Select one student on merit" in page
+    # no step "Select one student on merit" since 1.2.192: the choice of the student is the last of the instructions of step 3
+    assert "Sign in to the institution&#39;s page" in page and "Select one student on merit" not in page
+    assert '<b class="hs-st">Select one student</b>' in page
     assert "For students" not in page and "Check that your institution takes part" not in page
     assert "Verify the registered students" not in page
     assert "/how-to-take-part</bdi>" in page

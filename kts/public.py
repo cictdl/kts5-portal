@@ -381,6 +381,23 @@ def nodal_guidelines():
                            pdf_url=url_for("public.public_file", relpath=DO_NOTICE_FILE))
 
 
+def online_assessment_steps(settings=None):
+    """
+    The Online Assessment of a Participating Institution, step by step (1.2.192; CICT, 16 November 2026: "give detailed instructions
+    for Online Assessment"): the first four steps of the Institutional Coordinator on the institution's page - sign in, the status,
+    the online test, the student chosen on merit - as "Submitting the selected student on the portal" gives them (1.2.152), for the
+    page of the institution-level assessment and for the guide of the institutions too. [(key, the values of its placeholders)]
+    """
+    settings = settings or all_settings()
+    inst_login = Markup('<a href="{}">{}</a>').format(url_for("campus.login"), t("nav.inst_login"))
+    return [("hs.c1", {"inst_login": inst_login}),
+            ("hs.c2", {}),
+            ("hs.c3", {"date": fmt_date(settings.get("camp.to"), get_lang() != "en"), "online_test": _ui("The online assessment of the portal"),
+                       "switch_on": _ui("Switch on"), "excel": _ui("Excel")}),
+            ("hs.c4", {"students_list": _ui("Students who took the online assessment"), "select": _ui("Select"),
+                       "selected": _ui("The selected student"), "send_link": _ui("Select the student")})]
+
+
 @bp.route("/how-to-submit-the-student")
 def submit_guide():
     """
@@ -393,15 +410,9 @@ def submit_guide():
     def day(key):
         return fmt_date(settings.get(key), numeric)
 
-    inst_login = Markup('<a href="{}">{}</a>').format(url_for("campus.login"), t("nav.inst_login"))
     nodal_login = Markup('<a href="{}">{}</a>').format(url_for("auth.login"), t("nav.nodal_login"))
     excel = _ui("Excel")
-    coord = [("hs.c1", {"inst_login": inst_login}),
-             ("hs.c2", {}),
-             ("hs.c3", {"date": day("camp.to"), "online_test": _ui("The online assessment of the portal"),
-                        "switch_on": _ui("Switch on"), "excel": excel}),
-             ("hs.c4", {"students_list": _ui("Students who took the online assessment"), "select": _ui("Select"),
-                        "selected": _ui("The selected student"), "send_link": _ui("Select the student")}),
+    coord = online_assessment_steps(settings) + [      # the first four: also on /examination and in the guide (1.2.192)
              ("hs.c5", {"open_reg": _ui("Submit the nomination"), "date": day("reg.end")}),
              ("hs.c6", {}),
              ("hs.c7", {"withdraw": _ui("Withdraw the selection")}),
@@ -711,14 +722,18 @@ def programme():
 
 @bp.route("/how-to-take-part")
 def guide():
-    """How to take part (1.2.53): the steps of the students, the participating institutions and the Nodal Officers."""
-    return render_template("public/guide.html", settings=all_settings(), only=None, base_url=current_app.config["BASE_URL"])
+    """How to take part (1.2.53): the steps of the participating institutions and the Nodal Officers (those of the students until 1.2.191)."""
+    settings = all_settings()
+    return render_template("public/guide.html", settings=settings, only=None, base_url=current_app.config["BASE_URL"],
+                           oa_steps=online_assessment_steps(settings))
 
 
 @bp.route("/how-to-take-part/institutions")
 def guide_institutions():
     """The steps of the participating institutions alone, to print or to forward."""
-    return render_template("public/guide.html", settings=all_settings(), only="institutions", base_url=current_app.config["BASE_URL"])
+    settings = all_settings()
+    return render_template("public/guide.html", settings=settings, only="institutions", base_url=current_app.config["BASE_URL"],
+                           oa_steps=online_assessment_steps(settings))
 
 
 @bp.route("/stipend")
@@ -1153,7 +1168,8 @@ def examination():
     settings = all_settings()
     start, end, is_open = exam_window(settings)
     return render_template("public/examination.html", settings=settings, start=start, end=end,
-                           is_open=is_open, dates=_key_dates(settings), syllabus_langs=[b["stream"] for b in syllabus_books()])
+                           is_open=is_open, dates=_key_dates(settings), syllabus_langs=[b["stream"] for b in syllabus_books()],
+                           oa_steps=online_assessment_steps(settings))
 
 
 @bp.route("/merit-list")

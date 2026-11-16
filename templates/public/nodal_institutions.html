@@ -20,8 +20,9 @@
     <div class="prog-rings no-rings{{ '' if show_covered else ' n2' }}">
       {% for key, n, total, cls in (('k_added', status.added, status.rows, 'ring-verified'), ('k_pending', status.pending, status.rows, 'ring-testing'), ('k_covered', status.covered, status.total, 'ring-participating')) if show_covered or key != 'k_covered' %}
       <div class="card prog-ring {{ cls }}">
-        <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="52"/><circle class="arc" cx="60" cy="60" r="52" style="--share:{{ '%.4f'|format(n / total) if total else 0 }}"/>
-          <text x="60" y="66" text-anchor="middle" class="pct">{{ (100 * n / total)|round|int if total else 0 }}%</text></svg>
+        {# no ring and no percentage while the switch figures.percent of the Console is off (1.2.192: "Remove the Percentages") #}
+        {% if get_setting('figures.percent') == '1' %}<svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="52"/><circle class="arc" cx="60" cy="60" r="52" style="--share:{{ '%.4f'|format(n / total) if total else 0 }}"/>
+          <text x="60" y="66" text-anchor="middle" class="pct">{{ (100 * n / total)|round|int if total else 0 }}%</text></svg>{% endif %}
         <div class="num">{{ '{:,}'.format(n) }}</div>
         <div class="lbl">{{ t('no.' ~ key) }}</div>
         <div class="sub small muted"><bdi>{{ t('dash.of')|replace('{n}', '{:,}'.format(n))|replace('{total}', '{:,}'.format(total)) }}</bdi></div>

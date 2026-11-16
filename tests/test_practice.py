@@ -182,11 +182,14 @@ def test_the_classroom_quiz_under_the_heading_of_the_assessment():
     client = app.test_client()
     page = client.get("/examination?lang=en").get_data(as_text=True)
     head = page.index("<h1>Institution-level assessment</h1>")
-    link = page.index('<a class="btn quiz-cta" href="/quiz/">🎯 Classroom quiz</a>')
-    assert "A live Thirukkural quiz: the questions on the screen, the answers on your phone." in page
+    # since 1.2.192 the button under the heading is the Online Assessment, the institution's online test (tests/test_list_1116.py);
+    # the Classroom quiz, another thing, keeps its place in the menu and stands no longer on this page
+    link = page.index('<a class="btn quiz-cta" href="#online-assessment">🖥 Online Assessment</a>')
+    main = page.split("<main")[1].split("</main>")[0]
+    assert "A live Thirukkural quiz: the questions on the screen, the answers on your phone." not in main and 'href="/quiz/"' not in main
     assert head < link < page.index('class="two-col"')
     from test_public_fixes import _text
-    assert f'href="/quiz/">🎯 {_text("quiz.title", "ta")}</a>' in client.get("/examination?lang=ta").get_data(as_text=True)
+    assert f'href="#online-assessment">🖥 {_text("exam.online_title", "ta")}</a>' in client.get("/examination?lang=ta").get_data(as_text=True)
     css = (ROOT / "static" / "css" / "portal.css").read_text(encoding="utf-8")
     # it pulses three times, never on and on, and not at all for those who ask for reduced motion
     assert "animation: quiz-pulse 1.5s ease-out .5s 3;" in css and "infinite" not in css.split(".btn.quiz-cta")[1].split("@keyframes")[0]

@@ -26,8 +26,10 @@ def test_the_pages_state_the_pattern():
         assert LINE in client.get(path + "?lang=en").get_data(as_text=True), path
     # the page of the assessment names the ways an institution may assess its students (the revised D.O. letter, 1.2.111; the
     # home page did on its date tile until the key dates took the tiles' place, 1.2.152); the online test of the portal is one
-    assert ("a short written test, an oral interaction, a presentation, an essay, a quiz or a suitable combination"
-            in client.get("/examination?lang=en").get_data(as_text=True))
+    # since 1.2.192 (CICT, 16 November 2026) it says that the institutions shall use the portal's online assessment, and may also
+    # assess their students in any other suitable mode
+    assert ("The Participating Institutions shall use the portal&#39;s online assessment for the selection of the students. The institutions "
+            "may also assess the students in any other suitable mode." in client.get("/examination?lang=en").get_data(as_text=True))
 
 
 def test_the_pattern_gives_100_marks():

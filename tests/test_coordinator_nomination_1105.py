@@ -155,7 +155,8 @@ def test_the_guides_and_the_mail_of_the_selection():
     assert "Submit the nomination" in hs and 'dir="ltr">Select the student</b>' in hs and 'dir="ltr">Presentation video</b>' in hs
     assert "personal registration link" not in hs and "Select and send the registration link" not in hs
     guide = client.get("/how-to-take-part?lang=en").get_data(as_text=True)
-    assert "Submit the nomination by" in guide and "Your Institutional Coordinator submits your nomination on the portal" in guide
+    # the students' part left the guide in 1.2.192; the institutions' step says it
+    assert "Submit the nomination by" in guide and "On the institution&#39;s page, fill in and submit the nomination form of the student" in guide
     assert "personal registration link" not in guide
     help_page = client.get("/help?lang=en").get_data(as_text=True)
     assert "Its Institutional Coordinator submits the student's nomination on the institution's page" in help_page

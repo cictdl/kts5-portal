@@ -66,7 +66,7 @@ def test_the_assessment_leaves_the_menu_and_its_page_stays():
     assert "/examination" not in _menu(home) and "/examination" not in footer
     # the page itself, and the links to it from the pages that need it
     assert "<h1>Institution-level assessment</h1>" in _get(client, "/examination?lang=en")
-    assert 'href="/examination"' in _get(client, "/how-to-take-part?lang=en")
+    assert 'href="/examination#online-assessment"' in _get(client, "/how-to-take-part?lang=en")      # from step 3 of the institutions (1.2.192)
     # the Console's switch brings both back, the menu's item before the Students' Engagement Programme (1.2.161)
     assert [k for _title, items in SETTING_GROUPS for k, *_ in items].count("menu.assessment") == 1
     with app.app_context():

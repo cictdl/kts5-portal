@@ -829,7 +829,8 @@ DEFAULT_SETTINGS = {
     # the table "The figures of each State/UT" of the dashboard;
     "dashboard.table": "0",
     # and the percentages: the rings and the percentages of the stages of /progress (the numbers stay), the scale under the map of
-    # the dashboard
+    # the dashboard; since 1.2.192 also the ring, "N of 1,000" and the percentages of the types of institution of /institutions
+    # and the rings of /nodal-institutions
     "figures.percent": "0",
     # the card "From registration to verification" of /progress (1.2.190; CICT, 16 November 2026, of "72 Student selected on merit"
     # and "354 Participating Institutions yet to select their student": "hide the card"): its stages and the line of the

@@ -15,11 +15,14 @@
     <div class="pi-head"><h2 id="pi-h">{{ t('home.stats') }}</h2><span class="small muted"><i class="pi-live" aria-hidden="true"></i>{{ t('dash.updated')|replace('{time}', pi.now) }}</span></div>
     {% set show_reg = get_setting('institutions.registered') == '1' %}{# the card hidden since 1.2.164 (CICT, 7 November 2026) #}
     <div class="pi-kpis{{ '' if show_reg else ' n3' }}">
-      <div class="card pi-kpi pi-ring">
-        <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="52"/><circle class="arc" cx="60" cy="60" r="52" style="stroke-dashoffset:{{ pi.offset }}"/>
-          <text x="60" y="67" text-anchor="middle" class="pct">{{ pi.pct }}%</text></svg>
+      {# no ring, no "N of 1,000" and no percentage of a type of institution (1.2.192; CICT, 16 November 2026: "remove percentages",
+         "remove out of 1000"), while the switch figures.percent of the Console is off; the numbers stay #}
+      {% set show_pct = get_setting('figures.percent') == '1' %}
+      <div class="card pi-kpi{{ ' pi-ring' if show_pct }}">
+        {% if show_pct %}<svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="52"/><circle class="arc" cx="60" cy="60" r="52" style="stroke-dashoffset:{{ pi.offset }}"/>
+          <text x="60" y="67" text-anchor="middle" class="pct">{{ pi.pct }}%</text></svg>{% endif %}
         <div><div class="num">{{ '{:,}'.format(pi.selected) }}</div><div class="lbl">{{ t('nav.institutions') }}</div>
-          <div class="sub small muted"><bdi>{{ t('dash.of')|replace('{n}', '{:,}'.format(pi.selected))|replace('{total}', '{:,}'.format(pi.to_select)) }}</bdi></div></div>
+          {% if show_pct %}<div class="sub small muted"><bdi>{{ t('dash.of')|replace('{n}', '{:,}'.format(pi.selected))|replace('{total}', '{:,}'.format(pi.to_select)) }}</bdi></div>{% endif %}</div>
       </div>
       {% if show_reg %}
       <div class="card pi-kpi"><div class="num">{{ '{:,}'.format(pi.registered) }}</div><div class="lbl">{{ t('dash.inst_reg') }}</div>
@@ -34,7 +37,7 @@
         <h3 id="pi-types-h">{{ t('reg.college_type') }}</h3>
         {% if pi.types %}
         <div class="pi-stack" aria-hidden="true">{% for k in pi.types %}<span class="pi-seg c{{ loop.index0 % 8 }}" style="flex:{{ k.count }}"></span>{% endfor %}</div>
-        <ul class="pi-legend">{% for k in pi.types %}<li><i class="pi-sw c{{ loop.index0 % 8 }}" aria-hidden="true"></i><span>{{ t('opt.ctype.%d' % k.n) if k.n else k.name }}</span><b>{{ k.count }}</b><span class="muted small">{{ k.pct }}%</span></li>{% endfor %}</ul>
+        <ul class="pi-legend">{% for k in pi.types %}<li><i class="pi-sw c{{ loop.index0 % 8 }}" aria-hidden="true"></i><span>{{ t('opt.ctype.%d' % k.n) if k.n else k.name }}</span><b>{{ k.count }}</b>{% if show_pct %}<span class="muted small">{{ k.pct }}%</span>{% endif %}</li>{% endfor %}</ul>
         {% else %}<p class="small muted">{{ t('hei.empty') }}</p>{% endif %}
       </section>
       {% if show_reg %}
