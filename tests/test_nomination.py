@@ -48,7 +48,7 @@ def test_the_form_tells_the_nomination_and_offers_the_blank_form():
     assert "Each selected Participating Institution assesses its students, selects one on merit" in page
     assert "5 · Faculty Supervisor/Guide" in page and "(optional)" not in page.split("5 · Faculty Supervisor/Guide")[1].split("6 ·")[0]
     assert 'name="nomination"' in page and 'data-max="4194304"' in page
-    assert 'href="/static/KTS5-nomination-form.pdf" download' in page and "Download the nomination form" in page
+    assert 'href="/static/KTS5-nomination-form.pdf" download' in page and "Download the Student nomination form" in page
     r = client.get("/static/KTS5-nomination-form.pdf")
     assert r.status_code == 200 and r.data[:5] == b"%PDF-"
     r.close()
@@ -60,7 +60,7 @@ def test_the_registration_page_offers_the_form_before_and_while_it_is_open():
     from kts.db import set_setting
     app = make_app(ADMIN_PASSWORD=None)
     client = app.test_client()
-    link = 'href="/static/KTS5-nomination-form.pdf" download>Download the nomination form (PDF)</a>'
+    link = 'href="/static/KTS5-nomination-form.pdf" download>Download the Student nomination form (PDF)</a>'
     # open: at the top of the form of the Institutional Coordinator (1.2.182), and again at the upload of step 6
     coord = app.test_client()
     page = coord.get(f"/register?token={as_coordinator(app, coord)}&lang=en").get_data(as_text=True)
