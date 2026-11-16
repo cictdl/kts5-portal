@@ -136,7 +136,7 @@ def test_no_percentages_on_the_participating_institutions():
     pi = page[page.index('<section class="pi"'):page.index('pi-states"')]
     # at a glance: the number, without a ring, a percentage or "of 1,000"
     kpis = pi[pi.index('<div class="pi-kpis'):pi.index('<div class="pi-two')]
-    assert '<div class="num">5</div><div class="lbl">Participating institutions</div>' in kpis
+    assert '<div class="num">5</div><div class="lbl">Participating Institutions registered</div>' in kpis
     assert "pi-ring" not in kpis and "<svg" not in kpis and "%" not in kpis and "of 1,000" not in kpis and "1,000" not in pi
     # the types of institution: the counts, no percentage
     legend = pi[pi.index('<ul class="pi-legend">'):pi.index("</ul>", pi.index('<ul class="pi-legend">'))]

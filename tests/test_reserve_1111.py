@@ -179,7 +179,7 @@ def test_the_number_of_annexure_i_and_a_reserve_list_without_an_upper_limit():
     assert not any(str(n) in re.sub(r"<[^>]+>", " ", table) for n in (75, 70, 65, 60, 55))
     # the figures at a glance count them together (1.2.178)
     pi = public[public.index('<section class="pi"'):public.index('<p><b>')]
-    assert '<div class="num">10</div><div class="lbl">Participating institutions</div>' in pi and "10 institutions from 1 States/UTs" in public
+    assert '<div class="num">10</div><div class="lbl">Participating Institutions registered</div>' in pi and "10 institutions from 1 States/UTs" in public
     # the evaluation sheet: no column of a reserve list "up to 20%"; each institution of the reserve list with its place
     ws = load_workbook(io.BytesIO(officer.get("/console/institutions/evaluation.xlsx?state=Puducherry").data)).active
     values = [[c.value for c in row] for row in ws.iter_rows()]
@@ -421,7 +421,7 @@ def test_the_states_and_uts_and_the_districts_of_the_pages():
     home = app.test_client().get("/?lang=en").get_data(as_text=True)
     glance = home[home.index("<h2>At a glance</h2>"):]
     cards = re.findall(r'<div class="num">([^<]+)</div><div class="lbl">([^<]+)</div>', glance[:glance.index("</section>")])
-    assert [(n.strip(), label) for n, label in cards][:2] == [("6", "Participating institutions"), ("5", "States and UTs")]
+    assert [(n.strip(), label) for n, label in cards][:2] == [("6", "Participating Institutions registered"), ("5", "States and UTs")]
 
 
 def test_the_texts_in_23_languages():

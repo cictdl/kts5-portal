@@ -221,7 +221,8 @@
       {% endif %}
       {# while the students' registration is hidden: the institutions (1.2.148) #}
       {% if inst_stats %}
-      <div class="card stat indigo"><div class="num">{{ '{:,}'.format(inst_stats.selected) }}</div><div class="lbl">{{ t('nav.institutions') }}</div></div>
+      {# "Participating Institutions registered" (1.2.194; CICT, 16 November 2026), as on the dashboard and on /progress #}
+      <div class="card stat indigo"><div class="num">{{ '{:,}'.format(inst_stats.selected) }}</div><div class="lbl">{{ t('dash.inst_sel') }}</div></div>
       {% if show_reg %}<div class="card stat accent"><div class="num">{{ '{:,}'.format(inst_stats.registered) }}</div><div class="lbl">{{ t('dash.inst_reg') }}</div></div>{% endif %}
       <div class="card stat kumkum"><div class="num">{{ inst_stats.states }}</div><div class="lbl">{{ t('home.stat_states') }}</div></div>
       {% endif %}

@@ -41,7 +41,7 @@ def test_the_figures():
     pi = page[page.index('<section class="pi"'):page.index('class="table-wrap"')]
     assert '<h2 id="pi-h">At a glance</h2>' in pi and "Live figures, as on" in pi
     # 4 Participating Institutions (Lakshadweep counts with Kerala) of the 1,000; 6 registered (not the one only identified)
-    assert '<div class="num">4</div><div class="lbl">Participating institutions</div>' in pi and "<bdi>4 of 1,000</bdi>" in pi
+    assert '<div class="num">4</div><div class="lbl">Participating Institutions registered</div>' in pi and "<bdi>4 of 1,000</bdi>" in pi
     assert '<text x="60" y="67" text-anchor="middle" class="pct">0%</text>' in pi
     assert '<div class="num">6</div><div class="lbl">Institutions registered</div>' in pi
     # the States/UTs reached: Tamil Nadu and Lakshadweep of the 36 (1.2.174; the rows of Annexure-I, of 31, before); three
@@ -86,4 +86,4 @@ def test_every_language_and_no_institution_yet():
         from kts.db import set_setting
         set_setting("hei.public", "1")
     page = empty.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    assert '<div class="num">0</div><div class="lbl">Participating institutions</div>' in page and "No institution has been accepted yet." in page
+    assert '<div class="num">0</div><div class="lbl">Participating Institutions registered</div>' in page and "No institution has been accepted yet." in page

@@ -21,7 +21,7 @@
       <div class="card pi-kpi{{ ' pi-ring' if show_pct }}">
         {% if show_pct %}<svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="52"/><circle class="arc" cx="60" cy="60" r="52" style="stroke-dashoffset:{{ pi.offset }}"/>
           <text x="60" y="67" text-anchor="middle" class="pct">{{ pi.pct }}%</text></svg>{% endif %}
-        <div><div class="num">{{ '{:,}'.format(pi.selected) }}</div><div class="lbl">{{ t('nav.institutions') }}</div>
+        <div><div class="num">{{ '{:,}'.format(pi.selected) }}</div><div class="lbl">{{ t('dash.inst_sel') }}</div>
           {% if show_pct %}<div class="sub small muted"><bdi>{{ t('dash.of')|replace('{n}', '{:,}'.format(pi.selected))|replace('{total}', '{:,}'.format(pi.to_select)) }}</bdi></div>{% endif %}</div>
       </div>
       {% if show_reg %}

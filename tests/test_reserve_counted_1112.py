@@ -67,12 +67,12 @@ def test_counted_together_on_every_public_page():
     # /institutions at a glance and the home page
     page = client.get("/institutions?lang=en").get_data(as_text=True)
     pi = page[page.index('<section class="pi"'):page.index("<p><b>")]
-    assert '<div class="num">8</div><div class="lbl">Participating institutions</div>' in pi
+    assert '<div class="num">8</div><div class="lbl">Participating Institutions registered</div>' in pi
     assert '<div class="num">2</div><div class="lbl">States and UTs</div>' in pi and '<div class="num">3</div><div class="lbl">Districts reached</div>' in pi
     home = client.get("/?lang=en").get_data(as_text=True)
     glance = home[home.index("<h2>At a glance</h2>"):]
     cards = re.findall(r'<div class="num">([^<]+)</div><div class="lbl">([^<]+)</div>', glance[:glance.index("</section>")])
-    assert [(n.strip(), label) for n, label in cards][:2] == [("8", "Participating institutions"), ("2", "States and UTs")]
+    assert [(n.strip(), label) for n, label in cards][:2] == [("8", "Participating Institutions registered"), ("2", "States and UTs")]
     # the State/UT page
     with app.app_context():
         code = DRIVE.code_of("Puducherry")
@@ -88,7 +88,7 @@ def test_counted_together_on_every_public_page():
         assert DRIVE.table()["Puducherry"]["participating"] == 3
     page = client.get("/institutions?lang=en").get_data(as_text=True)
     pi = page[page.index('<section class="pi"'):page.index("<p><b>")]
-    assert '<div class="num">3</div><div class="lbl">Participating institutions</div>' in pi and "Reserve Puducherry" not in page
+    assert '<div class="num">3</div><div class="lbl">Participating Institutions registered</div>' in pi and "Reserve Puducherry" not in page
 
 
 def test_the_console_keeps_them_apart():
