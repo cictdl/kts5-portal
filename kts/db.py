@@ -830,6 +830,10 @@ DEFAULT_SETTINGS = {
     # and the percentages: the rings and the percentages of the stages of /progress (the numbers stay), the scale under the map of
     # the dashboard
     "figures.percent": "0",
+    # the card "From registration to verification" of /progress (1.2.190; CICT, 16 November 2026, of "72 Student selected on merit"
+    # and "354 Participating Institutions yet to select their student": "hide the card"): its stages and the line of the
+    # institutions yet to select their student, with their keys of /progress.json; '1' shows it again
+    "progress.flow": "0",
     "site.draft_note_on": "1",
     "home.pm_on": "1",
     "home.pm_quote": "Kashi Tamil Sangamam furthers the spirit of \u2018Ek Bharat, Shreshtha Bharat\u2019.",

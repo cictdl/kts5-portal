@@ -33,7 +33,9 @@
     {% endfor %}
   </div>
 
-  {# the stages, from registration to verification #}
+  {# the stages, from registration to verification: hidden since 1.2.190 (CICT, 16 November 2026: "hide the card"), shown again by
+     the switch progress.flow of the Console #}
+  {% if get_setting('progress.flow') == '1' %}
   <section class="card prog-flow" aria-labelledby="prog-flow-h">
     <h2 id="prog-flow-h">{{ t('pg.flow_title') }}</h2>
     <ol class="prog-stages">
@@ -48,6 +50,7 @@
     </ol>
     <p class="small muted prog-behind"><bdi data-k="behind" data-tpl="{{ t('pg.behind') }}">{{ t('pg.behind')|replace('{n}', p.counts.not_selected|string) }}</bdi>{% if sp %} · <bdi data-k="unregistered" data-tpl="{{ t('pg.unregistered') }}">{{ t('pg.unregistered')|replace('{n}', p.counts.not_registered|string) }}</bdi>{% endif %}</p>
   </section>
+  {% endif %}
 
   {# the last three weeks, day by day: the line of the registrations of institutions only while their number is shown (1.2.168) #}
   {% if 'inst' in p.series or sp %}

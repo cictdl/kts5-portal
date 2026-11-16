@@ -1652,6 +1652,10 @@ def progress_json():
         data["flat"] = {k: v for k, v in data["flat"].items() if not any(h in k for h in hidden)}
         for part in ("shares", "widths"):
             data[part] = {k: v for k, v in data[part].items() if not any(h in k for h in hidden)}
+    if get_setting("progress.flow") != "1":        # the card of the stages hidden (1.2.190): its figures go with it
+        gone = ("selected", "not_selected", "not_registered", "behind", "unregistered")
+        data["flat"] = {k: v for k, v in data["flat"].items() if not k.startswith("st_") and k not in gone}
+        data["widths"] = {}
     if get_setting("figures.percent") != "1":      # no percentage, no ring (1.2.189): the numbers and the bars stay
         data["flat"] = {k: v for k, v in data["flat"].items() if not k.endswith("_pct")}
         data["shares"] = {}

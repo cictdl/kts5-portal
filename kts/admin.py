@@ -2030,6 +2030,7 @@ SETTING_GROUPS = [
               ("figures.assessment", "Show the figures of the institutions' online assessment on the public pages: the students who took an institution's online test (the card and the column of the dashboard) and the institutions assessing their students online (the ring and the stage of the Progress page)", "bool"),
               ("dashboard.table", "Show the table “The figures of each State/UT” on the dashboard", "bool"),
               ("figures.percent", "Show the percentages on the dashboard and on the Progress page: the rings and the percentages of the stages (the numbers stay either way), the scale under the map of the dashboard", "bool"),
+              ("progress.flow", "Show the card “From registration to verification” on the Progress page: the stages (the students selected on merit) and the line of the Participating Institutions yet to select their student", "bool"),
               ("site.visitors", "Show the count of visitors in the footer of every page", "bool"),
               ("site.draft_note_on", "Show the note “this translation is a draft” in interface languages that are not yet reviewed", "bool")]),
     ("Home page", [("home.pm_on", "Show the Prime Minister's photograph and quotation", "bool"),
