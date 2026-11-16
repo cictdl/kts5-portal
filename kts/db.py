@@ -818,8 +818,9 @@ DEFAULT_SETTINGS = {
     # its student delegates by name, once verified (1.2.124)
     "dashboard.names": "1",
     # "Marks recorded: N of M" for each State/UT: the institutions selected or on the reserve list whose marks of Annexure-V
-    # are recorded (1.2.175; CICT, 12 November 2026)
-    "dashboard.marks": "1",
+    # are recorded (1.2.175; CICT, 12 November 2026); off since 1.2.191 (CICT, 16 November 2026: "hide all the marks"), and
+    # switched off once on a database of before (migrate.marks_off_1116)
+    "dashboard.marks": "0",
     # hidden since 1.2.189 (CICT, 16 November 2026, of the dashboard and of /progress: "hide this one", "hide this portion", "hide
     # all the percentage calculations"); '1' shows each again. The figures of the institutions' online assessment: the students who
     # took an institution's online test (the card and the column of the dashboard) and the institutions assessing their students
@@ -1547,6 +1548,11 @@ def init_db(app):
     if not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.cap_off_1112'").fetchone():
         conn.execute("UPDATE settings SET value = '0', updated_at = ? WHERE key = 'hei.cap_annexure'", (now,))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", ("migrate.cap_off_1112", "1", now))
+    # "hide all the marks" (CICT, 16 November 2026, 1.2.191): "Marks recorded: N of M" leaves the dashboard, once; CICT may show it
+    # again in the Console
+    if not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.marks_off_1116'").fetchone():
+        conn.execute("UPDATE settings SET value = '0', updated_at = ? WHERE key = 'dashboard.marks'", (now,))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", ("migrate.marks_off_1116", "1", now))
     if not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.revised_do'").fetchone():
         for key in REVISED_DO_DATES:
             conn.execute("UPDATE settings SET value = ?, updated_at = ? WHERE key = ?", (DEFAULT_SETTINGS[key], now, key))

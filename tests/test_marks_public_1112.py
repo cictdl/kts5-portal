@@ -135,7 +135,7 @@ def test_the_reserve_list_counted_with_the_selected():
 
 def test_the_setting_takes_it_off_the_page():
     from kts.db import DEFAULT_SETTINGS, set_setting
-    assert DEFAULT_SETTINGS["dashboard.marks"] == "1"
+    assert DEFAULT_SETTINGS["dashboard.marks"] == "0"      # off since 1.2.191; the tests' portal shows it (tests/conftest.py)
     app = _portal()
     with app.app_context():
         set_setting("dashboard.marks", "0")

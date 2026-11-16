@@ -66,7 +66,8 @@ def make_app(**settings):
         set_setting("launch.on", "0")
         # hidden since 1.2.189: the figures of the online assessment, the table of the dashboard, the percentages. The tests made
         # before look at the pages with all of it shown; tests/test_dashboard_hidden_1116.py looks at them as they are
-        for key in ("figures.assessment", "dashboard.table", "figures.percent", "progress.flow"):      # the last since 1.2.190
+        # ... and "Marks recorded" on the dashboard, off since 1.2.191 (tests/test_marks_hidden_1116.py)
+        for key in ("figures.assessment", "dashboard.table", "figures.percent", "progress.flow", "dashboard.marks"):
             set_setting(key, "1")
     return app
 
