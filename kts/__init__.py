@@ -326,6 +326,10 @@ def create_app(config_object=Config):
             told = heis.mail_reserve_selected()
             if told:
                 app.logger.info("The reserve list is no more: %d institutions that were on it are told by mail that they are selected.", told)
+            # ... and told once again, in a mail that says so in its subject and at its head (1.2.200)
+            again = heis.mail_reserve_selected_again(first_now=told)
+            if again:
+                app.logger.info("%d institutions that were on the reserve list are told once again by mail that they are selected.", again)
         except Exception:  # a mail never stands in the way of the start of the portal
             app.logger.exception("the mails to the institutions of the reserve list were not queued")
     return app

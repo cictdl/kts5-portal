@@ -517,6 +517,46 @@ def mail_reserve_selected():
     return told
 
 
+RESERVE_MAIL_AGAIN_MARK = "mail.reserve_selected_again_1117"
+
+
+def mail_reserve_selected_again(first_now=0):
+    """
+    A second mail to the institutions that came off the reserve list, and to them only (1.2.200; CICT, 17 November 2026: "selected
+    should be sent once again an email stating there are selected. The reserve list entries only", with the subject and the first
+    sentences of the mail; and, of the word: "every institute is registered not selected"): the mail of a selected institution,
+    which says in its subject and at its head that the institution is registered as a Participating Institution. The institutions are those of the lines "release 1.2.198" of the audit log that are still selected. Once for each
+    database: the mark is put in before the first mail is queued, by the one start of the portal that finds none; nothing is
+    mailed after the last day of the nomination, nor at a start at which the first mail has just gone out (first_now, the number
+    told by mail_reserve_selected). Gives the number of institutions told.
+    """
+    conn = get_db()
+    turned = conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)",
+                          (RESERVE_MAIL_AGAIN_MARK, "mailing", utcnow())).rowcount
+    conn.commit()
+    if turned != 1:
+        return 0
+    late = now_ist().date().isoformat() > (get_setting("reg.end") or "9999")[:10]
+    told = 0
+    if not late and not first_now:
+        for line in query("SELECT DISTINCT entity_id FROM audit_log WHERE actor = 'release 1.2.198' AND action = 'institution_accepted' "
+                          "AND entity = 'institution' ORDER BY entity_id"):
+            row = query("SELECT * FROM institutions WHERE id = ? AND status = 'accepted'", (line["entity_id"],), one=True)
+            if row is None or not _to_institution(row):
+                continue
+            mail_decision(row, heading=f"KTS 5.0: {row['name']} is registered as a Participating Institution", lead=(
+                "Further to our earlier e-mail: your institution is registered as a Participating Institution of Kashi Tamil Sangamam "
+                f"5.0 – Thirukkural Payilvom. The Nodal Institution of {unit_name(row['state'])} had placed it in the reserve list. "
+                "The reserve list has been discontinued, and every institution that was in it is now a registered Participating "
+                "Institution."))
+            told += 1
+    execute("UPDATE settings SET value = ?, updated_at = ? WHERE key = ?",
+            ("not mailed: after the last day of the nomination" if late else
+             "not mailed: the first mail went out at this start" if first_now else f"mailed {told} institutions", utcnow(),
+             RESERVE_MAIL_AGAIN_MARK))
+    return told
+
+
 def counted_statuses():
     """
     The statuses that the public pages count as Participating Institutions: 'accepted', and 'reserve' while the reserve list is
@@ -607,10 +647,11 @@ def mail_received(row):
                 for u in officers])
 
 
-def mail_decision(row, lead=None):
+def mail_decision(row, lead=None, heading=None):
     """
     The mail of a decision to the Head of the Institution and the Institutional Coordinator. lead: the first sentences of the mail
-    of a selected institution, where it is not a selection by the Nodal Institution that is told (1.2.198, mail_reserve_selected).
+    of a selected institution, where it is not a selection by the Nodal Institution that is told (1.2.198, mail_reserve_selected);
+    heading: its subject, where that is another too (1.2.200, mail_reserve_selected_again).
     """
     base = current_app.config["BASE_URL"]
     if row["status"] == "reserve":
@@ -624,7 +665,7 @@ def mail_decision(row, lead=None):
                 + f"\n\nReference: {row['ref']}\n"
                 f"\nFor any question, please write to the Nodal Officer of your State/UT or to CICT.\n\nCentral Institute of Classical Tamil, Chennai")
     elif row["status"] == "accepted":
-        subject = f"KTS 5.0: {row['name']} is a Participating Institution"
+        subject = heading or f"KTS 5.0: {row['name']} is a Participating Institution"
         body = ("Dear Sir/Madam,\n\n"
                 + (lead or f"The Nodal Institution of {unit_name(row['state'])} has selected your institution as a Participating "
                            f"Institution of Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom.")
