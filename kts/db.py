@@ -1057,6 +1057,52 @@ DO13_NOTICE = (
     ]),
 )
 DO13_NOTICE_FILE = "notices/KTS5-DO-letter-13-November-2026.pdf"
+# The circular of the All India Council for Technical Education of 13 November 2026 to the technical universities and the
+# AICTE-approved institutions (1.2.197; CICT, 17 November 2026, with the circular: "pin the letter"): pinned among the notices and
+# circulars with the circular itself. Its days are the days of the portal (tests/test_aicte_13nov_1117.py); the D.O. letter of
+# 31 October that it encloses gives that letter's own days, and the notice says so.
+AICTE13_NOTICE = (
+    "Circular of AICTE, 13 November 2026: registration and student participation in Kashi Tamil Sangamam 5.0",
+    "\n".join([
+        "F. No. AICTE/P&AP/Misc/2026 of 13 November 2026 from the Member Secretary, All India Council for Technical Education "
+        "(AICTE), to the Vice-Chancellors of the Technical Universities and the Principals/Directors of the AICTE-approved higher "
+        "educational institutions, on registration and student participation in Kashi Tamil Sangamam 5.0 (28 November – 12 December "
+        "2026; theme: Thirukkural Payilvom – Thirukkural Abhyas Karen – Let's Learn the Thirukkural). The circular with its "
+        "enclosures is attached.",
+        "",
+        "The circular encourages all interested AICTE-approved higher educational institutions to register on this portal "
+        "(kts.cict.in) at the earliest, and preferably well before the last date of registration, 18 November 2026, and requests "
+        "them to accord top priority to the matter. It notes that:",
+        "• registration is open to all interested higher educational institutions; the Nodal Higher Educational Institution of the "
+        "State/UT scrutinises and selects the Participating Institutions against the prescribed allocation, under the notified "
+        "Standard Operating Procedure, and registration does not automatically guarantee selection;",
+        "• each selected Participating Institution invites its interested students and assesses, fairly and transparently, their "
+        "interest in and understanding of the Thirukkural, by 23 November 2026;",
+        "• each selected Participating Institution nominates one student on merit through this portal by 24 November 2026;",
+        "• the prescribed study resources, in text and audio-visual formats, are available in the 22 scheduled Indian languages, "
+        "including Tamil and Hindi, and in English;",
+        "• the one-month research and academic engagement runs from 15 December 2026 to 14 January 2027: the selected students "
+        "prepare an original article/research note of 4–5 pages under faculty guidance and deliver a one-hour presentation/lecture "
+        "at their institutions;",
+        "• eligible selected students are entitled to a stipend of Rs. 10,000, subject to fulfilment of the programme requirements "
+        "and validation of the bank account details.",
+        "",
+        "The institutions are requested to register in time on the portal; to encourage students of all faculties and departments "
+        "to take part, with particular emphasis on students of diverse Indian language backgrounds; to spread the information "
+        "through their websites, social media, notice boards and student groups; and to facilitate the assessment and the "
+        "nomination of the students within the timeline, wherever selected as Participating Institutions.",
+        "",
+        "Enclosed with the circular: the D.O. letter of 31 October 2026 of the Department of Higher Education, Ministry of "
+        "Education, with its Annexures I to V; the revised timeline; and a publicity creative for KTS 5.0. The D.O. letter of "
+        "31 October gives that letter's own days (nomination by 20 November 2026), which the Ministry has revised since: the days "
+        "in force are those of the circular and of the revised timeline (registration of institutions up to 18 November, "
+        "selection by 19 November, assessment by 23 November, nomination by 24 November 2026).",
+        "",
+        "For any clarification: Dr. R. Bhuvaneshwari, Registrar, Central Institute of Classical Tamil (CICT), Chennai, "
+        "registrar@cict.in, mobile 9790325518 / 9965734497.",
+    ]),
+)
+AICTE13_NOTICE_FILE = "notices/KTS5-AICTE-circular-13-November-2026.pdf"
 
 # the revised D.O. letter of the Ministry (26 October 2026, Annexure-III D): the days of the steps it keeps, as 1.2.95 put them
 for _key, _days in (("assess", ("2026-10-29T00:00", None)), ("selection", ("2026-10-30T00:00", "2026-10-31T00:00")),
@@ -1793,6 +1839,16 @@ def init_db(app):
                          "VALUES(?,?,'circular','en',1,1,?,'/schedule',?,?)", (DO13_NOTICE[0], DO13_NOTICE[1], DO13_NOTICE_FILE, now, now))
         conn.execute("UPDATE notices SET body = ?, updated_at = ? WHERE title = ? AND body = ?",
                      (DO_NOTICE[1], now, DO_NOTICE[0], DO_NOTICE[1].replace(DO_TIMELINE_LINE, DO_TIMELINE_LINE_1189)))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
+
+    # The circular of AICTE of 13 November 2026 to the technical universities and the AICTE-approved institutions (1.2.197; CICT,
+    # 17 November 2026: "pin the letter"): pinned among the notices and circulars with the circular itself (data/notices/), put in
+    # once for each database; none is added when a notice with its title is there already.
+    mark = "seed.notice.aicte_13nov"
+    if (app.config["DATA_DIR"] / AICTE13_NOTICE_FILE).is_file() and not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
+        if not conn.execute("SELECT 1 FROM notices WHERE title = ?", (AICTE13_NOTICE[0],)).fetchone():
+            conn.execute("INSERT INTO notices(title, body, category, lang, pinned, published, attachment, link, created_at, updated_at) "
+                         "VALUES(?,?,'circular','en',1,1,?,'/schedule',?,?)", (AICTE13_NOTICE[0], AICTE13_NOTICE[1], AICTE13_NOTICE_FILE, now, now))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
 
     # The launch of 14 October 2026, 5:00 PM was postponed (1.2.69): on a database that has announced it already (its notice

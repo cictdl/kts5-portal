@@ -72,8 +72,9 @@ def test_the_strip_of_the_registration_is_highlighted():
 
 
 def test_the_circular_band():
-    # the newest circular of the Ministry with its letter: that of 13 November 2026 since 1.2.189 (tests/test_do_13nov_1116.py)
-    from kts.db import DO13_NOTICE_FILE as DO_NOTICE_FILE
+    # the newest circular with its letter: the circular of AICTE of 13 November 2026 since 1.2.197 (tests/test_aicte_13nov_1117.py);
+    # the D.O. letter of the Ministry of that day from 1.2.189 (tests/test_do_13nov_1116.py)
+    from kts.db import AICTE13_NOTICE_FILE as DO_NOTICE_FILE
     app = _app(**LIVE, home_circular="1")   # the line of the newest circular, hidden since 1.2.162 (tests/test_home_circular_1105.py)
     client = app.test_client()
     for code, cat in CATALOGUES.items():
@@ -85,7 +86,7 @@ def test_the_circular_band():
         assert first < band.index('href="/guidelines-for-nodal-institutions"') < band.index('<a class="na-link" href="/nodal-institutions">'), code
         assert f'<span class="na-title">{escape(cat["ng.title"])}</span>' in band and f'<span class="na-title">{escape(cat["nodal.title"])}</span>' in band, code
         assert f'href="/files/{DO_NOTICE_FILE}"' in band, code
-        assert band.index('<span class="na-title" lang="en" dir="ltr">D.O. letter of the Ministry of Education, 13 November 2026</span>') > first, code
+        assert band.index('<span class="na-title" lang="en" dir="ltr">Circular of AICTE, 13 November 2026</span>') > first, code
     # NEW only while the circular is recent; never with 0
     with app.app_context():
         from kts.db import execute, set_setting

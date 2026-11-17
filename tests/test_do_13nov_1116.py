@@ -82,7 +82,9 @@ def test_the_letter_is_pinned_among_the_notices_with_its_file():
     assert r.status_code == 200 and r.mimetype == "application/pdf" and r.data[:5] == b"%PDF-" and 1_000_000 < len(r.data) < 2_000_000
     for word in (b"/JavaScript", b"/JS ", b"/OpenAction", b"/Launch", b"/EmbeddedFile", b"/URI", b"/AA "):
         assert word not in r.data, word
-    # where the Console shows the newest circular of the Ministry at the head of the home page, it is this letter
+    # where the Console shows the newest circular at the head of the home page, it was this letter until the circular of AICTE of
+    # the same day was pinned (1.2.197, tests/test_aicte_13nov_1117.py); without that one it is this letter
+    _sql(app, "DELETE FROM notices WHERE title LIKE 'Circular of AICTE, 13 November 2026%'")
     with app.app_context():
         set_setting("home.circular", "1")
     home = client.get("/?lang=en").get_data(as_text=True)
