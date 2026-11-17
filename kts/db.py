@@ -741,7 +741,9 @@ DEFAULT_SETTINGS = {
     # the revised D.O. letter (26 October 2026): the Nodal Institution selects only the number of Participating Institutions
     # that Annexure-I prescribes for its State/UT (data/nodal_heis.json), between the close of registration and this day
     # off since 1.2.178 (CICT, 12 November 2026: "accepted institutions ceiling should not be there"); switched off once on a
-    # database of before (migrate.cap_off_1112)
+    # database of before (migrate.cap_off_1112). Switched on again in the Settings of the live portal, it stood in the way of the
+    # selection once the reserve list was no more: off again, once, with hei.max_per_state (migrate.cap_off_1117), and neither is
+    # a setting of the Console any more (1.2.199; CICT, 17 November 2026: "No higher ceiling add for all the states")
     "hei.cap_annexure": "0",
     "hei.select_end": "2026-11-19",   # 19 November since the Ministry's revision of 10 November 2026 (1.2.172; 16-17 before)
     "hei.public": "1",
@@ -1610,6 +1612,12 @@ def init_db(app):
     if not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.marks_off_1116'").fetchone():
         conn.execute("UPDATE settings SET value = '0', updated_at = ? WHERE key = 'dashboard.marks'", (now,))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", ("migrate.marks_off_1116", "1", now))
+    # no ceiling on the institutions selected, for all the States/UTs (1.2.199; CICT, 17 November 2026: "i cannot select a new
+    # institution. No higher ceiling add for all the states"): the two settings of a ceiling are switched off once more; they are
+    # no longer among the Settings of the Console
+    if not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.cap_off_1117'").fetchone():
+        conn.execute("UPDATE settings SET value = '0', updated_at = ? WHERE key IN ('hei.cap_annexure', 'hei.max_per_state')", (now,))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", ("migrate.cap_off_1117", "1", now))
     # the reserve list is no more (1.2.198; CICT, 17 November 2026: "remove the reserve list condition" - of the institutions on
     # it: "Selected, like the 551"): each becomes a selected Participating Institution, once, with a line of the audit log. The
     # mark holds the number of them; a second mark holds them, for the mail that tells each of it once the portal has started

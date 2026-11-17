@@ -79,7 +79,7 @@ def test_the_form_sent_back_as_it_is_shown_saves_nothing():
     from kts.db import all_settings
     app, admin = _portal()
     keys = [key for _group, items in SETTING_GROUPS for key, _label, _kind in items]
-    assert len(keys) == len(set(keys)) == 130 and sorted(_fields(admin)) == sorted(keys)      # three more since 1.2.189, one since 1.2.190, two since 1.2.195, one since 1.2.198
+    assert len(keys) == len(set(keys)) == 128 and sorted(_fields(admin)) == sorted(keys)      # three more since 1.2.189, one since 1.2.190, two since 1.2.195, one since 1.2.198; two fewer since 1.2.199
     with app.app_context():
         before = all_settings()
     page = _send(admin)
@@ -117,14 +117,14 @@ def test_a_number_field_takes_a_number_that_can_be_used():
                      ("exam.questions", "12.5"), ("exam.marks_per_q", "0"), ("exam.marks_per_q", ""), ("exam.negative", "-1"), ("exam.negative", ""),
                      ("quiz.max_players", "0"), ("backup.keep", "0"), ("stipend.amount", "0"), ("stipend.amount", "10,000"), ("practice.questions", "2"),
                      ("practice.questions", "31"), ("practice.minutes", "61"), ("practice.minutes", "0"), ("mail.daily_limit", ""),
-                     ("hei.max_per_state", "many")):
+                     ("mail.daily_limit", "many")):      # hei.max_per_state until 1.2.199, which takes it off the page
         before = _stored(app, key)
         page = _send(admin, **{key.replace(".", "__"): bad, "merit__note": f"saved with {key} {bad!r}"})
         # the field keeps what it had and the page says so; the other field of the same form is saved
         assert f"Not saved: {key}" in page and "Saved 1 setting(s)." in page, (key, bad)
         assert _stored(app, key) == before and _stored(app, "merit.note") == f"saved with {key} {bad!r}", (key, bad)
     for key, good in (("exam.negative", "0.25"), ("exam.marks_per_q", "1.5"), ("exam.duration_min", "45"), ("exam.questions", "40"), ("mail.daily_limit", "0"),
-                      ("hei.max_per_state", "4"), ("practice.questions", "30"), ("practice.minutes", "1"), ("quiz.max_players", "1")):
+                      ("practice.questions", "30"), ("practice.minutes", "1"), ("quiz.max_players", "1")):
         page = _send(admin, **{key.replace(".", "__"): good})
         assert "Saved 1 setting(s)." in page and "Not saved" not in page and _stored(app, key) == good, (key, good)
     # the browser lets a fraction of a mark into the two fields of the marks, and no number below 0 into any

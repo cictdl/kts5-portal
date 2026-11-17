@@ -2056,9 +2056,9 @@ SETTING_GROUPS = [
     ("Participating institutions (Console › Institutions; the website: /institutions)", [
         ("hei.open", "Institutions may apply on the website (/institutions/register); those identified by a Nodal Institution register with their invitation at any time", "bool"),
         ("hei.end", "Last date for institutions to apply (YYYY-MM-DD; empty: none)", "date"),
-        ("hei.cap_annexure", "Each State/UT accepts at most the number of Participating Institutions that Annexure-I of the revised D.O. letter prescribes for it (off since 1.2.178: no ceiling)", "bool"),
+        # no ceiling on the institutions selected, for all the States/UTs (1.2.199; CICT, 17 November 2026): hei.cap_annexure and
+        # hei.max_per_state are no longer settings of this page, where the ceiling had been switched on again
         ("hei.select_end", "Last date for the Nodal Institutions to select the Participating Institutions (YYYY-MM-DD)", "date"),
-        ("hei.max_per_state", "Otherwise: institutions accepted in one State/UT at most, the same for all (0: no limit)", "number"),
         ("hei.public", "Show the participating institutions on the website, State/UT by State/UT", "bool"),
         ("hei.reserve_list", "The Nodal Institutions keep a reserve list of institutions: the button “Reserve list” and the column “Reserve” of Console › Institutions (off since 17 November 2026: there is no reserve list, and the institutions that were on it are selected)", "bool"),
         ("hei.reserve_public", "The public pages list the institutions of the reserve list with the Participating Institutions of their State/UT and count them with them, not told apart (off: only the institutions selected)", "bool"),
