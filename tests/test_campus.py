@@ -393,7 +393,7 @@ def test_the_letter_in_the_data_and_the_pages():
     # with the D.O. letter of 31 October 2026 (1.2.155)
     assert DEFAULT_SETTINGS["exam.open"] == "0" and DEFAULT_SETTINGS["reg.by_institution"] == "1" and DEFAULT_SETTINGS["camp.to"] == "2026-11-23"
     assert "exam.open" not in RETIRED_DEFAULTS and "2026-10-21" in RETIRED_DEFAULTS["reg.end"] and "50" in RETIRED_DEFAULTS["hei.max_per_state"]
-    assert set(RETIRED_EVENT_TITLES) == {"selection", "letters", "live", "assess", "internship", "papers", "hei_list"}
+    assert set(RETIRED_EVENT_TITLES) == {"selection", "letters", "live", "assess", "internship", "papers", "hei_list", "hei_select"}
     app = make_app(ADMIN_PASSWORD=None)
     client = app.test_client()
     home = client.get("/?lang=en").get_data(as_text=True)

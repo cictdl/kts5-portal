@@ -747,6 +747,10 @@ DEFAULT_SETTINGS = {
     "hei.public": "1",
     # the reserve list of each row of Annexure-I on /institutions, in the order of the marks, without them (1.2.174)
     "hei.reserve_public": "1",
+    # the reserve list itself, off since 1.2.198 (CICT, 17 November 2026: "remove the reserve list condition", "in console reserve
+    # column should be removed"): the Console offers none, and the institutions that were on it became selected, once
+    # (migrate.reserve_off_1117). Switched on in the Console, the button "Reserve list" and the column "Reserve" come back
+    "hei.reserve_list": "0",
     # an institution is selected, or put on the reserve list, only once its marks of Annexure-V are recorded (1.2.174); off since
     # 1.2.175, CICT, 12 November 2026: "marks will be added later stage"
     "hei.marks_first": "0",
@@ -920,6 +924,8 @@ RETIRED_EVENT_TITLES = {
     "hei_list": ["Nodal Institutions furnish the details of their Nodal Officer and the preliminary list of institutions"],
     "internship": ["Commencement of the one-month internship and research period"],
     "papers": ["Submission of research papers"],
+    # no reserve list since 1.2.198 (CICT, 17 November 2026)
+    "hei_select": ["Scrutiny and selection of the Participating Institutions by the Nodal Institutions, with a reserve list"],
 }
 
 # Days of the events of data/timeline.json as earlier versions put them in, by the key of the event:
@@ -1604,6 +1610,22 @@ def init_db(app):
     if not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.marks_off_1116'").fetchone():
         conn.execute("UPDATE settings SET value = '0', updated_at = ? WHERE key = 'dashboard.marks'", (now,))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", ("migrate.marks_off_1116", "1", now))
+    # the reserve list is no more (1.2.198; CICT, 17 November 2026: "remove the reserve list condition" - of the institutions on
+    # it: "Selected, like the 551"): each becomes a selected Participating Institution, once, with a line of the audit log. The
+    # mark holds the number of them; a second mark holds them, for the mail that tells each of it once the portal has started
+    # ("for the reserve list send an email": heis.mail_reserve_selected)
+    if not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.reserve_off_1117'").fetchone():
+        moved = conn.execute("SELECT id, ref FROM institutions WHERE status = 'reserve' ORDER BY id").fetchall()
+        conn.executemany(
+            "INSERT INTO audit_log(user_id, actor, action, entity, entity_id, detail, ip, created_at) VALUES(NULL,?,?,?,?,?,'',?)",
+            [("release 1.2.198", "institution_accepted", "institution", r["id"],
+              json.dumps({"ref": r["ref"], "was": "reserve", "note": "the reserve list is no more (CICT, 17 November 2026)"}),
+              now) for r in moved])
+        conn.execute("UPDATE institutions SET status = 'accepted', updated_at = ? WHERE status = 'reserve'", (now,))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)",
+                     ("migrate.reserve_off_1117", str(len(moved)), now))
+        conn.execute("INSERT OR REPLACE INTO settings(key, value, updated_at) VALUES(?,?,?)",
+                     ("migrate.reserve_off_1117.mail", json.dumps([r["id"] for r in moved]), now))
     if not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.revised_do'").fetchone():
         for key in REVISED_DO_DATES:
             conn.execute("UPDATE settings SET value = ?, updated_at = ? WHERE key = ?", (DEFAULT_SETTINGS[key], now, key))

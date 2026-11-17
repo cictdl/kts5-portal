@@ -70,7 +70,8 @@ def test_the_dashboard_says_marks_recorded_for_each_state():
         assert '<td class="num dash-marks">–</td>' in _row(page, code), code
     foot = page[page.index("<tfoot>"):page.index("</tfoot>")]
     assert '<td class="num dash-marks"><bdi>2 of 5</bdi></td>' in foot
-    assert ("Marks recorded: of the institutions that the Nodal Institution has selected or placed on its reserve list, those whose "
+    # the sentence without the reserve list since 1.2.198 (tests/test_no_reserve_1117.py)
+    assert ("Marks recorded: of the institutions that the Nodal Institution has selected, those whose "
             "marks under the Standard Operating Procedure (Annexure-V) are recorded on the portal.") in page
     # the note of the square and the heading of the State/UT
     tile = page[page.index('href="#d-TN"'):]

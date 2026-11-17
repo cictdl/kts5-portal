@@ -69,7 +69,9 @@ def make_app(**settings):
         # ... and "Marks recorded" on the dashboard, off since 1.2.191 (tests/test_marks_hidden_1116.py)
         # ... and the card "Yet to nominate a Nodal Officer" and the button of the one-page report on the page of the Nodal
         # Institutions, hidden since 1.2.195 (tests/test_nodal_pending_1116.py)
-        for key in ("figures.assessment", "dashboard.table", "figures.percent", "progress.flow", "dashboard.marks", "nodal.pending", "nodal.report"):
+        # ... and the reserve list of the Console, no more since 1.2.198 (tests/test_no_reserve_1117.py)
+        for key in ("figures.assessment", "dashboard.table", "figures.percent", "progress.flow", "dashboard.marks", "nodal.pending", "nodal.report",
+                    "hei.reserve_list"):
             set_setting(key, "1")
     return app
 

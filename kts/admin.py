@@ -1120,17 +1120,22 @@ def institutions():
             abort(404)
         action = request.form.get("action")
         note = (request.form.get("note") or "").strip()[:500]
+        # the reserve list is no more (1.2.198; CICT, 17 November 2026): offered, and spoken of, only where Settings switch it on
+        reserve_on = get_setting("hei.reserve_list") == "1"
+        if action == "reserve" and not reserve_on:
+            abort(400)
+        or_reserve = ", or put on the reserve list," if reserve_on else ""
         # an institution identified by the Nodal Institution is selected once it has registered with its invitation (1.2.173)
         if action in ("accept", "reserve") and (row["status"] == "identified"
                                                 or (HEI.never_registered(row) and not HEI.busy_reason(row))):
             again = "Invite again" if row["status"] == "identified" else "↩ Back to invited"
-            flash(f"{row['name']} has not completed its registration yet: it is selected, or put on the reserve list, once it has "
+            flash(f"{row['name']} has not completed its registration yet: it is selected{or_reserve} once it has "
                   f"registered with its invitation, on its marks of Annexure-V ({again} mails the link once more).", "error")
             return redirect(back)
         # selected, or put on the reserve list, on the marks of the Evaluation Committee (Annexure-V), recorded first (1.2.174)
         if action in ("accept", "reserve") and row["sop_total"] is None and get_setting("hei.marks_first") == "1":
-            flash(f"{row['name']}: record the marks of the Evaluation Committee first (Marks, Annexure-V). An institution is selected, "
-                  f"or put on the reserve list, on its marks.", "error")
+            flash(f"{row['name']}: record the marks of the Evaluation Committee first (Marks, Annexure-V). An institution is selected"
+                  f"{or_reserve} on its marks.", "error")
             return redirect(back)
         # selected, put on the reserve list or declined before it registered: back to identified, invited again (1.2.173)
         if action == "reinvite":
@@ -1153,8 +1158,8 @@ def institutions():
                           f"AND status = 'accepted' AND id != ?", (*group, row["id"]), one=True)["n"]
             if cap and taken >= cap:
                 flash(f"{HEI.label_of(row['state'], 'en')} has {taken} accepted institutions: that is the number Annexure-I prescribes for it "
-                      f"(Settings › Participating institutions). The others may be placed on the reserve list, which has no upper limit.",
-                      "error")
+                      f"(Settings › Participating institutions)."
+                      + (" The others may be placed on the reserve list, which has no upper limit." if reserve_on else ""), "error")
                 return redirect(back)
             status = "accepted"
         elif action == "reserve":
@@ -1234,6 +1239,7 @@ def institutions():
                            select_end=settings.get("hei.select_end"), unmarked=[(u, unmarked[u]) for u in units if unmarked.get(u)],
                            reserve_public=settings.get("hei.public") == "1" and settings.get("hei.reserve_public") == "1",
                            marks_first=settings.get("hei.marks_first") == "1",
+                           reserve_on=settings.get("hei.reserve_list") == "1",
                            sop_max=sum(m for _k, _c, m, *_ in HEI.SOP), benchmark=HEI.SOP_BENCHMARK,
                            marks={r["id"]: HEI.sop_marks(r) for r in rows[:INST_ROWS_SHOWN]}, order=request.args.get("order", ""))
 
@@ -1272,7 +1278,7 @@ def institution_marks(iid):
     return render_template("console/institution_marks.html", row=row, marks=marks, errors=errors, note=note, sop=HEI.SOP,
                            legacy=HEI.sop_legacy(row),
                            benchmark=HEI.SOP_BENCHMARK, allocation=HEI.allocation_of(row["state"]),
-                           marks_first=get_setting("hei.marks_first") == "1")
+                           marks_first=get_setting("hei.marks_first") == "1", reserve_on=get_setting("hei.reserve_list") == "1")
 
 
 @bp.route("/institutions/evaluation.xlsx")
@@ -2054,6 +2060,7 @@ SETTING_GROUPS = [
         ("hei.select_end", "Last date for the Nodal Institutions to select the Participating Institutions (YYYY-MM-DD)", "date"),
         ("hei.max_per_state", "Otherwise: institutions accepted in one State/UT at most, the same for all (0: no limit)", "number"),
         ("hei.public", "Show the participating institutions on the website, State/UT by State/UT", "bool"),
+        ("hei.reserve_list", "The Nodal Institutions keep a reserve list of institutions: the button “Reserve list” and the column “Reserve” of Console › Institutions (off since 17 November 2026: there is no reserve list, and the institutions that were on it are selected)", "bool"),
         ("hei.reserve_public", "The public pages list the institutions of the reserve list with the Participating Institutions of their State/UT and count them with them, not told apart (off: only the institutions selected)", "bool"),
         ("hei.marks_first", "An institution is selected, or put on the reserve list, only once the marks of Annexure-V are recorded for it (off: the marks may be recorded at a later stage)", "bool"),
         ("join.on", "Show the State/UT pages for the registration of institutions (/join), with their links and A4 posters", "bool"),

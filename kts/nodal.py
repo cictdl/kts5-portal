@@ -116,13 +116,18 @@ def figures(states, now=None):
     return per, total
 
 
+def _with_reserve():
+    """The words ", with a reserve list" of the mails to the Nodal Officers, while the Console keeps one (hei.reserve_list; off since 1.2.198)."""
+    return ", with a reserve list" if get_setting("hei.reserve_list") == "1" else ""
+
+
 def account_paragraph(states):
     """The part of the mail of a new account that a Nodal Officer reads."""
     from .heis import with_covered
     names = ", ".join(rows_of(with_covered(list(states))))   # the row of Annexure-I: Kerala and Lakshadweep (1.2.135)
     text = (f"As Nodal Officer for {names}, you scrutinise the institutions of your State/UT that register on the portal, record "
             f"the marks of the Evaluation Committee on the criteria of Annexure-V of the D.O. letter of 31 October 2026 and select "
-            f"the number of Participating Institutions that Annexure-I prescribes, with a reserve list: Console > Institutions. "
+            f"the number of Participating Institutions that Annexure-I prescribes{_with_reserve()}: Console > Institutions. "
             f"Then you see the applications of the students the Participating Institutions nominate, with their photograph, ID "
             f"proof and signed nomination form, and you verify them: Console > Verification queue. Only verified students are "
             f"consolidated by CICT into the list of the selected students.")
@@ -240,7 +245,7 @@ def signin_mail(user, now=None):
              f"• The institutions of {names} register on the portal" + (f" up to {long_date(hei_end)}" if hei_end else "")
              + f": {registered} registered so far" + (f", {pending} awaiting your decision" if pending else "") + ".",
              f"• The Nodal Institution selects the {number} Participating Institutions that Annexure-I prescribes"
-             + (f" by {long_date(select_end)}" if select_end else "") + ", with a reserve list, in the Console (Institutions).",
+             + (f" by {long_date(select_end)}" if select_end else "") + f"{_with_reserve()}, in the Console (Institutions).",
              "• Each selected institution nominates one student" + (f" by {long_date(reg_end)}" if reg_end else "")
              + "; the Nodal Officers verify the nominations" + (f" by {long_date(end)}" if end else "") + "."
              + (f" {total['awaiting']} application(s) await your verification already." if total["awaiting"] else ""),

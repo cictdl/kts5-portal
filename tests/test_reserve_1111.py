@@ -439,7 +439,8 @@ def test_the_texts_in_23_languages():
     en = CATALOG["en"]
     # the Guidelines give the key points of the Ministry's letter: without its 20 per cent, and without a sentence of CICT's own
     assert old not in en["ng.rank"] and "limit" not in en["ng.rank"]
-    assert en["ng.rank"].endswith("the other eligible institutions, in the order of their marks, form the reserve list.")
+    # ... and without the reserve list since 1.2.198 (tests/test_no_reserve_1117.py)
+    assert en["ng.rank"].endswith("select only the number prescribed for the State/UT in Annexure-I.")
     assert en["hei.any_number"].startswith("Any number of institutions of a State/UT may register.")
     assert en["hei.reserve_h"] == "Reserve list"
     app = _app()

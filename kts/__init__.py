@@ -320,6 +320,14 @@ def create_app(config_object=Config):
             made = qbank.seed_k108(app)
             if made:
                 app.logger.info("Question bank: %d questions on the 108 Thirukkural made in the languages of the test.", made)
+    # the institutions that came off the reserve list are told that they are selected (1.2.198): once, the database being ready
+    with app.app_context():
+        try:
+            told = heis.mail_reserve_selected()
+            if told:
+                app.logger.info("The reserve list is no more: %d institutions that were on it are told by mail that they are selected.", told)
+        except Exception:  # a mail never stands in the way of the start of the portal
+            app.logger.exception("the mails to the institutions of the reserve list were not queued")
     return app
 
 

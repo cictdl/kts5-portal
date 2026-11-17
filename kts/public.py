@@ -419,7 +419,7 @@ def submit_guide():
              ("hs.c8", {"presentation": _ui("Presentation video")})]
     nodal = [("hs.n1", {"nodal_login": nodal_login}),
              ("hs.n2", {"institutions": _ui("Institutions"), "marks": _ui("Marks"), "select_inst": _ui("✓ Select"),
-                        "reserve": _ui("Reserve"), "annex2": _ui("Excel (Annexure-II)"), "date": day("hei.select_end")}),
+                        "annex2": _ui("Excel (Annexure-II)"), "date": day("hei.select_end")}),
              ("hs.n3", {"progress": _ui("Progress"), "progress_excel": _ui("Excel (all, with contacts)")}),
              ("hs.n4", {"queue": _ui("Verification queue"), "verify": _ui("✓ Verify"), "reject": _ui("✗ Reject"),
                         "date": day("verify.end")}),

@@ -42,7 +42,8 @@ def test_the_three_parts_with_their_dates_and_links(site):
     assert "<b>Register your institution by 18 Nov 2026</b>" in page and "<b>Submit the nomination by 24 Nov 2026</b>" in page
     assert "<b>Assess your students by 23 Nov 2026</b>" in page and "Between 22 Oct 2026" not in page
     # the Nodal Officers accept the institutions up to the last day of the selection (the revised D.O. letter, 1.2.110)
-    assert "and select the number that Annexure-I prescribes, with a reserve list, by 19 Nov 2026." in page
+    # without a reserve list since 1.2.198 (tests/test_no_reserve_1117.py)
+    assert "and select the number that Annexure-I prescribes, by 19 Nov 2026." in page
     assert "Selection of the Participating Institutions by the Nodal Institutions</div><div class=\"val\">19 Nov 2026</div>" in page
     assert "<b>Verify the registered students by 05 Dec 2026</b>" in page
     assert not any(p in page for p in PLACEHOLDERS)

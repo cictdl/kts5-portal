@@ -476,6 +476,47 @@ def mail_invited(row):
                   f"Central Institute of Classical Tamil, Chennai")
 
 
+RESERVE_MAIL_MARK = "migrate.reserve_off_1117.mail"
+
+
+def mail_reserve_selected():
+    """
+    The mail to the institutions that came off the reserve list when it was done away with (1.2.198; CICT, 17 November 2026: "for
+    the reserve list send an email"). init_db makes them selected and leaves them in a mark; here, once, at the start of the
+    portal, each is told that it is selected, with the steps and the days of a selected institution (to its Head and its
+    Institutional Coordinator). The mark is turned before the first mail is queued, so that none goes out twice; nothing is mailed
+    after the last day of the nomination (a copy of the database of before, restored later). Gives the number of institutions told.
+    """
+    mark = query("SELECT value FROM settings WHERE key = ?", (RESERVE_MAIL_MARK,), one=True)
+    try:
+        ids = json.loads(mark["value"]) if mark else None
+    except ValueError:
+        ids = None
+    if not isinstance(ids, list) or not ids:
+        return 0
+    late = now_ist().date().isoformat() > (get_setting("reg.end") or "9999")[:10]
+    # the mark is turned only by the one that still finds the list in it: two starts of the portal at once send the mails once
+    conn = get_db()
+    turned = conn.execute("UPDATE settings SET value = ?, updated_at = ? WHERE key = ? AND value = ?",
+                          ("not mailed: after the last day of the nomination" if late else f"mailing {len(ids)} institutions",
+                           utcnow(), RESERVE_MAIL_MARK, mark["value"])).rowcount
+    conn.commit()
+    if late or turned != 1:
+        return 0
+    told = 0
+    for iid in ids:
+        row = query("SELECT * FROM institutions WHERE id = ? AND status = 'accepted'", (iid,), one=True)
+        if row is None or not _to_institution(row):
+            continue
+        mail_decision(row, lead=(
+            "Your institution is now a selected Participating Institution of Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom. "
+            f"The Nodal Institution of {unit_name(row['state'])} had placed it in the reserve list; the reserve list has been "
+            "discontinued, and every institution that was in it is selected."))
+        told += 1
+    execute("UPDATE settings SET value = ?, updated_at = ? WHERE key = ?", (f"mailed {told} institutions", utcnow(), RESERVE_MAIL_MARK))
+    return told
+
+
 def counted_statuses():
     """
     The statuses that the public pages count as Participating Institutions: 'accepted', and 'reserve' while the reserve list is
@@ -566,7 +607,11 @@ def mail_received(row):
                 for u in officers])
 
 
-def mail_decision(row):
+def mail_decision(row, lead=None):
+    """
+    The mail of a decision to the Head of the Institution and the Institutional Coordinator. lead: the first sentences of the mail
+    of a selected institution, where it is not a selection by the Nodal Institution that is told (1.2.198, mail_reserve_selected).
+    """
     base = current_app.config["BASE_URL"]
     if row["status"] == "reserve":
         subject = f"KTS 5.0: {row['name']} is in the reserve list"
@@ -580,8 +625,10 @@ def mail_decision(row):
                 f"\nFor any question, please write to the Nodal Officer of your State/UT or to CICT.\n\nCentral Institute of Classical Tamil, Chennai")
     elif row["status"] == "accepted":
         subject = f"KTS 5.0: {row['name']} is a Participating Institution"
-        body = (f"Dear Sir/Madam,\n\nThe Nodal Institution of {unit_name(row['state'])} has selected your institution as a Participating "
-                f"Institution of Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom.\n\nReference: {row['ref']}\n{_details(row)}\n"
+        body = ("Dear Sir/Madam,\n\n"
+                + (lead or f"The Nodal Institution of {unit_name(row['state'])} has selected your institution as a Participating "
+                           f"Institution of Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom.")
+                + f"\n\nReference: {row['ref']}\n{_details(row)}\n"
                 f"Please assess your interested students on the Thirukkural by {_by(get_setting('camp.to'))} (a short written test, "
                 f"an oral interaction, a presentation, an essay, a quiz or a combination of these; fair, documented and approved by "
                 f"the Head of the Institution or an authorised committee) and nominate one student on merit, with one Faculty "

@@ -245,7 +245,8 @@ def test_the_guidelines_the_guide_and_the_drive_pages():
     client = make_app(ADMIN_PASSWORD=None).test_client()
     page = _get(client, "/guidelines-for-nodal-institutions?lang=en")
     assert "Only the applications found eligible after scrutiny" in page and "<h2 id=\"ng-replace\">Replacement</h2>" in page
-    assert "the next eligible institution from the approved reserve list may be included" in page
+    # no reserve list since 1.2.198 (tests/test_no_reserve_1117.py): the next in the order of the marks
+    assert "the next eligible institution in the order of the marks may be included" in page
     assert "Dr. R. Bhuvaneshwari, Registrar, Central Institute of Classical Tamil (CICT), Chennai · registrar@cict.in · 9790325518 / 9965734497" in page
     guide = _get(client, "/how-to-take-part?lang=en")
     assert "After the nomination" in guide and "By 23 Nov 2026" in guide and "22 Oct 2026" not in guide
