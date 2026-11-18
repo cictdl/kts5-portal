@@ -141,8 +141,8 @@ def test_the_key_dates():
         box = box[:box.index("</div>\n</div>") if "</div>\n</div>" in box else 6000]
         text = re.sub(r"<[^>]+>", "|", box)
         for line in ("KTS 5.0 – Key dates", "Registration and selection", "Online programme", "Research and submission",
-                     "Up to 18 Nov 2026", "Last date for the registration of institutions",
-                     "19 Nov 2026", "Selection of the Participating Institutions by the Nodal Institutions",
+                     "Up to 21 Nov 2026", "Last date for the registration of institutions",
+                     "22 Nov 2026", "Selection of the Participating Institutions by the Nodal Institutions",
                      "By 23 Nov 2026", "Thirukkural assessment of the interested students by each Participating Institution",
                      "24 Nov 2026", "Each Participating Institution nominates one student on merit through the CICT portal",
                      "28 Nov 2026", "Inaugural function of KTS 5.0", "12 Dec 2026", "Valedictory function of KTS 5.0",
@@ -156,7 +156,7 @@ def test_the_key_dates():
     page = _get(client, "/?lang=hi")
     box = page[page.index('<div class="kd-box">'):]
     box = box[:box.index("</div>\n</div>") if "</div>\n</div>" in box else 6000]
-    assert "18-11-2026" in box and "19-11-2026" in box and "23-11-2026" in box and "16-11-2026" not in box
+    assert "21-11-2026" in box and "22-11-2026" in box and "23-11-2026" in box and "16-11-2026" not in box
 
 
 def test_the_schedule_without_the_central_online_test():

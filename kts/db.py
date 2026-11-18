@@ -735,8 +735,9 @@ DEFAULT_SETTINGS = {
     "backup.keep": "28",
     # the participating institutions (1.2.41, kts/heis.py)
     "hei.open": "1",
-    # 18 November 2026 since 1.2.171 (CICT, 10 November 2026); 15 November in the D.O. letter of 31 October
-    "hei.end": "2026-11-18",
+    # 21 November 2026 since 1.2.203 (CICT, 18 November 2026: "Up to 21 Nov 2026 Last date for the registration of institutions");
+    # 18 November since 1.2.171 (CICT, 10 November 2026); 15 November in the D.O. letter of 31 October
+    "hei.end": "2026-11-21",
     "hei.max_per_state": "0",
     # the revised D.O. letter (26 October 2026): the Nodal Institution selects only the number of Participating Institutions
     # that Annexure-I prescribes for its State/UT (data/nodal_heis.json), between the close of registration and this day
@@ -745,7 +746,9 @@ DEFAULT_SETTINGS = {
     # selection once the reserve list was no more: off again, once, with hei.max_per_state (migrate.cap_off_1117), and neither is
     # a setting of the Console any more (1.2.199; CICT, 17 November 2026: "No higher ceiling add for all the states")
     "hei.cap_annexure": "0",
-    "hei.select_end": "2026-11-19",   # 19 November since the Ministry's revision of 10 November 2026 (1.2.172; 16-17 before)
+    # 22 November 2026 since 1.2.203 (CICT, 18 November 2026: "22 Nov 2026 Selection of the Participating Institutions by the Nodal
+    # Institutions"); 19 November by the Ministry's revision of 10 November 2026 (1.2.172; 16-17 before)
+    "hei.select_end": "2026-11-22",
     "hei.public": "1",
     # the reserve list of each row of Annexure-I on /institutions, in the order of the marks, without them (1.2.174)
     "hei.reserve_public": "1",
@@ -891,8 +894,8 @@ RETIRED_DEFAULTS = {
     # on 22 October 2026 (1.2.95): registration 22-29 October, and every later date a week on
     "launch.at": ["2026-10-14T17:00"],
     "launch.until": ["2026-10-22"],
-    "hei.end": ["2026-10-21", "2026-10-29", "2026-11-10", "2026-11-15"],
-    "hei.select_end": ["2026-11-15", "2026-11-17"],
+    "hei.end": ["2026-10-21", "2026-10-29", "2026-11-10", "2026-11-15", "2026-11-18"],      # 18 November up to 1.2.202
+    "hei.select_end": ["2026-11-15", "2026-11-17", "2026-11-19"],                           # 19 November up to 1.2.202
     "orientation.by": ["2026-12-10"],
     "camp.from": ["2026-10-15"],
     "camp.to": ["2026-10-21", "2026-10-29", "2026-11-20", "2026-11-19"],
@@ -1139,6 +1142,11 @@ RETIRED_EVENT_DAYS["hei_reg"].append(("2026-11-15T00:00", None))
 for _key, _days in (("hei_select", ("2026-11-16T00:00", "2026-11-17T00:00")), ("assess", ("2026-11-19T00:00", None)),
                     ("selection", ("2026-11-21T00:00", "2026-12-05T00:00"))):
     RETIRED_EVENT_DAYS.setdefault(_key, []).append(_days)
+
+# the registration of institutions up to 21 November 2026 and their selection on 22 November (CICT, 18 November 2026, 1.2.203):
+# the days of the two steps up to 1.2.202
+RETIRED_EVENT_DAYS["hei_reg"].append(("2026-11-18T00:00", None))
+RETIRED_EVENT_DAYS["hei_select"].append(("2026-11-19T00:00", None))
 
 # Steps of the timeline that the revised D.O. letter (26 October 2026) no longer has: (title, starts_at, ends_at) as the
 # portal put them in. Each is taken off the schedule once (published = 0), where it still holds them; nothing is deleted.
@@ -1547,12 +1555,18 @@ def _first_passwords(app, conn, now):
 
 
 NODAL_NOTICE_LINK = "/nodal-institutions"
-# the days in the circular: those of the Ministry's revision of 10 November 2026 (1.2.172), and of the D.O. letter of 31 October
-# 2026 before, which a circular that a database holds unchanged gives up
-NODAL_DAYS = ("up to 18 November 2026. The Nodal Institution of each State/UT scrutinises them and selects the prescribed number "
-              "on 19 November 2026, with a reserve list; each selected Participating Institution assesses its interested students "
+# the days in the circular: the registration up to 21 November and the selection on 22 November 2026 since 1.2.203 (CICT,
+# 18 November 2026); those of the Ministry's revision of 10 November 2026 before (1.2.172), and of the D.O. letter of 31 October
+# 2026 before that, which a circular that a database holds unchanged gives up
+NODAL_DAYS = ("up to 21 November 2026. The Nodal Institution of each State/UT scrutinises them and selects the prescribed number "
+              "on 22 November 2026, with a reserve list; each selected Participating Institution assesses its interested students "
               "by 23 November and nominates one on merit on 24 November 2026 (the timeline as revised by the Ministry of Education "
-              "on 10 November 2026).")
+              "on 10 November 2026; the registration of institutions extended to 21 November and the selection moved to "
+              "22 November 2026).")
+NODAL_DAYS_1202 = ("up to 18 November 2026. The Nodal Institution of each State/UT scrutinises them and selects the prescribed number "
+                   "on 19 November 2026, with a reserve list; each selected Participating Institution assesses its interested students "
+                   "by 23 November and nominates one on merit on 24 November 2026 (the timeline as revised by the Ministry of Education "
+                   "on 10 November 2026).")
 NODAL_DAYS_1171 = ("up to 15 November 2026. The Nodal Institution of each State/UT scrutinises them and selects the prescribed "
                    "number on 16 and 17 November 2026, with a reserve list; each selected Participating Institution assesses its "
                    "interested students by 19 November and nominates one on merit by 20 November 2026.")
@@ -1884,6 +1898,19 @@ def init_db(app):
                      (LAUNCH_NOTICE[1], now, LAUNCH_NOTICE[0], LAUNCH_BODY_1171))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
 
+    # The registration of institutions up to 21 November and their selection on 22 November 2026 (1.2.203; CICT, 18 November
+    # 2026): the circular of the Nodal Institutions and the notice of the launch take the two days where a database holds their
+    # text of before unchanged, once
+    mark = "migrate.dates_1118.notices"
+    if not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
+        if seed_path.exists():
+            title, body = nodal_notice(json.loads(seed_path.read_text(encoding="utf-8")))
+            conn.execute("UPDATE notices SET body = ?, updated_at = ? WHERE title = ? AND body = ?",
+                         (body, now, title, body.replace(NODAL_DAYS, NODAL_DAYS_1202)))
+        conn.execute("UPDATE notices SET body = ?, updated_at = ? WHERE title = ? AND body = ?",
+                     (LAUNCH_NOTICE[1], now, LAUNCH_NOTICE[0], LAUNCH_BODY_1202))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
+
     # The D.O. letter of 13 November 2026 to the States/UTs, with the revised timeline (1.2.189): pinned among the notices and
     # circulars with the letter itself (data/notices/), put in once for each database; none is added when a notice with its title
     # is there already (as when CICT put the letter in itself). The notice of the letter of 31 October says that its timeline has
@@ -1964,6 +1991,14 @@ def init_db(app):
         conn.close()
 
 
+# the days in the notice of the launch: the registration up to 21 November and the selection on 22 November 2026 since 1.2.203
+# (CICT, 18 November 2026)
+LAUNCH_DAYS = (
+    "21 November 2026; the Nodal Institutions select the Participating Institutions on 22 November, and each selected "
+    "Participating Institution assesses its interested students by 23 November and nominates one student on merit through the "
+    "portal on 24 November 2026 (the D.O. letter of the Ministry of Education of 31 October 2026, its timeline as revised by the "
+    "Ministry on 10 November 2026; the registration of institutions extended to 21 November and the selection moved to "
+    "22 November 2026).")
 LAUNCH_NOTICE = (
     "Launch of the KTS 5.0 web portal and registration by the Hon'ble Minister of Education, 22 October 2026",
     "The Hon'ble Minister of Education, Shri Pralhad Joshi, launched the web portal of the fifth edition of Kashi Tamil "
@@ -1971,17 +2006,18 @@ LAUNCH_NOTICE = (
     "28 November to 12 December 2026 under the theme “Thirukkural Payilvom – Thirukkural Abhyas Karen”. The programme "
     "seeks to celebrate the cultural and civilisational bonds between Kashi and Tamil Nadu and to promote the timeless "
     "ethical and moral values of the Thirukkural.\n\nAll interested higher educational institutions register on kts.cict.in up to "
-    "18 November 2026; the Nodal Institutions select the Participating Institutions on 19 November, and each selected "
-    "Participating Institution assesses its interested students by 23 November and nominates one student on merit through the "
-    "portal on 24 November 2026 (the D.O. letter of the Ministry of Education of 31 October 2026, its timeline as revised by the "
-    "Ministry on 10 November 2026).",
+    + LAUNCH_DAYS,
 )
-# its days up to 1.2.171 (the D.O. letter of 31 October 2026): a notice that a database holds unchanged takes the revised ones
-LAUNCH_BODY_1171 = LAUNCH_NOTICE[1].replace(
+# its days up to 1.2.202 (the Ministry's revision of 10 November 2026) and up to 1.2.171 (the D.O. letter of 31 October 2026): a
+# notice that a database holds unchanged takes the present ones
+LAUNCH_BODY_1202 = LAUNCH_NOTICE[1].replace(
+    LAUNCH_DAYS,
     "18 November 2026; the Nodal Institutions select the Participating Institutions on 19 November, and each selected "
     "Participating Institution assesses its interested students by 23 November and nominates one student on merit through the "
     "portal on 24 November 2026 (the D.O. letter of the Ministry of Education of 31 October 2026, its timeline as revised by the "
-    "Ministry on 10 November 2026).",
+    "Ministry on 10 November 2026).")
+LAUNCH_BODY_1171 = LAUNCH_NOTICE[1].replace(
+    LAUNCH_DAYS,
     "15 November 2026; the Nodal Institutions select the Participating Institutions on 16 and 17 November, and each selected "
     "Participating Institution assesses its interested students by 19 November and nominates one student on merit through the "
     "portal by 20 November 2026 (the D.O. letter of the Ministry of Education of 31 October 2026).")

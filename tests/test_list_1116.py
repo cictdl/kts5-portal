@@ -51,7 +51,7 @@ def test_how_to_take_part_for_institutions_and_nodal_officers_only(site):
     assert re.findall(r'<div class="res-tabs no-print">(.*?)</div>', page, re.S)[0].count("<a ") == 2
     inst = _part(page, "institutions")
     titles = re.findall(r'<li style="margin-bottom:12px"><b>([^<]+)</b>', inst)
-    assert titles == ["Register your institution by 18 Nov 2026", "Sign in to the institution&#39;s page", "Assess your students by 23 Nov 2026",
+    assert titles == ["Register your institution by 21 Nov 2026", "Sign in to the institution&#39;s page", "Assess your students by 23 Nov 2026",
                       "Submit the nomination by 24 Nov 2026", "Campus activities and report", "After the nomination"]
     assert "Select one student on merit" not in page
     # step 3: what the institutions shall use, the link "Online Assessment", and how it is done

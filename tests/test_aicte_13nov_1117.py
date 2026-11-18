@@ -21,8 +21,9 @@ TITLE = "Circular of AICTE, 13 November 2026: registration and student participa
 def test_the_days_of_the_circular_are_the_days_of_the_portal():
     from kts.db import AICTE13_NOTICE, DEFAULT_SETTINGS
     body = AICTE13_NOTICE[1]
-    for words, key, day in (("the last date of registration, 18 November 2026", "hei.end", "2026-11-18"),
-                            ("selection by 19 November", "hei.select_end", "2026-11-19"),
+    # the circular gives 18 and 19 November for the first two; the portal has 21 and 22 November since 1.2.203
+    for words, key, day in (("the last date of registration, 18 November 2026", "hei.end", "2026-11-21"),
+                            ("selection by 19 November", "hei.select_end", "2026-11-22"),
                             ("by 23 November 2026", "camp.to", "2026-11-23"),
                             ("by 24 November 2026", "reg.end", "2026-11-24"),
                             ("28 November – 12 December 2026", "kts.start", "2026-11-28"),

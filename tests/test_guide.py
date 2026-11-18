@@ -39,13 +39,13 @@ def test_the_three_parts_with_their_dates_and_links(site):
         assert heading in page
     assert "For students" not in page
     # the dates of the settings in the steps
-    assert "<b>Register your institution by 18 Nov 2026</b>" in page and "<b>Submit the nomination by 24 Nov 2026</b>" in page
+    assert "<b>Register your institution by 21 Nov 2026</b>" in page and "<b>Submit the nomination by 24 Nov 2026</b>" in page
     assert "<b>Assess your students by 23 Nov 2026</b>" in page and "Between 22 Oct 2026" not in page
     # the Nodal Officers accept the institutions up to the last day of the selection (the revised D.O. letter, 1.2.110)
     # without a reserve list since 1.2.198 (tests/test_no_reserve_1117.py)
     # no selection of institutions since 1.2.201; the step of the Nodal Officer says so since 1.2.202
     assert "see the institutions registered for your State/UT: every institution that registers is a Participating Institution" in page
-    assert "Selection of the Participating Institutions by the Nodal Institutions</div><div class=\"val\">19 Nov 2026</div>" in page
+    assert "Selection of the Participating Institutions by the Nodal Institutions</div><div class=\"val\">22 Nov 2026</div>" in page
     assert "<b>Verify the registered students by 05 Dec 2026</b>" in page
     assert not any(p in page for p in PLACEHOLDERS)
     for href in ('href="/institutions"', 'href="/institutions/register"', 'href="/institution/login"',

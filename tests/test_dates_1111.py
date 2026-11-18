@@ -15,7 +15,8 @@ import fitz
 from conftest import ROOT, make_app
 from test_timeline import S, _settings, _sql, _start
 
-NEW = {"hei.end": "2026-11-18", "hei.select_end": "2026-11-19", "camp.to": "2026-11-23", "reg.end": "2026-11-24",
+# the first two days are those of 1.2.203 (CICT, 18 November 2026: 21 and 22 November; 18 and 19 by the revision of 10 November)
+NEW = {"hei.end": "2026-11-21", "hei.select_end": "2026-11-22", "camp.to": "2026-11-23", "reg.end": "2026-11-24",
        "remind.test_by": "2026-11-22", "remind.select_by": "2026-11-23", "remind.register_by": "2026-11-24"}
 OLD = {"hei.end": "2026-11-18", "hei.select_end": "2026-11-17", "camp.to": "2026-11-19", "reg.end": "2026-11-20",
        "remind.test_by": "2026-11-18", "remind.select_by": "2026-11-19", "remind.register_by": "2026-11-20"}
@@ -39,7 +40,7 @@ def test_the_days():
     assert {"2026-10-21", "2026-11-20"} <= set(RETIRED_DEFAULTS["remind.register_by"])
     # the schedule, in the order of its days
     assert (S["hei_reg"]["starts"], S["hei_select"]["starts"], S["hei_select"].get("ends"), S["assess"]["starts"]) == (
-        "2026-11-18", "2026-11-19", None, "2026-11-23")
+        "2026-11-21", "2026-11-22", None, "2026-11-23")
     assert (S["selection"]["starts"], S["selection"]["ends"]) == ("2026-11-25", "2026-12-05")
     keys = [k for k in S]
     assert keys.index("hei_reg") < keys.index("hei_select") < keys.index("assess") < keys.index("selection")
@@ -62,7 +63,7 @@ def test_a_live_database_takes_the_revision_once():
     settings = _settings(again)
     assert {k: settings[k] for k in NEW} == dict(NEW, **{"camp.to": "2026-11-21"})   # CICT's own day stays
     rows = {t: (s, e) for t, s, e in _sql(again, "SELECT title, starts_at, ends_at FROM events")}
-    assert rows[S["hei_select"]["title"]] == ("2026-11-19T00:00", None)
+    assert rows[S["hei_select"]["title"]] == ("2026-11-22T00:00", None)      # 22 November since 1.2.203
     assert rows[S["assess"]["title"]] == ("2026-11-23T00:00", None)
     assert rows[S["selection"]["title"]] == ("2026-11-25T00:00", "2026-12-05T00:00")
     notices = _sql(again, "SELECT title, body, pinned, link FROM notices WHERE published = 1 ORDER BY pinned DESC, created_at DESC, id DESC")
@@ -87,13 +88,13 @@ def test_the_pages_and_the_notice():
     client = app.test_client()
     page = client.get("/schedule?lang=en").get_data(as_text=True)
     box = re.sub(r"<[^>]+>", "|", page[page.index('<div class="kd-box">'):][:6000])
-    for line in ("|Up to 18 Nov 2026|", "|19 Nov 2026|", "|By 23 Nov 2026|", "|24 Nov 2026|", "|28 Nov 2026|"):
+    for line in ("|Up to 21 Nov 2026|", "|22 Nov 2026|", "|By 23 Nov 2026|", "|24 Nov 2026|", "|28 Nov 2026|"):
         assert line in box, line
     assert "16 Nov 2026" not in box and "– 19 Nov" not in box
     with app.test_request_context():
         words = finder.hub(all_settings(), "en")["words"]
     assert (words["hei_end"], words["select"], words["camp_to"], words["reg_end"]) == (
-        "18 November 2026", "19 November 2026", "23 November 2026", "24 November 2026")
+        "21 November 2026", "22 November 2026", "23 November 2026", "24 November 2026")
     notices = client.get("/notices?lang=en").get_data(as_text=True)
     assert EXT_NOTICE[0] in notices
     assert "up to 18 November 2026 (earlier 15 November)" in EXT_NOTICE[1] and "24 November 2026 (earlier 20 November)" in EXT_NOTICE[1]

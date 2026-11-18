@@ -21,8 +21,10 @@ FILE = ROOT / "data" / "notices" / "KTS5-DO-letter-13-November-2026.pdf"
 # the annexure of the letter, row by row: the day as the notice writes it, the settings of the portal that hold it, the row of
 # the schedule (data/timeline.json) that shows it
 ANNEXURE = [
-    ("18 November 2026: registration of institutions on kts.cict.in and outreach.", {"hei.end": "2026-11-18"}, ("hei_reg", "2026-11-18", None)),
-    ("19 November 2026: scrutiny and selection of the Participating Institutions.", {"hei.select_end": "2026-11-19"}, ("hei_select", "2026-11-19", None)),
+    # these two days of the letter were the portal's until 1.2.202; since 1.2.203 the portal has 21 and 22 November (CICT,
+    # 18 November 2026), and the notice keeps the days of the letter
+    ("18 November 2026: registration of institutions on kts.cict.in and outreach.", {"hei.end": "2026-11-21"}, ("hei_reg", "2026-11-21", None)),
+    ("19 November 2026: scrutiny and selection of the Participating Institutions.", {"hei.select_end": "2026-11-22"}, ("hei_select", "2026-11-22", None)),
     ("23 November 2026: assessment of the interested students.", {"camp.to": "2026-11-23"}, ("assess", "2026-11-23", None)),
     ("24 November 2026: nomination of one student per institution on the CICT portal.", {"reg.end": "2026-11-24"}, None),
     ("28 November 2026: inaugural function of KTS 5.0 (virtual joining).", {"kts.start": "2026-11-28"}, None),
@@ -53,7 +55,7 @@ def test_every_day_of_the_annexure_is_the_day_of_the_portal():
     with app.app_context():
         set_setting("reg.end", DEFAULT_SETTINGS["reg.end"])      # the tests' own last day of registration (tests/conftest.py)
     page = app.test_client().get("/schedule?lang=en").get_data(as_text=True)
-    for day in ("18 Nov 2026", "19 Nov 2026", "23 Nov 2026", "24 Nov 2026", "28 Nov 2026", "12 Dec 2026", "14 Dec 2026", "15 Dec 2026", "14 Jan 2027"):
+    for day in ("21 Nov 2026", "22 Nov 2026", "23 Nov 2026", "24 Nov 2026", "28 Nov 2026", "12 Dec 2026", "14 Dec 2026", "15 Dec 2026", "14 Jan 2027"):
         assert day in page, day
     main = page[page.index("<main"):page.index("</main>")]      # the foot of the page names the day of the release
     for gone in ("15 Nov 2026", "16 Nov 2026", "17 Nov 2026", "20 Nov 2026"):      # the days of the letter of 31 October

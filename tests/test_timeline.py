@@ -101,7 +101,8 @@ def test_the_dates_of_the_timeline_are_the_defaults():
     # engagement from 15 December 2026 to 14 January 2027
     assert DEFAULT_SETTINGS["reg.start"] == "2026-10-22" and DEFAULT_SETTINGS["reg.end"] == "2026-11-24"   # 1.2.172
     # registration up to 18 November since 1.2.171 (CICT, 10 November 2026), the selection unchanged
-    assert DEFAULT_SETTINGS["hei.end"] == "2026-11-18" and DEFAULT_SETTINGS["hei.select_end"] == "2026-11-19"
+    # ... up to 21 November, and the selection on 22 November, since 1.2.203 (CICT, 18 November 2026; tests/test_dates_1118.py)
+    assert DEFAULT_SETTINGS["hei.end"] == "2026-11-21" and DEFAULT_SETTINGS["hei.select_end"] == "2026-11-22"
     assert DEFAULT_SETTINGS["camp.to"] == "2026-11-23" and DEFAULT_SETTINGS["verify.end"] == "2026-12-05"
     # the central online test of CICT, 10 November 00:00 to 20 November 23:59 (1.2.120)
     assert (DEFAULT_SETTINGS["exam.date"], DEFAULT_SETTINGS["exam.date_to"]) == ("2026-11-10", "2026-11-20")
@@ -207,7 +208,7 @@ def test_the_schedule_shows_the_timeline_in_order(monkeypatch):
     assert past == ""
     places = [upcoming.index("<bdi>" + _text(key) + "</bdi>") for key in KEYS]
     assert places == sorted(places)
-    for day in ("07 Oct 2026", "13 Oct 2026", "22 Oct 2026", "18 Nov 2026", "19 Nov 2026", "23 Nov 2026",
+    for day in ("07 Oct 2026", "13 Oct 2026", "22 Oct 2026", "21 Nov 2026", "22 Nov 2026", "23 Nov 2026",
                 "24 Nov 2026", "25 Nov 2026", "– 05 Dec 2026", "28 Nov 2026", "14 Dec 2026", "12 Dec 2026", "15 Dec 2026",
                 "– 14 Jan 2027", "14 Jan 2027"):
         assert day in upcoming, day
@@ -503,7 +504,7 @@ def test_the_live_database_moves_to_the_revised_letter():
     settings = _settings(again)
     assert {key: settings[key] for key in REVISED_DO_DATES} == {key: DEFAULT_SETTINGS[key] for key in REVISED_DO_DATES}
     assert (settings["hei.end"], settings["hei.select_end"], settings["reg.end"], settings["verify.end"], settings["papers.due"]) == (
-        "2026-11-18", "2026-11-19", "2026-11-24", "2026-12-05", "2027-01-14")
+        "2026-11-21", "2026-11-22", "2026-11-24", "2026-12-05", "2027-01-14")
     assert settings["hei.cap_annexure"] == "0"   # no ceiling since 1.2.178
     rows = {t: (s, e, p) for t, s, e, p in _sql(again, "SELECT title, starts_at, ends_at, published FROM events")}
     for s in SEEDS:
