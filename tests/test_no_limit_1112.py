@@ -53,7 +53,8 @@ def test_the_label_beside_every_register_button():
     assert CATALOG["en"]["hei.no_limit"] == "Any number of institutions of a State/UT may register."
     # the registration form: the whole sentence, not dimmed
     form = client.get("/institutions/register?lang=en").get_data(as_text=True)
-    assert '<p class="hei-any-number" style="max-width:72ch"><b>Any number of institutions of a State/UT may register. The Nodal' in form
+    # ... and, since 1.2.201, that every institution that registers is a Participating Institution (tests/test_all_registered_1117.py)
+    assert '<p class="hei-any-number" style="max-width:72ch"><b>Any number of institutions of a State/UT may register. Every institution' in form
 
 
 def test_no_label_while_registration_is_closed():

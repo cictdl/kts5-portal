@@ -624,6 +624,75 @@ def _to_institution(row):
     return [a for a in dict.fromkeys([row["head_email"], row["coord_email"]]) if a]
 
 
+REGISTERED_LEAD = "Your institution is registered as a Participating Institution of Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom."
+PENDING_MAIL_MARK = "mail.pending_registered_1117"
+
+
+def select_step():
+    """
+    Whether the Nodal Institutions select the Participating Institutions from those registered (hei.select_step). Off since
+    1.2.201 (CICT, 17 November 2026: "every institute is registered not selected"): every institution that registers is a
+    Participating Institution at once.
+    """
+    return get_setting("hei.select_step") == "1"
+
+
+def registered_heading(row):
+    return f"KTS 5.0: {row['name']} is registered as a Participating Institution"
+
+
+def mail_registered(row):
+    """
+    The mails of a registration where every institution that registers is a Participating Institution at once (1.2.201): the
+    institution is told so, with the steps and the days of a Participating Institution; the Nodal Officers of its State/UT are
+    told of it.
+    """
+    base = current_app.config["BASE_URL"]
+    mail_decision(row, lead=REGISTERED_LEAD, heading=f"{registered_heading(row)} ({row['ref']})")
+    officers = [u for u in query("SELECT * FROM users WHERE role = 'nodal' AND active = 1")
+                if row["state"] in with_covered([s for s in (u["states"] or "").split("|") if s])]
+    send_later([(u["email"], f"KTS 5.0: {row['name']} has registered ({row['state']})",
+                 f"Dear {u['name']},\n\nAn institution of {row['state']} has registered as a Participating Institution of KTS 5.0.\n\n"
+                 f"Reference: {row['ref']}\n{_details(row)}\n"
+                 f"It is in the list of the institutions of your State/UT in the console; it assesses its students and nominates one "
+                 f"on merit, and you verify the nomination: {base}/console/institutions\n\nCICT, Chennai")
+                for u in officers])
+
+
+def mail_pending_registered():
+    """
+    The mail to the institutions that awaited the selection when it was done away with (1.2.201; CICT, 17 November 2026, asked
+    whether they are mailed: "Yes, mail them"). init_db makes them Participating Institutions and leaves them in a mark; here,
+    once, at the start of the portal, each is told that it is registered as a Participating Institution, with the steps and the
+    days (to its Head and its Institutional Coordinator). The mark is turned before the first mail is queued, by the one start
+    that still finds the list in it; nothing is mailed after the last day of the nomination. Gives the number told.
+    """
+    mark = query("SELECT value FROM settings WHERE key = ?", (PENDING_MAIL_MARK,), one=True)
+    try:
+        ids = json.loads(mark["value"]) if mark else None
+    except ValueError:
+        ids = None
+    if not isinstance(ids, list) or not ids:
+        return 0
+    late = now_ist().date().isoformat() > (get_setting("reg.end") or "9999")[:10]
+    conn = get_db()
+    turned = conn.execute("UPDATE settings SET value = ?, updated_at = ? WHERE key = ? AND value = ?",
+                          ("not mailed: after the last day of the nomination" if late else f"mailing {len(ids)} institutions",
+                           utcnow(), PENDING_MAIL_MARK, mark["value"])).rowcount
+    conn.commit()
+    if late or turned != 1:
+        return 0
+    told = 0
+    for iid in ids:
+        row = query("SELECT * FROM institutions WHERE id = ? AND status = 'accepted'", (iid,), one=True)
+        if row is None or not _to_institution(row):
+            continue
+        mail_decision(row, lead=REGISTERED_LEAD, heading=registered_heading(row))
+        told += 1
+    execute("UPDATE settings SET value = ?, updated_at = ? WHERE key = ?", (f"mailed {told} institutions", utcnow(), PENDING_MAIL_MARK))
+    return told
+
+
 def mail_received(row):
     base = current_app.config["BASE_URL"]
     for address in _to_institution(row):

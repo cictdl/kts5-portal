@@ -1072,23 +1072,30 @@ def hei_register():
             ctx.update(data=data, errors=errors, captcha=new_captcha())
             return render_template("public/hei_register.html", **ctx), 400
         now = utcnow()
+        # every institution that registers is a Participating Institution at once (1.2.201; CICT, 17 November 2026: "every
+        # institute is registered not selected"); where Settings keep the selection by the Nodal Institution (hei.select_step), it
+        # awaits that selection as before
+        status = "pending" if HEI.select_step() else "accepted"
+        told = HEI.mail_received if status == "pending" else HEI.mail_registered
         if identified is not None:
             # invited by the Nodal Institution: registered, it awaits the selection like any other (1.2.155; selected at once before,
             # which the D.O. letter of 31 October 2026 does not allow - the selection is under Annexure-V, within Annexure-I)
-            execute(f"UPDATE institutions SET {', '.join(f + ' = ?' for f in HEI.FIELDS)}, inst_key = ?, status = 'pending', "
+            execute(f"UPDATE institutions SET {', '.join(f + ' = ?' for f in HEI.FIELDS)}, inst_key = ?, status = ?, decided_at = ?, "
                     f"invite_token = NULL, ip = ?, updated_at = ? WHERE id = ?",
-                    [data[f] for f in HEI.FIELDS] + [HEI.key_of(data), ip, now, identified["id"]])
+                    [data[f] for f in HEI.FIELDS] + [HEI.key_of(data), status, None if status == "pending" else now, ip, now,
+                                                     identified["id"]])
             audit("institution_registered", "institution", identified["id"], detail=identified["ref"], ip=ip)
-            HEI.mail_received(query("SELECT * FROM institutions WHERE id = ?", (identified["id"],), one=True))
+            told(query("SELECT * FROM institutions WHERE id = ?", (identified["id"],), one=True))
             session["hei_applied"] = identified["id"]
             return redirect(url_for("public.hei_done", ref=identified["ref"]))
-        cols = HEI.FIELDS + ["inst_key", "status", "ip", "created_at", "updated_at", "source"]
+        cols = HEI.FIELDS + ["inst_key", "status", "decided_at", "ip", "created_at", "updated_at", "source"]
         rid = execute(f"INSERT INTO institutions({', '.join(cols)}) VALUES({', '.join('?' * len(cols))})",
-                      [data[f] for f in HEI.FIELDS] + [HEI.key_of(data), "pending", ip, now, now, ctx["via"]])
+                      [data[f] for f in HEI.FIELDS] + [HEI.key_of(data), status, None if status == "pending" else now, ip, now, now,
+                                                       ctx["via"]])
         execute("UPDATE institutions SET ref = ? WHERE id = ?", (HEI.ref_of(rid), rid))
         limiter.hit("hei", ip, 3600)
         audit("institution_applied", "institution", rid, detail=HEI.ref_of(rid), ip=ip)
-        HEI.mail_received(query("SELECT * FROM institutions WHERE id = ?", (rid,), one=True))
+        told(query("SELECT * FROM institutions WHERE id = ?", (rid,), one=True))
         session["hei_applied"] = rid
         return redirect(url_for("public.hei_done", ref=HEI.ref_of(rid)))
     ctx["captcha"] = new_captcha()

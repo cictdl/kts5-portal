@@ -313,9 +313,9 @@ def test_the_public_pages_say_nothing_of_a_reserve_list():
         page = pages[path] = r.get_data(as_text=True)
         main = page[page.index("<main"):page.index("</main>")]
         assert "reserve list" not in main.lower() and ">Reserve<" not in main, path
-    assert ("selects the number of Participating Institutions prescribed for its State/UT; registration does not by itself confer "
-            "selection.") in pages["/institutions/register"]
-    assert "and selects the number prescribed for the State/UT in Annexure-I.</" in pages["/institutions/register"]
+    # the registration of institutions speaks of no selection since 1.2.201 (tests/test_all_registered_1117.py)
+    assert "Every institution that registers is a Participating Institution.</" in pages["/institutions/register"]
+    assert "does not by itself confer selection" not in pages["/institutions/register"]
     assert "the next eligible institution in the order of the marks may be included" in pages["/guidelines-for-nodal-institutions"]
     assert "select only the number prescribed for the State/UT in Annexure-I.</p>" in pages["/guidelines-for-nodal-institutions"]
     assert 'with <b class="ui-name" lang="en" dir="ltr">✓ Select</b>, by ' in pages["/how-to-submit-the-student"]
@@ -354,9 +354,9 @@ def test_the_texts_in_23_languages():
     en = CATALOG["en"]
     new = json.loads((ROOT / "data" / "i18n" / "en.json").read_text(encoding="utf-8"))
     assert len(en) == 1521 and all(en[k] == new[k] for k in KEYS)
-    assert en["hei.any_number"] == ("Any number of institutions of a State/UT may register. The Nodal Institution records the marks of "
-                                    "each under the Standard Operating Procedure (Annexure-V) and selects the number prescribed for the "
-                                    "State/UT in Annexure-I.")
+    # its second sentence since 1.2.201: every institution that registers is a Participating Institution
+    assert en["hei.any_number"] == ("Any number of institutions of a State/UT may register. Every institution that registers is a "
+                                    "Participating Institution.")
     assert en["timeline.hei_select"] == "Scrutiny and selection of the Participating Institutions by the Nodal Institutions"
     assert en["join.over"] == "More institutions have registered than will be selected: the Nodal Institution selects {n} on merit."
     assert en["ng.g5"] == "The Committee shall recommend the selected list for approval by the competent authority of the Nodal Institution."

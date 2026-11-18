@@ -1125,15 +1125,22 @@ def institutions():
         if action == "reserve" and not reserve_on:
             abort(400)
         or_reserve = ", or put on the reserve list," if reserve_on else ""
+        # no selection of institutions since 1.2.201 (CICT, 17 November 2026; hei.select_step): every institution that registers
+        # is a Participating Institution at once, none is returned to pending, and the marks of Annexure-V stand in no one's way
+        select_on = HEI.select_step()
+        if action == "pending" and not select_on:
+            abort(400)
         # an institution identified by the Nodal Institution is selected once it has registered with its invitation (1.2.173)
         if action in ("accept", "reserve") and (row["status"] == "identified"
                                                 or (HEI.never_registered(row) and not HEI.busy_reason(row))):
             again = "Invite again" if row["status"] == "identified" else "↩ Back to invited"
-            flash(f"{row['name']} has not completed its registration yet: it is selected{or_reserve} once it has "
-                  f"registered with its invitation, on its marks of Annexure-V ({again} mails the link once more).", "error")
+            flash((f"{row['name']} has not completed its registration yet: it is selected{or_reserve} once it has "
+                   f"registered with its invitation, on its marks of Annexure-V ({again} mails the link once more).") if select_on else
+                  (f"{row['name']} has not completed its registration yet: it is a Participating Institution once it has registered "
+                   f"with its invitation ({again} mails the link once more)."), "error")
             return redirect(back)
         # selected, or put on the reserve list, on the marks of the Evaluation Committee (Annexure-V), recorded first (1.2.174)
-        if action in ("accept", "reserve") and row["sop_total"] is None and get_setting("hei.marks_first") == "1":
+        if action in ("accept", "reserve") and row["sop_total"] is None and get_setting("hei.marks_first") == "1" and select_on:
             flash(f"{row['name']}: record the marks of the Evaluation Committee first (Marks, Annexure-V). An institution is selected"
                   f"{or_reserve} on its marks.", "error")
             return redirect(back)
@@ -1180,8 +1187,13 @@ def institutions():
                 (status, note if status == "declined" else "", user["id"], now if status != "pending" else None, now, row["id"]))
         audit("institution_" + status, "institution", row["id"], detail={"ref": row["ref"], "note": note}, user=user, ip=client_ip())
         if status != "pending":
-            HEI.mail_decision(query("SELECT * FROM institutions WHERE id = ?", (row["id"],), one=True))
-        flash(f"{row['name']}: {status}" + (" – the Head of the Institution and the coordinator are informed by mail." if status != "pending" else "."),
+            fresh = query("SELECT * FROM institutions WHERE id = ?", (row["id"],), one=True)
+            if status == "accepted" and not select_on:      # a decline undone: a registered Participating Institution again
+                HEI.mail_decision(fresh, lead=HEI.REGISTERED_LEAD, heading=HEI.registered_heading(fresh))
+            else:
+                HEI.mail_decision(fresh)
+        said = "registered" if status == "accepted" and not select_on else status
+        flash(f"{row['name']}: {said}" + (" – the Head of the Institution and the coordinator are informed by mail." if status != "pending" else "."),
               "success")
         return redirect(back)
     f, sql, args = _inst_filters(scope)
@@ -1240,6 +1252,7 @@ def institutions():
                            reserve_public=settings.get("hei.public") == "1" and settings.get("hei.reserve_public") == "1",
                            marks_first=settings.get("hei.marks_first") == "1",
                            reserve_on=settings.get("hei.reserve_list") == "1",
+                           select_on=settings.get("hei.select_step") == "1", any_pending=any(c.get("pending") for c in summary.values()),
                            sop_max=sum(m for _k, _c, m, *_ in HEI.SOP), benchmark=HEI.SOP_BENCHMARK,
                            marks={r["id"]: HEI.sop_marks(r) for r in rows[:INST_ROWS_SHOWN]}, order=request.args.get("order", ""))
 
@@ -2060,6 +2073,7 @@ SETTING_GROUPS = [
         # hei.max_per_state are no longer settings of this page, where the ceiling had been switched on again
         ("hei.select_end", "Last date for the Nodal Institutions to select the Participating Institutions (YYYY-MM-DD)", "date"),
         ("hei.public", "Show the participating institutions on the website, State/UT by State/UT", "bool"),
+        ("hei.select_step", "The Nodal Institutions select the Participating Institutions from those registered: the buttons “✓ Select” and “Marks”, the column “Pending” and the evaluation sheet of Console › Institutions (off since 18 November 2026: every institution that registers is a Participating Institution at once)", "bool"),
         ("hei.reserve_list", "The Nodal Institutions keep a reserve list of institutions: the button “Reserve list” and the column “Reserve” of Console › Institutions (off since 17 November 2026: there is no reserve list, and the institutions that were on it are selected)", "bool"),
         ("hei.reserve_public", "The public pages list the institutions of the reserve list with the Participating Institutions of their State/UT and count them with them, not told apart (off: only the institutions selected)", "bool"),
         ("hei.marks_first", "An institution is selected, or put on the reserve list, only once the marks of Annexure-V are recorded for it (off: the marks may be recorded at a later stage)", "bool"),

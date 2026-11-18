@@ -125,9 +125,13 @@ def account_paragraph(states):
     """The part of the mail of a new account that a Nodal Officer reads."""
     from .heis import with_covered
     names = ", ".join(rows_of(with_covered(list(states))))   # the row of Annexure-I: Kerala and Lakshadweep (1.2.135)
-    text = (f"As Nodal Officer for {names}, you scrutinise the institutions of your State/UT that register on the portal, record "
-            f"the marks of the Evaluation Committee on the criteria of Annexure-V of the D.O. letter of 31 October 2026 and select "
-            f"the number of Participating Institutions that Annexure-I prescribes{_with_reserve()}: Console > Institutions. "
+    first = (f"As Nodal Officer for {names}, you scrutinise the institutions of your State/UT that register on the portal, record "
+             f"the marks of the Evaluation Committee on the criteria of Annexure-V of the D.O. letter of 31 October 2026 and select "
+             f"the number of Participating Institutions that Annexure-I prescribes{_with_reserve()}: Console > Institutions. ")
+    if get_setting("hei.select_step") != "1":      # no selection of institutions since 1.2.201
+        first = (f"As Nodal Officer for {names}, you see the institutions of your State/UT that register on the portal, each of them "
+                 f"a Participating Institution: Console > Institutions. ")
+    text = (first +
             f"Then you see the applications of the students the Participating Institutions nominate, with their photograph, ID "
             f"proof and signed nomination form, and you verify them: Console > Verification queue. Only verified students are "
             f"consolidated by CICT into the list of the selected students.")
@@ -232,6 +236,7 @@ def signin_mail(user, now=None):
     registered = (query(f"SELECT COUNT(*) AS n FROM institutions WHERE status != 'identified' AND state IN ({','.join('?' * len(states))})",
                         states, one=True)["n"] if states else 0)
     pending = institutions_pending(states)
+    selecting = get_setting("hei.select_step") == "1"      # off since 1.2.201: every institution that registers takes part
     _per, total = figures(states, now)
     number = sum(allocation_of(members[0]) for members in rows.values())
     hei_end, select_end, reg_end, end = (_day(get_setting(k)) for k in ("hei.end", "hei.select_end", "reg.end", "verify.end"))
@@ -244,9 +249,11 @@ def signin_mail(user, now=None):
              f"Tamil Sangamam 5.0 – Thirukkural Payilvom needs the Nodal Institution on the portal now:", "",
              f"• The institutions of {names} register on the portal" + (f" up to {long_date(hei_end)}" if hei_end else "")
              + f": {registered} registered so far" + (f", {pending} awaiting your decision" if pending else "") + ".",
-             f"• The Nodal Institution selects the {number} Participating Institutions that Annexure-I prescribes"
-             + (f" by {long_date(select_end)}" if select_end else "") + f"{_with_reserve()}, in the Console (Institutions).",
-             "• Each selected institution nominates one student" + (f" by {long_date(reg_end)}" if reg_end else "")
+             (f"• The Nodal Institution selects the {number} Participating Institutions that Annexure-I prescribes"
+              + (f" by {long_date(select_end)}" if select_end else "") + f"{_with_reserve()}, in the Console (Institutions).")
+             if selecting else "• Every institution that registers is a Participating Institution; the Console lists them (Institutions).",
+             ("• Each selected institution nominates one student" if selecting else "• Each Participating Institution nominates one student")
+             + (f" by {long_date(reg_end)}" if reg_end else "")
              + "; the Nodal Officers verify the nominations" + (f" by {long_date(end)}" if end else "") + "."
              + (f" {total['awaiting']} application(s) await your verification already." if total["awaiting"] else ""),
              "",

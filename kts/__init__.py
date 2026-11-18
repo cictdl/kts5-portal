@@ -330,6 +330,10 @@ def create_app(config_object=Config):
             again = heis.mail_reserve_selected_again(first_now=told)
             if again:
                 app.logger.info("%d institutions that were on the reserve list are told once again by mail that they are selected.", again)
+            # the institutions that awaited the selection are told that they are registered Participating Institutions (1.2.201)
+            waited = heis.mail_pending_registered()
+            if waited:
+                app.logger.info("%d institutions that awaited the selection are told by mail that they are Participating Institutions.", waited)
         except Exception:  # a mail never stands in the way of the start of the portal
             app.logger.exception("the mails to the institutions of the reserve list were not queued")
     return app

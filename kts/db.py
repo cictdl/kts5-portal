@@ -753,6 +753,11 @@ DEFAULT_SETTINGS = {
     # column should be removed"): the Console offers none, and the institutions that were on it became selected, once
     # (migrate.reserve_off_1117). Switched on in the Console, the button "Reserve list" and the column "Reserve" come back
     "hei.reserve_list": "0",
+    # the selection of the Participating Institutions by the Nodal Institutions, off since 1.2.201 (CICT, 17 November 2026: "The
+    # committee will only select the student. so every institute is registered not selected"): every institution that registers
+    # is a Participating Institution at once, and those that awaited the selection became so, once
+    # (migrate.pending_registered_1117). Switched on in the Console, the selection is as it was
+    "hei.select_step": "0",
     # an institution is selected, or put on the reserve list, only once its marks of Annexure-V are recorded (1.2.174); off since
     # 1.2.175, CICT, 12 November 2026: "marks will be added later stage"
     "hei.marks_first": "0",
@@ -1618,6 +1623,26 @@ def init_db(app):
     if not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.cap_off_1117'").fetchone():
         conn.execute("UPDATE settings SET value = '0', updated_at = ? WHERE key IN ('hei.cap_annexure', 'hei.max_per_state')", (now,))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", ("migrate.cap_off_1117", "1", now))
+    # every institution that has registered is a Participating Institution (1.2.201; CICT, 17 November 2026: "every institute is
+    # registered not selected" - asked: "All registered take part"): those that awaited the selection become Participating
+    # Institutions, once, each with a line of the audit log; one that its Nodal Institution invited and that has not completed
+    # its registration stays as it is. The second mark holds them for the mail that tells each of it once the portal has
+    # started ("Yes, mail them": heis.mail_pending_registered)
+    if not conn.execute("SELECT 1 FROM settings WHERE key = 'migrate.pending_registered_1117'").fetchone():
+        moved = conn.execute("SELECT id, ref FROM institutions WHERE status = 'pending' AND (invited_by IS NULL OR head_name != '') "
+                             "ORDER BY id").fetchall()
+        conn.executemany(
+            "INSERT INTO audit_log(user_id, actor, action, entity, entity_id, detail, ip, created_at) VALUES(NULL,?,?,?,?,?,'',?)",
+            [("release 1.2.201", "institution_accepted", "institution", r["id"],
+              json.dumps({"ref": r["ref"], "was": "pending",
+                          "note": "every institution that has registered is a Participating Institution (CICT, 17 November 2026)"}),
+              now) for r in moved])
+        conn.executemany("UPDATE institutions SET status = 'accepted', decided_at = COALESCE(decided_at, ?), updated_at = ? WHERE id = ?",
+                         [(now, now, r["id"]) for r in moved])
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)",
+                     ("migrate.pending_registered_1117", str(len(moved)), now))
+        conn.execute("INSERT OR REPLACE INTO settings(key, value, updated_at) VALUES(?,?,?)",
+                     ("mail.pending_registered_1117", json.dumps([r["id"] for r in moved]), now))
     # the reserve list is no more (1.2.198; CICT, 17 November 2026: "remove the reserve list condition" - of the institutions on
     # it: "Selected, like the 551"): each becomes a selected Participating Institution, once, with a line of the audit log. The
     # mark holds the number of them; a second mark holds them, for the mail that tells each of it once the portal has started
