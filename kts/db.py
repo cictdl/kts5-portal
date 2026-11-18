@@ -926,7 +926,8 @@ RETIRED_EVENT_TITLES = {
     "letters": ["Issue of confirmation letters"],
     "live": ["Live sessions: 20 question-and-answer sessions", "Live online orientation with an interactive question-and-answer session"],
     # the revised D.O. letter (26 October 2026)
-    "assess": ["Completion of the institution-level assessments: each institution selects one student on merit"],
+    "assess": ["Completion of the institution-level assessments: each institution selects one student on merit",
+               "Last date for the assessment of interested students by each selected Participating Institution"],      # without "selected" since 1.2.202
     # the D.O. letter of 31 October 2026 has no preliminary list of institutions (1.2.155)
     "hei_list": ["Nodal Institutions furnish the details of their Nodal Officer and the preliminary list of institutions"],
     "internship": ["Commencement of the one-month internship and research period"],

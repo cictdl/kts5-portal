@@ -318,9 +318,9 @@ def test_the_public_pages_say_nothing_of_a_reserve_list():
     assert "does not by itself confer selection" not in pages["/institutions/register"]
     assert "the next eligible institution in the order of the marks may be included" in pages["/guidelines-for-nodal-institutions"]
     assert "select only the number prescribed for the State/UT in Annexure-I.</p>" in pages["/guidelines-for-nodal-institutions"]
-    assert 'with <b class="ui-name" lang="en" dir="ltr">✓ Select</b>, by ' in pages["/how-to-submit-the-student"]
+    assert "every institution that registers is a Participating Institution" in pages["/how-to-submit-the-student"]      # 1.2.202
     assert "{reserve}" not in pages["/how-to-submit-the-student"]
-    assert "select the number that Annexure-I prescribes, by " in pages["/how-to-take-part"]
+    assert "See the Participating Institutions" in pages["/how-to-take-part"]      # 1.2.202
     # the step of the schedule: its title in the file, and in a database that held the title of before
     step = "Scrutiny and selection of the Participating Institutions by the Nodal Institutions"
     assert f"<bdi>{step}</bdi>" in pages["/"] and step + "," not in pages["/"] and step + "," not in pages["/schedule"]

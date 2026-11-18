@@ -97,7 +97,7 @@ def test_the_hub_of_the_home_page(monkeypatch):
     assert "Searching the 4 Participating Institutions registered so far" in hub
     assert '<div class="hub-invite" data-hub-invite hidden>' in hub
     assert "Colleges and universities can still register until 15 November 2026. Send this to your Principal:" in hub
-    assert "Colleges and universities register on the KTS 5.0 portal by 15 November 2026: http://localhost:8905/institutions/register The Nodal Institution of the State/UT selects" in hub
+    assert "Colleges and universities register on the KTS 5.0 portal by 15 November 2026: http://localhost:8905/institutions/register Every institution that registers is a Participating Institution; one student" in hub
     wa = hub[hub.index('href="https://wa.me/?text=') + 6:]
     wa = wa[:wa.index('"')]
     assert "15 November 2026" in unquote(wa) and "/institutions/register" in unquote(wa)
@@ -105,11 +105,12 @@ def test_the_hub_of_the_home_page(monkeypatch):
     assert 'data-hub-copy data-done="Copied" hidden>' in hub
     # the college or university: register by 15 November, 12 days left, the institutions registered so far
     assert "<h3>Register your institution by 15 November 2026</h3><span class=\"hub-chip ok\">12 days left</span>" in hub
-    assert "selects the Participating Institutions on 16–17 November 2026; each then assesses its students by 19 November 2026 and nominates one by 20 November 2026." in hub
+    # no selection of institutions (1.2.202)
+    assert "Every institution that registers is a Participating Institution; each assesses its students by 19 November 2026 and nominates one by 20 November 2026." in hub
     assert "6 institutions have registered so far." in hub   # declined ones too, as the dashboard counts them
     assert 'href="/institutions/register">Register your institution</a>' in hub and 'href="/institution/login">Institution sign-in</a>' in hub
     # the Nodal Officer: select by 17 November, then verify by 5 December
-    assert "<h3>Select the Participating Institutions by 17 November 2026</h3><span class=\"hub-chip ok\">14 days left</span>" in hub
+    assert "<h3>See the Participating Institutions of your State/UT</h3><span class=\"hub-chip ok\">14 days left</span>" in hub
     assert 'href="/console/login">Console sign-in</a>' in hub and 'href="/nodal-institutions#letter">' in hub
 
 

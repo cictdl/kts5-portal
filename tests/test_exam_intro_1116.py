@@ -12,7 +12,7 @@ from markupsafe import escape
 
 from test_1110 import _app, _get, _main
 
-FIRST = ("Each selected Participating Institution assesses its interested students on their interest in and understanding of the "
+FIRST = ("Each Participating Institution assesses its interested students on their interest in and understanding of the "
          "Thirukkural, by a short written test, an oral interaction, a presentation, an essay, a quiz or a suitable combination of "
          "these, in a fair and documented process approved by the Head of the Institution or an authorised committee, and nominates "
          "one student on merit.")

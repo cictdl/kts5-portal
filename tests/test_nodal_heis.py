@@ -29,7 +29,8 @@ def test_the_page_shows_them_in_the_language_of_the_reader():
     page = client.get("/partners?lang=en").get_data(as_text=True)
     assert "State/UT-wise list of Nodal Higher Educational Institutions" in page
     assert ("The Nodal Higher Educational Institution of each State/UT undertakes outreach for the registration of the institutions "
-            "of its State/UT on this portal, selects the number of Participating Institutions prescribed for it") in page
+            "of its State/UT on this portal, and coordinates the assessments, nominations and campus activities of the Participating "
+            "Institutions.") in page      # no selection of institutions (1.2.202)
     assert page.count('<td lang="en" dir="ltr">') == 31
     assert '<td lang="en" dir="ltr">Central University of Tamil Nadu</td>' in page
     assert page.index("Central University of Andhra Pradesh") < page.index("Pondicherry University")

@@ -61,7 +61,7 @@ def test_the_letter_of_tamil_nadu_in_english():
     # the letterhead, the Nodal Officer, the row of Annexure-I and its number
     assert "CENTRAL UNIVERSITY OF TAMIL NADU" in doc and "Nodal Higher Educational Institution for Tamil Nadu and Andaman and Nicobar Islands" in doc
     assert "Dr. T. N. Officer, Nodal Officer · Registrar · nodal.tn@cutn.example · 9444000001" in doc
-    assert "The Ministry has designated Central University of Tamil Nadu as the Nodal Higher Educational Institution for Tamil Nadu and Andaman and Nicobar Islands, to select 50 Participating Institutions" in doc
+    assert "The Ministry has designated Central University of Tamil Nadu as the Nodal Higher Educational Institution for Tamil Nadu and Andaman and Nicobar Islands. I am glad to inform you that your institution, registered on the portal, is a Participating Institution." in doc
     # the dates of the settings, in words
     for when in ("Assess your students by 23 November 2026.", "Nominate one student on merit by 24 November 2026.",
                  "28 November – 12 December 2026 at Varanasi", "The one-month research and academic engagement, 15 December 2026 – 14 January 2027.",
@@ -82,7 +82,7 @@ def test_without_an_officer_and_in_tamil_and_urdu():
     client = app.test_client()
     _r, _z, doc = _letter(client, "Kerala", "en")
     assert "(Name of the Nodal Officer), Nodal Officer · (Designation) · (e-mail) · (phone)" in doc and "Kerala and Lakshadweep" in doc
-    assert "to select 21 Participating Institutions" in doc
+    assert "registered on the portal, is a Participating Institution" in doc and "to select" not in doc      # 1.2.202
     # an account exists but CICT keeps the officers off the public pages: blanks
     _nodal(app, "nodal.kl@cuk.example", ["Kerala"])
     with app.app_context():

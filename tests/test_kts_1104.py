@@ -211,14 +211,15 @@ def test_submitting_the_selected_student():
     assert 'Open <a href="/institution/login">Institution login</a> and enter the e-mail address' in page
     assert 'press <b class="ui-name" lang="en" dir="ltr">Select</b> beside the student chosen on merit' in page
     assert 'In <b class="ui-name" lang="en" dir="ltr">Verification queue</b>, open each application' in page
-    assert "by 23 Nov 2026" in page and "with {open_reg}" not in page and "by 05 Dec 2026" in page and "by 19 Nov 2026" in page
+    # the step of the Nodal Officer names no day of a selection since 1.2.202
+    assert "by 23 Nov 2026" in page and "with {open_reg}" not in page and "by 05 Dec 2026" in page
     assert 'Open <a href="/console/login">Nodal Officer login</a> and sign in' in page
     for code, cat in CATALOGUES.items():
         page = _get(client, f"/how-to-submit-the-student?lang={code}")
         assert f"<h1>{escape(cat['hs.title'])}</h1>" in page, code
         main = page[page.index("<main"):page.index("</main>")]
         assert not re.search(r"\{[a-z_0-9]+\}", main), (code, re.findall(r"\{[a-z_0-9]+\}", main))
-        assert main.count('class="ui-name"') == 22 and '<b class="ui-name" lang="en" dir="ltr">✓ Verify</b>' in main, code
+        assert main.count('class="ui-name"') == 20 and '<b class="ui-name" lang="en" dir="ltr">✓ Verify</b>' in main, code
         assert 'href="/institution/login"' in main and 'href="/console/login"' in main, code
 
 

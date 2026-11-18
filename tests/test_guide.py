@@ -43,7 +43,8 @@ def test_the_three_parts_with_their_dates_and_links(site):
     assert "<b>Assess your students by 23 Nov 2026</b>" in page and "Between 22 Oct 2026" not in page
     # the Nodal Officers accept the institutions up to the last day of the selection (the revised D.O. letter, 1.2.110)
     # without a reserve list since 1.2.198 (tests/test_no_reserve_1117.py)
-    assert "and select the number that Annexure-I prescribes, by 19 Nov 2026." in page
+    # no selection of institutions since 1.2.201; the step of the Nodal Officer says so since 1.2.202
+    assert "see the institutions registered for your State/UT: every institution that registers is a Participating Institution" in page
     assert "Selection of the Participating Institutions by the Nodal Institutions</div><div class=\"val\">19 Nov 2026</div>" in page
     assert "<b>Verify the registered students by 05 Dec 2026</b>" in page
     assert not any(p in page for p in PLACEHOLDERS)
@@ -115,8 +116,8 @@ def test_the_home_page_tells_the_institutions_what_they_do(site):
     """The paragraph for the Higher Educational Institutions under the hero (1.2.55), with its links."""
     home = _page(site, "/")
     # the selection of the Participating Institutions by the Nodal Institutions (the revised D.O. letter, 1.2.111)
-    text = ("All interested Higher Educational Institutions register on this portal, and the Nodal Institution of each State/UT "
-            "selects the prescribed number of Participating Institutions. The Participating Institutions access the multilingual "
+    text = ("All interested Higher Educational Institutions register on this portal, and every institution that registers is a "
+            "Participating Institution. The Participating Institutions access the multilingual "      # 1.2.202
             "study resources hosted here, assess their interested students on the theme “Thirukkural Payilvom – Thirukkural "
             "Abhyas Karen”, and register one student nominated on merit, duly endorsed by the Head of the Institution. Detailed "
             "programme guidelines and timelines are available here.")

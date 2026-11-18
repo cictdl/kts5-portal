@@ -467,10 +467,13 @@ def mail_invited(row):
                   f"Programme of the Ministry of Education (the Sangamam at Varanasi: {_by(get_setting('kts.start'))} – "
                   f"{_by(get_setting('kts.end'))}).\n\n"
                   f"Please complete the registration of the institution on the KTS 5.0 portal with this link:\n\n{link}\n\n"
-                  f"It asks for the Head of the Institution and confirms the Institutional Coordinator. The Nodal Institution then "
-                  f"selects the Participating Institutions from those registered, under the Standard Operating Procedure "
-                  f"(Annexure-V of the D.O. letter of 31 October 2026) and within the number that Annexure-I prescribes; "
-                  f"registration does not by itself confer selection. A selected institution assesses its students on the "
+                  f"It asks for the Head of the Institution and confirms the Institutional Coordinator. "
+                  + ("The Nodal Institution then "
+                     "selects the Participating Institutions from those registered, under the Standard Operating Procedure "
+                     "(Annexure-V of the D.O. letter of 31 October 2026) and within the number that Annexure-I prescribes; "
+                     "registration does not by itself confer selection. A selected institution" if select_step() else
+                     "Every institution that registers is a Participating Institution. A Participating Institution")      # 1.2.202
+                  + " assesses its students on the "
                   f"Thirukkural (the portal offers a ready online test) and nominates one student on merit on the portal by {by}. "
                   f"The steps and the dates are on the institution's page of the portal.\n\nReference: {row['ref']}\n\n"
                   f"Central Institute of Classical Tamil, Chennai")
@@ -753,8 +756,12 @@ def mail_decision(row, lead=None, heading=None):
                 f"The participating institutions are listed at {base}/institutions\n\nCentral Institute of Classical Tamil, Chennai")
     else:
         subject = f"KTS 5.0: application of {row['name']} ({row['ref']})"
-        body = (f"Dear Sir/Madam,\n\nThe Nodal Institution of {unit_name(row['state'])} could not select your institution as a Participating "
-                f"Institution of KTS 5.0. Registration does not by itself confer selection.\n\nReference: {row['ref']}\n"
+        body = ("Dear Sir/Madam,\n\n"
+                + (f"The Nodal Institution of {unit_name(row['state'])} could not select your institution as a Participating "
+                   f"Institution of KTS 5.0. Registration does not by itself confer selection." if select_step() else
+                   f"The Nodal Institution of {unit_name(row['state'])} could not accept the registration of your institution as a "
+                   f"Participating Institution of KTS 5.0.")      # no selection of institutions since 1.2.201
+                + f"\n\nReference: {row['ref']}\n"
                 + (f"Remark: {row['decision_note']}\n" if row["decision_note"] else "")
                 + "\nFor any question, please write to the Nodal Officer of your State/UT or to CICT.\n\n"
                 "Central Institute of Classical Tamil, Chennai")
