@@ -1,7 +1,9 @@
 {# KTS 5.0 – Key dates (1.2.152, CICT's note of 4 November 2026): the timeline of the Ministry's D.O. letter of 31 October 2026
    (Annexure-III D) in three groups - registration and selection, the online programme, research and submission - each day from its
    setting (public.key_dates_box), so that a day changed in the Console changes here too #}
-{% macro key_dates(heading='h2', id='kd-title') %}
+{# highlight (1.2.205): the label of a row to show in bold, blinking letters - the last date for the registration of institutions
+   on the home page, while that registration is open #}
+{% macro key_dates(heading='h2', id='kd-title', highlight='') %}
 {% set kd = key_dates_box() %}
 <div class="kd-box">
   <{{ heading }} class="kd-title" id="{{ id }}">{{ t('kd.title') }}</{{ heading }}>
@@ -11,7 +13,7 @@
       <h3 class="kd-gh" id="{{ id }}-{{ loop.index }}">{{ t(g.title) }}</h3>
       <ul class="kd-list">
         {% for r in g.rows %}
-        <li{% if not r.d1 %} class="kd-note"{% endif %}>{% if r.d1 %}<span class="kd-when"><bdi>{% if r.prefix %}{{ t(r.prefix)|replace('{date}', r.d1|date) }}{% elif r.d2 %}{{ r.d1|date }} – {{ r.d2|date }}{% else %}{{ r.d1|date }}{% endif %}</bdi></span>{% endif %}<span class="kd-what">{% if r.endpoint %}<a href="{{ url_for(r.endpoint) }}">{{ t(r.label) }}</a>{% else %}{{ t(r.label) }}{% endif %}</span></li>
+        <li{% if not r.d1 %} class="kd-note"{% elif highlight and r.label == highlight %} class="kd-blink"{% endif %}>{% if r.d1 %}<span class="kd-when"><bdi>{% if r.prefix %}{{ t(r.prefix)|replace('{date}', r.d1|date) }}{% elif r.d2 %}{{ r.d1|date }} – {{ r.d2|date }}{% else %}{{ r.d1|date }}{% endif %}</bdi></span>{% endif %}<span class="kd-what">{% if r.endpoint %}<a href="{{ url_for(r.endpoint) }}">{{ t(r.label) }}</a>{% else %}{{ t(r.label) }}{% endif %}</span></li>
         {% endfor %}
       </ul>
     </section>

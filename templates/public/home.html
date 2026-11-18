@@ -189,7 +189,7 @@
 <section class="section home-kd">
   <div class="wrap">
     <span class="eyebrow">{{ t('home.kicker') }}</span>
-    {{ key_dates('h2', 'home-kd') }}
+    {{ key_dates('h2', 'home-kd', 'kd.reg' if hei_open else '') }}
     {% if settings.get('reg.public') == '1' %}<div class="dates kd-reg"><div class="date-tile"><div class="lbl">{{ t('home.reg_window') }}</div><div class="val">{% if dates.reg_after_launch %}{{ t('reg.after_launch') }}{% else %}<bdi>{{ dates.reg_start|date }} – {{ dates.reg_end|date }}</bdi>{% endif %}</div>
         <div class="sub">{% if dates.reg_state == 'open' %}<span class="pill green">{{ t('home.open') }}</span>{% elif dates.reg_state == 'not_yet' %}<span class="pill saffron">{{ t('reg.not_yet') }} {{ dates.reg_start|date }}</span>{% elif dates.reg_ended %}<span class="pill kumkum">{{ t('reg.closed') }}</span>{% endif %}</div></div></div>{% endif %}
   </div>

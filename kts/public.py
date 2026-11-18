@@ -301,6 +301,11 @@ def key_dates_box(settings=None):
     ]
     for g in groups:
         g["rows"] = [r for r in g["rows"] if r["d1"] or r["label"] in ("kd.online", "kd.cert")]
+    # the selection, the assessment and the nomination, hidden since 1.2.205 (CICT, 18 November 2026: "hide these ... also hide and
+    # selection"; kd.select_rows): the first group is the registration alone, under the heading "Registration"
+    if s.get("kd.select_rows") != "1":
+        groups[0]["title"] = "tag.registration"
+        groups[0]["rows"] = [r for r in groups[0]["rows"] if r["label"] not in ("kd.select", "kd.assess", "kd.nominate")]
     return groups
 
 

@@ -71,7 +71,7 @@ def make_app(**settings):
         # Institutions, hidden since 1.2.195 (tests/test_nodal_pending_1116.py)
         # ... and the reserve list of the Console, no more since 1.2.198 (tests/test_no_reserve_1117.py)
         for key in ("figures.assessment", "dashboard.table", "figures.percent", "progress.flow", "dashboard.marks", "nodal.pending", "nodal.report",
-                    "hei.reserve_list", "hei.select_step"):      # ... and the selection of institutions, no more since 1.2.201
+                    "hei.reserve_list", "hei.select_step", "kd.select_rows"):      # ... and the selection of institutions, no more since 1.2.201
             set_setting(key, "1")
     return app
 

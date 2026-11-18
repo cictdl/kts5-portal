@@ -1191,6 +1191,13 @@ footer.site .bottom .wrap { display: flex; justify-content: space-between; gap: 
 .kd-list li { display: grid; gap: 2px; }
 .kd-when { font-weight: 800; color: var(--kumkum); font-size: .95rem; }
 .kd-note .kd-what { color: var(--dim); font-size: .9rem; }
+/* the last date for the registration of institutions in the Key dates of the home page (1.2.205; CICT, 18 November 2026: "in
+   blinking letters on home Page, bold letters"): bold, and blinking once a second while the registration is open, as the NEW badge
+   does; not at all for those who ask their device for reduced motion */
+.kd-list li.kd-blink .kd-what { font-weight: 800; }
+@media (prefers-reduced-motion: no-preference) {
+  .kd-list li.kd-blink { animation: new-blink 1s steps(1, end) .3s infinite; }
+}
 @media (max-width: 899px) { .kd-groups { grid-template-columns: 1fr; } }
 .kd-reg { margin-top: 14px; }
 /* the Guidelines for Nodal Institutions and the steps of submitting the selected student (1.2.152) */
