@@ -604,22 +604,60 @@ def qr_data_uri(text):
 
 # ---- mail -------------------------------------------------------------------
 
-def send_mail(to_addr, subject, body, now=False):
+def send_mail(to_addr, subject, body, now=False, urgent=False):
     """
     Queue a message to one person in the outbox (kts/mailq.py sends it in the background, before the
     mails of lists). now=True sends it at once and waits for the answer of the mail server: for the
     test message of the console only.
+
+    urgent=True (the sign-in code of the institution's page, 1.2.207; CICT, 19 November 2026: "your sign-in code have to be sent
+    as soon as possible. no wait"): sent at once in a thread of its own, outside the queue and its limits and a pause of the
+    Console, so that the page answers at once and the mail leaves within seconds. The outbox keeps it, first of all (priority -1,
+    claimed as 'sending' until the thread is done). If the mail server does not take it, it waits in the queue before every other
+    mail and the sender tries it again, past the limits.
     """
+    urgent_now = urgent and bool(current_app.config.get("SMTP_HOST"))
     row_id = execute(
-        "INSERT INTO outbox(to_addr, subject, body, status, created_at, priority) VALUES(?,?,?,?,?,0)",
-        (to_addr, subject, body, "queued", utcnow()),
+        "INSERT INTO outbox(to_addr, subject, body, status, created_at, priority, next_try) VALUES(?,?,?,?,?,?,?)",
+        (to_addr, subject, body, "sending" if urgent_now else "queued", utcnow(), -1 if urgent else 0,
+         utcnow() if urgent_now else None),
     )
-    if now and current_app.config.get("SMTP_HOST"):
+    if urgent_now:
+        threading.Thread(target=_send_urgent, args=(current_app._get_current_object(), row_id, to_addr, subject, body),
+                         name="kts-urgent-mail", daemon=True).start()
+    elif now and current_app.config.get("SMTP_HOST"):
         _deliver(row_id, to_addr, subject, body)
     else:
         from . import mailq
         mailq.wake()
     return row_id
+
+
+def _send_urgent(app, row_id, to_addr, subject, body):
+    """The mail of send_mail(urgent=True), in its own thread: sent at once, or left in the queue, first of all, to be tried again."""
+    with app.app_context():
+        cfg = app.config
+        try:
+            msg = EmailMessage()
+            msg["From"] = cfg["SMTP_FROM"]
+            msg["To"] = to_addr
+            msg["Subject"] = subject
+            msg.set_content(body)
+            smtp = _smtp(cfg)
+            try:
+                if cfg.get("SMTP_USER"):
+                    smtp.login(cfg["SMTP_USER"], cfg["SMTP_PASSWORD"] or "")
+                smtp.send_message(msg)
+            finally:
+                try:
+                    smtp.quit()
+                except Exception:  # noqa: BLE001
+                    pass
+            execute("UPDATE outbox SET status = 'sent', sent_at = ?, error = '', next_try = NULL WHERE id = ?", (utcnow(), row_id))
+        except Exception as exc:  # noqa: BLE001 - the queue tries it again, before every other mail
+            execute("UPDATE outbox SET status = 'queued', error = ?, next_try = NULL WHERE id = ?", (str(exc)[:500], row_id))
+            from . import mailq
+            mailq.wake(app)
 
 
 def send_later(messages):

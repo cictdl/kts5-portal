@@ -104,7 +104,8 @@ def login():
                 send_mail(email, "KTS 5.0: your sign-in code",
                           f"Dear Sir/Madam,\n\nYour code to sign in to the institution's page of the KTS 5.0 portal "
                           f"({names}):\n\n    {code}\n\nIt is valid for {CODE_MINUTES} minutes. If you did not ask for it, "
-                          f"ignore this mail.\n\nCentral Institute of Classical Tamil, Chennai")
+                          f"ignore this mail.\n\nCentral Institute of Classical Tamil, Chennai",
+                          urgent=True)      # at once, outside the queue and its limits (1.2.207)
                 audit("institution_code_sent", "institution", rows[0]["id"], detail=email, ip=ip)
             # an address that belongs to no institution is answered in the same way: the page does not say which
             # addresses the portal knows

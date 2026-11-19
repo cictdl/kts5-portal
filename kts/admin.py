@@ -2135,7 +2135,7 @@ SETTING_GROUPS = [
     ("Orientation", [("orientation.note", "Note shown on the orientation page", "text")]),
     ("Mail", [("mail.daily_limit", "Mails sent in 24 hours at most (a Google Workspace account sends about 2,000 a day)", "number"),
               ("mail.per_minute", "Mails sent in one minute at most", "number"),
-              ("mail.paused", "Sending paused (new mails wait in the queue)", "bool")]),
+              ("mail.paused", "Sending paused (new mails wait in the queue; the sign-in codes go at once all the same)", "bool")]),
     ("Contact", [("contact.email", "Helpdesk email", "text"), ("contact.phone", "Helpdesk phone", "text"), ("contact.address", "Postal address", "text"),
                  ("contact.notify", "Every message of the contact form is also e-mailed to this address (empty: none)", "text")]),
     ("Social media (an empty address hides the link)", [(key, name, "text") for key, name, _address in SOCIAL_LINKS]),

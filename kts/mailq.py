@@ -69,7 +69,8 @@ def figures(now=None):
     return {"sent_day": day, "sent_minute": minute, "daily_limit": _number("mail.daily_limit"),
             "per_minute": _number("mail.per_minute"), "paused": get_setting("mail.paused") == "1",
             "quota_pause": paused_until if paused_until > _iso(now) else "",
-            "waiting_one": waiting.get(0, 0), "waiting_list": sum(n for p, n in waiting.items() if p != 0)}
+            # the sign-in codes (priority -1, 1.2.207) are mails to one person too
+            "waiting_one": sum(n for p, n in waiting.items() if p <= 0), "waiting_list": sum(n for p, n in waiting.items() if p > 0)}
 
 
 def _permanent(exc):
@@ -102,7 +103,12 @@ def run_once(app, now=None):
         if not cfg.get("SMTP_HOST"):
             result["waiting"] = "mail is not configured"
             return result
-        if get_setting("mail.paused") == "1":
+        # a sign-in code that waits (priority -1, 1.2.207; CICT: "no wait") goes past the limits of the portal and a pause of the
+        # Console; only Google's refusal of the day holds it, as it holds every mail of the account
+        urgent = query("SELECT COUNT(*) AS n FROM outbox WHERE status = 'queued' AND priority < 0 AND (next_try IS NULL OR next_try <= ?)",
+                       (_iso(now),), one=True)["n"]
+        paused = get_setting("mail.paused") == "1"
+        if paused and not urgent:
             result["waiting"] = "paused"
             return result
         pause = get_setting("mail.quota_pause_until") or ""
@@ -110,12 +116,13 @@ def run_once(app, now=None):
             result["waiting"] = "daily quota of the mail account used up"
             return result
         f = figures(now)
-        room = min(f["daily_limit"] - f["sent_day"], f["per_minute"] - f["sent_minute"])
-        if room <= 0:
+        room = 0 if paused else min(f["daily_limit"] - f["sent_day"], f["per_minute"] - f["sent_minute"])
+        if room <= 0 and not urgent:
             result["waiting"] = "daily limit" if f["sent_day"] >= f["daily_limit"] else "limit per minute"
             return result
         rows = query("SELECT id, to_addr, subject, body, attempts FROM outbox WHERE status = 'queued' "
-                     "AND (next_try IS NULL OR next_try <= ?) ORDER BY priority, id LIMIT ?", (_iso(now), room))
+                     "AND (next_try IS NULL OR next_try <= ?) AND (priority < 0 OR ? > 0) ORDER BY priority, id LIMIT ?",
+                     (_iso(now), room, max(room, 0) + urgent))
         claimed = []
         for r in rows:
             cur = conn.execute("UPDATE outbox SET status = 'sending', next_try = ? WHERE id = ? AND status = 'queued'",
