@@ -2070,6 +2070,7 @@ SETTING_GROUPS = [
     ("Participating institutions (Console › Institutions; the website: /institutions)", [
         ("hei.open", "Institutions may apply on the website (/institutions/register); those identified by a Nodal Institution register with their invitation at any time", "bool"),
         ("hei.end", "Last date for institutions to apply (YYYY-MM-DD; empty: none)", "date"),
+        ("hei.end_time", "Hour of that day at which the registration of institutions closes (HH:MM, IST; empty: at the end of the day)", "time"),
         # no ceiling on the institutions selected, for all the States/UTs (1.2.199; CICT, 17 November 2026): hei.cap_annexure and
         # hei.max_per_state are no longer settings of this page, where the ceiling had been switched on again
         ("hei.select_end", "Last date for the Nodal Institutions to select the Participating Institutions (YYYY-MM-DD)", "date"),

@@ -121,6 +121,12 @@ def _with_reserve():
     return ", with a reserve list" if get_setting("hei.reserve_list") == "1" else ""
 
 
+def hour_words(settings, lang):
+    """", 5:00 PM" after the last day of the registration of institutions (1.2.208)."""
+    from .heis import hour_words as words
+    return words(settings, lang)
+
+
 def account_paragraph(states):
     """The part of the mail of a new account that a Nodal Officer reads."""
     from .heis import with_covered
@@ -247,7 +253,7 @@ def signin_mail(user, now=None):
              f"Your account as Nodal Officer for {names} on the KTS 5.0 portal ({base}) was created{on} and the temporary password "
              f"was mailed to this address; the account has not been signed in to yet. The Students' Engagement Programme of Kashi "
              f"Tamil Sangamam 5.0 – Thirukkural Payilvom needs the Nodal Institution on the portal now:", "",
-             f"• The institutions of {names} register on the portal" + (f" up to {long_date(hei_end)}" if hei_end else "")
+             f"• The institutions of {names} register on the portal" + (f" up to {long_date(hei_end)}{hour_words({'hei.end_time': get_setting('hei.end_time')}, 'en')}" if hei_end else "")
              + f": {registered} registered so far" + (f", {pending} awaiting your decision" if pending else "") + ".",
              (f"• The Nodal Institution selects the {number} Participating Institutions that Annexure-I prescribes"
               + (f" by {long_date(select_end)}" if select_end else "") + f"{_with_reserve()}, in the Console (Institutions).")

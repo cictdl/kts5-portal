@@ -16,7 +16,7 @@
 
 <h2>For participating institutions</h2>
 <ol>
-  <li><a href="{{ url_for('public.hei_register') }}">Register your institution</a> by <bdi>{{ settings['hei.end']|date }}</bdi>, or complete the registration from the invitation e-mail of your Nodal Institution.</li>
+  <li><a href="{{ url_for('public.hei_register') }}">Register your institution</a> by <bdi>{{ hei_until() }}</bdi>, or complete the registration from the invitation e-mail of your Nodal Institution.</li>
   <li><a href="{{ url_for('campus.login') }}">Sign in to the institution's page</a> with the e-mail address of the Institutional Coordinator or of the Head of the Institution: a six-digit code is mailed to you.</li>
   <li>Assess your students by <bdi>{{ settings['camp.to']|date }}</bdi>, select one on merit, and make sure the student registers by <bdi>{{ settings['reg.end']|date }}</bdi>. The <a href="{{ url_for('public.guide_institutions') }}">guide for institutions</a> can be printed.</li>
 </ol>

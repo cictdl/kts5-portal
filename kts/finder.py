@@ -128,7 +128,7 @@ def hub(settings, lang):
         first = HEI.selection_start(settings)   # the day after the registration, or the schedule's (1.2.171)
         select_start = date.fromisoformat(first) if first else select_end
     window = HEI.window(settings)
-    words_ = {"hei_end": long_day(hei_end, lang), "select": span(select_start, select_end, lang), "camp_to": long_day(camp_to, lang),
+    words_ = {"hei_end": long_day(hei_end, lang) + HEI.hour_words(settings, lang), "select": span(select_start, select_end, lang), "camp_to": long_day(camp_to, lang),
               "reg_end": long_day(reg_end, lang), "verify_end": long_day(verify_end, lang), "select_end": long_day(select_end, lang)}
     link = current_app.config["BASE_URL"].rstrip("/") + url_for("public.hei_register")
     message = text("hub.invite", lang).replace("{date}", words_["hei_end"]).replace("{link}", link)

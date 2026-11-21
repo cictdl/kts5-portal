@@ -107,7 +107,7 @@ def share(row, lang, settings, ph):
     from .finder import long_day
     link = current_app.config["BASE_URL"].rstrip("/") + "/join/" + row["code"] + (f"?lang={lang}" if lang != "en" else "")
     label = HEI.label_of(row["state"], lang)
-    when = long_day(_day(settings, "hei.end"), lang)
+    when = long_day(_day(settings, "hei.end"), lang) + HEI.hour_words(settings, lang)      # with its hour (1.2.208)
     if ph == "assess":
         message = title(row, lang, settings, ph) + " " + link
         subject = title(row, lang, settings, ph)

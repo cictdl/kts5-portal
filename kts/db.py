@@ -738,6 +738,9 @@ DEFAULT_SETTINGS = {
     # 21 November 2026 since 1.2.203 (CICT, 18 November 2026: "Up to 21 Nov 2026 Last date for the registration of institutions");
     # 18 November since 1.2.171 (CICT, 10 November 2026); 15 November in the D.O. letter of 31 October
     "hei.end": "2026-11-21",
+    # the hour of that day at which the registration of institutions closes (IST; 1.2.208, CICT, 21 November 2026: "5 pm is the
+    # deadline"); empty: at the end of the day
+    "hei.end_time": "17:00",
     "hei.max_per_state": "0",
     # the revised D.O. letter (26 October 2026): the Nodal Institution selects only the number of Participating Institutions
     # that Annexure-I prescribes for its State/UT (data/nodal_heis.json), between the close of registration and this day
@@ -1131,9 +1134,9 @@ EXT21_NOTICE = (
     "\n".join([
         "The Ministry of Education, Government of India, has extended the last date for the registration of institutions on "
         "this portal (kts.cict.in) for the Students' Engagement Programme of Kashi Tamil Sangamam 5.0 (Thirukkural Payilvom) "
-        "from 18 November 2026 to 21 November 2026.",
+        "from 18 November 2026 to 21 November 2026, 5:00 PM.",
         "",
-        "• Registration of institutions on kts.cict.in: up to 21 November 2026 (earlier 18 November).",
+        "• Registration of institutions on kts.cict.in: up to 21 November 2026, 5:00 PM (earlier 18 November).",
         "• Selection of the Participating Institutions by the Nodal Institutions: 22 November 2026 (earlier 19 November).",
         "",
         "Unchanged: the assessment of the interested students by each Participating Institution, by 23 November 2026; the "
@@ -1144,6 +1147,9 @@ EXT21_NOTICE = (
         "on this portal: Register › Register your institution.",
     ]),
 )
+
+# its text up to 1.2.207, without the hour: a notice that a database holds unchanged takes the hour (1.2.208)
+EXT21_BODY_1207 = EXT21_NOTICE[1].replace("21 November 2026, 5:00 PM", "21 November 2026")
 
 # the revised D.O. letter of the Ministry (26 October 2026, Annexure-III D): the days of the steps it keeps, as 1.2.95 put them
 for _key, _days in (("assess", ("2026-10-29T00:00", None)), ("selection", ("2026-10-30T00:00", "2026-10-31T00:00")),
@@ -1965,6 +1971,12 @@ def init_db(app):
         if not conn.execute("SELECT 1 FROM notices WHERE title = ?", (EXT21_NOTICE[0],)).fetchone():
             conn.execute("INSERT INTO notices(title, body, category, lang, pinned, published, attachment, link, created_at, updated_at) "
                          "VALUES(?,?,'circular','en',1,1,'','/institutions/register',?,?)", (EXT21_NOTICE[0], EXT21_NOTICE[1], now, now))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
+    # ... and its hour, 5:00 PM (1.2.208; CICT, 21 November 2026): where the notice is as 1.2.204 put it, once
+    mark = "migrate.ext21_hour_1121"
+    if not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
+        conn.execute("UPDATE notices SET body = ?, updated_at = ? WHERE title = ? AND body = ?",
+                     (EXT21_NOTICE[1], now, EXT21_NOTICE[0], EXT21_BODY_1207))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
 
     # The launch of 14 October 2026, 5:00 PM was postponed (1.2.69): on a database that has announced it already (its notice

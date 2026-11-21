@@ -171,6 +171,15 @@ def create_app(config_object=Config):
         return _ltr(text[1:] if not numeric and text.startswith("0") else text)
 
     app.jinja_env.filters["clock"] = _clock
+
+    def _hei_until():
+        """
+        The last moment of the registration of institutions as the pages give it (1.2.208): "21 Nov 2026, 5:00 PM" in English,
+        "21-11-2026, 17:00" in the other languages; the day alone without an hour.
+        """
+        settings = db.all_settings()
+        day = utils.fmt_date(settings.get("hei.end"), _numeric())
+        return _ltr(day + heis.hour_words(settings, "en" if not _numeric() else "xx")) if day else day
     app.jinja_env.filters["size"] = utils.human_size
     app.jinja_env.filters["langname"] = lambda code: (K.lang_info(code) or {}).get("name", code)
     app.jinja_env.filters["langnative"] = lambda code: (K.lang_info(code) or {}).get("native", code)
@@ -255,6 +264,8 @@ def create_app(config_object=Config):
             "now_ist": utils.now_ist,
             # the registration of institutions: 'open', 'off' or 'ended' - "Apply now" at the top leads to it while open (1.2.145)
             "hei_window": lambda: heis.window(db.all_settings()),
+            # the last day of the registration of institutions with its hour (1.2.208)
+            "hei_until": _hei_until,
             # the students' registration shown on the public pages (1.2.147: hidden by default)
             "students_public": lambda: db.get_setting("reg.public") == "1",
             # KTS 5.0 – Key dates (1.2.152) and the steps of /how-to-submit-the-student with their English button names

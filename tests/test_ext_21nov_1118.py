@@ -15,7 +15,7 @@ def test_its_days_are_the_days_of_the_portal():
     from kts.db import DEFAULT_SETTINGS, EXT21_NOTICE
     assert EXT21_NOTICE[0] == TITLE
     body = EXT21_NOTICE[1]
-    for words, key, day in (("up to 21 November 2026 (earlier 18 November)", "hei.end", "2026-11-21"),
+    for words, key, day in (("up to 21 November 2026, 5:00 PM (earlier 18 November)", "hei.end", "2026-11-21"),      # the hour since 1.2.208
                             ("22 November 2026 (earlier 19 November)", "hei.select_end", "2026-11-22"),
                             ("by 23 November 2026", "camp.to", "2026-11-23"),
                             ("24 November 2026", "reg.end", "2026-11-24"),
@@ -23,7 +23,7 @@ def test_its_days_are_the_days_of_the_portal():
                             ("12 December 2026", "kts.end", "2026-12-12")):
         assert words in body and DEFAULT_SETTINGS[key] == day, (words, key)
     assert body.startswith("The Ministry of Education, Government of India, has extended the last date for the registration of institutions "
-                           "on this portal (kts.cict.in)") and "from 18 November 2026 to 21 November 2026." in body
+                           "on this portal (kts.cict.in)") and "from 18 November 2026 to 21 November 2026, 5:00 PM." in body
     assert "Every institution that registers is a Participating Institution." in body
     assert len(body) < 1200 and "reserve" not in body and "selected Participating" not in body
 
@@ -37,8 +37,8 @@ def test_the_notice_is_pinned_and_leads_to_the_registration():
     assert TITLE in page and "Pinned" in page[page.index(TITLE) - 400:page.index(TITLE)]
     nid = _sql(app, "SELECT id FROM notices WHERE title = ?", (TITLE,))[0][0]
     one = client.get(f"/notices/{nid}?lang=en").get_data(as_text=True)
-    assert "The Ministry of Education, Government of India, has extended" in one and "from 18 November 2026 to 21 November 2026." in one and 'href="/institutions/register"' in one
-    assert "Registration of institutions on kts.cict.in: up to 21 November 2026 (earlier 18 November)." in one
+    assert "The Ministry of Education, Government of India, has extended" in one and "from 18 November 2026 to 21 November 2026, 5:00 PM." in one and 'href="/institutions/register"' in one
+    assert "Registration of institutions on kts.cict.in: up to 21 November 2026, 5:00 PM (earlier 18 November)." in one
 
 
 def test_a_live_database_takes_it_once_and_first():

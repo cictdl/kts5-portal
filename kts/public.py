@@ -289,7 +289,7 @@ def key_dates_box(settings=None):
         first = HEI.selection_start(s)   # the day after the registration, or the schedule's first day of selection (1.2.171)
         select_from = first if first and first < select_end else None
     groups = [
-        {"title": "kd.g1", "rows": [row("kd.reg", hei_end, prefix="kd.upto"),
+        {"title": "kd.g1", "rows": [dict(row("kd.reg", hei_end, prefix="kd.upto"), until=True),   # with its hour (1.2.208)
                                     row("kd.select", select_from or select_end, select_end if select_from else None),
                                     row("kd.assess", day("camp.to"), prefix="kd.by"),
                                     row("kd.nominate", day("reg.end"), endpoint="public.submit_guide")]},   # how (1.2.154)
@@ -518,7 +518,7 @@ def join_poster(code):
     page = base + "/join/" + row["code"] + (f"?lang={lang}" if lang != "en" else "")
     return render_template("public/join_poster.html", code=row["code"], label=HEI.label_of(state, lang),
                            heading=DRIVE.title(row, lang, settings, "recruit"), heading_en=DRIVE.title(row, "en", settings, "recruit"),
-                           hei_end=FINDER.long_day(FINDER._day(settings, "hei.end"), lang), qr=qr_data_uri(page),
+                           hei_end=FINDER.long_day(FINDER._day(settings, "hei.end"), lang) + HEI.hour_words(settings, lang), qr=qr_data_uri(page),
                            short=re.sub(r"^https?://", "", base) + "/join/" + row["code"],
                            nodal=next((h["name"] for h in nodal_heis() if h["state"] == state), ""))
 
@@ -1119,7 +1119,7 @@ def hei_done(ref):
         drow = DRIVE.table().get(HEI.nodal_state_of(row["state"]))
         if drow:
             pass_on = dict(DRIVE.share(drow, get_lang(), settings, "recruit"), code=drow["code"], label=HEI.label_of(drow["state"]),
-                           date=FINDER.long_day(FINDER._day(settings, "hei.end"), get_lang()))
+                           date=FINDER.long_day(FINDER._day(settings, "hei.end"), get_lang()) + HEI.hour_words(settings, get_lang()))
     return render_template("public/hei_done.html", row=row, pass_on=pass_on)
 
 

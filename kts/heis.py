@@ -29,7 +29,7 @@ with_covered, label_of, unit_name).
 import json
 import re
 import secrets
-from datetime import date, timedelta
+from datetime import date, time, timedelta
 
 from flask import current_app
 
@@ -359,13 +359,39 @@ def remove_invited(state):
     return {"removed": removed, "mails": mails}
 
 
+def end_hour(settings):
+    """
+    The hour of the last day at which the registration of institutions closes (hei.end_time, IST; 1.2.208, CICT, 21 November
+    2026: "5 pm is the deadline"), or None: at the end of the day.
+    """
+    m = re.fullmatch(r"\s*(\d{1,2})[:.](\d{2})\s*", settings.get("hei.end_time") or "")
+    if not m or int(m.group(1)) > 23 or int(m.group(2)) > 59:
+        return None
+    return time(int(m.group(1)), int(m.group(2)))
+
+
+def hour_words(settings, lang):
+    """", 5:00 PM" after the last day of the registration of institutions (", 17:00" in the other languages), or "" (1.2.208)."""
+    hour = end_hour(settings)
+    if hour is None:
+        return ""
+    if lang == "en":
+        return f", {hour.hour % 12 or 12}:{hour.minute:02d} {'AM' if hour.hour < 12 else 'PM'}"
+    return f", {hour.hour:02d}:{hour.minute:02d}"
+
+
 def window(settings):
-    """'open', 'off' (hei.open is off) or 'ended' (after hei.end)."""
+    """'open', 'off' (hei.open is off) or 'ended' (after hei.end, and from its hour hei.end_time on that day, 1.2.208)."""
     if settings.get("hei.open") != "1":
         return "off"
     end = (settings.get("hei.end") or "").strip()
-    if end and now_ist().date().isoformat() > end[:10]:
-        return "ended"
+    if end:
+        now = now_ist()
+        if now.date().isoformat() > end[:10]:
+            return "ended"
+        hour = end_hour(settings)
+        if hour is not None and now.date().isoformat() == end[:10] and now.time().replace(second=0, microsecond=0) >= hour:
+            return "ended"
     return "open"
 
 

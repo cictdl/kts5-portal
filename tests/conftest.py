@@ -73,6 +73,9 @@ def make_app(**settings):
         for key in ("figures.assessment", "dashboard.table", "figures.percent", "progress.flow", "dashboard.marks", "nodal.pending", "nodal.report",
                     "hei.reserve_list", "hei.select_step", "kd.select_rows"):      # ... and the selection of institutions, no more since 1.2.201
             set_setting(key, "1")
+        # the hour of the last day of the registration of institutions (1.2.208, tests/test_hei_end_time_1121.py): the tests made
+        # before see the whole day
+        set_setting("hei.end_time", "")
     return app
 
 
