@@ -29,7 +29,7 @@ from . import search as S
 from .i18n import get_lang, offered, t
 from .utils import (DOC_EXT, IMAGE_EXT, age_on, check_captcha, client_ip, college_key, csv_bytes,
                     IST, exam_window, file_folder, fmt_date, limiter, make_app_no, new_captcha, now_ist, plain_english,
-                    launch_at, qr_data_uri, registration_state, save_upload, send_mail, valid_email, valid_mobile,
+                    launch_at, qr_data_uri, reg_over, registration_state, save_upload, send_mail, valid_email, valid_mobile,
                     valid_pincode)
 from .version import RELEASED, VERSION
 
@@ -47,8 +47,7 @@ def _states():
 
 def _key_dates(settings):
     start, end, _ = exam_window(settings)
-    reg_end = settings.get("reg.end") or ""
-    ended = bool(reg_end) and reg_end < now_ist().strftime("%Y-%m-%d")
+    ended = reg_over(settings, now_ist())      # after the last day, and on it from its hour (1.2.209)
     return {
         "reg_start": settings.get("reg.start"),
         "reg_end": settings.get("reg.end"),
@@ -117,14 +116,27 @@ def _timeline(settings):
              for key, kind, day in (("timeline.reg_open", "registration", reg_on and _iso_day(settings.get("reg.start"))),
                                     # the nomination by the Participating Institutions (20 November) while it is open (1.2.155)
                                     ("timeline.reg_close", "registration", (reg_on or settings.get("nominate.open") != "0")
-                                     and _iso_day(settings.get("reg.end"))),
+                                     and i18n.dates_public() and _iso_day(settings.get("reg.end"))),
                                     ("timeline.inauguration", "general", _iso_day(settings.get("kts.start"))),
                                     ("timeline.valedictory", "general", _iso_day(settings.get("kts.end")))) if day]
+    # the last day of the nomination at its hour (reg.end_time, 1.2.209: 27 November 2026, 5:00 PM)
+    hour = HEI.end_hour({"hei.end_time": settings.get("reg.end_time")})
+    if hour is not None:
+        fixed = [(key, kind, starts[:10] + f"T{hour:%H:%M}" if key == "timeline.reg_close" else starts, ends)
+                 for key, kind, starts, ends in fixed]
     # CICT's central online test (1.2.126), its days as the settings have them, while it is not switched off; left out of the
     # schedule unless schedule.central_test is '1' (1.2.152)
     first, last = _iso_day(settings.get("exam.date")), _iso_day(settings.get("exam.date_to"))
     if first and settings.get("exam.open") != "0" and settings.get("schedule.central_test") == "1":
         fixed.append(("timeline.exam", "examination", first + "T00:00", last + "T00:00" if last and last > first else None))
+    # the last days kept off the public pages (1.2.209, dates.public): the registration of institutions, the selection and the
+    # assessment leave the schedule (and the nomination above)
+    if not i18n.dates_public():
+        rows = [r for r in rows if r["title"] not in _step_titles(("hei_reg", "hei_select", "assess"))]
+    # the selection of institutions, no step of the programme since 1.2.201 and off the Key dates since 1.2.205 (kd.select_rows),
+    # leaves the schedule with them (1.2.209: the registration of institutions runs past its day)
+    if settings.get("kd.select_rows") != "1":
+        rows = [r for r in rows if r["title"] not in _step_titles(("hei_select",))]
     for key, kind, starts_at, ends_at in fixed:
         rows.append({"id": None, "title": i18n.text(key, "en"), "description": "", "kind": kind, "lang": "",
                      "starts_at": starts_at, "ends_at": ends_at, "venue": "", "link": "", "agency": None})
@@ -140,6 +152,13 @@ def _timeline(settings):
     upcoming = [r for r in rows if r["onwards"] or (r["ends_at"] or r["starts_at"]) >= today]
     past = [r for r in rows if not r["onwards"] and (r["ends_at"] or r["starts_at"]) < today]
     return upcoming, past[::-1][:50]
+
+
+@lru_cache(maxsize=8)
+def _step_titles(keys):
+    """The titles of these steps of the timeline (data/timeline.json), to leave them off the schedule (1.2.209)."""
+    rows = json.loads((current_app.config["DATA_DIR"] / "timeline.json").read_text(encoding="utf-8"))
+    return frozenset(r["title"] for r in rows if r["key"] in keys)
 
 
 @lru_cache(maxsize=1)
@@ -292,7 +311,7 @@ def key_dates_box(settings=None):
         {"title": "kd.g1", "rows": [dict(row("kd.reg", hei_end, prefix="kd.upto"), until=True),   # with its hour (1.2.208)
                                     row("kd.select", select_from or select_end, select_end if select_from else None),
                                     row("kd.assess", day("camp.to"), prefix="kd.by"),
-                                    row("kd.nominate", day("reg.end"), endpoint="public.submit_guide")]},   # how (1.2.154)
+                                    dict(row("kd.nominate", day("reg.end"), endpoint="public.submit_guide"), until_reg=True)]},   # how (1.2.154); with its hour (1.2.209)
         {"title": "kd.g2", "rows": [row("kd.inaug", day("kts.start")), row("kd.valed", day("kts.end")),
                                     row("kd.online"), row("kd.cert")]},
         {"title": "kd.g3", "rows": [row("kd.orient", day("orientation.by"), prefix="kd.by"),
@@ -306,6 +325,10 @@ def key_dates_box(settings=None):
     if s.get("kd.select_rows") != "1":
         groups[0]["title"] = "tag.registration"
         groups[0]["rows"] = [r for r in groups[0]["rows"] if r["label"] not in ("kd.select", "kd.assess", "kd.nominate")]
+    # the last days kept off the public pages (1.2.209, dates.public): the registration of institutions, the selection, the
+    # assessment and the nomination leave the box; a group left without a row is not shown (public/_key_dates.html)
+    if not i18n.dates_public():
+        groups[0]["rows"] = [r for r in groups[0]["rows"] if r["label"] not in ("kd.reg", "kd.select", "kd.assess", "kd.nominate")]
     return groups
 
 
@@ -317,8 +340,8 @@ def nomination_open(settings):
     """
     if settings.get("nominate.open") == "0":
         return False
-    end = _iso_day(settings.get("reg.end"))
-    return not end or now_ist().strftime("%Y-%m-%d") <= end
+    # up to the last day, and on it up to its hour (reg.end_time, 1.2.209: 27 November 2026, 5:00 PM)
+    return not reg_over(settings, now_ist())
 
 
 def ui_text(key, **values):
@@ -418,7 +441,7 @@ def submit_guide():
     nodal_login = Markup('<a href="{}">{}</a>').format(url_for("auth.login"), t("nav.nodal_login"))
     excel = _ui("Excel")
     coord = online_assessment_steps(settings) + [      # the first four: also on /examination and in the guide (1.2.192)
-             ("hs.c5", {"open_reg": _ui("Submit the nomination"), "date": day("reg.end")}),
+             ("hs.c5", {"open_reg": _ui("Submit the nomination"), "date": day("reg.end") + HEI.nominate_hour_words(get_lang(), settings)}),
              ("hs.c6", {}),
              ("hs.c7", {"withdraw": _ui("Withdraw the selection")}),
              ("hs.c8", {"presentation": _ui("Presentation video")})]
@@ -481,7 +504,8 @@ def join_board():
         rows.sort(key=lambda r: r["label"])
     total = {"reg": sum(r["reg"] for r in rows), "n": sum(r["n"] for r in rows)}
     today = now_ist().date()
-    chip = FINDER.days_chip(FINDER._day(settings, "hei.end"), today, lang) if DRIVE.phase(settings, today) == "recruit" else None
+    chip = (FINDER.days_chip(FINDER._day(settings, "hei.end"), today, lang)
+            if DRIVE.phase(settings, today) == "recruit" and i18n.dates_public() else None)      # no days left to count (1.2.209)
     return render_template("public/join_board.html", rows=rows, total=total, chip=chip, as_of=now_ist().strftime("%H:%M"))
 
 
@@ -497,6 +521,7 @@ def join_state(code):
     ph = DRIVE.phase(settings, today)
     chip = (FINDER.days_chip(FINDER._day(settings, "hei.end"), today, lang) if ph == "recruit"
             else FINDER.days_chip(FINDER._day(settings, "camp.to"), today, lang) if ph == "assess" else None)
+    chip = chip if i18n.dates_public() else None      # no days left to count while the last days are kept off (1.2.209)
     nodal = next((h["name"] for h in nodal_heis() if h["state"] == state), "")
     return render_template("public/join_state.html", row=row, ph=ph, chip=chip, label=HEI.label_of(state, lang),
                            heading=DRIVE.title(row, lang, settings, ph), sh=DRIVE.share(row, lang, settings, ph),
@@ -853,9 +878,8 @@ def register():
     # the nomination open (1.2.154): up to reg.end even while the students' registration is switched off or hidden
     open_now = state == "open" or nomination_open(settings)
     if not (by_coord and open_now):
-        end = _iso_day(settings.get("reg.end"))
         # anybody else: the coordinator submits the nomination (before reg.start, the page of the day it opens, as before)
-        ctx.update(ended=bool(end) and end < now_ist().strftime("%Y-%m-%d"), by_institution=open_now and state != "not_yet",
+        ctx.update(ended=reg_over(settings, now_ist()), by_institution=open_now and state != "not_yet",
                    token_bad=bool(token) and inst is None)
         # a form sent by anybody but the coordinator stores nothing
         return render_template("public/register_closed.html", **ctx), (403 if request.method == "POST" else 200)

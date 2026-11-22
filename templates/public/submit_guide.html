@@ -8,7 +8,7 @@
 <div class="wrap section hs-page">
   <span class="eyebrow">{{ t('site.name') }}</span>
   <h1>{{ t('hs.title') }}</h1>
-  <p class="lead" style="max-width:80ch">{{ t('hs.lead')|replace('{date}', settings['reg.end']|date) }}</p>
+  <p class="lead" style="max-width:80ch">{{ t('hs.lead')|replace('{date}', reg_until()) }}</p>
   <div class="btn-row"><a class="btn" href="#coordinator">{{ t('hs.coord') }}</a><a class="btn secondary" href="#nodal">{{ t('hs.nodal') }}</a></div>
 
   <section class="card accent hs-part" id="coordinator" aria-labelledby="hs-coord">

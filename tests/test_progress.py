@@ -232,4 +232,7 @@ def test_the_days_of_the_reminders_lie_within_registration():
     from kts.db import DEFAULT_SETTINGS as D
     # the selection on 22 November since 1.2.203, the day of the first reminder
     assert D["reg.start"] < D["hei.select_end"] <= D["remind.test_by"] < D["remind.select_by"] < D["remind.register_by"] <= D["reg.end"]
-    assert (D["camp.from"], D["camp.to"]) == ("2026-10-22", "2026-11-23") and (D["reg.start"], D["reg.end"]) == ("2026-10-22", "2026-11-24")
+    # the assessments and the nomination up to 27 November 2026 (1.2.209; 23 and 24 November before); the reminders keep their
+    # days, 22, 23 and 24 November, so the last no longer falls on the last day
+    assert (D["camp.from"], D["camp.to"]) == ("2026-10-22", "2026-11-27") and (D["reg.start"], D["reg.end"]) == ("2026-10-22", "2026-11-27")
+    assert (D["remind.test_by"], D["remind.select_by"], D["remind.register_by"]) == ("2026-11-22", "2026-11-23", "2026-11-24")

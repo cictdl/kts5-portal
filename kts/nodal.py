@@ -18,6 +18,7 @@ from datetime import date, datetime, timedelta, timezone
 from flask import current_app
 
 from .db import execute, get_db, get_setting, query, utcnow
+from .i18n import dates_public
 from .utils import now_ist, send_later
 
 # the applications that a Nodal Officer has verified, whatever happened to them afterwards
@@ -246,6 +247,8 @@ def signin_mail(user, now=None):
     _per, total = figures(states, now)
     number = sum(allocation_of(members[0]) for members in rows.values())
     hei_end, select_end, reg_end, end = (_day(get_setting(k)) for k in ("hei.end", "hei.select_end", "reg.end", "verify.end"))
+    if not dates_public():   # the last days kept off the mails (1.2.209)
+        hei_end = reg_end = None
     contact = (get_setting("contact.email") or "").strip() or "office@cict.in"
     guide = next((v["url"] for v in guide_videos() if v["n"] == 1), f"{base}/nodal-institutions")
     on = f" on {long_date(created)}" if created else ""
@@ -259,7 +262,7 @@ def signin_mail(user, now=None):
               + (f" by {long_date(select_end)}" if select_end else "") + f"{_with_reserve()}, in the Console (Institutions).")
              if selecting else "• Every institution that registers is a Participating Institution; the Console lists them (Institutions).",
              ("• Each selected institution nominates one student" if selecting else "• Each Participating Institution nominates one student")
-             + (f" by {long_date(reg_end)}" if reg_end else "")
+             + (f" by {long_date(reg_end)}{hour_words({'hei.end_time': get_setting('reg.end_time')}, 'en')}" if reg_end else "")
              + "; the Nodal Officers verify the nominations" + (f" by {long_date(end)}" if end else "") + "."
              + (f" {total['awaiting']} application(s) await your verification already." if total["awaiting"] else ""),
              "",

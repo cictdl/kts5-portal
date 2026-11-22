@@ -36,7 +36,7 @@ def _portal():
 def test_the_texts_in_every_language_with_their_placeholders():
     from kts.i18n import CATALOG
     keys = [k for k in CATALOG["en"] if k.startswith("nl.")]
-    assert len(keys) == 81 and "nl.p1" in keys and "nl.art_c4" in keys
+    assert len(keys) == 86 and "nl.p1" in keys and "nl.art_c4" in keys      # 1.2.209: five of them without the last days (_nd)
     for code, catalogue in CATALOG.items():
         for key in keys:
             value = catalogue.get(key)

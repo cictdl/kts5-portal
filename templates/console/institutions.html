@@ -1,13 +1,13 @@
 {% extends "console/base.html" %}
 {% block title %}Institutions{% endblock %}
 {% block content %}
-<p class="dim" style="max-width:92ch">{% if not select_on %}{# no selection of institutions since 1.2.201 (CICT, 17 November 2026; hei.select_step) #}The institutions of the States/UTs: every interested institution registers up to <b>{{ hei_until() }}</b>
+<p class="dim" style="max-width:92ch">{% if not select_on %}{# no selection of institutions since 1.2.201 (CICT, 17 November 2026; hei.select_step) #}The institutions of the States/UTs: every interested institution registers up to <b>{{ hei_until(True) }}</b>
   (any number of institutions of a State/UT may register), and every institution that registers is a Participating Institution at once
   (CICT, 17 November 2026): there is no selection of institutions, no reserve list and no ceiling. Each Participating Institution assesses
   its students and nominates one on merit, registered with the portal's link on or before <b>{{ reg_end|date }}</b>. An entry that is not
   an eligible institution may be declined, with a remark.
   {% else %}The institutions of the States/UTs, as the revised D.O. letter of the Ministry sets out: every interested institution
-  registers up to <b>{{ hei_until() }}</b> (any number of institutions of a State/UT may register); the Nodal Institution scrutinises them, records the marks of its evaluation committee on the five criteria of
+  registers up to <b>{{ hei_until(True) }}</b> (any number of institutions of a State/UT may register); the Nodal Institution scrutinises them, records the marks of its evaluation committee on the five criteria of
   the Standard Operating Procedure (Annexure-V: 100 marks, benchmark {{ benchmark }}) and, by <b>{{ select_end|date }}</b>, selects the number
   Annexure-I prescribes{% if reserve_on %}{% if marks_first %}: an institution is selected, or put on the reserve list, once its marks are recorded{% else %} (the marks may
   be recorded at a later stage, CICT, 12 November 2026: an institution of the reserve list then takes its place in the order of the marks){% endif %}. The others, in the order of their marks,

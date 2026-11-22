@@ -2036,6 +2036,7 @@ SETTING_GROUPS = [
               ("home.launch_video", "Show the video of the launch of the web portal and registration (22 October 2026) on the home page", "bool"),
               ("reg.public", "Show the students' registration on the public pages: the menu, buttons and dates of the registration and of the application status, and the counts of student delegates registered (the pages /register and /status work either way)", "bool"),
               ("nominate.open", "The nomination by the Participating Institutions: the personal registration link of the student a Participating Institution has selected opens the registration form up to its last day (reg.end), even while the students' own registration is switched off (reg.open) or hidden (reg.public)", "bool"),
+              ("dates.public", "Show the last days of the registration of institutions, of the assessment and of the nomination on the public pages and in the mails (off: only the Console gives them; the notices keep their own words)", "bool"),
               ("schedule.central_test", "Show CICT's central online test (its days: exam.date to exam.date_to) in the schedule and among the upcoming events of the home page", "bool"),
               ("circular.new_days", "The newest circular of the Ministry (a circular notice with the letter attached) carries a blinking ‘NEW’ on the home page for so many days after it is put in (0: never)", "text"),
               ("home.circular", "Show the newest circular of the Ministry, with its PDF, first in the circular band of the home page (the notice stays under Notices either way)", "bool"),
@@ -2058,7 +2059,8 @@ SETTING_GROUPS = [
     ("Home page", [("home.pm_on", "Show the Prime Minister's photograph and quotation", "bool"),
                    ("home.pm_quote", "Quotation (without quotation marks)", "text"),
                    ("home.pm_quote_by", "Attribution", "text"), ("home.pm_caption", "Photograph caption", "text")]),
-    ("Registration", [("reg.open", "Registration enabled", "bool"), ("reg.start", "Opens on (YYYY-MM-DD)", "date"), ("reg.end", "Closes on (YYYY-MM-DD)", "date")]),
+    ("Registration", [("reg.open", "Registration enabled", "bool"), ("reg.start", "Opens on (YYYY-MM-DD)", "date"), ("reg.end", "Closes on (YYYY-MM-DD)", "date"),
+                      ("reg.end_time", "Hour of that day at which the nomination closes (HH:MM, IST; empty: at the end of the day)", "time")]),
     ("Launch of the KTS 5.0 web portal and registration (by the Hon'ble Minister of Education; the stage screen: /launch)", [
         ("launch.on", "Announce the launch: the banner and the home page before it; registration opens at the launch", "bool"),
         ("launch.at", "Moment of the launch (YYYY-MM-DDTHH:MM, IST)", "text"),

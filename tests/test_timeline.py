@@ -20,7 +20,9 @@ NAMES = ("INSTANCE_DIR", "DATABASE", "UPLOAD_DIR")
 # registration opens with the launch of the registration portal, set for 14 October 2026 (1.2.69) and held on 22 October (1.2.95);
 # the steps after it are those of the revised D.O. letter of 26 October 2026 (Annexure-III D, 1.2.110)
 # the letter of 31 October 2026 (1.2.133): the orientation (14 December) and the engagement (15 December) after the valedictory
-ORDER = ["circular", "hei_list", "reg_open*", "hei_reg", "hei_select", "assess", "reg_close*", "selection", "inauguration*",
+# the registration of institutions, the assessment and the nomination up to 27 November 2026 (1.2.209): the three stand after
+# the selection of institutions (22 November) and the first day of the consolidation (25 November - 5 December), as the days sort
+ORDER = ["circular", "hei_list", "reg_open*", "hei_select", "selection", "hei_reg", "assess", "reg_close*", "inauguration*",
          "valedictory*", "live", "internship", "research", "papers"]
 KEYS = ["timeline." + name.rstrip("*") for name in ORDER]
 
@@ -99,11 +101,15 @@ def test_the_dates_of_the_timeline_are_the_defaults():
     # register up to 15 November, the Nodal Institutions select them on 16 and 17 November, each selected one assesses its
     # students by 19 November and nominates its student by 20 November, verification up to 5 December, the one-month
     # engagement from 15 December 2026 to 14 January 2027
-    assert DEFAULT_SETTINGS["reg.start"] == "2026-10-22" and DEFAULT_SETTINGS["reg.end"] == "2026-11-24"   # 1.2.172
+    # the nomination up to 27 November 2026, 5:00 PM (1.2.209; 24 November from 1.2.172 to 1.2.208)
+    assert DEFAULT_SETTINGS["reg.start"] == "2026-10-22" and DEFAULT_SETTINGS["reg.end"] == "2026-11-27"
+    assert DEFAULT_SETTINGS["reg.end_time"] == DEFAULT_SETTINGS["hei.end_time"] == "17:00"
     # registration up to 18 November since 1.2.171 (CICT, 10 November 2026), the selection unchanged
     # ... up to 21 November, and the selection on 22 November, since 1.2.203 (CICT, 18 November 2026; tests/test_dates_1118.py)
-    assert DEFAULT_SETTINGS["hei.end"] == "2026-11-21" and DEFAULT_SETTINGS["hei.select_end"] == "2026-11-22"
-    assert DEFAULT_SETTINGS["camp.to"] == "2026-11-23" and DEFAULT_SETTINGS["verify.end"] == "2026-12-05"
+    # ... up to 27 November since 1.2.209 (22 November 2026; tests/test_dates_hidden_1122.py), the selection unchanged; the
+    # assessment up to 27 November too (23 November up to 1.2.208)
+    assert DEFAULT_SETTINGS["hei.end"] == "2026-11-27" and DEFAULT_SETTINGS["hei.select_end"] == "2026-11-22"
+    assert DEFAULT_SETTINGS["camp.to"] == "2026-11-27" and DEFAULT_SETTINGS["verify.end"] == "2026-12-05"
     # the central online test of CICT, 10 November 00:00 to 20 November 23:59 (1.2.120)
     assert (DEFAULT_SETTINGS["exam.date"], DEFAULT_SETTINGS["exam.date_to"]) == ("2026-11-10", "2026-11-20")
     assert (DEFAULT_SETTINGS["exam.start_time"], DEFAULT_SETTINGS["exam.end_time"]) == ("00:00", "23:59")
@@ -113,14 +119,16 @@ def test_the_dates_of_the_timeline_are_the_defaults():
     # the Ministry's revision of 10 November 2026 (1.2.172): one day of selection, 19 November
     assert (S["hei_reg"]["starts"], S["hei_select"]["starts"], S["hei_select"].get("ends")) == (
         DEFAULT_SETTINGS["hei.end"], DEFAULT_SETTINGS["hei.select_end"], None)
-    assert S["assess"]["starts"] == DEFAULT_SETTINGS["camp.to"] and DEFAULT_SETTINGS["reg.end"] == "2026-11-24"
+    # the three last days on 27 November 2026 (1.2.209)
+    assert S["hei_reg"]["starts"] == S["assess"]["starts"] == DEFAULT_SETTINGS["reg.end"] == "2026-11-27"
+    assert S["assess"]["starts"] == DEFAULT_SETTINGS["camp.to"]
     assert (S["selection"]["starts"], S["selection"]["ends"], S["live"]["starts"]) == ("2026-11-25", DEFAULT_SETTINGS["verify.end"], "2026-12-14")
     assert (S["internship"]["starts"], S["research"]["starts"], S["research"]["ends"], S["papers"]["starts"]) == (
         DEFAULT_SETTINGS["internship.start"], DEFAULT_SETTINGS["internship.start"], DEFAULT_SETTINGS["papers.due"], DEFAULT_SETTINGS["papers.due"])
     assert DEFAULT_SETTINGS["kts.start"] == "2026-11-28" and DEFAULT_SETTINGS["kts.end"] == "2026-12-12"
     # the days of the week as the calendar has them
     days = [datetime.fromisoformat(DEFAULT_SETTINGS[key]).strftime("%a") for key in ("reg.start", "reg.end", "exam.date", "kts.start", "kts.end")]
-    assert days == ["Thu", "Tue", "Tue", "Sat", "Sat"]   # the nomination on Tuesday 24 November since 1.2.172
+    assert days == ["Thu", "Fri", "Tue", "Sat", "Sat"]   # the nomination on Friday 27 November since 1.2.209 (Tuesday 24 before)
 
 
 def test_a_database_of_an_earlier_version_receives_the_dates():
@@ -129,7 +137,8 @@ def test_a_database_of_an_earlier_version_receives_the_dates():
         _sql(app, "UPDATE settings SET value = ? WHERE key = ?", (old, key))
     _sql(app, "DELETE FROM settings WHERE key IN ('kts.start', 'kts.end', 'schedule.tentative')")
     settings = _settings(_start(app))
-    assert (settings["reg.start"], settings["reg.end"], settings["exam.date"]) == ("2026-10-22", "2026-11-24", "2026-11-10")
+    # the nomination up to 27 November 2026 (1.2.209)
+    assert (settings["reg.start"], settings["reg.end"], settings["exam.date"]) == ("2026-10-22", "2026-11-27", "2026-11-10")
     assert (settings["kts.start"], settings["kts.end"], settings["schedule.tentative"]) == ("2026-11-28", "2026-12-12", "1")
 
 def test_the_live_database_moves_to_the_timeline_of_8_october():
@@ -147,7 +156,7 @@ def test_the_live_database_moves_to_the_timeline_of_8_october():
     again = _start(app)
     settings = _settings(again)
     moved = [settings[k] for k in ("reg.start", "reg.end", "exam.date", "letter.date", "internship.start", "exam.start_time")]
-    assert moved == ["2026-10-22", "2026-11-24", "2026-11-10", "2026-12-06", "2026-12-15", "00:00"]
+    assert moved == ["2026-10-22", "2026-11-27", "2026-11-10", "2026-12-06", "2026-12-15", "00:00"]   # reg.end: 27 November (1.2.209)
     rows = {t: (s, e) for t, s, e in _sql(again, "SELECT title, starts_at, ends_at FROM events")}
     assert rows[S["selection"]["title"]] == ("2026-11-25T00:00", "2026-12-05T00:00")
     assert rows[S["internship"]["title"]] == ("2026-12-15T00:00", None)
@@ -167,7 +176,8 @@ def test_dates_set_by_the_administrator_are_left_alone():
     assert settings["kts.end"] == "2026-12-14"
 
 
-@pytest.mark.parametrize("day, state", [("2026-10-21", "not_yet"), ("2026-10-22", "open"), ("2026-11-24", "open"), ("2026-11-25", "closed")])
+# the last day 27 November 2026 since 1.2.209 (24 November before): open on it, closed on the day after
+@pytest.mark.parametrize("day, state", [("2026-10-21", "not_yet"), ("2026-10-22", "open"), ("2026-11-27", "open"), ("2026-11-28", "closed")])
 def test_registration_follows_the_dates(monkeypatch, day, state):
     app = _portal()
     _on(monkeypatch, day)
@@ -208,10 +218,14 @@ def test_the_schedule_shows_the_timeline_in_order(monkeypatch):
     assert past == ""
     places = [upcoming.index("<bdi>" + _text(key) + "</bdi>") for key in KEYS]
     assert places == sorted(places)
-    for day in ("07 Oct 2026", "13 Oct 2026", "22 Oct 2026", "21 Nov 2026", "22 Nov 2026", "23 Nov 2026",
-                "24 Nov 2026", "25 Nov 2026", "– 05 Dec 2026", "28 Nov 2026", "14 Dec 2026", "12 Dec 2026", "15 Dec 2026",
-                "– 14 Jan 2027", "14 Jan 2027"):
+    for day in ("07 Oct 2026", "13 Oct 2026", "22 Oct 2026", "22 Nov 2026", "25 Nov 2026", "– 05 Dec 2026", "27 Nov 2026",
+                "28 Nov 2026", "14 Dec 2026", "12 Dec 2026", "15 Dec 2026", "– 14 Jan 2027", "14 Jan 2027"):
         assert day in upcoming, day
+    # the registration of institutions (21 November up to 1.2.208), the assessment (23) and the nomination (24) all on 27
+    # November 2026 (1.2.209): the day stands three times, their earlier days no more
+    assert upcoming.count("27 Nov 2026") == 3
+    for day in ("21 Nov 2026", "23 Nov 2026", "24 Nov 2026"):
+        assert day not in upcoming, day
     # a day without a time of day stands alone; the test has the hours of its settings
     assert "12:00 AM" not in upcoming
     # the steps that the revised D.O. letter no longer has are not there: the evaluation by CIIL, the booklet
@@ -220,7 +234,14 @@ def test_the_schedule_shows_the_timeline_in_order(monkeypatch):
 
 def test_what_is_over_moves_to_the_past(monkeypatch):
     app = _portal()
-    _on(monkeypatch, "2026-11-25")
+    # on their day, 27 November 2026 (1.2.209), the registration of institutions, the assessment and the nomination are not over
+    _on(monkeypatch, "2026-11-27")
+    upcoming, past = _halves(_page(app, "/schedule?lang=en"))
+    for key in ("timeline.hei_reg", "timeline.assess", "timeline.reg_close"):
+        assert _text(key) in upcoming and _text(key) not in past, key
+    assert _text("timeline.hei_select") in past and _text("timeline.hei_select") not in upcoming
+    # the day after (25 November up to 1.2.208, the day after the nomination of 24 November)
+    _on(monkeypatch, "2026-11-28")
     upcoming, past = _halves(_page(app, "/schedule?lang=en"))
     for key in ("timeline.circular", "timeline.hei_list", "timeline.reg_open", "timeline.hei_reg", "timeline.hei_select",
                 "timeline.assess", "timeline.reg_close"):
@@ -232,8 +253,10 @@ def test_what_is_over_moves_to_the_past(monkeypatch):
     _on(monkeypatch, "2026-12-06")
     upcoming, past = _halves(_page(app, "/schedule?lang=en"))
     assert _text("timeline.selection") in past and _text("timeline.live") in upcoming
-    # the last that is over stands first
-    assert past.index(_text("timeline.selection")) < past.index(_text("timeline.reg_close")) < past.index(_text("timeline.circular"))
+    # the past stands in the order of the first days, the latest first: the nomination closes on 27 November 2026 (1.2.209),
+    # after the first day of the consolidation (25 November), which stood above it while the nomination closed on 24 November
+    places = [past.index(_text("timeline." + key)) for key in ("inauguration", "reg_close", "selection", "hei_select", "circular")]
+    assert places == sorted(places)
 
 
 def test_the_home_page_shows_the_next_four_and_the_days_of_the_sangamam(monkeypatch):
@@ -244,6 +267,8 @@ def test_the_home_page_shows_the_next_four_and_the_days_of_the_sangamam(monkeypa
     card = page[page.index("<h3>" + _text("schedule.upcoming") + "</h3>"):]
     card = card[:card.index("</ul>")]
     # the central online test (10 November, 1.2.126) stood fourth; left out of the schedule since 1.2.152 (schedule.central_test)
+    # the fourth is the selection of institutions (22 November) since 1.2.209: their registration runs up to 27 November
+    assert KEYS[:4] == ["timeline.circular", "timeline.hei_list", "timeline.reg_open", "timeline.hei_select"]
     assert [key for key in KEYS if _text(key) in card] == KEYS[:4] and _text("timeline.exam") not in card
     assert "07 Oct 2026" in card and "12:00 AM" not in card
     # after the last step of the timeline (the engagement ends on 14 January 2027, 1.2.133), nothing is upcoming
@@ -395,7 +420,10 @@ def test_the_banner_announces_them_while_they_are_open(monkeypatch):
 
 def test_the_banner_says_so_when_registration_is_closed(monkeypatch):
     app = _portal()
-    _on(monkeypatch, "2026-11-25")
+    # the last day is 27 November 2026 (1.2.209; 24 November before): open on it, closed on the day after
+    _on(monkeypatch, "2026-11-27")
+    assert _text("set.banner") in _banner(_page(app, "/?lang=en"))
+    _on(monkeypatch, "2026-11-28")
     banner = _banner(_page(app, "/?lang=en"))
     assert _text("reg.closed") in banner and "are open" not in banner
     # also when the administrator has switched the registration off inside the dates, once the portal has been launched
@@ -404,6 +432,11 @@ def test_the_banner_says_so_when_registration_is_closed(monkeypatch):
     assert _text("reg.closed") in _banner(_page(app, "/?lang=en"))
     # switched off with the launch, which is postponed and has no date yet: it opens after the launch (1.2.76)
     app = _portal(**{"reg.open": "0", "launch.on": "0"})
+    # the registration of institutions is open on that day, 24 October: its window (kts.heis) reads the same clock. At the real
+    # one it is over in the tests' portal, which keeps its last day of 21 November 2026 (conftest, 1.2.209), and the banner
+    # would name the nomination in its place (1.2.155)
+    from kts import heis, utils
+    monkeypatch.setattr(heis, "now_ist", utils.now_ist)
     banner = _banner(_page(app, "/?lang=en"))
     assert _text("reg.after_launch_note") in banner and _text("reg.closed") not in banner
 
@@ -467,7 +500,8 @@ def test_the_live_database_moves_to_the_dates_of_the_launch():
     again = _start(app)
     settings = _settings(again)
     assert {key: settings[key] for key in old} == {key: DEFAULT_SETTINGS[key] for key in old}
-    assert (settings["reg.start"], settings["reg.end"], settings["launch.at"]) == ("2026-10-22", "2026-11-24", "2026-10-22T12:00")
+    # the nomination up to 27 November 2026 (1.2.209)
+    assert (settings["reg.start"], settings["reg.end"], settings["launch.at"]) == ("2026-10-22", "2026-11-27", "2026-10-22T12:00")
     rows = {t: (s, e) for t, s, e in _sql(again, "SELECT title, starts_at, ends_at FROM events")}
     for key in days:
         s = S[key]
@@ -503,8 +537,9 @@ def test_the_live_database_moves_to_the_revised_letter():
     again = _start(app)
     settings = _settings(again)
     assert {key: settings[key] for key in REVISED_DO_DATES} == {key: DEFAULT_SETTINGS[key] for key in REVISED_DO_DATES}
+    # the registration of institutions and the nomination up to 27 November 2026 (1.2.209; 21 and 24 November before)
     assert (settings["hei.end"], settings["hei.select_end"], settings["reg.end"], settings["verify.end"], settings["papers.due"]) == (
-        "2026-11-21", "2026-11-22", "2026-11-24", "2026-12-05", "2027-01-14")
+        "2026-11-27", "2026-11-22", "2026-11-27", "2026-12-05", "2027-01-14")
     assert settings["hei.cap_annexure"] == "0"   # no ceiling since 1.2.178
     rows = {t: (s, e, p) for t, s, e, p in _sql(again, "SELECT title, starts_at, ends_at, published FROM events")}
     for s in SEEDS:

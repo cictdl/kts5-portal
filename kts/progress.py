@@ -21,7 +21,8 @@ from datetime import date
 from flask import current_app
 
 from .db import get_db, get_setting, query, utcnow
-from .heis import label_of, nodal_state_of, row_of, unit_name, with_covered
+from .i18n import dates_public
+from .heis import label_of, nodal_state_of, nominate_hour_words, row_of, unit_name, with_covered
 from .utils import now_ist, send_later
 
 STAGES = ("none", "testing", "selected", "registered", "verified")
@@ -167,6 +168,10 @@ def mails_for(inst, kind, reminder=True):
     """[(address, subject, body)] of one reminder to one institution."""
     base = current_app.config["BASE_URL"]
     camp_to, reg_end = _day(get_setting("camp.to")), _day(get_setting("reg.end"))
+    # the last days left out while they are kept off the mails (1.2.209, dates.public)
+    shown = dates_public()
+    reg_day = long_date(reg_end) + nominate_hour_words("en")      # the last day of the nomination with its hour
+    by_camp, by_reg = (f" by {long_date(camp_to)}", f" by {reg_day}") if shown else ("", "")
     head = "Reminder – " if reminder else ""
     sign_in = (f"Sign in to the institution's page with this e-mail address (a code is mailed to you, no password): "
                f"{base}/institution/login\n\n")
@@ -178,16 +183,16 @@ def mails_for(inst, kind, reminder=True):
                      f"student{'s' if inst['signed_up'] != 1 else ''} signed up, {inst['tested']} tested. No student is selected yet.")
         else:
             state = "The portal does not show an assessment or a selected student for your institution yet."
-        subject = (f"{head}KTS 5.0: select your student by {long_date(camp_to)} – {inst['name']}" if kind == "select"
-                   else f"{head}KTS 5.0: assess your students and select one by {long_date(camp_to)} – {inst['name']}")
+        subject = (f"{head}KTS 5.0: select your student{by_camp} – {inst['name']}" if kind == "select"
+                   else f"{head}KTS 5.0: assess your students and select one{by_camp} – {inst['name']}")
         body = (dear + f"{inst['name']} ({inst['ref']}) is a participating institution of Kashi Tamil Sangamam 5.0 – Thirukkural "
                 f"Payilvom. {state}\n\n"
                 f"What remains to be done:\n"
-                f"  1. Assess your interested students on the Thirukkural, on or before {long_date(camp_to)}: with the online "
+                f"  1. Assess your interested students on the Thirukkural{', on or before ' + long_date(camp_to) if shown else ''}: with the online "
                 f"assessment of the portal (switch it on at the institution's page and give the students its link and access code), "
                 f"or in any other suitable mode.\n"
                 f"  2. Select one student on merit on the institution's page; the portal informs the student by e-mail.\n"
-                f"  3. Submit the nomination of the student on the institution's page on or before {long_date(reg_end)}, with the "
+                f"  3. Submit the nomination of the student on the institution's page{' on or before ' + reg_day if shown else ''}, with the "
                 f"nomination form signed by the Head of the Institution and the details of the Faculty Supervisor/Guide.\n\n"
                 + sign_in + _nodal_line(inst) + footer)
         out = [(inst["coord_email"], subject, body)]
@@ -197,10 +202,10 @@ def mails_for(inst, kind, reminder=True):
                         f"{inst['coord_name']}.\n\n" + "-" * 60 + "\n\n" + body))
         return out
     # the nomination of the selected student is not submitted (1.2.158: the Institutional Coordinator submits it)
-    subject = f"{head}KTS 5.0: submit the nomination of {inst['winner_name']} by {long_date(reg_end)}"
+    subject = f"{head}KTS 5.0: submit the nomination of {inst['winner_name']}{by_reg}"
     return [(inst["coord_email"], subject,
              dear + f"{inst['name']} selected {inst['winner_name']} for Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom, but the "
-             f"nomination of the student is not submitted yet. The last date is {long_date(reg_end)}.\n\n"
+             f"nomination of the student is not submitted yet.{' The last date is ' + reg_day + '.' if shown else ''}\n\n"
              f"Submit it on the institution's page: press \u201cSubmit the nomination\u201d and fill in the student's form with a "
              f"photograph, an ID proof, the nomination form signed by the Head of the Institution, and the name, designation, "
              f"e-mail and mobile of the Faculty Supervisor/Guide.\n\n" + sign_in + _nodal_line(inst) + footer)]

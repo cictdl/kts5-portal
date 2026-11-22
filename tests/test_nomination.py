@@ -88,7 +88,10 @@ def test_the_form_gives_the_last_day_of_the_revised_letter():
     (1.2.126; from 15 October, on or before 22 October until then, 1.2.48)."""
     import fitz
     text = " ".join(fitz.open(str(ROOT / "static" / "KTS5-nomination-form.pdf"))[0].get_text().split())
-    assert "on or before 24 November 2026. The institution keeps" in text   # the Ministry's revision (1.2.172)
+    # the Ministry's revision (1.2.172): on or before 24 November 2026; 27 November 2026, 5:00 PM since 1.2.209 (CICT, 22 November
+    # 2026), in the heading of the form and in its note
+    assert "on or before 27 November 2026, 5:00 PM. The institution keeps" in text and "24 November" not in text
+    assert "(nomination on or before 27 November 2026, 5:00 PM)" in text
     assert "October" not in text
     # the participating institution's coordinator and its Nodal Institution, as Annexure-IV asks
     assert "Institutional Coordinator" in text and "State/UT Nodal Higher Educational Institution" in text

@@ -23,6 +23,7 @@ from datetime import date, datetime, timedelta
 from flask import current_app
 
 from .db import get_setting, query
+from .i18n import dates_public
 from .heis import counted_statuses, reserve_by_row
 from .progress import VERIFIED, institutions, nodal_heis
 from .utils import IST, now_ist
@@ -278,6 +279,20 @@ def _pipeline():
             "milestones": milestones, "today": today.isoformat(), "as_of": now_ist().strftime("%H:%M")}
 
 
+# the milestones whose day is kept off the public pages (1.2.209, dates.public)
+UNDATED_MILESTONES = ("hei_reg", "hei_select", "assess", "reg_close")
+
+
+def _without_milestones(p, keys):
+    """The pipeline without these milestones."""
+    marks = [dict(m) for m in p["milestones"] if m["key"] not in keys]
+    if not any(m["status"] == "next" for m in marks):
+        nxt = next((m for m in marks if m["status"] == "upcoming"), None)
+        if nxt:
+            nxt["status"] = "next"
+    return dict(p, milestones=marks)
+
+
 def pipeline_view(show_registered=True):
     """
     The pipeline as the public page shows it. While the number of institutions registered is hidden (institutions.registered,
@@ -285,6 +300,11 @@ def pipeline_view(show_registered=True):
     the bar of each remaining stage is then measured against the first of them, the Participating Institutions selected.
     """
     p = pipeline()
+    # without the milestones whose day is kept off the public pages; and without the selection of institutions while its rows of
+    # the Key dates are hidden (kd.select_rows, 1.2.205), as on the schedule
+    off = set(() if dates_public() else UNDATED_MILESTONES) | ({"hei_select"} if get_setting("kd.select_rows") != "1" else set())
+    if off:
+        p = _without_milestones(p, off)
     if show_registered:
         return p
     stages = [dict(s) for s in p["stages"] if s["key"] != "registered"]

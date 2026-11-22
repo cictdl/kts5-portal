@@ -180,5 +180,7 @@ def test_the_heading_of_the_nomination_form():
     text = " ".join(doc[0].get_text().split())
     assert doc.page_count == 1 and "STUDENT NOMINATION FORM" in text and text.count("NOMINATION FORM") == 1
     # the rest of the form as it was: the day of the nomination twice, the four parts
-    assert text.count("24 November 2026") == 2 and "A. Participating institution" in text and "D. Endorsement by the Head of the Institution" in text
+    # (the day: 27 November 2026, 5:00 PM since 1.2.209, CICT, 22 November 2026; 24 November 2026 up to 1.2.208)
+    assert text.count("27 November 2026") == 2 and text.count("27 November 2026, 5:00 PM") == 2 and "24 November" not in text
+    assert "A. Participating institution" in text and "D. Endorsement by the Head of the Institution" in text
     assert path.stat().st_size < 400_000

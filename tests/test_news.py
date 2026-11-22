@@ -22,8 +22,8 @@ def _page(client, path):
 def test_the_press_release_of_the_launch_in_eleven_languages():
     # ten languages in 1.2.99, Punjabi (PIB Chandigarh) in 1.2.112
     from kts import kural as K
-    press = [n for n in NEWS if n["kind"] == "press"]
-    assert len(press) == 1 and press[0]["date"] == "2026-10-22"
+    press = [n for n in NEWS if n["kind"] == "press" and n["date"] == "2026-10-22"]      # one more on 21 November (1.2.209)
+    assert len(press) == 1 and len([n for n in NEWS if n["kind"] == "press"]) == 2
     versions = press[0]["versions"]
     assert [v["lang"] for v in versions] == ["en", "as", "gu", "hi", "kn", "ml", "mr", "or", "pa", "ta", "ur"]
     assert all(v["lang"] in K.ORIENTATION_LANGS and v["title"] and v["office"].startswith("PIB ") for v in versions)
@@ -294,7 +294,7 @@ def test_the_news_added_on_3_november():
              "@EduMinOfIndia</span> · 6:45 PM", "@PIBChennai</span> · 7:08 PM"]
     assert [day22.index(m) for m in marks] == sorted(day22.index(m) for m in marks)
     # a card with five networks
-    nov2 = page[page.index("2 Nov 2026"):page.index("1 Nov 2026")]
+    nov2 = page[page.index("02 Nov 2026"):page.index("01 Nov 2026")]      # not the "1 Nov 2026" of 21 November (1.2.209)
     assert all(f'>{site} <span aria-hidden="true">↗</span></a>' in nov2 for site in ("X", "Facebook", "Instagram", "Threads", "Telegram"))
     assert "@cict_chennai" in nov2 and "@Classicaltamil" in nov2
     assert '<p class="reel-quote" style="margin:6px 0 0" lang="ta" dir="auto">“5-வது காசி தமிழ்ச் சங்கமம் (KTS 5.0)' in day22

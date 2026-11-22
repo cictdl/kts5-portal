@@ -10,7 +10,7 @@
      CICT's central online test is not in the list below (schedule.central_test) #}
   {% from "public/_key_dates.html" import key_dates with context %}
   <div style="margin-bottom:24px">{{ key_dates('h2', 'sch-kd') }}
-  {% if students_public() %}<div class="dates kd-reg"><div class="date-tile"><div class="lbl">{{ t('home.reg_window') }}</div><div class="val">{% if dates.reg_after_launch %}{{ t('reg.after_launch') }}{% else %}<bdi>{{ dates.reg_start|date }} – {{ dates.reg_end|date }}</bdi>{% endif %}</div></div></div>{% endif %}</div>
+  {% if students_public() and dates_public() %}<div class="dates kd-reg"><div class="date-tile"><div class="lbl">{{ t('home.reg_window') }}</div><div class="val">{% if dates.reg_after_launch %}{{ t('reg.after_launch') }}{% else %}<bdi>{{ dates.reg_start|date }} – {{ dates.reg_end|date }}</bdi>{% endif %}</div></div></div>{% endif %}</div>
   <h2>{{ t('schedule.upcoming') }}</h2>
   <div class="table-wrap"><table class="table">
     <thead><tr><th>{{ t('common.date') }}</th><th>{{ t('common.event') }}</th><th>{{ t('common.category') }}</th><th>{{ t('common.language') }}</th><th>{{ t('common.venue') }}</th><th>{{ t('common.agency') }}</th></tr></thead>

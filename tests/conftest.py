@@ -76,6 +76,11 @@ def make_app(**settings):
         # the hour of the last day of the registration of institutions (1.2.208, tests/test_hei_end_time_1121.py): the tests made
         # before see the whole day
         set_setting("hei.end_time", "")
+        # the last days of the registration of institutions and of the assessment as they were up to 1.2.208, and no hour for the
+        # nomination (reg.end is the 2030 of above): the tests made before look at the pages of those days. From 1.2.209 they are
+        # 27 November 2026, 5:00 PM (tests/test_dates_hidden_1122.py, which also switches the days off the public pages)
+        for key, value in (("hei.end", "2026-11-21"), ("camp.to", "2026-11-23"), ("reg.end_time", ""), ("dates.public", "1")):
+            set_setting(key, value)
     return app
 
 

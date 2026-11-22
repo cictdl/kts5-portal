@@ -16,10 +16,12 @@ from test_timeline import _settings, _sql, _start
 
 FILE = ROOT / "data" / "notices" / "KTS5-AICTE-circular-13-November-2026.pdf"
 TITLE = "Circular of AICTE, 13 November 2026: registration and student participation in Kashi Tamil Sangamam 5.0"
+# the registration of institutions, the assessment and the nomination: up to 27 November 2026 since 1.2.209 (CICT, 22 November 2026)
+EXTENDED = ("hei.end", "camp.to", "reg.end")
 
 
 def test_the_days_of_the_circular_are_the_days_of_the_portal():
-    from kts.db import AICTE13_NOTICE, DEFAULT_SETTINGS
+    from kts.db import AICTE13_NOTICE, DEFAULT_SETTINGS, RETIRED_DEFAULTS
     body = AICTE13_NOTICE[1]
     # the circular gives 18 and 19 November for the first two; the portal has 21 and 22 November since 1.2.203
     for words, key, day in (("the last date of registration, 18 November 2026", "hei.end", "2026-11-21"),
@@ -30,7 +32,14 @@ def test_the_days_of_the_circular_are_the_days_of_the_portal():
                             ("28 November – 12 December 2026", "kts.end", "2026-12-12"),
                             ("from 15 December 2026 to 14 January 2027", "internship.start", "2026-12-15"),
                             ("from 15 December 2026 to 14 January 2027", "papers.due", "2027-01-14")):
-        assert words in body and DEFAULT_SETTINGS[key] == day, (words, key)
+        assert words in body, (words, key)
+        if key in EXTENDED:
+            # extended on 22 November 2026 (1.2.209): the words of the circular stay, the day of the portal is 27 November, and its
+            # day up to 1.2.208 (the one given here) is a retired value, which a database that holds it leaves at a start
+            assert DEFAULT_SETTINGS[key] == "2026-11-27" and day in RETIRED_DEFAULTS[key], (words, key)
+        else:
+            assert DEFAULT_SETTINGS[key] == day, (words, key)
+    assert DEFAULT_SETTINGS["reg.end_time"] == "17:00"     # the nomination up to 5:00 PM of that day (1.2.209)
     assert "a stipend of Rs. 10,000" in body
     # the letter enclosed gives its own days, and the notice says so
     assert "nomination by 20 November 2026), which the Ministry has revised since" in body
@@ -90,9 +99,12 @@ def test_a_live_database_gets_the_notice_once_and_first():
     assert page.index(TITLE) < page.index(str(escape(DO13_NOTICE[0])))
     home = client.get("/?lang=en").get_data(as_text=True)
     assert home.index("Circular of AICTE, 13 November 2026") < home.index("D.O. letter of the Ministry of Education, 13 November 2026")
-    # no setting moves
+    # no setting moves, but the two days of the tests that 1.2.209 extended (22 November 2026): the database of the tests holds the
+    # last days of the registration of institutions and of the assessment as they were up to 1.2.208 (tests/conftest.py), retired
+    # values, which a start takes to 27 November; the tests' own last day of the nomination (2030) stays
     after = _settings(again)
-    assert {k: after[k] for k in before} == before and after["seed.notice.aicte_13nov"] == "1"
+    assert {k: before[k] for k in EXTENDED} == {"hei.end": "2026-11-21", "camp.to": "2026-11-23", "reg.end": "2030-12-31"}
+    assert {k: after[k] for k in before} == {**before, "hei.end": "2026-11-27", "camp.to": "2026-11-27"} and after["seed.notice.aicte_13nov"] == "1"
     # once: deleted in the Console, the notice does not come back
     _sql(again, "DELETE FROM notices WHERE title = ?", (TITLE,))
     assert _sql(_start(again), "SELECT COUNT(*) FROM notices WHERE title = ?", (TITLE,)) == [(0,)]

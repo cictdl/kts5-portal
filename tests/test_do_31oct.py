@@ -22,7 +22,7 @@ OLD_DAYS = {"hei_reg": ("2026-11-10", None), "hei_select": ("2026-11-11", "2026-
 
 
 def test_the_numbers_and_the_days_of_the_letter():
-    from kts.db import DEFAULT_SETTINGS, REVISED_DO2_DATES
+    from kts.db import DEFAULT_SETTINGS, RETIRED_DEFAULTS, REVISED_DO2_DATES
     heis = {h["state"]: h["allocation"] for h in json.loads((ROOT / "data" / "nodal_heis.json").read_text(encoding="utf-8"))}
     assert {s: heis[s] for s in ("Andhra Pradesh", "Gujarat", "Karnataka", "Madhya Pradesh", "Maharashtra", "Odisha", "Tamil Nadu",
                                  "Uttar Pradesh", "West Bengal")} == {
@@ -31,15 +31,22 @@ def test_the_numbers_and_the_days_of_the_letter():
     assert sum(heis.values()) == 1000 and heis["Jammu and Kashmir"] == 11 and heis["Puducherry"] == 5
     assert {k: DEFAULT_SETTINGS[k] for k in OLD_SETTINGS} == {
         # the first two: 21 and 22 November since 1.2.203 (CICT, 18 November 2026; tests/test_dates_1118.py)
-        "hei.end": "2026-11-21", "hei.select_end": "2026-11-22", "camp.to": "2026-11-23", "internship.start": "2026-12-15",
+        # the registration of institutions and the assessment up to 27 November 2026 since 1.2.209 (CICT, 22 November 2026: 21 and
+        # 23 November until then; tests/test_dates_hidden_1122.py)
+        "hei.end": "2026-11-27", "hei.select_end": "2026-11-22", "camp.to": "2026-11-27", "internship.start": "2026-12-15",
         "papers.due": "2027-01-14", "present.due": "2027-01-14", "remind.test_by": "2026-11-22", "remind.select_by": "2026-11-23",
         "remind.register_by": "2026-11-24", "orientation.by": "2026-12-14"}   # the Ministry's revision of 10 November (1.2.172)
     assert set(REVISED_DO2_DATES) == set(OLD_SETTINGS)
     # the nomination, the verification and the Sangamam stay
-    assert DEFAULT_SETTINGS["reg.end"] == "2026-11-24" and DEFAULT_SETTINGS["verify.end"] == "2026-12-05"   # nomination: 1.2.172
+    # (the nomination on 24 November since 1.2.172; up to 27 November 2026, 5:00 PM since 1.2.209, CICT, 22 November 2026)
+    assert DEFAULT_SETTINGS["reg.end"] == "2026-11-27" and DEFAULT_SETTINGS["reg.end_time"] == "17:00" and DEFAULT_SETTINGS["verify.end"] == "2026-12-05"
     assert (DEFAULT_SETTINGS["kts.start"], DEFAULT_SETTINGS["kts.end"]) == ("2026-11-28", "2026-12-12")
+    # the days up to 1.2.208 are retired ones: a database that still holds one takes 27 November at a start (1.2.209)
+    assert "2026-11-21" in RETIRED_DEFAULTS["hei.end"] and "2026-11-23" in RETIRED_DEFAULTS["camp.to"] and "2026-11-24" in RETIRED_DEFAULTS["reg.end"]
     assert (S["hei_reg"]["starts"], S["hei_select"]["starts"], S["hei_select"].get("ends"), S["assess"]["starts"]) == (
-        "2026-11-21", "2026-11-22", None, "2026-11-23")   # registration up to 21 November, selection on the 22nd, since 1.2.203
+        # registration up to 21 November, selection on the 22nd, since 1.2.203; registration and assessment up to 27 November
+        # since 1.2.209 (21 and 23 November until then)
+        "2026-11-27", "2026-11-22", None, "2026-11-27")
     assert (S["live"]["starts"], S["internship"]["starts"], S["research"]["starts"], S["research"]["ends"], S["papers"]["starts"]) == (
         "2026-12-14", "2026-12-15", "2026-12-15", "2027-01-14", "2027-01-14")
 
@@ -58,7 +65,7 @@ def test_a_live_database_of_the_letter_of_26_october_takes_the_new_days_once():
              (starts + "T00:00", ends + "T00:00" if ends else None, S[key]["title"]))
     # the orientation moved by CICT in the Console stays where it was put
     _sql(app, "UPDATE events SET starts_at = '2026-12-11T10:00' WHERE title = ?", (S["live"]["title"],))
-    old_body = _notices(app)[0]["body"].replace("up to 21 November 2026", "up to 10 November 2026").replace("(50)", "(150)")
+    old_body = _notices(app)[0]["body"].replace("up to 27 November 2026", "up to 10 November 2026").replace("(50)", "(150)")
     _sql(app, "UPDATE notices SET body = ? WHERE title = ?", (old_body, TITLE))
     again = _start(app)
     settings = _settings(again)
@@ -73,7 +80,9 @@ def test_a_live_database_of_the_letter_of_26_october_takes_the_new_days_once():
     for s in SEEDS:
         assert s["title"] in rows, s["key"]
     body = _notices(again)[0]["body"]
-    assert "up to 21 November 2026" in body and "on 22 November 2026" in body and "(150)" not in body
+    # the days of now: 27 November 2026, 5:00 PM, the selection without a day (1.2.209; 21 and 22 November by 1.2.203)
+    assert "up to 27 November 2026, 5:00 PM" in body and "selects the prescribed number, with a reserve list" in body
+    assert "up to 10 November 2026" not in body and "(150)" not in body
     assert "Central University of Tamil Nadu (50)" in body and "Banaras Hindu University (300)" in body
     # changed in the Console afterwards, they stay so
     # (a day that was never the portal's own: 18 November was, up to 1.2.202, and a database that holds it takes the 21st)
@@ -87,19 +96,36 @@ def test_the_pages_show_the_days_of_the_letter():
     from kts.db import set_setting, DEFAULT_SETTINGS
     app = make_app(ADMIN_PASSWORD=None)
     with app.app_context():
-        for key in ("reg.start", "reg.end"):
+        # the days of the portal, not the tests' own (tests/conftest.py): since 1.2.209 also the last days of the registration of
+        # institutions and of the assessment and the hour of the nomination, which the tests hold as they were up to 1.2.208
+        for key in ("reg.start", "reg.end", "reg.end_time", "hei.end", "camp.to"):
             set_setting(key, DEFAULT_SETTINGS[key])
     client = app.test_client()
     guide = client.get("/how-to-take-part?lang=en").get_data(as_text=True)
-    assert "21 Nov 2026" in guide and "22 Nov 2026" in guide and "23 Nov 2026" in guide and "24 Nov 2026" in guide
     main = guide[guide.index("<main"):guide.index("</main>")]   # not the foot, which names the day of the release
+    # 27 November 2026 since 1.2.209 (CICT, 22 November 2026), where 21, 23 and 24 November stood until 1.2.208; the nomination
+    # with its hour, 5:00 PM. Each day on its own tile, now that three of them are one day
+    for label, day in (("Last date for institutions to register", "27 Nov 2026"),
+                       ("Selection of the Participating Institutions by the Nodal Institutions", "22 Nov 2026"),
+                       ("Assessments at the institutions", "<bdi>By 27 Nov 2026</bdi>"),
+                       ("Nomination of one student by each Participating Institution on the portal", "27 Nov 2026, 5:00 PM")):
+        assert f'<div class="lbl">{label}</div><div class="val">{day}</div>' in main, label
+    assert "Register your institution by 27 Nov 2026" in main and "Submit the nomination by 27 Nov 2026, 5:00 PM" in main
+    for gone in ("21 Nov 2026", "23 Nov 2026", "24 Nov 2026"):   # the days up to 1.2.208
+        assert gone not in main, gone
     assert "10 Nov 2026" not in main and "11 Nov 2026" not in main
     nodal = client.get("/nodal-institutions?lang=en").get_data(as_text=True)
     # no number to be selected of a State/UT on the public pages (1.2.179): the table has no column of it
     assert ">300<" not in nodal and ">1,000</th>" not in nodal and "Number of Participating HEIs to be selected" not in nodal
     schedule = client.get("/schedule?lang=en").get_data(as_text=True)
-    for day in ("21 Nov 2026", "22 Nov 2026", "23 Nov 2026", "25 Nov 2026", "14 Dec 2026", "15 Dec 2026", "– 14 Jan 2027"):
+    # 27 November 2026 since 1.2.209, where 21 and 23 November stood: the registration of institutions and the assessment
+    for day in ("Up to 27 Nov 2026", "22 Nov 2026", "By 27 Nov 2026", "25 Nov 2026", "14 Dec 2026", "15 Dec 2026", "– 14 Jan 2027"):
         assert day in schedule, day
+    table = schedule[schedule.index("<main"):schedule.index("</main>")]   # not the foot, which names the day of the release
+    for title in (S["hei_reg"]["title"], S["assess"]["title"]):   # ... each on its row of the schedule
+        assert "27 Nov 2026</td>" in table[table.index("<bdi>" + title) - 40:table.index("<bdi>" + title)], title
+    for gone in ("21 Nov 2026", "23 Nov 2026", "24 Nov 2026"):   # the days up to 1.2.208
+        assert gone not in table, gone
     assert "11 Jan 2027" not in schedule and "10 Dec 2026" not in schedule   # the central test still opens on 10 November
 
 

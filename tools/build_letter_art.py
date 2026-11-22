@@ -42,7 +42,10 @@ def texts(lang):
     with APP.app_context():
         v = L.values("Tamil Nadu", lang, get=DEFAULT_SETTINGS.get)
         v["portal"] = "kts.cict.in"
-        t = {k: L.fill(k, lang, v) for k in portal_i18n.CATALOG["en"] if k.startswith("nl.art_")}
+        # without the last days while they are kept off the public pages (dates.public of DEFAULT_SETTINGS, 1.2.209)
+        hide = DEFAULT_SETTINGS.get("dates.public") == "0"
+        t = {k: L.fill(k + "_nd" if hide and k + "_nd" in portal_i18n.CATALOG["en"] else k, lang, v)
+             for k in portal_i18n.CATALOG["en"] if k.startswith("nl.art_") and not k.endswith("_nd")}
         get = DEFAULT_SETTINGS.get
         day = lambda key: L.day_text(L._day(key, get), lang, year=False)  # noqa: E731
         by = lambda s: portal_i18n.text("nl.by", lang).replace("{date}", s)  # noqa: E731
@@ -54,6 +57,10 @@ def texts(lang):
         dates = [sel, by(day("camp.to")), day("reg.end"), "",
                  day("kts.start"), day("kts.end"), by(day("orientation.by")),
                  f"{day('internship.start')} – {day('papers.due')}"]
+        if hide:   # the selection, the assessment and the nomination without their days
+            dates[:3] = ["", "", ""]
+        if DEFAULT_SETTINGS.get("hei.select_step") != "1":   # no selection of institutions since 1.2.201: no day for it
+            dates[0] = ""
     return t, dates
 
 

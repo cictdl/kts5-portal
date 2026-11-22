@@ -2021,5 +2021,58 @@
         "time": ""
       }
     ]
+  },
+  {
+    "key": "pib-2026-11-21-kts5-rangoli",
+    "date": "2026-11-21",
+    "kind": "press",
+    "source": "Press Information Bureau",
+    "versions": [
+      {
+        "lang": "en",
+        "office": "PIB Delhi",
+        "ministry": "Ministry of Education",
+        "title": "Rangoli competition at Assi Ghat builds enthusiasm for Kashi Tamil Sangamam 5.0",
+        "subtitle": "Pre-event celebrations bring Kashi and Tamil Nadu closer through cultural expression and community participation.",
+        "time": "7:27 PM",
+        "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2339668"
+      },
+      {
+        "lang": "as",
+        "office": "PIB Guwahati",
+        "ministry": "মানৱ সম্পদ উন্নয়ণ মন্ত্ৰালয়",
+        "title": "কাশী তামিল সংগমম ৫.০ক লৈ উৎসাহ-উদ্দীপনা সৃষ্টিৰ উদ্দেশ্যে আছী ঘাটত ৰংগোলী প্ৰতিযোগিতা",
+        "subtitle": "মূল অনুষ্ঠানৰ পূৰ্বে আয়োজিত বিভিন্ন কাৰ্যসূচীৰ জৰিয়তে সাংস্কৃতিক প্ৰকাশ আৰু ৰাইজৰ অংশগ্ৰহণেৰে কাশী আৰু তামিলনাডুৰ মাজৰ সম্পৰ্ক অধিক নিবিড় কৰাৰ প্ৰয়াস।",
+        "time": "7:27 PM",
+        "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2339795"
+      },
+      {
+        "lang": "or",
+        "office": "PIB Bhubaneswar",
+        "ministry": "ଶିକ୍ଷା ମନ୍ତ୍ରଣାଳୟ",
+        "title": "କାଶୀ ତାମିଲ ସଙ୍ଗମମ୍ ୫.୦ ପାଇଁ ଅସୀ ଘାଟରେ ରଙ୍ଗୋଲି ପ୍ରତିଯୋଗିତା, ଉତ୍ସାହ ବୃଦ୍ଧି",
+        "subtitle": "ସାଂସ୍କୃତିକ ଅଭିବ୍ୟକ୍ତି ଓ ଜନଭାଗୀଦାରୀରେ ନିକଟତର ହେଉଛନ୍ତି କାଶୀ ଓ ତାମିଲନାଡୁ",
+        "time": "7:27 PM",
+        "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2339799"
+      },
+      {
+        "lang": "ta",
+        "office": "PIB Chennai",
+        "ministry": "மனித வள மேம்பாட்டு அமைச்சகம்",
+        "title": "காசி தமிழ் சங்கமம் 5.0-ஐ முன்னிட்டு அஸ்ஸி படித்துறையில் ரங்கோலிப் போட்டி",
+        "subtitle": "",
+        "time": "7:27 PM",
+        "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2339747"
+      },
+      {
+        "lang": "ur",
+        "office": "PIB Delhi",
+        "ministry": "وزارتِ تعلیم",
+        "title": "کاشی تمل سنگمم 5.0 کا جوش و خروش بڑھانے کے لیے اسّی گھاٹ پر رنگولی مقابلے کا انعقاد",
+        "subtitle": "پیشگی تقریبات کے ذریعے ثقافتی اظہار اور عوامی شرکت کے وسیلے سے کاشی اور تمل ناڈو کے درمیان قربت میں اضافہ",
+        "time": "7:27 PM",
+        "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2339758"
+      }
+    ]
   }
 ]

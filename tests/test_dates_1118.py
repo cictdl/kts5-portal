@@ -8,16 +8,27 @@ two steps of the schedule, and the two notices that give the days in words, wher
 Console stays. Nothing else moves: the assessment by 23 November, the nomination on 24 November, the verification up to
 5 December; the notices of the letters of the Ministry and of AICTE keep the days those letters give.
 
+Since 1.2.209 (CICT, 22 November 2026: "Up to 27 Nov 2026, 5:00 PM ... extend", "Extend both to 27 Nov, 5 PM") the registration of
+institutions, the assessment and the nomination run up to 27 November 2026; the selection stays on 22 November. The settings the
+portal comes with, the steps of the schedule (data/timeline.json) and a database started again have those days, and 21 November
+is one more day of before. The tests' portal keeps the last days of the registration and of the assessment as they were up to
+1.2.208 (conftest: 21 and 23 November), so its Key dates and its guide still give those; the two notices keep their words.
+tests/test_dates_hidden_1122.py follows the days of 1.2.209.
+
     python -m pytest tests/test_dates_1118.py -q
 """
 import re
 
 from conftest import make_app
-from test_timeline import S, _settings, _sql, _start
+from test_timeline import S, _on, _settings, _sql, _start
 
-NEW = {"hei.end": "2026-11-21", "hei.select_end": "2026-11-22"}
+# the settings the portal comes with: the registration up to 27 November since 1.2.209 (21 November by 1.2.203)
+NEW = {"hei.end": "2026-11-27", "hei.select_end": "2026-11-22"}
 OLD = {"hei.end": "2026-11-18", "hei.select_end": "2026-11-19"}
-STAY = {"camp.to": "2026-11-23", "reg.end": "2026-11-24", "verify.end": "2026-12-05", "kts.start": "2026-11-28", "kts.end": "2026-12-12"}
+# the days 1.2.203 left alone; of them the assessment and the nomination are up to 27 November since 1.2.209 (23 and 24 before)
+STAY = {"camp.to": "2026-11-27", "reg.end": "2026-11-27", "verify.end": "2026-12-05", "kts.start": "2026-11-28", "kts.end": "2026-12-12"}
+# the days 1.2.209 moved, as 1.2.203 had them: days of before now
+BEFORE_1209 = {"hei.end": "2026-11-21", "camp.to": "2026-11-23", "reg.end": "2026-11-24"}
 OLD_DAYS = {"hei_reg": ("2026-11-18T00:00", None), "hei_select": ("2026-11-19T00:00", None)}
 MARK = "migrate.dates_1118.notices"
 
@@ -42,28 +53,45 @@ def _main(client, path):
 def test_the_two_days():
     from kts.db import DEFAULT_SETTINGS, RETIRED_DEFAULTS, RETIRED_EVENT_DAYS
     assert {k: DEFAULT_SETTINGS[k] for k in NEW} == NEW
-    assert {k: DEFAULT_SETTINGS[k] for k in STAY} == STAY                   # nothing else moves
+    assert {k: DEFAULT_SETTINGS[k] for k in STAY} == STAY                   # nothing else moved with them (1.2.203)
     for key, old in OLD.items():
         assert old in RETIRED_DEFAULTS[key] and NEW[key] not in RETIRED_DEFAULTS[key], key
+    # the days 1.2.209 moved are days of before, as 18 and 19 November are; the day of now is not among them
+    for key, old in BEFORE_1209.items():
+        assert old in RETIRED_DEFAULTS[key] and DEFAULT_SETTINGS[key] not in RETIRED_DEFAULTS[key], key
     # the schedule, in the order of its days: registration, selection, assessment, the consolidation and verification
+    # ... since 1.2.209: the selection (22 November), the consolidation and verification (from 25 November), then the registration
+    # and the assessment, both up to 27 November (21 and 23 November before)
     assert (S["hei_reg"]["starts"], S["hei_reg"].get("ends"), S["hei_select"]["starts"], S["hei_select"].get("ends")) == (
-        "2026-11-21", None, "2026-11-22", None)
-    assert (S["assess"]["starts"], S["selection"]["starts"], S["selection"]["ends"]) == ("2026-11-23", "2026-11-25", "2026-12-05")
-    assert S["hei_reg"]["starts"] < S["hei_select"]["starts"] < S["assess"]["starts"] < S["selection"]["starts"]
+        "2026-11-27", None, "2026-11-22", None)
+    assert (S["assess"]["starts"], S["selection"]["starts"], S["selection"]["ends"]) == ("2026-11-27", "2026-11-25", "2026-12-05")
+    assert S["hei_select"]["starts"] < S["selection"]["starts"] < S["hei_reg"]["starts"] == S["assess"]["starts"]
+    keys = list(S)
+    assert keys.index("hei_select") < keys.index("selection") < keys.index("hei_reg") < keys.index("assess")
     assert OLD_DAYS["hei_reg"] in RETIRED_EVENT_DAYS["hei_reg"] and OLD_DAYS["hei_select"] in RETIRED_EVENT_DAYS["hei_select"]
+    # ... and the two steps 1.2.209 moved, on their days of before
+    assert ("2026-11-21T00:00", None) in RETIRED_EVENT_DAYS["hei_reg"] and ("2026-11-23T00:00", None) in RETIRED_EVENT_DAYS["assess"]
 
 
-def test_the_pages_give_the_two_days():
+def test_the_pages_give_the_two_days(monkeypatch):
     app = make_app(ADMIN_PASSWORD=None)
+    # the day CICT set the two days: the steps looked for below are upcoming ones, in the order of their days (the schedule
+    # lists the steps that are over apart, after the others; 1.2.209)
+    _on(monkeypatch, "2026-11-18")
     client = app.test_client()
     home = _main(client, "/")
     assert "Registration and selection Up to 21 Nov 2026 Last date for the registration of institutions 22 Nov 2026 Selection of the Participating Institutions by the Nodal Institutions" in home
     # (the home page also gives the day itself, with the Kural of the day: only the days of the two steps are looked for)
     assert "By 23 Nov 2026" in home and "Up to 18 Nov 2026" not in home and "19 Nov 2026 Selection" not in home
     schedule = _main(client, "/schedule")
-    assert "21 Nov 2026 Last date for the registration of institutions; wide outreach by the Nodal Institutions" in schedule
+    # the steps of the schedule have the days of data/timeline.json: the registration of institutions and the assessment on
+    # 27 November 2026 since 1.2.209 (21 and 23 November before), the selection on 22 November as before, and so before them
+    assert "27 Nov 2026 Last date for the registration of institutions; wide outreach by the Nodal Institutions" in schedule
     assert "22 Nov 2026 Scrutiny and selection of the Participating Institutions by the Nodal Institutions" in schedule
-    assert schedule.index("21 Nov 2026 Last date for the registration") < schedule.index("22 Nov 2026 Scrutiny") < schedule.index("23 Nov 2026 Last date for the assessment")
+    assert schedule.index("22 Nov 2026 Scrutiny") < schedule.index("27 Nov 2026 Last date for the registration") < schedule.index("27 Nov 2026 Last date for the assessment")
+    # (the Key dates above the schedule keep "Up to 21 Nov 2026 Last date for the registration of institutions" of the tests' portal)
+    assert "21 Nov 2026 Last date for the registration of institutions; wide outreach" not in schedule
+    assert "23 Nov 2026 Last date for the assessment" not in schedule
     assert "18 Nov 2026 Last date for the registration" not in schedule and "19 Nov 2026 Scrutiny" not in schedule
     assert "Up to 18 Nov 2026" not in schedule and "19 Nov 2026 Selection" not in schedule
     guide = _main(client, "/how-to-take-part")
@@ -93,13 +121,19 @@ def test_a_live_database_takes_the_two_days_once():
     assert {k: settings[k] for k in NEW} == NEW and {k: settings[k] for k in STAY if k not in ("reg.end",)} == {
         k: v for k, v in STAY.items() if k != "reg.end"}
     rows = {t: (s, e) for t, s, e in _sql(again, "SELECT title, starts_at, ends_at FROM events")}
-    assert rows[S["hei_reg"]["title"]] == ("2026-11-21T00:00", None) and rows[S["hei_select"]["title"]] == ("2026-11-22T00:00", None)
-    assert rows[S["assess"]["title"]] == ("2026-11-23T00:00", None) and rows[S["selection"]["title"]] == ("2026-11-25T00:00", "2026-12-05T00:00")
+    # the step of the registration from 18 to 27 November, its day since 1.2.209 (21 November by 1.2.203); the assessment on 27 too
+    assert rows[S["hei_reg"]["title"]] == ("2026-11-27T00:00", None) and rows[S["hei_select"]["title"]] == ("2026-11-22T00:00", None)
+    assert rows[S["assess"]["title"]] == ("2026-11-27T00:00", None) and rows[S["selection"]["title"]] == ("2026-11-25T00:00", "2026-12-05T00:00")
     bodies = "\n".join(n[0] for n in _sql(again, "SELECT body FROM notices WHERE published = 1"))
     assert NODAL_DAYS in bodies and NODAL_DAYS_1202 not in bodies
     assert LAUNCH_NOTICE[1] in bodies and LAUNCH_BODY_1202 not in bodies
-    assert "up to 21 November 2026" in NODAL_DAYS and "on 22 November 2026" in NODAL_DAYS
-    assert "kts.cict.in up to 21 November 2026; the Nodal Institutions select the Participating Institutions on 22 November" in LAUNCH_NOTICE[1]
+    # the words of 1.2.203 are the words of before since 1.2.209, which gives 27 November 2026, 5:00 PM and no day for the
+    # selection (tests/test_dates_hidden_1122.py)
+    from kts.db import LAUNCH_BODY_1208, NODAL_DAYS_1208
+    assert "up to 21 November 2026" in NODAL_DAYS_1208 and "on 22 November 2026" in NODAL_DAYS_1208
+    assert "kts.cict.in up to 21 November 2026; the Nodal Institutions select the Participating Institutions on 22 November" in LAUNCH_BODY_1208
+    assert "up to 27 November 2026, 5:00 PM" in NODAL_DAYS and NODAL_DAYS_1208 not in bodies and LAUNCH_BODY_1208 not in bodies
+    assert "kts.cict.in up to 27 November 2026, 5:00 PM; the Nodal Institutions select the Participating Institutions, and" in LAUNCH_NOTICE[1]
     # the notices of the letters keep the days of the letters
     assert "up to 18 November 2026 (earlier 15 November)" in bodies
     # once: a notice that CICT words anew afterwards stays as CICT words it
@@ -121,5 +155,6 @@ def test_what_cict_set_in_the_console_stays():
     settings = _settings(again)
     assert (settings["hei.end"], settings["hei.select_end"]) == ("2026-11-25", "2026-11-22")
     rows = {t: (s, e) for t, s, e in _sql(again, "SELECT title, starts_at, ends_at FROM events")}
-    assert rows[S["hei_reg"]["title"]] == ("2026-11-21T00:00", None) and rows[S["hei_select"]["title"]] == ("2026-11-20T00:00", None)
+    # the step of the registration, not moved by hand, takes the day of now: 27 November since 1.2.209 (21 November by 1.2.203)
+    assert rows[S["hei_reg"]["title"]] == ("2026-11-27T00:00", None) and rows[S["hei_select"]["title"]] == ("2026-11-20T00:00", None)
     assert _sql(again, "SELECT body FROM notices WHERE title = ?", (LAUNCH_NOTICE[0],))[0][0] == "The launch, in the words of CICT."

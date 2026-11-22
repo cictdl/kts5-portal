@@ -39,7 +39,8 @@ def test_the_moment_and_the_phases():
     s = dict(DEFAULT_SETTINGS)
     # the launch of 22 October 2026 (1.2.95): registration from 22 October, to 20 November since the revised D.O. letter (1.2.110)
     assert s["launch.on"] == "1" and s["launch.at"] == "2026-10-22T12:00" and s["launch.until"] == "2026-10-29"
-    assert s["reg.start"] == "2026-10-22" and s["reg.end"] == "2026-11-24"   # the nomination on 24 November since 1.2.172
+    # the nomination on 24 November since 1.2.172; up to 27 November 2026, 5:00 PM since 1.2.209 (CICT, 22 November 2026)
+    assert s["reg.start"] == "2026-10-22" and s["reg.end"] == "2026-11-27" and s["reg.end_time"] == "17:00"
     assert launch_at(s).isoformat() == "2026-10-22T12:00:00+05:30"
     assert launch_phase(s, _at(22, 11, 59)) == "before" and launch_phase(s, _at(22, 12)) == "after"
     assert launch_phase(s, _at(29, 23, 59)) == "after" and launch_phase(s, _at(30)) is None
@@ -55,10 +56,19 @@ def test_registration_opens_at_the_launch(monkeypatch):
     assert registration_state(s) == "not_yet"
     _clock(monkeypatch, _at(22, 12))
     assert registration_state(s) == "open"
-    _clock(monkeypatch, _at(24, 23, 59, month=11))
+    # the last day: 27 November 2026 since 1.2.209 (24 November up to 1.2.208); "2026-11-24" is a retired value
+    assert s["reg.end"] == "2026-11-27" and "2026-11-24" in RETIRED_DEFAULTS["reg.end"]
+    _clock(monkeypatch, _at(27, 16, 59, month=11))      # before its hour, 5:00 PM (reg.end_time, 1.2.209)
     assert registration_state(s) == "open"
-    _clock(monkeypatch, _at(25, month=11))
+    _clock(monkeypatch, _at(28, month=11))
     assert registration_state(s) == "closed"
+    # without an hour, the whole of the last day, as before (the hour itself closes the nomination: public.nomination_open,
+    # tests/test_dates_hidden_1122.py)
+    whole = {**s, "reg.end_time": ""}
+    _clock(monkeypatch, _at(27, 23, 59, month=11))
+    assert registration_state(whole) == "open"
+    _clock(monkeypatch, _at(28, month=11))
+    assert registration_state(whole) == "closed"
     # a database that kept the day of the timeline of 8 October 2026, or the day first set for the launch, takes the day of
     # the launch
     assert "2026-10-15" in RETIRED_DEFAULTS["reg.start"] and "2026-10-14" in RETIRED_DEFAULTS["reg.start"]
@@ -139,11 +149,13 @@ def test_the_launch_postponed(monkeypatch):
     home = app.test_client().get("/?lang=en").get_data(as_text=True)
     assert "will be launched by" in home and "20 Oct 2026" in home and "launch-card" in home
     assert "Shri Pralhad Joshi" in app.test_client().get(f"/notices/{nid}").get_data(as_text=True)
-    # after registration has really closed, its last day is named
+    # after registration has really closed, its last day is named: 27 November 2026 since 1.2.209 (24 November up to 1.2.208)
     with app.app_context():
         set_setting("launch.on", "0")
-    _clock(monkeypatch, _at(25, 10, month=11))
-    assert "Registrations closed on" in app.test_client().get("/register?lang=en").get_data(as_text=True)
+    _clock(monkeypatch, _at(27, 10, month=11))      # on the last day itself, not yet
+    assert "Registrations closed on" not in app.test_client().get("/register?lang=en").get_data(as_text=True)
+    _clock(monkeypatch, _at(28, 10, month=11))
+    assert "Registrations closed on 27 Nov 2026." in app.test_client().get("/register?lang=en").get_data(as_text=True)
 
 
 def test_the_postponement_switches_the_launch_off_once():
@@ -359,7 +371,8 @@ def test_the_notice_of_before_the_launch_says_that_it_took_place():
     # (1.2.95), dated the day it changes; one that CICT has changed stays as it is
     from kts.db import LAUNCH_NOTICE, RETIRED_LAUNCH_NOTICES, execute, init_db, query
     assert "launched the web portal" in LAUNCH_NOTICE[1] and "on 22 October 2026" in LAUNCH_NOTICE[1]
-    assert "on 24 November 2026" in LAUNCH_NOTICE[1] and "will launch" not in LAUNCH_NOTICE[1]
+    # the nomination by 27 November 2026, 5:00 PM (1.2.209; on 24 November before)
+    assert "by 27 November 2026, 5:00 PM" in LAUNCH_NOTICE[1] and "will launch" not in LAUNCH_NOTICE[1]
     app = make_app(ADMIN_PASSWORD=None)
     old_title, old_body = RETIRED_LAUNCH_NOTICES[0]
     with app.app_context():

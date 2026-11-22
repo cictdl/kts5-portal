@@ -8,17 +8,17 @@
 <h2>For students</h2>
 <p>The step-by-step guide for students, participating institutions and Nodal Officers is on <a href="{{ url_for('public.guide') }}">How to take part</a>.</p>
 <ol>
-  <li>Your institution must be a <a href="{{ url_for('public.institutions') }}">participating institution</a>. By <bdi>{{ settings['camp.to']|date }}</bdi> it assesses its interested students, with the portal's online test (your Institutional Coordinator gives you its link and access code) or in another suitable mode, and selects one student on merit.</li>
-  <li>The institution informs the selected student by e-mail. Its Institutional Coordinator submits the student's nomination on the institution's page on or before <bdi>{{ settings['reg.end']|date }}</bdi>, with a photograph, an ID proof, the <a href="{{ url_for('static', filename='KTS5-nomination-form.pdf') }}">nomination form</a> signed and sealed by the Head of the Institution, and the details of the Faculty Supervisor/Guide. The student receives the application number by e-mail.</li>
+  <li>Your institution must be a <a href="{{ url_for('public.institutions') }}">participating institution</a>. {% if dates_public() %}By <bdi>{{ settings['camp.to']|date }}</bdi> it assesses{% else %}It assesses{% endif %} its interested students, with the portal's online test (your Institutional Coordinator gives you its link and access code) or in another suitable mode, and selects one student on merit.</li>
+  <li>The institution informs the selected student by e-mail. Its Institutional Coordinator submits the student's nomination on the institution's page{% if dates_public() %} on or before <bdi>{{ reg_until() }}</bdi>{% endif %}, with a photograph, an ID proof, the <a href="{{ url_for('static', filename='KTS5-nomination-form.pdf') }}">nomination form</a> signed and sealed by the Head of the Institution, and the details of the Faculty Supervisor/Guide. The student receives the application number by e-mail.</li>
   <li>Follow your application on <a href="{{ url_for('public.status') }}">Application status</a> with your application number, your date of birth and the last four digits of your mobile number. The same details sign you in to the <a href="{{ url_for('candidate.login') }}">candidate portal</a>.</li>
   <li>The Nodal Officer of your State/UT verifies your application, and CICT announces the selected students by e-mail and on this portal. Selected students give their bank details for the stipend (see the <a href="{{ url_for('public.stipend_guide') }}">guide</a>) and submit their research paper in the candidate portal.</li>
 </ol>
 
 <h2>For participating institutions</h2>
 <ol>
-  <li><a href="{{ url_for('public.hei_register') }}">Register your institution</a> by <bdi>{{ hei_until() }}</bdi>, or complete the registration from the invitation e-mail of your Nodal Institution.</li>
+  <li><a href="{{ url_for('public.hei_register') }}">Register your institution</a>{% if dates_public() %} by <bdi>{{ hei_until() }}</bdi>{% endif %}, or complete the registration from the invitation e-mail of your Nodal Institution.</li>
   <li><a href="{{ url_for('campus.login') }}">Sign in to the institution's page</a> with the e-mail address of the Institutional Coordinator or of the Head of the Institution: a six-digit code is mailed to you.</li>
-  <li>Assess your students by <bdi>{{ settings['camp.to']|date }}</bdi>, select one on merit, and make sure the student registers by <bdi>{{ settings['reg.end']|date }}</bdi>. The <a href="{{ url_for('public.guide_institutions') }}">guide for institutions</a> can be printed.</li>
+  <li>Assess your students{% if dates_public() %} by <bdi>{{ settings['camp.to']|date }}</bdi>{% endif %}, select one on merit, and make sure the student registers{% if dates_public() %} by <bdi>{{ reg_until() }}</bdi>{% endif %}. The <a href="{{ url_for('public.guide_institutions') }}">guide for institutions</a> can be printed.</li>
 </ol>
 
 <h2>Documents and videos</h2>

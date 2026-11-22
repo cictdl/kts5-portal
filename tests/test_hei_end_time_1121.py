@@ -2,6 +2,10 @@
 The registration of institutions closes at 5:00 PM of its last day (1.2.208). CICT, 21 November 2026, with the row of the Key
 dates "Up to 21 Nov 2026 - Last date for the registration of institutions": "5 pm is the deadline. change".
 
+That last day is 27 November 2026 since 1.2.209 (CICT, 22 November 2026: "Up to 27 Nov 2026, 5:00 PM ... extend"), still up to
+5:00 PM: the portal of these tests takes the day from the settings the portal comes with, so their moments and their texts are
+those of 27 November. The notice of the extension to 21 November keeps its words (and is off the notices, tests/test_dates_hidden_1122.py).
+
     python -m pytest tests/test_hei_end_time_1121.py -q
 """
 import re
@@ -22,7 +26,8 @@ def empty_limiter():
 
 
 def _portal(**settings):
-    """The portal as the live one is set: the registration of institutions up to 21 November 2026, 5:00 PM."""
+    """The portal as the live one is set: the registration of institutions up to 27 November 2026, 5:00 PM (21 November up to
+    1.2.208; 1.2.209)."""
     from kts.db import DEFAULT_SETTINGS, set_setting
     app = make_app(ADMIN_PASSWORD=None)
     with app.app_context():
@@ -45,7 +50,8 @@ def _main(client, path):
 def test_the_setting():
     from kts.admin import SETTING_GROUPS
     from kts.db import DEFAULT_SETTINGS
-    assert (DEFAULT_SETTINGS["hei.end"], DEFAULT_SETTINGS["hei.end_time"]) == ("2026-11-21", "17:00")
+    # the day extended from 21 to 27 November 2026 (1.2.209); the hour stays
+    assert (DEFAULT_SETTINGS["hei.end"], DEFAULT_SETTINGS["hei.end_time"]) == ("2026-11-27", "17:00")
     rows = {k: (label, kind) for _g, items in SETTING_GROUPS for k, label, kind in items}
     assert rows["hei.end_time"] == ("Hour of that day at which the registration of institutions closes (HH:MM, IST; empty: at the end of the "
                                     "day)", "time")
@@ -57,13 +63,15 @@ def test_the_registration_closes_at_5_pm(monkeypatch):
     app = _portal()
     with app.app_context():
         settings = all_settings()
-    for moment, state in (("2026-11-20T23:59:00", "open"), ("2026-11-21T09:00:00", "open"), ("2026-11-21T16:59:59", "open"),
-                          ("2026-11-21T17:00:00", "ended"), ("2026-11-21T17:01:00", "ended"), ("2026-11-22T10:00:00", "ended")):
+    # the moments of 27 November, the last day since 1.2.209 (those of 21 November before); 21 and 22 November are open days now
+    for moment, state in (("2026-11-21T17:00:00", "open"), ("2026-11-22T10:00:00", "open"),
+                          ("2026-11-26T23:59:00", "open"), ("2026-11-27T09:00:00", "open"), ("2026-11-27T16:59:59", "open"),
+                          ("2026-11-27T17:00:00", "ended"), ("2026-11-27T17:01:00", "ended"), ("2026-11-28T10:00:00", "ended")):
         _at(monkeypatch, moment)
         assert HEI.window(settings) == state, moment
     # without an hour, the whole day, as before
     settings["hei.end_time"] = ""
-    _at(monkeypatch, "2026-11-21T23:59:00")
+    _at(monkeypatch, "2026-11-27T23:59:00")
     assert HEI.window(settings) == "open"
     for odd in ("5 pm", "25:00", "17:60"):
         settings["hei.end_time"] = odd
@@ -75,12 +83,12 @@ def test_the_registration_closes_at_5_pm(monkeypatch):
 def test_the_form_of_the_registration_before_and_after_5_pm(monkeypatch):
     app = _portal()
     client = app.test_client()
-    _at(monkeypatch, "2026-11-21T16:30:00")
+    _at(monkeypatch, "2026-11-27T16:30:00")      # 27 November since 1.2.209 (21 November before), here and below
     text, page = _main(client, "/institutions/register?lang=en")
-    assert 'name="head_name"' in page and "Last date for institutions: 21 Nov 2026, 5:00 PM" in text
-    _at(monkeypatch, "2026-11-21T17:00:00")
+    assert 'name="head_name"' in page and "Last date for institutions: 27 Nov 2026, 5:00 PM" in text
+    _at(monkeypatch, "2026-11-27T17:00:00")
     text, page = _main(client, "/institutions/register?lang=en")
-    assert 'name="head_name"' not in page and "Applications of institutions closed on 21 Nov 2026, 5:00 PM." in text
+    assert 'name="head_name"' not in page and "Applications of institutions closed on 27 Nov 2026, 5:00 PM." in text
     # an application sent after the hour is not taken
     from test_institutions import FORM
     with client.session_transaction() as s:
@@ -93,30 +101,33 @@ def test_the_form_of_the_registration_before_and_after_5_pm(monkeypatch):
 
 def test_the_pages_give_the_hour(monkeypatch):
     app = _portal(**{"reg.open": "0", "launch.on": "0", "hei.start": "2026-10-22"})      # the banner as on the live site
-    _at(monkeypatch, "2026-11-21T10:00:00")
+    _at(monkeypatch, "2026-11-27T10:00:00")      # the last day, 27 November since 1.2.209 (21 November before)
     client = app.test_client()
     home, page = _main(client, "/?lang=en")
-    assert "Registration Up to 21 Nov 2026, 5:00 PM Last date for the registration of institutions" in home
-    assert re.search(r'<li class="kd-blink"><span class="kd-when"><bdi>Up to 21 Nov 2026, 5:00 PM</bdi></span>', page)
-    assert re.search(r'<span class="banner-date">Last date: <bdi>(<bdi dir="ltr">)?21 Nov 2026, 5:00 PM', page)
+    assert "Registration Up to 27 Nov 2026, 5:00 PM Last date for the registration of institutions" in home
+    assert re.search(r'<li class="kd-blink"><span class="kd-when"><bdi>Up to 27 Nov 2026, 5:00 PM</bdi></span>', page)
+    assert re.search(r'<span class="banner-date">Last date: <bdi>(<bdi dir="ltr">)?27 Nov 2026, 5:00 PM', page)
     schedule, _p = _main(client, "/schedule?lang=en")
-    assert "Up to 21 Nov 2026, 5:00 PM Last date for the registration of institutions" in schedule
+    assert "Up to 27 Nov 2026, 5:00 PM Last date for the registration of institutions" in schedule
     guide, _p = _main(client, "/how-to-take-part?lang=en")
-    assert "Last date for institutions to register 21 Nov 2026, 5:00 PM" in guide and "Register your institution by 21 Nov 2026, 5:00 PM" in guide
+    assert "Last date for institutions to register 27 Nov 2026, 5:00 PM" in guide and "Register your institution by 27 Nov 2026, 5:00 PM" in guide
     institutions, _p = _main(client, "/institutions?lang=en")
-    assert "Last date for institutions: 21 Nov 2026, 5:00 PM" in institutions
+    assert "Last date for institutions: 27 Nov 2026, 5:00 PM" in institutions
     helps, _p = _main(client, "/help?lang=en")
-    assert "by 21 Nov 2026, 5:00 PM" in helps
+    assert "by 27 Nov 2026, 5:00 PM" in helps
+    # no page gives the day of before (1.2.209)
+    for text in (home, schedule, guide, institutions, helps):
+        assert "21 Nov 2026, 5:00 PM" not in text
     # in the other languages, as the portal writes days and hours in them
     hindi, page = _main(client, "/?lang=hi")
-    assert "21-11-2026, 17:00" in page
+    assert "27-11-2026, 17:00" in page
     urdu = client.get("/?lang=ur").get_data(as_text=True)
-    assert "⁦21-11-2026, 17:00⁩" in urdu
+    assert "⁦27-11-2026, 17:00⁩" in urdu
     # the hub of the home page and the State/UT pages
     from kts import finder
     from kts.db import all_settings
     with app.test_request_context():
-        assert finder.hub(all_settings(), "en")["words"]["hei_end"] == "21 November 2026, 5:00 PM"
+        assert finder.hub(all_settings(), "en")["words"]["hei_end"] == "27 November 2026, 5:00 PM"
         assert finder.hub(all_settings(), "hi")["words"]["hei_end"].endswith(", 17:00")
 
 
@@ -128,7 +139,7 @@ def test_the_mail_of_the_nodal_officers():
     uid = _account(app, "new.kerala@tests.example", ["Kerala"])
     with app.app_context():
         _subject, body = nodal.signin_mail(query("SELECT * FROM users WHERE id = ?", (uid,), one=True))
-    assert "register on the portal up to 21 November 2026, 5:00 PM:" in body
+    assert "register on the portal up to 27 November 2026, 5:00 PM:" in body      # 27 November since 1.2.209
 
 
 def test_the_notice_of_the_extension_takes_the_hour_once():

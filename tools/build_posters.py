@@ -350,6 +350,14 @@ DATES = {"{hei_end}": short("hei.end"), "{camp_from}": short("camp.from"), "{cam
          "{email}": "kts@cict.in", "{phone}": "044-22540125"}
 
 
+# the last days kept off the public pages (dates.public of DEFAULT_SETTINGS, 1.2.209): poster 1 without the days of the assessment
+# and of the nomination
+HIDE_DATES = DEFAULT_SETTINGS.get("dates.public") == "0"
+if DEFAULT_SETTINGS.get("reg.end_time"):   # the last day of the nomination with its hour, 27 Nov 2026, 5:00 PM (1.2.209)
+    from kts.heis import hour_words as _hour_words  # noqa: E402
+    DATES["{reg_end}"] += _hour_words({"hei.end_time": DEFAULT_SETTINGS["reg.end_time"]}, "en")
+
+
 def filled(text):
     """The text escaped, its date and number placeholders filled in; a date keeps its order in a right-to-left line (bdi)."""
     out = esc(text)
@@ -367,14 +375,14 @@ def ltr_numbers(text):
 
 def poster1(lang, cat):
     k = K.kural(391)
-    steps = [(cat["home.step_exam"], f'{cat["guide.date_assess"]} · {span("camp.from", "camp.to")}'),
+    steps = [(cat["home.step_exam"], cat["kd.assess"] if HIDE_DATES else f'{cat["guide.date_assess"]} · {span("camp.from", "camp.to")}'),
              (cat["home.step_merit"], cat["home.step_merit_sub"]),
              (cat["home.step_orient"], cat["home.step_orient_sub"]),
              (cat["home.step_present"], cat["home.step_present_sub"])]
     step_html = "".join(f'<div class="step"><span class="n">{i}</span><b class="fitw">{esc(t)}</b><small>{ltr_numbers(s)}</small></div>'
                         for i, (t, s) in enumerate(steps, 1))
     # how a student takes part: the six steps of the guide, as their titles
-    how = "".join(f'<div class="how"><span class="n">{i}</span><span>{filled(cat[f"guide.s{i}_t"])}</span></div>' for i in range(1, 7))
+    how = "".join(f'<div class="how"><span class="n">{i}</span><span>{filled(cat[f"guide.s{i}_t_nd" if HIDE_DATES and f"guide.s{i}_t_nd" in cat else f"guide.s{i}_t"])}</span></div>' for i in range(1, 7))
     body = (top() +
             f'<div><div class="kicker">{esc(cat["home.kicker"])}</div>'
             f'<h1 class="big">{esc(cat["site.tagline"])}</h1>'
@@ -383,7 +391,8 @@ def poster1(lang, cat):
             f'<div class="lead">{esc(cat["home.hero_sub"])}</div>'
             f'<div class="card">{couplet_html(k, lang)}<div class="cite">{chapter_cite(k, lang)}</div></div>'
             f'<div class="steps">{step_html}</div>'
-            f'<div class="band"><div><div class="lbl">{esc(cat["guide.date_assess"])}</div><div class="val"><bdi dir="ltr">{span("camp.from", "camp.to", "%B")}</bdi></div></div>'
+            + ('<div class="band" style="grid-template-columns:1fr">' if HIDE_DATES else
+               f'<div class="band"><div><div class="lbl">{esc(cat["guide.date_assess"])}</div><div class="val"><bdi dir="ltr">{span("camp.from", "camp.to", "%B")}</bdi></div></div>') +
             f'<div><div class="lbl">{esc(cat["site.name"])}</div><div class="val"><bdi dir="ltr">{span("kts.start", "kts.end")}</bdi> · <span class="en">Varanasi</span> · <span class="ta" lang="ta">வாரணாசி</span></div></div></div>'
             f'<div class="stipend"><b>₹10,000</b><span>{ltr_numbers(cat["home.stipend"])}</span></div>'
             f'<div><div class="kicker">{esc(cat["guide.title"])}</div><div class="hows">{how}</div></div>'

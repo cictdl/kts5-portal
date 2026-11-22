@@ -25,7 +25,8 @@ def _portal():
         from kts.db import set_setting as _set
         _set("institutions.registered", "1")   # the institutions registered shown (hidden by default since 1.2.168, tests/test_1110.py)
         _set("reg.public", "1")
-        _set("reg.end", "2026-11-24")   # the nomination, among the milestones (1.2.155); the tests' portal keeps it far ahead
+        # the nomination, among the milestones (1.2.155), on its day: 27 November 2026 since 1.2.209 (24 November before)
+        _set("reg.end", "2026-11-27")
     tn = _inst(app, "Presidency College", state="Tamil Nadu", test_on=1)
     sid = _student(app, tn, "Student One", tested=True)
     _student(app, tn, "Student Two", tested=True)
@@ -71,7 +72,11 @@ def test_the_figures():
     assert all(s["to_select"] for s in p["states"]) and "Lakshadweep" not in {s["state"] for s in p["states"]}
     # the milestones, in order, with at most one 'next'
     keys = [m["key"] for m in p["milestones"]]
-    assert keys == ["hei_reg", "hei_select", "assess", "reg_close", "selection", "inauguration", "valedictory", "live", "internship", "papers"]
+    # the registration of institutions, the assessment and the nomination on 27 November 2026 (1.2.209), after the selection of
+    # institutions (22 November) and the first day of the consolidation (25 November)
+    assert keys == ["hei_select", "selection", "hei_reg", "assess", "reg_close", "inauguration", "valedictory", "live", "internship", "papers"]
+    days = {m["key"]: m["starts"] for m in p["milestones"]}
+    assert days["hei_reg"] == days["assess"] == days["reg_close"] == "2026-11-27" and days["hei_select"] == "2026-11-22"
     assert [m["starts"] for m in p["milestones"]] == sorted(m["starts"] for m in p["milestones"])
     statuses = [m["status"] for m in p["milestones"]]
     assert statuses.count("next") <= 1 and set(statuses) <= {"done", "current", "next", "upcoming"}

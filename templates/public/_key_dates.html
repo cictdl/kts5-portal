@@ -8,16 +8,16 @@
 <div class="kd-box">
   <{{ heading }} class="kd-title" id="{{ id }}">{{ t('kd.title') }}</{{ heading }}>
   <div class="kd-groups">
-    {% for g in kd %}
+    {% for g in kd %}{% if g.rows %}
     <section class="kd-group kd-{{ loop.index }}" aria-labelledby="{{ id }}-{{ loop.index }}">
       <h3 class="kd-gh" id="{{ id }}-{{ loop.index }}">{{ t(g.title) }}</h3>
       <ul class="kd-list">
         {% for r in g.rows %}
-        <li{% if not r.d1 %} class="kd-note"{% elif highlight and r.label == highlight %} class="kd-blink"{% endif %}>{% if r.d1 %}<span class="kd-when"><bdi>{% if r.until %}{{ t(r.prefix)|replace('{date}', hei_until()) }}{% elif r.prefix %}{{ t(r.prefix)|replace('{date}', r.d1|date) }}{% elif r.d2 %}{{ r.d1|date }} – {{ r.d2|date }}{% else %}{{ r.d1|date }}{% endif %}</bdi></span>{% endif %}<span class="kd-what">{% if r.endpoint %}<a href="{{ url_for(r.endpoint) }}">{{ t(r.label) }}</a>{% else %}{{ t(r.label) }}{% endif %}</span></li>
+        <li{% if not r.d1 %} class="kd-note"{% elif highlight and r.label == highlight %} class="kd-blink"{% endif %}>{% if r.d1 %}<span class="kd-when"><bdi>{% if r.until %}{{ t(r.prefix)|replace('{date}', hei_until()) }}{% elif r.prefix %}{{ t(r.prefix)|replace('{date}', r.d1|date) }}{% elif r.until_reg %}{{ reg_until() }}{% elif r.d2 %}{{ r.d1|date }} – {{ r.d2|date }}{% else %}{{ r.d1|date }}{% endif %}</bdi></span>{% endif %}<span class="kd-what">{% if r.endpoint %}<a href="{{ url_for(r.endpoint) }}">{{ t(r.label) }}</a>{% else %}{{ t(r.label) }}{% endif %}</span></li>
         {% endfor %}
       </ul>
     </section>
-    {% endfor %}
+    {% endif %}{% endfor %}
   </div>
 </div>
 {% endmacro %}

@@ -76,6 +76,18 @@ def _load():
 
 CATALOG = _load()
 
+
+def _undated(catalog):
+    """
+    The keys whose text gives the last day of the registration of institutions, of the assessment or of the nomination: each has a
+    second text without it, <key>_nd (1.2.209; CICT, 22 November 2026: "dont post the date outside"), which the portal gives while
+    the setting dates.public is off.
+    """
+    return frozenset(k[:-3] for k in catalog["en"] if k.endswith("_nd") and k[:-3] in catalog["en"])
+
+
+UNDATED = _undated(CATALOG)
+
 # Kept for tools that expect the old three-language table (the static-site builder).
 STRINGS = {key: (text, CATALOG["ta"].get(key, text), CATALOG["hi"].get(key, text))
            for key, text in CATALOG["en"].items()}
@@ -83,8 +95,9 @@ STRINGS = {key: (text, CATALOG["ta"].get(key, text), CATALOG["hi"].get(key, text
 
 def reload():
     """Re-read the JSON files (used by the console after a translation file is replaced)."""
-    global CATALOG
+    global CATALOG, UNDATED
     CATALOG = _load()
+    UNDATED = _undated(CATALOG)
     return {code: len(table) for code, table in CATALOG.items()}
 
 
@@ -115,8 +128,37 @@ def get_lang():
     return lang
 
 
+def dates_public():
+    """
+    The last days of the registration of institutions, of the assessment and of the nomination given on the public pages and in the
+    mails (the setting dates.public, 1.2.209): read once in a request; True outside the portal (the tools, the tests of the texts).
+    """
+    from flask import has_app_context, has_request_context
+    if has_request_context():
+        env = request.environ
+        if "kts.dates_public" not in env:
+            env["kts.dates_public"] = _dates_public_now()
+        return env["kts.dates_public"]
+    if has_app_context():
+        return _dates_public_now()
+    return True
+
+
+def _dates_public_now():
+    from .db import get_setting
+    try:
+        return get_setting("dates.public", "0") != "0"
+    except Exception:  # noqa: BLE001 - no database to ask: the days are not given
+        return False
+
+
 def text(key, lang):
-    """Translation of `key` in the interface language `lang`, falling back to English."""
+    """
+    Translation of `key` in the interface language `lang`, falling back to English; while the last days are kept off the public
+    pages, the text without the day where the key has one (1.2.209).
+    """
+    if key in UNDATED and not dates_public():
+        key += "_nd"
     value = CATALOG.get(lang, {}).get(key)
     if value:
         return value

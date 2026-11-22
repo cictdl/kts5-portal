@@ -31,8 +31,11 @@ def test_the_circular_holds_every_state_and_its_nodal_institution():
     assert "Total: 1,000 Participating HEIs." in n["body"]
     assert "Registration does not by itself confer selection." in n["body"] and "tentative" not in n["body"]
     # the days of the Ministry's revision of 10 November 2026 (1.2.172)
-    assert "up to 21 November 2026" in n["body"] and "on 22 November 2026" in n["body"] and "by 23 November" in n["body"]
-    assert "on 24 November 2026" in n["body"] and "D.O. letter of 31 October 2026" in n["body"]
+    # ... as extended to 27 November 2026, 5:00 PM (1.2.209): the selection keeps its words and has no day
+    assert "up to 27 November 2026, 5:00 PM" in n["body"] and "selects the prescribed number, with a reserve list" in n["body"]
+    assert "by 27 November and nominates one on merit by 27 November 2026, 5:00 PM" in n["body"]
+    assert "D.O. letter of 31 October 2026" in n["body"]
+    assert all(day not in n["body"] for day in ("21 November", "22 November", "23 November", "24 November"))
 
 
 def test_it_is_shown_among_the_notices_and_on_the_home_page():

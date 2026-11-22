@@ -38,7 +38,7 @@ from flask import (Blueprint, Response, abort, current_app, flash, g, jsonify, r
 from . import kural as K
 from .candidate import _build_paper, _load_paper
 from .db import all_settings, audit, execute, get_db, get_setting, query, utcnow
-from .i18n import t
+from .i18n import dates_public, t
 from .utils import (check_captcha, client_ip, limiter, new_captcha, now_ist, parse_iso, plain_english, send_mail,
                     valid_email, valid_mobile, xlsx_bytes)
 
@@ -322,14 +322,14 @@ def registration_mail(inst, student):
         send_mail(student["email"], f"KTS 5.0: you are selected by {inst['name']}",
                   f"Dear {student['name']},\n\n{inst['name']} has selected you, on the basis of its assessment, as its student for "
                   f"Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom.\n\nYour Institutional Coordinator, {inst['coord_name']}, submits "
-                  f"your nomination on the KTS 5.0 portal on or before {_reg_end_text()}. Give the coordinator a photograph, an ID "
+                  f"your nomination on the KTS 5.0 portal{_on_or_before()}. Give the coordinator a photograph, an ID "
                   f"proof and your details (date of birth, address, course and year of study, language); the nomination form is "
                   f"signed and sealed by the Head of the Institution, with your Faculty Supervisor/Guide.\n\nOnce the nomination is "
                   f"submitted, you receive your application number by e-mail, to follow your application at {base}/status and to "
                   f"sign in to the candidate portal.\n\nCentral Institute of Classical Tamil, Chennai")
     send_mail(inst["coord_email"], f"KTS 5.0: submit the nomination of {student['name']} ({inst['ref']})",
               f"Dear {inst['coord_name']},\n\n{inst['name']} has selected {student['name']} on merit. Submit the nomination on the "
-              f"KTS 5.0 portal on or before {_reg_end_text()}: sign in to the institution's page, {base}/institution, and press "
+              f"KTS 5.0 portal{_on_or_before()}: sign in to the institution's page, {base}/institution, and press "
               f"\u201cSubmit the nomination\u201d. The form asks for the student's details, a photograph, an ID proof, the nomination "
               f"form signed and sealed by the Head of the Institution ({base}/static/KTS5-nomination-form.pdf) and the details of the "
               f"Faculty Supervisor/Guide.\n\nThe student has been informed by e-mail"
@@ -337,9 +337,20 @@ def registration_mail(inst, student):
               f".\n\nCentral Institute of Classical Tamil, Chennai")
 
 
+def _on_or_before():
+    """
+    " on or before 27 November 2026", the last day of the nomination as a mail gives it; nothing while the last days are kept off
+    the mails (1.2.209, dates.public).
+    """
+    return f" on or before {_reg_end_text()}" if dates_public() else ""
+
+
 def _reg_end_text():
     end = _day(get_setting("reg.end"))
-    return f"{end.day} {end:%B %Y}" if end else "the date given by CICT"
+    if not end:
+        return "the date given by CICT"
+    from .heis import nominate_hour_words
+    return f"{end.day} {end:%B %Y}{nominate_hour_words('en')}"      # with the hour of the nomination (1.2.209)
 
 
 def _issue(inst, student_id):

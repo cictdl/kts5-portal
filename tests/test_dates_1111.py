@@ -6,6 +6,10 @@ CICT's consolidation and verification of the nominations 25 November - 5 Decembe
 days of 1.2.171 takes them at the next start; what CICT set in the Console stays. The revision is pinned as a notice, above the
 D.O. letter; the circular of the Nodal Institutions and the launch notice take the revised days where their text is unchanged.
 
+Since 1.2.209 (CICT, 22 November 2026: "Extend both to 27 Nov, 5 PM") the registration of institutions, the assessment and the
+nomination run up to 27 November 2026, the nomination up to 5:00 PM: the settings the portal comes with, the schedule, a database
+started again, poster 1 and the nomination form have those days; the notice of the revision keeps the words of the Ministry.
+
     python -m pytest tests/test_dates_1111.py -q
 """
 import re
@@ -16,8 +20,12 @@ from conftest import ROOT, make_app
 from test_timeline import S, _settings, _sql, _start
 
 # the first two days are those of 1.2.203 (CICT, 18 November 2026: 21 and 22 November; 18 and 19 by the revision of 10 November)
-NEW = {"hei.end": "2026-11-21", "hei.select_end": "2026-11-22", "camp.to": "2026-11-23", "reg.end": "2026-11-24",
+# ... and since 1.2.209 (CICT, 22 November 2026: "Extend both to 27 Nov, 5 PM") the registration of institutions, the assessment and
+# the nomination are up to 27 November 2026; the selection and the reminders keep their days
+NEW = {"hei.end": "2026-11-27", "hei.select_end": "2026-11-22", "camp.to": "2026-11-27", "reg.end": "2026-11-27",
        "remind.test_by": "2026-11-22", "remind.select_by": "2026-11-23", "remind.register_by": "2026-11-24"}
+# the three days of the revision that 1.2.209 moved (21 November: of 1.2.203), days of before now
+REVISED = {"hei.end": "2026-11-21", "camp.to": "2026-11-23", "reg.end": "2026-11-24"}
 OLD = {"hei.end": "2026-11-18", "hei.select_end": "2026-11-17", "camp.to": "2026-11-19", "reg.end": "2026-11-20",
        "remind.test_by": "2026-11-18", "remind.select_by": "2026-11-19", "remind.register_by": "2026-11-20"}
 OLD_DAYS = {"hei_select": ("2026-11-16T00:00", "2026-11-17T00:00"), "assess": ("2026-11-19T00:00", None),
@@ -35,15 +43,20 @@ def test_the_days():
     for key, old in OLD.items():
         if old != NEW[key]:
             assert old in RETIRED_DEFAULTS[key], key
+    # the days of the revision that the extension to 27 November moved are days of before as well (1.2.209)
+    for key, old in REVISED.items():
+        assert old in RETIRED_DEFAULTS[key] and NEW[key] not in RETIRED_DEFAULTS[key], key
     # the reminders: each key once, with the days of the letters of 26 and 31 October
     assert {"2026-10-20", "2026-11-19"} <= set(RETIRED_DEFAULTS["remind.select_by"])
     assert {"2026-10-21", "2026-11-20"} <= set(RETIRED_DEFAULTS["remind.register_by"])
     # the schedule, in the order of its days
+    # ... since 1.2.209 the registration of institutions and the assessment on 27 November (21 and 23 before), and so after the
+    # selection (22 November) and the first day of the consolidation and verification (25 November)
     assert (S["hei_reg"]["starts"], S["hei_select"]["starts"], S["hei_select"].get("ends"), S["assess"]["starts"]) == (
-        "2026-11-21", "2026-11-22", None, "2026-11-23")
+        "2026-11-27", "2026-11-22", None, "2026-11-27")
     assert (S["selection"]["starts"], S["selection"]["ends"]) == ("2026-11-25", "2026-12-05")
     keys = [k for k in S]
-    assert keys.index("hei_reg") < keys.index("hei_select") < keys.index("assess") < keys.index("selection")
+    assert keys.index("hei_select") < keys.index("selection") < keys.index("hei_reg") < keys.index("assess")
 
 
 def test_a_live_database_takes_the_revision_once():
@@ -64,7 +77,7 @@ def test_a_live_database_takes_the_revision_once():
     assert {k: settings[k] for k in NEW} == dict(NEW, **{"camp.to": "2026-11-21"})   # CICT's own day stays
     rows = {t: (s, e) for t, s, e in _sql(again, "SELECT title, starts_at, ends_at FROM events")}
     assert rows[S["hei_select"]["title"]] == ("2026-11-22T00:00", None)      # 22 November since 1.2.203
-    assert rows[S["assess"]["title"]] == ("2026-11-23T00:00", None)
+    assert rows[S["assess"]["title"]] == ("2026-11-27T00:00", None)          # 27 November since 1.2.209 (23 by the revision)
     assert rows[S["selection"]["title"]] == ("2026-11-25T00:00", "2026-12-05T00:00")
     notices = _sql(again, "SELECT title, body, pinned, link FROM notices WHERE published = 1 ORDER BY pinned DESC, created_at DESC, id DESC")
     assert notices[0][0] == EXT_NOTICE[0] and notices[0][2] == 1 and notices[0][3] == "/schedule"
@@ -88,21 +101,28 @@ def test_the_pages_and_the_notice():
     client = app.test_client()
     page = client.get("/schedule?lang=en").get_data(as_text=True)
     box = re.sub(r"<[^>]+>", "|", page[page.index('<div class="kd-box">'):][:6000])
-    for line in ("|Up to 21 Nov 2026|", "|22 Nov 2026|", "|By 23 Nov 2026|", "|24 Nov 2026|", "|28 Nov 2026|"):
+    # the nomination, set above to the day the portal comes with: 27 November 2026 since 1.2.209 (24 November by the revision).
+    # The registration and the assessment are those the tests' portal keeps (conftest: 21 and 23 November, the days of 1.2.208)
+    for line in ("|Up to 21 Nov 2026|", "|22 Nov 2026|", "|By 23 Nov 2026|", "|27 Nov 2026|", "|28 Nov 2026|"):
         assert line in box, line
-    assert "16 Nov 2026" not in box and "– 19 Nov" not in box
+    assert "16 Nov 2026" not in box and "– 19 Nov" not in box and "|24 Nov 2026|" not in box
     with app.test_request_context():
         words = finder.hub(all_settings(), "en")["words"]
     assert (words["hei_end"], words["select"], words["camp_to"], words["reg_end"]) == (
-        "21 November 2026", "22 November 2026", "23 November 2026", "24 November 2026")
+        "21 November 2026", "22 November 2026", "23 November 2026", "27 November 2026")
     notices = client.get("/notices?lang=en").get_data(as_text=True)
     assert EXT_NOTICE[0] in notices
     assert "up to 18 November 2026 (earlier 15 November)" in EXT_NOTICE[1] and "24 November 2026 (earlier 20 November)" in EXT_NOTICE[1]
 
 
 def test_the_poster_and_the_form():
+    # since 1.2.209 the assessment up to 27 November and the nomination by 27 November 2026, 5:00 PM (23 and 24 November by the
+    # revision): poster 1 built anew, the two lines of the form set anew. Both days being the 27th now, the day of the nomination
+    # is looked for with its hour, which the poster gives with it alone (the words of a line that runs on are put together)
     for lang in ("en", "hi", "ta"):
-        text = fitz.open(ROOT / "static" / "posters" / f"KTS5-poster-1-{lang}.pdf")[0].get_text()
-        assert "22 Oct – 23 Nov 2026" in text and "24 Nov" in text and "19 Nov" not in text and "20 Nov" not in text, lang
-    form = fitz.open(ROOT / "static" / "KTS5-nomination-form.pdf")[0].get_text()
-    assert form.count("24 November 2026") == 2 and "20 November 2026" not in form
+        text = " ".join(fitz.open(ROOT / "static" / "posters" / f"KTS5-poster-1-{lang}.pdf")[0].get_text().split())
+        assert "22 Oct – 27 Nov 2026" in text and "27 Nov 2026, 5:00 PM" in text and "19 Nov" not in text and "20 Nov" not in text, lang
+        assert "23 Nov" not in text and "24 Nov" not in text, lang
+    form = " ".join(fitz.open(ROOT / "static" / "KTS5-nomination-form.pdf")[0].get_text().split())
+    assert form.count("27 November 2026") == 2 and form.count("on or before 27 November 2026, 5:00 PM") == 2
+    assert "24 November" not in form and "20 November 2026" not in form

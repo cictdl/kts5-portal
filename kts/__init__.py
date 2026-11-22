@@ -172,14 +172,26 @@ def create_app(config_object=Config):
 
     app.jinja_env.filters["clock"] = _clock
 
-    def _hei_until():
+    def _hei_until(force=False):
         """
         The last moment of the registration of institutions as the pages give it (1.2.208): "21 Nov 2026, 5:00 PM" in English,
-        "21-11-2026, 17:00" in the other languages; the day alone without an hour.
+        "21-11-2026, 17:00" in the other languages; the day alone without an hour. Nothing while the last days are kept off the
+        public pages (1.2.209, dates.public), but with force (the Console).
         """
+        if not force and not i18n.dates_public():
+            return ""
         settings = db.all_settings()
         day = utils.fmt_date(settings.get("hei.end"), _numeric())
         return _ltr(day + heis.hour_words(settings, "en" if not _numeric() else "xx")) if day else day
+
+    def _reg_until():
+        """
+        The last moment of the nomination as the pages give it (1.2.209): "27 Nov 2026, 5:00 PM" in English, "27-11-2026, 17:00" in
+        the other languages; the day alone without an hour (reg.end_time).
+        """
+        settings = db.all_settings()
+        day = utils.fmt_date(settings.get("reg.end"), _numeric())
+        return _ltr(day + heis.nominate_hour_words("en" if not _numeric() else "xx", settings)) if day else day
     app.jinja_env.filters["size"] = utils.human_size
     app.jinja_env.filters["langname"] = lambda code: (K.lang_info(code) or {}).get("name", code)
     app.jinja_env.filters["langnative"] = lambda code: (K.lang_info(code) or {}).get("native", code)
@@ -206,9 +218,8 @@ def create_app(config_object=Config):
             return "own"
         state = utils.registration_state(settings)
         # switched off with the postponed launch, before its last day: registration opens after the launch (1.2.76)
-        end = settings.get("reg.end") or ""
         if (state == "closed" and settings.get("reg.open") == "0" and settings.get("launch.on") == "0"
-                and not (end and end < utils.now_ist().strftime("%Y-%m-%d"))):
+                and not utils.reg_over(settings)):      # after the last day, and on it from its hour (1.2.209)
             return "after_launch"
         return state
 
@@ -266,6 +277,11 @@ def create_app(config_object=Config):
             "hei_window": lambda: heis.window(db.all_settings()),
             # the last day of the registration of institutions with its hour (1.2.208)
             "hei_until": _hei_until,
+            # the last day of the nomination with its hour, and that hour as the institution's page (in English) adds it (1.2.209)
+            "reg_until": _reg_until,
+            "reg_hour": lambda: heis.nominate_hour_words("en"),
+            # the last days of the registration of institutions, the assessment and the nomination on the public pages (1.2.209)
+            "dates_public": i18n.dates_public,
             # the students' registration shown on the public pages (1.2.147: hidden by default)
             "students_public": lambda: db.get_setting("reg.public") == "1",
             # KTS 5.0 – Key dates (1.2.152) and the steps of /how-to-submit-the-student with their English button names

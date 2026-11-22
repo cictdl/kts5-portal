@@ -8,7 +8,7 @@
   <p class="small dim" style="max-width:72ch">{{ t('hei.any_number') }}</p>
   <p><a href="{{ url_for('public.nodal_institutions') }}">{{ t('nodal.title') }} →</a></p>
   {% if window == 'open' %}<p><a class="btn saffron" href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a>
-    {% if settings.get('hei.end') %}<span class="pill green" style="margin-inline-start:8px">{{ t('hei.last_date') }}: {{ hei_until() }}</span>{% endif %}
+    {% if settings.get('hei.end') and dates_public() %}<span class="pill green" style="margin-inline-start:8px">{{ t('hei.last_date') }}: {{ hei_until() }}</span>{% endif %}
     <span class="pill green hei-no-limit" style="margin-inline-start:8px;white-space:normal">{{ t('hei.no_limit') }}</span></p>{% endif %}
   {# the Participating Institutions at a glance (1.2.149): the figures of the dashboard, then the list #}
   <section class="pi" aria-labelledby="pi-h">

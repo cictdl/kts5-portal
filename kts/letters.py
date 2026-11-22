@@ -19,7 +19,7 @@ from flask import current_app
 
 from . import heis as HEI
 from .db import DEFAULT_SETTINGS, get_setting
-from .i18n import LANG_INFO, offered, text
+from .i18n import LANG_INFO, dates_public, offered, text
 from .utils import now_ist
 
 PORTAL = "kts.cict.in"
@@ -68,7 +68,7 @@ def values(state, lang, officer=None, get=None):
         "email": officer.get("email") or text("nl.ph_email", lang), "phone": officer.get("phone") or text("nl.ph_phone", lang),
         "portal": PORTAL, "guide": guide or f"{PORTAL}/nodal-institutions",
         "contact_email": (get("contact.email") or "").strip() or "office@cict.in", "contact_phone": (get("contact.phone") or "").strip() or "",
-        "camp_to": day_text(_day("camp.to", get), lang), "reg_end": day_text(reg_end, lang),
+        "camp_to": day_text(_day("camp.to", get), lang), "reg_end": day_text(reg_end, lang) + HEI.nominate_hour_words(lang, {"reg.end_time": get("reg.end_time")}),
         "verify_span": span_text(reg_end + timedelta(days=1) if reg_end else None, verify_end, lang),
         "engagement": span_text(_day("internship.start", get), _day("papers.due", get), lang),
         "orientation_by": day_text(_day("orientation.by", get), lang), "papers_due": day_text(_day("papers.due", get), lang),
@@ -323,6 +323,8 @@ def letter_docx(state, lang, officer=None):
     # the dates of the Ministry's timeline only: the verification (nl.g3) has no date in the letter of 31 October 2026 (1.2.155)
     rows = [(by(v["camp_to"]), "nl.g1"), (v["reg_end"], "nl.g2"), (v["kts_start"], "nl.g4"),
             (v["kts_end"], "nl.g5"), (by(v["orientation_by"]), "nl.g6"), (v["engagement"], "nl.g7"), (v["papers_due"], "nl.g8")]
+    if not dates_public():   # the assessment and the nomination without their days (1.2.209)
+        rows = rows[2:]
     table = [[[[d.run(text("nl.col_when", lang), bold=True, size=19, colour=INDIGO)]], [[d.run(text("nl.col_what", lang), bold=True, size=19, colour=INDIGO)]]]]
     table += [[[[d.run(when, bold=True, size=19)]], [[d.run(t(key), size=19)]]] for when, key in rows]
     d.table(table, [5.2, 11.6], header=True)

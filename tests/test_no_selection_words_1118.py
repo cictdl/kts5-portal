@@ -38,7 +38,7 @@ def empty_limiter():
 def test_the_texts_in_23_languages():
     from kts.i18n import CATALOG
     en = CATALOG["en"]
-    assert len(en) == 1521 and len(KEYS) == 37
+    assert len(en) == 1547 and len(KEYS) == 37
     for key in KEYS:
         assert not GONE.search(en[key]), key
     assert en["reg.intro"].startswith("Each Participating Institution assesses its students, selects one on merit")
@@ -99,7 +99,8 @@ def test_the_step_of_the_assessment_in_the_schedule():
     new = "Last date for the assessment of interested students by each Participating Institution"
     old = "Last date for the assessment of interested students by each selected Participating Institution"
     app = _app()
-    assert json.loads((ROOT / "data" / "timeline.json").read_text(encoding="utf-8"))[4]["title"] == new
+    steps = {r["key"]: r for r in json.loads((ROOT / "data" / "timeline.json").read_text(encoding="utf-8"))}      # by its key (1.2.209)
+    assert steps["assess"]["title"] == new
     with app.app_context():
         assert query("SELECT COUNT(*) AS n FROM events WHERE title = ?", (new,), one=True)["n"] == 1
         execute("UPDATE events SET title = ? WHERE title = ?", (old, new))      # a database of before

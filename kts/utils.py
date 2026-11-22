@@ -139,7 +139,29 @@ def registration_state(settings):
             return "closed"
     except ValueError:
         pass
+    if reg_over(settings):   # on the last day, from its hour (reg.end_time, 1.2.209)
+        return "closed"
     return "open"
+
+
+def reg_over(settings, now=None):
+    """
+    The nomination (and the students' registration) is over: after its last day, reg.end, and on that day from its hour,
+    reg.end_time (1.2.209: 27 November 2026, 5:00 PM; without an hour, the whole day). False while reg.end cannot be read.
+    """
+    end = (settings.get("reg.end") or "")[:10]
+    try:
+        datetime.fromisoformat(end)
+    except ValueError:
+        return False
+    now = now or now_ist()
+    today = now.strftime("%Y-%m-%d")
+    if today != end:
+        return today > end
+    m = re.fullmatch(r"\s*(\d{1,2})[:.](\d{2})\s*", settings.get("reg.end_time") or "")
+    if not m or int(m.group(1)) > 23 or int(m.group(2)) > 59:
+        return False
+    return (now.hour, now.minute) >= (int(m.group(1)), int(m.group(2)))
 
 
 def exam_window(settings):

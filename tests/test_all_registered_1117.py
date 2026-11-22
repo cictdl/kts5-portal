@@ -324,7 +324,7 @@ def test_the_mails_to_the_nodal_officers():
 def test_the_texts_in_23_languages():
     from kts.i18n import CATALOG
     en = CATALOG["en"]
-    assert len(en) == 1521
+    assert len(en) == 1547      # 1.2.209: 26 texts without the last days (<key>_nd)
     assert en["hei.any_number"] == "Any number of institutions of a State/UT may register. Every institution that registers is a Participating Institution."
     assert en["hei.done_title"] == "Institution registered"
     assert en["hei.done_next"] == ("Your institution is registered as a Participating Institution of {state}. The Head of the Institution and "

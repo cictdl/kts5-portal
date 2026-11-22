@@ -34,6 +34,7 @@ from datetime import date, time, timedelta
 from flask import current_app
 
 from .db import execute, get_db, get_setting, query, utcnow
+from .i18n import dates_public
 from .utils import college_key, now_ist, send_later, send_mail
 
 # identified: in the list of the Nodal Institution (Annexure-II), invited, not yet registered (1.2.43); accepted: a selected
@@ -380,6 +381,12 @@ def hour_words(settings, lang):
     return f", {hour.hour:02d}:{hour.minute:02d}"
 
 
+def nominate_hour_words(lang, settings=None):
+    """", 5:00 PM" after the last day of the nomination (reg.end_time; ", 17:00" in the other languages), or "" (1.2.209)."""
+    value = settings.get("reg.end_time") if settings is not None else get_setting("reg.end_time")
+    return hour_words({"hei.end_time": value}, lang)
+
+
 def window(settings):
     """'open', 'off' (hei.open is off) or 'ended' (after hei.end, and from its hour hei.end_time on that day, 1.2.208)."""
     if settings.get("hei.open") != "1":
@@ -500,7 +507,7 @@ def mail_invited(row):
                      "registration does not by itself confer selection. A selected institution" if select_step() else
                      "Every institution that registers is a Participating Institution. A Participating Institution")      # 1.2.202
                   + " assesses its students on the "
-                  f"Thirukkural (the portal offers a ready online test) and nominates one student on merit on the portal by {by}. "
+                  f"Thirukkural (the portal offers a ready online test) and nominates one student on merit on the portal{' by ' + by + nominate_hour_words('en') if dates_public() else ''}. "
                   f"The steps and the dates are on the institution's page of the portal.\n\nReference: {row['ref']}\n\n"
                   f"Central Institute of Classical Tamil, Chennai")
 
@@ -640,6 +647,15 @@ def _details(row):
                if row["guide_name"] else ""))
 
 
+def _by_when(key, comma=""):
+    """
+    " by 27 November 2026" (after a comma with comma=","), the last day of a setting as a mail gives it; nothing while the last
+    days are kept off the mails (1.2.209, dates.public).
+    """
+    hour = nominate_hour_words("en") if key == "reg.end" else ""
+    return f"{comma} by {_by(get_setting(key))}{hour}" if dates_public() else ""
+
+
 def _by(day):
     """25 November 2026, as a mail says a last day; the day as it is when it cannot be read."""
     try:
@@ -768,10 +784,10 @@ def mail_decision(row, lead=None, heading=None):
                 + (lead or f"The Nodal Institution of {unit_name(row['state'])} has selected your institution as a Participating "
                            f"Institution of Kashi Tamil Sangamam 5.0 – Thirukkural Payilvom.")
                 + f"\n\nReference: {row['ref']}\n{_details(row)}\n"
-                f"Please assess your interested students on the Thirukkural by {_by(get_setting('camp.to'))} (a short written test, "
+                f"Please assess your interested students on the Thirukkural{_by_when('camp.to')} (a short written test, "
                 f"an oral interaction, a presentation, an essay, a quiz or a combination of these; fair, documented and approved by "
                 f"the Head of the Institution or an authorised committee) and nominate one student on merit, with one Faculty "
-                f"Supervisor/Guide, by {_by(get_setting('reg.end'))}.\n\n"
+                f"Supervisor/Guide{_by_when('reg.end', ',')}.\n\n"
                 f"How to nominate: sign in to the institution's page at {base}/institution/login with the e-mail address of the "
                 f"Institutional Coordinator or of the Head of the Institution (a six-digit code is mailed; there is no password). "
                 f"There you may switch on the portal's ready online test for your students; then select the student on merit and "

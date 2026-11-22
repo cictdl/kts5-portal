@@ -126,7 +126,7 @@ def title(row, lang, settings, ph):
     from .finder import long_day
     if ph == "assess":
         return (text("hub.i_shut_t", lang).replace("{camp_to}", long_day(_day(settings, "camp.to"), lang))
-                .replace("{reg_end}", long_day(_day(settings, "reg.end"), lang)))
+                .replace("{reg_end}", long_day(_day(settings, "reg.end"), lang) + HEI.nominate_hour_words(lang, settings)))
     # no number to be selected for a State/UT (1.2.179)
     return text("join.title_plain", lang).replace("{state}", HEI.label_of(row["state"], lang))
 

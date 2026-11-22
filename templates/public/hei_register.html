@@ -31,7 +31,7 @@
   {# what to have ready before starting (1.2.142) #}
   <div class="card hei-ready"><h3>{{ t('join.ready_t') }}</h3><p class="small" style="margin:0">{{ t('join.ready') }}</p></div>
   <p class="alert info" style="max-width:72ch"><b>{{ t('hei.english_note') }}</b></p>
-  {% if settings.get('hei.end') %}<p><span class="pill green">{{ t('hei.last_date') }}: {{ hei_until() }}</span></p>{% endif %}
+  {% if settings.get('hei.end') and dates_public() %}<p><span class="pill green">{{ t('hei.last_date') }}: {{ hei_until() }}</span></p>{% endif %}
   <form method="post" novalidate class="wrap-narrow" style="margin-inline:0;max-width:900px" data-once>
     <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
     {% if invite %}<input type="hidden" name="invite" value="{{ invite }}">{% endif %}

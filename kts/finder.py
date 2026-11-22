@@ -16,7 +16,7 @@ from flask import current_app, url_for
 
 from . import heis as HEI
 from .db import query
-from .i18n import place, text
+from .i18n import dates_public, place, text
 from .utils import now_ist
 
 # a word of a query that says nothing about which college (the query keeps its other words)
@@ -129,15 +129,16 @@ def hub(settings, lang):
         select_start = date.fromisoformat(first) if first else select_end
     window = HEI.window(settings)
     words_ = {"hei_end": long_day(hei_end, lang) + HEI.hour_words(settings, lang), "select": span(select_start, select_end, lang), "camp_to": long_day(camp_to, lang),
-              "reg_end": long_day(reg_end, lang), "verify_end": long_day(verify_end, lang), "select_end": long_day(select_end, lang)}
+              "reg_end": long_day(reg_end, lang) + HEI.nominate_hour_words(lang, settings), "verify_end": long_day(verify_end, lang), "select_end": long_day(select_end, lang)}
     link = current_app.config["BASE_URL"].rstrip("/") + url_for("public.hei_register")
     message = text("hub.invite", lang).replace("{date}", words_["hei_end"]).replace("{link}", link)
     subject = text("hub.invite_subject", lang).replace("{date}", words_["hei_end"])
     nodal_selecting = bool(select_end) and today <= select_end
     return {
         "today": today, "words": words_, "open": window == "open", "public": settings.get("hei.public") == "1",
-        "chips": {"student": days_chip(camp_to, today, lang),
-                  "inst": days_chip(hei_end if window == "open" else reg_end, today, lang),
+        # no days left to count while the last days are kept off the public pages (1.2.209)
+        "chips": {"student": days_chip(camp_to, today, lang) if dates_public() else None,
+                  "inst": days_chip(hei_end if window == "open" else reg_end, today, lang) if dates_public() else None,
                   "nodal": days_chip(select_end if nodal_selecting else verify_end, today, lang)},
         "nodal_selecting": nodal_selecting,
         "invite": {"text": message, "wa": "https://wa.me/?text=" + quote(message, safe=""),
