@@ -53,8 +53,13 @@ def _portal(**settings):
 
 
 def _hidden(**settings):
-    """... with the last days taken off the public pages and the mails (dates.public off)."""
-    return _portal(**{"dates.public": "0", **settings})
+    """
+    ... with the last days taken off the public pages and the mails (dates.public off), and the pinned notice of the extension to
+    27 November (1.2.210) taken off the notices, as CICT does then in the Console: the notices keep their own words.
+    """
+    app = _portal(**{"dates.public": "0", **settings})
+    _sql(app, "UPDATE notices SET published = 0 WHERE title LIKE 'Registration of institutions extended to 27 November 2026%'")
+    return app
 
 
 def _at(monkeypatch, moment):

@@ -1139,6 +1139,29 @@ AICTE13_NOTICE_FILE = "notices/KTS5-AICTE-circular-13-November-2026.pdf"
 # The registration of institutions extended to 21 November 2026 (1.2.203), as a notice of its own, pinned (1.2.204; CICT,
 # 18 November 2026, offered such a notice: "do"; "It is the ministry who told the extension"). Its days are the days of the
 # portal (tests/test_ext_21nov_1118.py).
+# The registration of institutions, the assessment and the nomination extended to 27 November 2026 (1.2.209), as a notice of its
+# own, pinned (1.2.210; CICT, 22 November 2026: "add a pinned notice for the extension to 27 November"; who extended: "Ministry of
+# Education"). Its days are the days of the portal (tests/test_ext_27nov_1122.py).
+EXT27_NOTICE = (
+    "Registration of institutions extended to 27 November 2026, 5:00 PM by the Ministry of Education",
+    "\n".join([
+        "The Ministry of Education, Government of India, has extended the last date for the registration of institutions on "
+        "this portal (kts.cict.in) for the Students' Engagement Programme of Kashi Tamil Sangamam 5.0 (Thirukkural Payilvom) "
+        "from 21 November 2026 to 27 November 2026, 5:00 PM.",
+        "",
+        "Accordingly, on this portal:",
+        "• Registration of institutions on kts.cict.in: up to 27 November 2026, 5:00 PM (earlier 21 November).",
+        "• Assessment of the interested students by each Participating Institution: by 27 November 2026 (earlier 23 November).",
+        "• Nomination of one student by each Participating Institution on the portal: up to 27 November 2026, 5:00 PM (earlier "
+        "24 November).",
+        "",
+        "Unchanged: the inaugural function of KTS 5.0 on 28 November and the valedictory function on 12 December 2026 (virtual "
+        "joining).",
+        "",
+        "Every institution that registers is a Participating Institution. Institutions that have not yet registered may do so "
+        "on this portal: Register › Register your institution.",
+    ]),
+)
 EXT21_NOTICE = (
     "Registration of institutions extended to 21 November 2026 by the Ministry of Education",
     "\n".join([
@@ -2019,6 +2042,15 @@ def init_db(app):
     mark = "migrate.ext21_off_1122"
     if not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
         conn.execute("UPDATE notices SET published = 0, updated_at = ? WHERE title = ?", (now, EXT21_NOTICE[0]))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
+
+    # The registration of institutions extended to 27 November 2026, 5:00 PM (1.2.210): its notice, pinned, put in once for each
+    # database; none is added when a notice with its title is there already.
+    mark = "seed.notice.ext_27nov"
+    if not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
+        if not conn.execute("SELECT 1 FROM notices WHERE title = ?", (EXT27_NOTICE[0],)).fetchone():
+            conn.execute("INSERT INTO notices(title, body, category, lang, pinned, published, attachment, link, created_at, updated_at) "
+                         "VALUES(?,?,'circular','en',1,1,'','/institutions/register',?,?)", (EXT27_NOTICE[0], EXT27_NOTICE[1], now, now))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
 
     # The launch of 14 October 2026, 5:00 PM was postponed (1.2.69): on a database that has announced it already (its notice
