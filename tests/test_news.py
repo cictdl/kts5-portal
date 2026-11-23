@@ -23,7 +23,7 @@ def test_the_press_release_of_the_launch_in_eleven_languages():
     # ten languages in 1.2.99, Punjabi (PIB Chandigarh) in 1.2.112
     from kts import kural as K
     press = [n for n in NEWS if n["kind"] == "press" and n["date"] == "2026-10-22"]      # one more on 21 November (1.2.209)
-    assert len(press) == 1 and len([n for n in NEWS if n["kind"] == "press"]) == 2
+    assert len(press) == 1 and len([n for n in NEWS if n["kind"] == "press"]) == 3      # and one of 4 November (1.2.211)
     versions = press[0]["versions"]
     assert [v["lang"] for v in versions] == ["en", "as", "gu", "hi", "kn", "ml", "mr", "or", "pa", "ta", "ur"]
     assert all(v["lang"] in K.ORIENTATION_LANGS and v["title"] and v["office"].startswith("PIB ") for v in versions)
@@ -88,7 +88,8 @@ def test_the_reports_of_the_web():
     # Hindi of Akashvani News and DD News as versions in Hindi, on the same sites (1.2.141); the file in the order of the days and the hours
     reports = [n for n in NEWS if n["kind"] == "article"]
     assert [n["source"] for n in reports] == ["Dainik Bhaskar", "Akashvani News", "Akashvani News", "Bhaskar Hindi", "ThePrint", "Careers360", "Akashvani News", "DD News", "DD India", "ThePrint Hindi", "Awaz-The Voice", "Punjab Kesari", "REVOI", "EdexLive", "ETV Bharat", "Hindu Tamil Thisai", "Dinamalar", "Dinamalar", "The Hindu", "The New Indian Express", "Public TV", "Dinamalar TV", "Dainik Jagran", "The Indian Express", "Daily Thanthi", "Dinamani", "NDTV Education", "DT Next", "Hindu Tamil Thisai", "Education Post", "Hindustan Times", "News18", "Organiser", "CNBCTV18", "Jagran Josh", "Times Now Tamil", "Dinamalar Kalvimalar", "Eenadu", "Akashvani News", "Akashvani News", "Akashvani News", "Prabhat Khabar", "Amar Ujala", "Hindu Tamil Thisai",
-                                          "News9", "TV9 Bangla", "TV9 Hindi"]   # 1.2.166
+                                          "UNI", "News9", "TV9 Bangla", "TV9 Hindi",   # 1.2.166; UNI of 3 November with 1.2.211
+                                          "Chirauri News", "Dinamalar", "ETV Bharat Uttar Pradesh", "Amar Ujala"]   # 1.2.211
     hosts = {"DD News": "https://ddnews.gov.in/", "Dinamalar": "https://www.dinamalar.com/",
              "Daily Thanthi": "https://www.dailythanthi.com/", "NDTV Education": "https://www.ndtv.com/",
              "Akashvani News": "https://newsonair.gov.in/", "Careers360": "https://news.careers360.com/",
@@ -107,7 +108,10 @@ def test_the_reports_of_the_web():
              "Times Now Tamil": "https://tamil.timesnownews.com/", "Dinamalar Kalvimalar": "https://www.dinamalar.com/news/kalvimalar-news-en/",
              "Eenadu": "https://www.eenadu.net/", "Prabhat Khabar": "https://www.prabhatkhabar.com/", "Amar Ujala": "https://www.amarujala.com/",
              # 1.2.166
-             "News9": "https://www.news9live.com/", "TV9 Bangla": "https://tv9bangla.com/", "TV9 Hindi": "https://www.tv9hindi.com/"}
+             "News9": "https://www.news9live.com/", "TV9 Bangla": "https://tv9bangla.com/", "TV9 Hindi": "https://www.tv9hindi.com/",
+             # 1.2.211 (ETV Bharat in Hindi, of Uttar Pradesh, under a name of its own: the entry above is its Tamil)
+             "UNI": "https://www.uniindia.com/", "Chirauri News": "https://www.chirauri.com/",
+             "ETV Bharat Uttar Pradesh": "https://www.etvbharat.com/hi/"}
     for n in reports:
         assert len({v["lang"] for v in n["versions"]}) == len(n["versions"]) <= 2, n["key"]
         for v in n["versions"]:

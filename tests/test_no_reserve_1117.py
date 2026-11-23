@@ -323,7 +323,8 @@ def test_the_public_pages_say_nothing_of_a_reserve_list():
     assert "See the Participating Institutions" in pages["/how-to-take-part"]      # 1.2.202
     # the step of the schedule: its title in the file, and in a database that held the title of before
     step = "Scrutiny and selection of the Participating Institutions by the Nodal Institutions"
-    assert f"<bdi>{step}</bdi>" in pages["/"] and step + "," not in pages["/"] and step + "," not in pages["/schedule"]
+    # (the schedule, which keeps the past steps: the home page lists only the next ones, and 22 November is past from the 23rd)
+    assert f"<bdi>{step}</bdi>" in pages["/schedule"] and step + "," not in pages["/"] and step + "," not in pages["/schedule"]
 
 
 def test_the_step_of_the_schedule_in_a_database_of_before():
@@ -344,8 +345,8 @@ def test_the_step_of_the_schedule_in_a_database_of_before():
     with app.app_context():
         assert query("SELECT COUNT(*) AS n FROM events WHERE title = 'Selection of the institutions, as CICT words it'", one=True)["n"] == 1
         execute("UPDATE events SET title = ? WHERE title LIKE 'Selection of the institutions, as%'", (step,))
-    # the schedule finds the translation of the title
-    page = app.test_client().get("/?lang=ta").get_data(as_text=True)
+    # the schedule finds the translation of the title (the schedule, not the home page: the step is past from 23 November 2026)
+    page = app.test_client().get("/schedule?lang=ta").get_data(as_text=True)
     assert CATALOG["ta"]["timeline.hei_select"] in page and CATALOG["ta"]["timeline.hei_select"] != step
 
 

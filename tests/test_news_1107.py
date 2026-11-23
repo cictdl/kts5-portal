@@ -19,8 +19,9 @@ NEW = [n for n in NEWS if n["date"] in ("2026-11-03", "2026-11-04")]
 def test_the_entries():
     social = [n for n in NEW if n["kind"] == "social"]
     reports = [n for n in NEW if n["kind"] == "article"]
-    assert len(NEW) == 21 and len(social) == 18 and len(reports) == 3
-    assert [n["source"] for n in reports] == ["News9", "TV9 Bangla", "TV9 Hindi"]
+    # ... and, added with 1.2.211, the report of UNI of 3 November and the press release of 4 November on the meeting at BHU
+    assert len(NEW) == 23 and len(social) == 18 and len(reports) == 4 and [n["kind"] for n in NEW].count("press") == 1
+    assert [n["source"] for n in reports] == ["UNI", "News9", "TV9 Bangla", "TV9 Hindi"]
     assert {n["source"] for n in social} == {
         "MyGov Hindi", "PIB Karnataka", "PIB Andhra Pradesh", "PIB Sri Vijaya Puram", "PIB Bihar", "Akashvani News Vijayawada",
         "DD News Uttar Pradesh", "DD India", "DD Tamil", "PIB Chandigarh", "TV9 Gujarati", "TV9 Marathi", "CBC Hyderabad",

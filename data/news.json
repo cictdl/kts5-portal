@@ -1655,6 +1655,20 @@
     ]
   },
   {
+    "key": "uni-2026-11-03-kts5-bhu-review",
+    "date": "2026-11-03",
+    "kind": "article",
+    "source": "UNI",
+    "versions": [
+      {
+        "lang": "en",
+        "title": "Kashi Tamil Sangam 5.0 to be held from Nov 28 to Dec 12, with theme \"Thirukkural Payilvom\"",
+        "time": "6:54 PM",
+        "url": "https://www.uniindia.com/north-india/event-up-kashi-tamil-sangam/235156"
+      }
+    ]
+  },
+  {
     "key": "social-2026-11-03-28",
     "date": "2026-11-03",
     "kind": "social",
@@ -1942,6 +1956,68 @@
     ]
   },
   {
+    "key": "pib-2026-11-04-kts5-bhu-meeting",
+    "date": "2026-11-04",
+    "kind": "press",
+    "source": "Press Information Bureau",
+    "versions": [
+      {
+        "lang": "en",
+        "office": "PIB Delhi",
+        "ministry": "Ministry of Education",
+        "title": "High-Level Meeting at Banaras Hindu University, Varanasi reviews preparations for Kashi Tamil Sangamam 5.0",
+        "subtitle": "KTS 5.0 to be held from Nov 28 to Dec 12, 2026 on the theme ‘Thirukkural Payilvom-Thirukkural Abhyas Karen’",
+        "time": "8:06 PM",
+        "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2332761"
+      },
+      {
+        "lang": "as",
+        "office": "PIB Guwahati",
+        "ministry": "মানৱ সম্পদ উন্নয়ণ মন্ত্ৰালয়",
+        "title": "বাৰাণসীৰ বেনাৰস হিন্দু বিশ্ববিদ্যালয়ত উচ্চপৰ্যায়ৰ বৈঠকত ‘কাশী তামিল সংগম ৫.০’ৰ প্ৰস্তুতিৰ পৰ্যালোচনা",
+        "subtitle": "‘তিৰুক্কুৰল পয়িলভম-তিৰুক্কুৰল অভ্যাস কৰেণ’ মূল বিষয়বস্তুৰে ২০২৬ চনৰ ২৮ নৱেম্বৰৰ পৰা ১২ ডিচেম্বৰলৈ অনুষ্ঠিত হ’ব কেটিএছ ৫.০",
+        "time": "8:06 PM",
+        "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2332917"
+      },
+      {
+        "lang": "hi",
+        "office": "PIB Delhi",
+        "ministry": "शिक्षा मंत्रालय",
+        "title": "बनारस हिंदू विश्वविद्यालय, वाराणसी में उच्च स्तरीय बैठक में काशी तमिल संगमम 5.0 की तैयारियों की समीक्षा",
+        "subtitle": "केटीएस 5.0 का आयोजन 28 नवंबर से 12 दिसंबर, 2026 तक ‘तिरुक्कुरल पयिल्वोम-तिरुक्कुरल अभ्यास करें’ विषय पर किया जाएगा",
+        "time": "8:06 PM",
+        "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2332805"
+      },
+      {
+        "lang": "pa",
+        "office": "PIB Chandigarh",
+        "ministry": "ਸਿੱਖਿਆ ਮੰਤਰਾਲਾ",
+        "title": "ਬਨਾਰਸ ਹਿੰਦੂ ਯੂਨੀਵਰਸਿਟੀ, ਵਾਰਾਣਸੀ ਵਿਖੇ ਉੱਚ ਪੱਧਰੀ ਬੈਠਕ ਵਿੱਚ ਕਾਸ਼ੀ ਤਮਿਲ ਸੰਗਮਮ 5.0 ਦੀਆਂ ਤਿਆਰੀਆਂ ਦੀ ਸਮੀਖਿਆ",
+        "subtitle": "ਕੇਟੀਐੱਸ 5.0 ਦਾ ਆਯੋਜਨ 28 ਨਵੰਬਰ ਤੋਂ 12 ਦਸੰਬਰ, 2026 ਤੱਕ ‘ਤਿਰੂੱਕੁਰਲ ਪਯਿਲਵੋਮ-ਤਿਰੂੱਕੁਰਲ ਅਭਿਆਸ ਕਰੇਂ’ ਵਿਸ਼ੇ ‘ਤੇ ਕੀਤਾ ਜਾਵੇਗਾ",
+        "time": "8:06 PM",
+        "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2332926"
+      },
+      {
+        "lang": "ta",
+        "office": "PIB Chennai",
+        "ministry": "மனித வள மேம்பாட்டு அமைச்சகம்",
+        "title": "'காசி தமிழ் சங்கமம் 5.0' நிகழ்விற்கான ஏற்பாடுகள் குறித்த உயர்மட்ட ஆய்வுக் கூட்டம்",
+        "subtitle": "",
+        "time": "8:06 PM",
+        "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2332933"
+      },
+      {
+        "lang": "ur",
+        "office": "PIB Delhi",
+        "ministry": "وزارتِ تعلیم",
+        "title": "وارانسی کی بنارس ہندو یونیورسٹی میں اعلیٰ سطحی اجلاس کے دوران کاشی تمل سنگمم 5.0 کی تیاریوں کا جائزہ لیا گیا",
+        "subtitle": "کاشی تمل سنگمم 5.0، 28 نومبر سے 12 دسمبر 2026 تک ’تروکّرَل پَیلووم – تروکّرَل اَبھیاس کریں‘ کے موضوع پر منعقدہوگا",
+        "time": "8:06 PM",
+        "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2332854"
+      }
+    ]
+  },
+  {
     "key": "social-2026-11-04-37",
     "date": "2026-11-04",
     "kind": "social",
@@ -2023,6 +2099,35 @@
     ]
   },
   {
+    "key": "chirauri-2026-11-20-kts5-bhu-vc",
+    "date": "2026-11-20",
+    "kind": "article",
+    "source": "Chirauri News",
+    "versions": [
+      {
+        "lang": "hi",
+        "title": "काशी तमिल संगमम 5.0 की तैयारियों की बीएचयू कुलपति ने की समीक्षा, 21 नवंबर से शुरू होगा प्री-इवेंट",
+        "time": "4:46 PM",
+        "url": "https://www.chirauri.com/bhu-vice-chancellor-reviews-preparations-for-kashi-tamil-sangamam-5-0-pre-event-to-begin-on-november-21/"
+      }
+    ]
+  },
+  {
+    "key": "dinamalar-2026-11-21-kts5-sinthanai-kalam",
+    "date": "2026-11-21",
+    "kind": "article",
+    "source": "Dinamalar",
+    "versions": [
+      {
+        "lang": "ta",
+        "byline": "ஸ்ரீ சாமு கிருஷ்ண சாஸ்திரி, தலைவர், பாரதிய பாஷா சமிதி",
+        "title": "காசி - தமிழகம் இடையே பண்பாட்டு பாலம் திருக்குறள்",
+        "time": "6:27 PM",
+        "url": "https://www.dinamalar.com/news/tamil-nadu-news/chintankalam-cultural-bridge-between-kasi-and-tamil-nadu-tirukkural/4382460"
+      }
+    ]
+  },
+  {
     "key": "pib-2026-11-21-kts5-rangoli",
     "date": "2026-11-21",
     "kind": "press",
@@ -2040,9 +2145,9 @@
       {
         "lang": "as",
         "office": "PIB Guwahati",
-        "ministry": "মানৱ সম্পদ উন্নয়ণ মন্ত্ৰালয়",
+        "ministry": "মানৱ সম্পদ উন্নয়ণ মন্ত্ৰালয়",
         "title": "কাশী তামিল সংগমম ৫.০ক লৈ উৎসাহ-উদ্দীপনা সৃষ্টিৰ উদ্দেশ্যে আছী ঘাটত ৰংগোলী প্ৰতিযোগিতা",
-        "subtitle": "মূল অনুষ্ঠানৰ পূৰ্বে আয়োজিত বিভিন্ন কাৰ্যসূচীৰ জৰিয়তে সাংস্কৃতিক প্ৰকাশ আৰু ৰাইজৰ অংশগ্ৰহণেৰে কাশী আৰু তামিলনাডুৰ মাজৰ সম্পৰ্ক অধিক নিবিড় কৰাৰ প্ৰয়াস।",
+        "subtitle": "মূল অনুষ্ঠানৰ পূৰ্বে আয়োজিত বিভিন্ন কাৰ্যসূচীৰ জৰিয়তে সাংস্কৃতিক প্ৰকাশ আৰু ৰাইজৰ অংশগ্ৰহণেৰে কাশী আৰু তামিলনাডুৰ মাজৰ সম্পৰ্ক অধিক নিবিড় কৰাৰ প্ৰয়াস।",
         "time": "7:27 PM",
         "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2339795"
       },
@@ -2072,6 +2177,36 @@
         "subtitle": "پیشگی تقریبات کے ذریعے ثقافتی اظہار اور عوامی شرکت کے وسیلے سے کاشی اور تمل ناڈو کے درمیان قربت میں اضافہ",
         "time": "7:27 PM",
         "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2339758"
+      }
+    ]
+  },
+  {
+    "key": "etvbharat-2026-11-21-kts5-rangoli",
+    "date": "2026-11-21",
+    "kind": "article",
+    "source": "ETV Bharat Uttar Pradesh",
+    "versions": [
+      {
+        "lang": "hi",
+        "byline": "ETV Bharat Uttar Pradesh Team",
+        "title": "काशी तमिल संगमम : अस्सी घाट पर रंगोली के रंगों में झलकी भारतीय संस्कृति और परंपरा",
+        "time": "8:18 PM",
+        "url": "https://www.etvbharat.com/hi/state/kashi-tamil-sangamam-indian-culture-and-tradition-reflected-in-the-colors-of-rangoli-at-assi-ghat-ups26112106051"
+      }
+    ]
+  },
+  {
+    "key": "amarujala-2026-11-22-kts5-rangoli",
+    "date": "2026-11-22",
+    "kind": "article",
+    "source": "Amar Ujala",
+    "versions": [
+      {
+        "lang": "hi",
+        "byline": "वाराणसी ब्यूरो",
+        "title": "Varanasi News: अस्सी घाट पर रंगों से सजी काशी-तमिल संस्कृति की झलक, बच्चों ने बनाई आकर्षक रंगोली",
+        "time": "1:12 AM",
+        "url": "https://www.amarujala.com/uttar-pradesh/varanasi/a-glimpse-of-kashi-tamil-culture-adorned-with-colors-at-assi-ghat-children-created-an-attractive-rangoli-varanasi-news-c-20-noi1138-1624084-2026-11-22"
       }
     ]
   }

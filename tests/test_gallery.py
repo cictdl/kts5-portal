@@ -154,7 +154,8 @@ def test_kts5_in_the_news():
     page = client.get("/gallery?lang=en").get_data(as_text=True)
     # 11 since 1.2.141, 15 since 1.2.159, 20 since 1.2.183 (Thiruvalluvar on stamps and coins), 28 since 1.2.206 (the posters of
     # the Ministry of Education, tests/test_gallery_moe_posters_1119.py)
-    assert page.count('<figure class="photo">') == 28 and "28 photographs" in page
+    # ... 32 since 1.2.211 (four photographs of the Ministry of Education from PIB, tests/test_news_gallery_1123.py)
+    assert page.count('<figure class="photo">') == 32 and "32 photographs" in page
     assert page.index("<bdi>KTS 5.0 in the news</bdi>") < page.index("<bdi>Launch of the KTS 5.0 web portal and registration</bdi>")
     news = client.get("/gallery?lang=en&album=KTS+5.0+in+the+news").get_data(as_text=True)
     assert news.count('<figure class="photo">') == 9 and "Classical text Thirukkural to take centre stage" in news   # 9 since 1.2.159

@@ -223,9 +223,11 @@ def test_the_schedule_shows_the_timeline_in_order(monkeypatch):
         assert day in upcoming, day
     # the registration of institutions (21 November up to 1.2.208), the assessment (23) and the nomination (24) all on 27
     # November 2026 (1.2.209): the day stands three times, their earlier days no more
-    assert upcoming.count("27 Nov 2026") == 3
+    # (in the schedule itself, not in the footer, which gives the day of the release - 23 November 2026 for 1.2.211)
+    steps = upcoming[:upcoming.index("</main>")]
+    assert steps.count("27 Nov 2026") == 3
     for day in ("21 Nov 2026", "23 Nov 2026", "24 Nov 2026"):
-        assert day not in upcoming, day
+        assert day not in steps, day
     # a day without a time of day stands alone; the test has the hours of its settings
     assert "12:00 AM" not in upcoming
     # the steps that the revised D.O. letter no longer has are not there: the evaluation by CIIL, the booklet

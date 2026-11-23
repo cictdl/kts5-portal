@@ -81,6 +81,19 @@ def _words(page):
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", page))
 
 
+def _without_own_days(page):
+    """
+    The page without the days that are its own - the day of the Kural of the day, and the day of the release ("Last updated", in
+    the footer and on the pages of the policies) - which may fall on a day that the tests look for, as the release of 23 November
+    2026 did (1.2.211).
+    """
+    import html
+    from kts.i18n import CATALOG
+    labels = sorted({html.escape(c["pol.updated"]) for c in CATALOG.values() if c.get("pol.updated")}, key=len, reverse=True)
+    page = re.sub(r'<div class="label">[^<]*</div>', "", page)
+    return re.sub("(?:" + "|".join(re.escape(label) for label in labels) + r"): <bdi>[^<]*</bdi>", "", page)
+
+
 def _outbox(app):
     from kts.db import query
     with app.app_context():
@@ -169,7 +182,7 @@ def test_the_pages_give_the_days(monkeypatch):
     assert "Registration Up to 27 Nov 2026, 5:00 PM Last date for the registration of institutions" in home
     assert re.search(r'<li class="kd-blink"><span class="kd-when"><bdi>Up to 27 Nov 2026, 5:00 PM</bdi></span>', page)
     assert re.search(r'<span class="banner-date">Last date: <bdi>(<bdi dir="ltr">)?27 Nov 2026, 5:00 PM', page)
-    assert not OLD_DAYS.search(page)
+    assert not OLD_DAYS.search(_without_own_days(page))
     assert 'name="head_name"' in _get(client, "/institutions/register?lang=en")
     guide = _words(_get(client, "/how-to-take-part?lang=en"))
     assert "Last date for institutions to register 27 Nov 2026, 5:00 PM" in guide and "Assessments at the institutions By 27 Nov 2026" in guide
@@ -318,7 +331,7 @@ def test_switched_off_no_public_page_gives_a_last_day(monkeypatch, lang):
     client = app.test_client()
     # (the notices keep their own words: the circular of the Nodal Institutions gives the days, switched off or not)
     for path in (p for p in PAGES if p != "/notices"):
-        page = _get(client, path + ("&" if "?" in path else "?") + f"lang={lang}")
+        page = _without_own_days(_get(client, path + ("&" if "?" in path else "?") + f"lang={lang}"))
         assert not NEW_DAY.search(page), (lang, path, NEW_DAY.search(page).group(0) if NEW_DAY.search(page) else "")
         assert not OLD_DAYS.search(page), (lang, path, OLD_DAYS.search(page).group(0) if OLD_DAYS.search(page) else "")
         # no "n days left" to the last days either (the Nodal Officers' days of the verification keep theirs)
@@ -455,7 +468,7 @@ def test_the_nomination_form_and_the_posters_give_the_new_day():
 def test_the_press_release_of_21_november():
     news = json.loads((ROOT / "data" / "news.json").read_text(encoding="utf-8"))
     item = next(n for n in news if n["key"] == "pib-2026-11-21-kts5-rangoli")
-    assert item["date"] == "2026-11-21" and item["kind"] == "press" and news[-1] is item
+    assert item["date"] == "2026-11-21" and item["kind"] == "press"      # (reports of later days follow it since 1.2.211)
     assert [v["lang"] for v in item["versions"]] == ["en", "as", "or", "ta", "ur"]
     assert all(v["time"] == "7:27 PM" and v["url"].startswith("https://www.pib.gov.in/PressReleasePage.aspx?PRID=233") for v in item["versions"])
     app = make_app(ADMIN_PASSWORD=None)
