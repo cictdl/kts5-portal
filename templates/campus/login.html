@@ -9,7 +9,7 @@
   {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
   <div class="card accent" style="max-width:560px">
     {% if sent %}
-    <p>If <b>{{ sent }}</b> belongs to a participating institution, a six-digit code has been mailed to it. It is valid for 15 minutes.</p>
+    <p>If <b>{{ sent }}</b> belongs to a participating institution, a six-digit code has been mailed to it. It is valid for 60 minutes.</p>
     <form method="post" action="{{ url_for('campus.code') }}" class="fields" data-once>
       <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
       <div class="field"><label for="code">Code from the e-mail</label><input type="text" id="code" name="code" inputmode="numeric" maxlength="7" autocomplete="one-time-code" required autofocus></div>

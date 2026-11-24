@@ -8,7 +8,7 @@ merit, and registers that student's details on the portal. CICT consolidates the
 
 * The Institutional Coordinator (or the Head of the Institution) signs in at /institution/login
   with the e-mail address given when the institution registered: the portal mails a six-digit
-  code, valid for CODE_MINUTES. No password is kept.
+  code, valid for CODE_MINUTES (60 since 1.2.212); signed in on that device for DEVICE_DAYS. No password is kept.
 * /institution is the institution's page: its status, the steps and dates of the programme, the
   online assessment, the students who took it with their scores, the winner, and the registration
   of the winner.
@@ -44,7 +44,11 @@ from .utils import (check_captcha, client_ip, limiter, new_captcha, now_ist, par
 
 bp = Blueprint("campus", __name__)
 
-CODE_MINUTES = 15
+# 60 minutes since 1.2.212 (CICT, 24 November 2026: the codes come late when the mail of the portal reaches Google's limit)
+CODE_MINUTES = 60
+# a coordinator who signs in with the code stays signed in on that device so many days (1.2.212): the cookie DEVICE_COOKIE
+DEVICE_DAYS = 30
+DEVICE_COOKIE = "kts_inst"
 CODE_TRIES = 5
 LOGIN_PER_HOUR = 12          # codes asked for from one address in an hour
 SIGNUP_PER_HOUR = 60         # sign-ups of students from one address in an hour
@@ -63,11 +67,38 @@ def institutions_of(email):
                  "ORDER BY CASE status WHEN 'accepted' THEN 0 WHEN 'pending' THEN 1 ELSE 2 END, id", (email, email))
 
 
+def _device_signer():
+    """The signer of the cookie of the device (1.2.212): the key of the portal, a salt of its own."""
+    from itsdangerous import URLSafeTimedSerializer
+    return URLSafeTimedSerializer(current_app.config["SECRET_KEY"], salt="kts-institution-device")
+
+
+def _device_sign_in():
+    """
+    The sign-in of the device (1.2.212): the address and the institution of a valid cookie of the device, not older than DEVICE_DAYS,
+    put back in the session of the portal; nothing for a cookie that cannot be read.
+    """
+    from itsdangerous import BadSignature
+    value = request.cookies.get(DEVICE_COOKIE)
+    if not value:
+        return
+    try:
+        data = _device_signer().loads(value, max_age=DEVICE_DAYS * 24 * 3600)
+        email, iid = str(data["e"]), int(data["i"])
+    except (BadSignature, KeyError, TypeError, ValueError):
+        return
+    session["inst_email"], session["inst_id"] = email, iid
+    session.permanent = True
+
+
 def current_institution():
-    """The institution signed in, or None."""
+    """The institution signed in, or None; with the cookie of the device when the session is over (1.2.212)."""
     if "inst" in g:
         return g.inst
     inst = None
+    from flask import has_request_context
+    if not (session.get("inst_id") and session.get("inst_email")) and has_request_context():
+        _device_sign_in()
     iid, email = session.get("inst_id"), session.get("inst_email")
     if iid and email:
         inst = query("SELECT * FROM institutions WHERE id = ?", (iid,), one=True)
@@ -141,7 +172,12 @@ def code():
     session["inst_id"] = rows[0]["id"]
     session.permanent = True
     audit("institution_login", "institution", rows[0]["id"], detail=pending["email"], ip=client_ip())
-    return redirect(url_for("campus.home"))
+    response = redirect(url_for("campus.home"))
+    # signed in on this device for DEVICE_DAYS days (1.2.212): no new code each day
+    response.set_cookie(DEVICE_COOKIE, _device_signer().dumps({"e": pending["email"], "i": rows[0]["id"]}),
+                        max_age=DEVICE_DAYS * 24 * 3600, httponly=True, samesite="Lax", path="/",
+                        secure=bool(current_app.config.get("SESSION_COOKIE_SECURE")))
+    return response
 
 
 @bp.route("/institution/switch/<int:iid>")
@@ -160,7 +196,11 @@ def switch(iid):
 def logout():
     session.pop("inst_id", None)
     session.pop("inst_email", None)
-    return redirect(url_for("public.home"))
+    response = redirect(url_for("public.home"))
+    # ... and on this device (1.2.212)
+    response.delete_cookie(DEVICE_COOKIE, path="/", samesite="Lax", httponly=True,
+                           secure=bool(current_app.config.get("SESSION_COOKIE_SECURE")))
+    return response
 
 
 def institution_required(fn):
