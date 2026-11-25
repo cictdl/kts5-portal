@@ -115,7 +115,8 @@ def test_the_academic_orientation():
     assert "<h1>Academic Orientation</h1>" in page
     assert 'class="active" aria-haspopup="true">Students&#39; Engagement Programme</a>' in _menu(page)   # its item since 1.2.161
     assert "Academic orientation by CICT, with access to the study material and educational videos · <b><bdi>By 14 " in page
-    assert "The content of the academic orientation will be published here." in page
+    # the video lectures of CICT on the 108 Thirukkural in place of the note of before (1.2.214, tests/test_academic_orientation_1125.py)
+    assert "The content of the academic orientation will be published here." not in page and 'id="acad-hi"' in page
     assert 'href="/orientation">▶ Educational Videos</a>' in page and 'href="/syllabus">📘 Study material: the study book</a>' in page
     # in the sitemap, for the search engines and on its page
     assert "/academic-orientation</loc>" in _get(client, "/sitemap.xml")
@@ -123,7 +124,7 @@ def test_the_academic_orientation():
     for code, catalogue in CATALOG.items():
         page = _get(client, f"/academic-orientation?lang={code}")
         assert f"<h1>{escape(catalogue['nav.acad'])}</h1>" in page, code
-        assert escape(catalogue["acad.soon"]) in page, code
+        assert escape(catalogue["acad.soon"]) not in page and escape(catalogue["k108.title"]) in page, code      # 1.2.214
         top = _top(_menu(page))
         assert top[4:6] == [escape(catalogue["nav.sep"]), escape(catalogue["nav.other_res"])], code   # the order of 1.2.161
 

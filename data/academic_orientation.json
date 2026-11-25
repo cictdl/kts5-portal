@@ -1,0 +1,22 @@
+[
+  {"lang": "hi", "session": 1, "chapters": [1, 27], "youtube": "IgYUAe33wsA", "seconds": 1434, "published": "2026-11-23"},
+  {"lang": "hi", "session": 2, "chapters": [28, 54], "youtube": "WNEQ4gNDeDo", "seconds": 1424, "published": "2026-11-23"},
+  {"lang": "hi", "session": 3, "chapters": [55, 81], "youtube": "GvjUM8g8h3U", "seconds": 1308, "published": "2026-11-23"},
+  {"lang": "hi", "session": 4, "chapters": [82, 108], "youtube": "630LuTXDrXQ", "seconds": 1248, "published": "2026-11-23"},
+  {"lang": "en", "session": 1, "chapters": [1, 27], "youtube": "vA_qeRTeT_g", "seconds": 1782, "published": "2026-11-23"},
+  {"lang": "en", "session": 2, "chapters": [28, 54], "youtube": "uwRWj3eSyNg", "seconds": 1990, "published": "2026-11-23"},
+  {"lang": "en", "session": 3, "chapters": [55, 81], "youtube": "_ept-UB053g", "seconds": 1750, "published": "2026-11-23"},
+  {"lang": "en", "session": 4, "chapters": [82, 108], "youtube": "dKa4tMGWVDI", "seconds": 1785, "published": "2026-11-23"},
+  {"lang": "ml", "session": 1, "chapters": [1, 27], "youtube": "f91B8bAF8iI", "seconds": 1437, "published": "2026-11-24"},
+  {"lang": "ml", "session": 2, "chapters": [28, 54], "youtube": "9dytcjJcZuE", "seconds": 1229, "published": "2026-11-24"},
+  {"lang": "ml", "session": 3, "chapters": [55, 81], "youtube": "aPnWVyOgf9Q", "seconds": 1271, "published": "2026-11-24"},
+  {"lang": "ml", "session": 4, "chapters": [82, 108], "youtube": "LfnIUArzKPE", "seconds": 1191, "published": "2026-11-24"},
+  {"lang": "sa", "session": 1, "chapters": [1, 27], "youtube": "-4SsQKu24R4", "seconds": 2162, "published": "2026-11-23"},
+  {"lang": "sa", "session": 2, "chapters": [28, 54], "youtube": "R3dXbUxDTaw", "seconds": 2203, "published": "2026-11-23"},
+  {"lang": "sa", "session": 3, "chapters": [55, 81], "youtube": "CoYP09UqzkA", "seconds": 1883, "published": "2026-11-23"},
+  {"lang": "sa", "session": 4, "chapters": [82, 108], "youtube": "u4UGbc7C6bI", "seconds": 2055, "published": "2026-11-23"},
+  {"lang": "ta", "session": 1, "chapters": [1, 27], "youtube": "ISF5w3eTvcA", "seconds": 2451, "published": "2026-11-23"},
+  {"lang": "ta", "session": 2, "chapters": [28, 54], "youtube": "zufHomGMliM", "seconds": 1484, "published": "2026-11-23"},
+  {"lang": "ta", "session": 3, "chapters": [55, 81], "youtube": "wSCcJ67gQ5k", "seconds": 1459, "published": "2026-11-23"},
+  {"lang": "ta", "session": 4, "chapters": [82, 108], "youtube": "1WRdXTJwO30", "seconds": 1253, "published": "2026-11-23"}
+]

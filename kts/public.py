@@ -389,7 +389,9 @@ def home():
     seminars = cict_events()
     ev_years = (min(e["start"][:4] for e in seminars), max(e["start"][:4] for e in seminars)) if seminars else None
     circular, circular_head, circ_new = latest_circular(settings)   # the circular band (1.2.152)
-    return render_template("public/home.html", settings=settings, dates=_key_dates(settings), uz=home_uzbek(),
+    # the languages of the lectures of the Academic Orientation, Hindi first, for the band that leads to them (1.2.214)
+    acad_langs = [{"code": code, "native": (i18n.LANG_INFO.get(code) or {}).get("native", code)} for code, _rows in academic_lectures()]
+    return render_template("public/home.html", settings=settings, dates=_key_dates(settings), uz=home_uzbek(), acad_langs=acad_langs,
                            circular=circular, circular_head=circular_head, circ_new=circ_new,
                            # "Find your next step" (1.2.140), while shown (home.hub, hidden since 1.2.146)
                            hub=FINDER.hub(settings, lang) if settings.get("home.hub") == "1" else None,
@@ -563,7 +565,8 @@ def reels():
     groups = {}
     for row in rows:
         group = groups.setdefault(row["lang"], {"name": row["lang"], "native": row["native"], "videos": []})
-        group["videos"].append({"id": row["id"], "presenter": row["presenter"]})
+        # a reel of CICT itself is told by its topic, in Tamil and in English (1.2.214)
+        group["videos"].append({"id": row["id"], "presenter": row["presenter"], "topic": row.get("topic"), "topic_en": row.get("topic_en")})
     return {"count": len(rows), "langs": tuple(groups.values())}
 
 
@@ -1769,10 +1772,39 @@ def orientation():
                            lectures=orientation_lectures())
 
 
+@lru_cache(maxsize=1)
+def academic_lectures():
+    """
+    The video lectures of the academic orientation (1.2.214; CICT, 25 November 2026: "Thirukkural Payilvom - 108 Thirukkural |
+    First Hindi then all languages"): the four lectures of CICT on the 108 Thirukkural in each language
+    (data/academic_orientation.json), Hindi first, then the other languages in the order of the languages of the portal.
+    """
+    rows = json.loads((current_app.config["DATA_DIR"] / "academic_orientation.json").read_text(encoding="utf-8"))
+    order = ["hi"] + [code for code in i18n.LANG_INFO if code != "hi"]
+    groups = {}
+    for row in sorted(rows, key=lambda r: (order.index(r["lang"]) if r["lang"] in order else len(order), r["session"])):
+        groups.setdefault(row["lang"], []).append(row)
+    return tuple((code, tuple(items)) for code, items in groups.items())
+
+
 @bp.route("/academic-orientation")
 def academic_orientation():
-    """The academic orientation of the selected students by CICT (1.2.156): its own item in the menu; CICT gives its content later."""
-    return render_template("public/academic_orientation.html", settings=all_settings())
+    """
+    The academic orientation of the selected students by CICT (1.2.156): its own item in the menu; since 1.2.214 the video lectures
+    of CICT on the 108 Thirukkural, language by language, each with its first and last chapter and its length.
+    """
+    lang = get_lang()
+    groups = []
+    for code, rows in academic_lectures():
+        info = i18n.LANG_INFO.get(code) or {"native": code, "name": code}
+        lectures = []
+        for r in rows:
+            first, last = K.chapter(r["chapters"][0]), K.chapter(r["chapters"][1])
+            lectures.append({"youtube": r["youtube"], "session": r["session"], "first": r["chapters"][0], "last": r["chapters"][1],
+                             "first_name": K.chapter_label(first, lang) if first else "", "last_name": K.chapter_label(last, lang) if last else "",
+                             "minutes": round(r["seconds"] / 60)})
+        groups.append({"code": code, "native": info["native"], "name": info["name"], "lectures": lectures})
+    return render_template("public/academic_orientation.html", settings=all_settings(), groups=groups)
 
 
 # ---- notices / schedule / partners / contact --------------------------------

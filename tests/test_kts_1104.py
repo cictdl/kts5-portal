@@ -91,11 +91,16 @@ def test_the_circular_band():
     with app.app_context():
         from kts.db import execute, set_setting
         execute("UPDATE notices SET created_at = '2026-01-01T00:00:00' WHERE attachment != ''")
-        assert "new-badge" not in _get(client, "/?lang=en")
+
+        def circulars():      # the band of the circulars (the band of the Academic Orientation has a NEW of its own, 1.2.214)
+            page = _get(client, "/?lang=en")
+            return page[page.index('<div class="nodal-attention">'):page.index('<nav class="quick-links"')].split('<div class="acad-band"')[0]
+
+        assert "new-badge" not in circulars()
         set_setting("circular.new_days", "100000")
-        assert '<span class="new-badge">NEW</span>' in _get(client, "/?lang=en")
+        assert '<span class="new-badge">NEW</span>' in circulars()
         set_setting("circular.new_days", "0")
-        assert "new-badge" not in _get(client, "/?lang=en")
+        assert "new-badge" not in circulars()
     css = (ROOT / "static" / "css" / "portal.css").read_text(encoding="utf-8")
     rules = css[css.index(".nodal-attention {"):css.index(".btn.saffron:hover")]
     # a plain band, not red; the NEW blinks continuously (1.2.153, the user: "make the NEW badge blink continuously"), and never

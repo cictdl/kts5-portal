@@ -3,12 +3,32 @@
 {% block content %}
 {# The academic orientation of the selected students by CICT (1.2.156; the user, 4 November 2026: "Make a new Menu named, Academic
    Orientation. In this we will provide content later"): its day (orientation.by, Annexure-III of the D.O. letter of 31 October 2026)
-   and, until CICT gives the content, the educational videos and the study material. #}
+   and, until CICT gives the content, the educational videos and the study material. Since 1.2.214 the video lectures of CICT on the
+   108 Thirukkural (public.academic_lectures). #}
 <div class="wrap section">
   <span class="eyebrow">{{ t('site.name') }} · {{ t('site.theme') }}</span>
   <h1>{{ t('nav.acad') }}</h1>
   <p class="lead dim" style="max-width:74ch">{{ t('timeline.live') }}{% if settings['orientation.by'] %} · <b><bdi>{{ t('kd.by')|replace('{date}', settings['orientation.by']|date) }}</bdi></b>{% endif %}</p>
+  {# the video lectures of CICT on the 108 Thirukkural, Hindi first (1.2.214); the note of before while there are none #}
+  {% if groups %}
+  <h2 style="margin-top:22px">{{ t('k108.title') }} · {{ t('res.cat_video') }}</h2>
+  <p><a class="btn sm secondary" href="{{ url_for('public.kural108') }}">📖 {{ t('k108.read') }}</a></p>
+  <div class="grid grid-3" style="margin-top:12px">
+    {% for g in groups %}
+    <div class="card acad-lang" id="acad-{{ g.code }}">
+      <h3><bdi lang="{{ g.code|langtag }}">{{ g.native }}</bdi>{% if g.native != g.name %} <span class="dim" style="font-weight:500" dir="ltr">· {{ g.name }}</span>{% endif %}</h3>
+      <ol style="margin:0;padding-inline-start:22px">
+        {% for v in g.lectures %}
+        <li style="padding:6px 0;border-top:1px solid var(--border)"><a href="https://www.youtube.com/watch?v={{ v.youtube }}" target="_blank" rel="noopener" title="{{ t('prog.reels.watch') }}"><span aria-hidden="true">▶</span> {{ t('common.chapters') }} <bdi dir="ltr">{{ v.first }}–{{ v.last }}</bdi></a>
+          <div class="small muted"><bdi>{{ v.first_name }}</bdi> – <bdi>{{ v.last_name }}</bdi> · {{ v.minutes }} {{ t('exam.min_short') }}</div></li>
+        {% endfor %}
+      </ol>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
   <div class="alert info">{{ t('acad.soon') }}</div>
+  {% endif %}
   <div class="btn-row" style="margin-top:14px">
     <a class="btn" href="{{ url_for('public.orientation') }}">▶ {{ t('nav.orientation') }}</a>
     <a class="btn secondary" href="{{ url_for('public.syllabus') }}">📘 {{ t('syl.cta') }}</a>

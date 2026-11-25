@@ -47,5 +47,12 @@
   {"id": "_3tLAQMZ_eQ", "lang": "Hindi", "native": "हिन्दी", "presenter": "Vijay Chittori"},
   {"id": "Kd5sxY9ltOY", "lang": "Kisan", "native": "किसान", "presenter": "Dr. Laxman Kishan"},
   {"id": "9-_RZeGA0pU", "lang": "Malto", "native": "माल्तो", "presenter": "Bijay Malto"},
-  {"id": "grxVhf6Dd4o", "lang": "Kashmiri", "native": "کٲشُر", "presenter": "Dr. Zargar Adil Ahmad"}
+  {"id": "grxVhf6Dd4o", "lang": "Kashmiri", "native": "کٲشُر", "presenter": "Dr. Zargar Adil Ahmad"},
+  {"id": "JHEHNq387oU", "lang": "Tamil", "native": "தமிழ்", "presenter": "CICT", "topic": "திருவள்ளுவர் கூறும் உலகம், கடல், மலை", "topic_en": "The world, the ocean and the mountains as described by Thiruvalluvar"},
+  {"id": "bYlR7k8UvrY", "lang": "Tamil", "native": "தமிழ்", "presenter": "CICT", "topic": "திருக்குறள் கூறும் கள்ளுண்ணாமை", "topic_en": "Abstaining from drinking as described in the Thirukkural"},
+  {"id": "9gaYo2DnHCs", "lang": "Tamil", "native": "தமிழ்", "presenter": "CICT", "topic": "திருக்குறள் கூறும் உணவும் மருந்தும்", "topic_en": "Food and medicine as described in the Thirukkural"},
+  {"id": "3L-0ullP87g", "lang": "Tamil", "native": "தமிழ்", "presenter": "CICT", "topic": "திருக்குறள் கூறும் வாழ்க்கைத் துணைநலம்", "topic_en": "The virtues of a life partner described in the Thirukkural"},
+  {"id": "-41h8VnAqpQ", "lang": "Tamil", "native": "தமிழ்", "presenter": "CICT", "topic": "இனிய சொற்கள் குறித்து திருக்குறள் கூறும் கருத்து யாது?", "topic_en": "What does the Thirukkural say about pleasant words?"},
+  {"id": "pX3Xgj79HFk", "lang": "Tamil", "native": "தமிழ்", "presenter": "CICT", "topic": "திருவள்ளுவரின் கருத்தும் வடிவமும்", "topic_en": "Thiruvalluvar's content and form"},
+  {"id": "B7KjNFCdv5Q", "lang": "Tamil", "native": "தமிழ்", "presenter": "CICT", "topic": "எவற்றை அடக்கியாள வேண்டும் என்று திருக்குறள் கூறுகிறது?", "topic_en": "What does the Thirukkural say should be controlled?"}
 ]
