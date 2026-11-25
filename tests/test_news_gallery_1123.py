@@ -52,9 +52,10 @@ def test_the_album_on_the_gallery():
     app = make_app(ADMIN_PASSWORD=None)
     client = app.test_client()
     page = client.get("/gallery?lang=en").get_data(as_text=True)
-    # the newest album, before the posters of the Ministry (18 November)
+    # before the albums of earlier days (since 1.2.213 the posters of the Ministry, with the poster of the MyGov quiz of 24 November,
+    # stand first)
     assert f"<bdi>{ALBUM}</bdi> <span" in page
-    assert page.index(f"<bdi>{ALBUM}</bdi>") < page.index("<bdi>Ministry of Education – KTS 5.0 Posters</bdi>")
+    assert page.index("<bdi>Ministry of Education – KTS 5.0 Posters</bdi>") < page.index(f"<bdi>{ALBUM}</bdi>") < page.index("<bdi>KTS 5.0 in the news</bdi>")
     album = client.get("/gallery?lang=en&album=" + ALBUM).get_data(as_text=True)
     assert album.count('<figure class="photo">') == 4 and "4 photographs" in album
     at = [album.index(f"/files/gallery/{s['file']}") for s in _seeds()]

@@ -51,7 +51,8 @@ def test_the_album_on_the_gallery():
     first = page.index('<figure class="photo">')
     assert page.index("/files/gallery/kts5-moe-three-initiatives.webp", first) < page.index("/files/gallery/kts5-news-", first)
     album = client.get("/gallery?lang=en&album=" + ALBUM).get_data(as_text=True)
-    assert album.count('<figure class="photo">') == 8 and "8 photographs" in album and "18 Nov 2026" in album
+    # ... and the poster of the MyGov quiz, of 24 November, since 1.2.213 (tests/test_mygov_quiz_1124.py)
+    assert album.count('<figure class="photo">') == 9 and "9 photographs" in album and "18 Nov 2026" in album
     at = [album.index(f"/files/gallery/{s['file']}") for s in _seeds()]
     assert at == sorted(at)                                                   # in the order given
     assert "Ministry of Education: the three initiatives of Kashi Tamil Sangamam 5.0" in album
@@ -66,7 +67,7 @@ def test_put_in_once():
     from kts.db import execute
     app = make_app(ADMIN_PASSWORD=None)
     rows = _rows(app)
-    assert len(rows) == 8 and all(r["published"] == 1 for r in rows)
+    assert len(rows) == 9 and all(r["published"] == 1 for r in rows)      # with the poster of the MyGov quiz (1.2.213)
     with app.app_context():
         execute("DELETE FROM gallery_photos WHERE id = ?", (rows[0]["id"],))
     again = make_app(**{name: app.config[name] for name in ("INSTANCE_DIR", "DATABASE", "UPLOAD_DIR")})

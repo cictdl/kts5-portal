@@ -1142,6 +1142,25 @@ AICTE13_NOTICE_FILE = "notices/KTS5-AICTE-circular-13-November-2026.pdf"
 # The registration of institutions, the assessment and the nomination extended to 27 November 2026 (1.2.209), as a notice of its
 # own, pinned (1.2.210; CICT, 22 November 2026: "add a pinned notice for the extension to 27 November"; who extended: "Ministry of
 # Education"). Its days are the days of the portal (tests/test_ext_27nov_1122.py).
+# The Kashi Tamil Sangamam 5.0 Quiz on Thirukkural of MyGov, as a notice of its own, pinned (1.2.213; CICT, 24 November 2026, with
+# the poster of the Ministry of Education and MyGov: "add this" - "Pinned notice"). Its words are those of the quiz page of MyGov.
+MYGOV_QUIZ_URL = "https://quiz.mygov.in/quiz/kashi-tamil-sangamam-5-0-quiz-on-thirukkural/"
+MYGOV_QUIZ_NOTICE = (
+    "Kashi Tamil Sangamam 5.0 – Quiz on Thirukkural on MyGov, 24 November – 12 December 2026",
+    "\n".join([
+        "The Ministry of Education invites everyone to take the Kashi Tamil Sangamam 5.0 Quiz on Thirukkural on the quiz portal of "
+        "MyGov, from 24 November 2026 to 12 December 2026, 11:45 PM.",
+        "",
+        "• Open to all Indian citizens; one attempt for each participant.",
+        "• 10 questions in 300 seconds, in English; sign in with a MyGov account to play.",
+        "• Rewards: a participation certificate; ₹1,000 to each of the first 10 winners, chosen by MyGov from those who answer all "
+        "the questions correctly within the time (MyGov's terms and conditions apply).",
+        "",
+        "Play the quiz: " + MYGOV_QUIZ_URL,
+        "",
+        "To prepare, read the Thirukkural in your language on this portal.",
+    ]),
+)
 EXT27_NOTICE = (
     "Registration of institutions extended to 27 November 2026, 5:00 PM by the Ministry of Education",
     "\n".join([
@@ -2051,6 +2070,15 @@ def init_db(app):
         if not conn.execute("SELECT 1 FROM notices WHERE title = ?", (EXT27_NOTICE[0],)).fetchone():
             conn.execute("INSERT INTO notices(title, body, category, lang, pinned, published, attachment, link, created_at, updated_at) "
                          "VALUES(?,?,'circular','en',1,1,'','/institutions/register',?,?)", (EXT27_NOTICE[0], EXT27_NOTICE[1], now, now))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
+
+    # The Kashi Tamil Sangamam 5.0 Quiz on Thirukkural of MyGov (1.2.213): its notice, pinned, leading to the quiz, put in once for
+    # each database; none is added when a notice with its title is there already.
+    mark = "seed.notice.mygov_quiz"
+    if not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
+        if not conn.execute("SELECT 1 FROM notices WHERE title = ?", (MYGOV_QUIZ_NOTICE[0],)).fetchone():
+            conn.execute("INSERT INTO notices(title, body, category, lang, pinned, published, attachment, link, created_at, updated_at) "
+                         "VALUES(?,?,'general','en',1,1,'',?,?,?)", (MYGOV_QUIZ_NOTICE[0], MYGOV_QUIZ_NOTICE[1], MYGOV_QUIZ_URL, now, now))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
 
     # The launch of 14 October 2026, 5:00 PM was postponed (1.2.69): on a database that has announced it already (its notice

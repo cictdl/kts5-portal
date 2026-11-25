@@ -89,7 +89,8 @@ def test_the_reports_of_the_web():
     reports = [n for n in NEWS if n["kind"] == "article"]
     assert [n["source"] for n in reports] == ["Dainik Bhaskar", "Akashvani News", "Akashvani News", "Bhaskar Hindi", "ThePrint", "Careers360", "Akashvani News", "DD News", "DD India", "ThePrint Hindi", "Awaz-The Voice", "Punjab Kesari", "REVOI", "EdexLive", "ETV Bharat", "Hindu Tamil Thisai", "Dinamalar", "Dinamalar", "The Hindu", "The New Indian Express", "Public TV", "Dinamalar TV", "Dainik Jagran", "The Indian Express", "Daily Thanthi", "Dinamani", "NDTV Education", "DT Next", "Hindu Tamil Thisai", "Education Post", "Hindustan Times", "News18", "Organiser", "CNBCTV18", "Jagran Josh", "Times Now Tamil", "Dinamalar Kalvimalar", "Eenadu", "Akashvani News", "Akashvani News", "Akashvani News", "Prabhat Khabar", "Amar Ujala", "Hindu Tamil Thisai",
                                           "UNI", "News9", "TV9 Bangla", "TV9 Hindi",   # 1.2.166; UNI of 3 November with 1.2.211
-                                          "Chirauri News", "Dinamalar", "ETV Bharat Uttar Pradesh", "Amar Ujala"]   # 1.2.211
+                                          "Chirauri News", "Dinamalar", "ETV Bharat Uttar Pradesh", "Amar Ujala",   # 1.2.211
+                                          "MyGov"]   # 1.2.213
     hosts = {"DD News": "https://ddnews.gov.in/", "Dinamalar": "https://www.dinamalar.com/",
              "Daily Thanthi": "https://www.dailythanthi.com/", "NDTV Education": "https://www.ndtv.com/",
              "Akashvani News": "https://newsonair.gov.in/", "Careers360": "https://news.careers360.com/",
@@ -111,7 +112,9 @@ def test_the_reports_of_the_web():
              "News9": "https://www.news9live.com/", "TV9 Bangla": "https://tv9bangla.com/", "TV9 Hindi": "https://www.tv9hindi.com/",
              # 1.2.211 (ETV Bharat in Hindi, of Uttar Pradesh, under a name of its own: the entry above is its Tamil)
              "UNI": "https://www.uniindia.com/", "Chirauri News": "https://www.chirauri.com/",
-             "ETV Bharat Uttar Pradesh": "https://www.etvbharat.com/hi/"}
+             "ETV Bharat Uttar Pradesh": "https://www.etvbharat.com/hi/",
+             # 1.2.213: the quiz page of MyGov
+             "MyGov": "https://quiz.mygov.in/quiz/"}
     for n in reports:
         assert len({v["lang"] for v in n["versions"]}) == len(n["versions"]) <= 2, n["key"]
         for v in n["versions"]:
