@@ -31,6 +31,20 @@
   </div>
 </div>
 {% endif %}
+{# The Quiz on Thirukkural of MyGov (1.2.215; CICT, 25 November 2026: "Kashi Tamil Sangamam 5.0 – Quiz on Thirukkural on MyGov,
+   24 November – 12 December 2026 Highlighting link on Home page"): a band of its own - deep green, large bold white letters, a
+   blinking NEW - that opens the quiz on quiz.mygov.in; its words are the title of the pinned notice, in the language of the notice,
+   and it is there while that notice is published and the quiz runs (public.home). Fixed colours, the same in dark mode: white
+   7.1:1 and gold 4.9:1 at the lightest of the green. The links of the two bands show the keyboard a white outline (portal.css). #}
+{% if quiz %}
+<div class="quiz-band" style="background:linear-gradient(90deg,#0b5132,#0e6540);border-bottom:4px solid #e0a020">
+  <div class="wrap" style="padding:14px 0;display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px">
+    <span class="new-badge">{{ t('circ.new') }}</span>
+    <a class="quiz-link" href="{{ quiz.link }}" target="_blank" rel="noopener" lang="{{ quiz.lang|langtag }}" dir="auto" style="color:#fff;font-weight:800;font-size:1.4rem;line-height:1.3;text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px;text-decoration-color:#ffd166"><span aria-hidden="true">🏆 </span>{{ quiz.title }} <span aria-hidden="true">↗</span></a>
+    <a class="quiz-notice" href="{{ url_for('public.notice', nid=quiz.id) }}" style="color:#ffd166;font-weight:700;font-size:1.05rem;text-decoration:underline;text-underline-offset:4px">{{ t('common.read_more') }} <span aria-hidden="true">{{ fwd }}</span></a>
+  </div>
+</div>
+{% endif %}
 {# Quick links (1.2.152, CICT: "Make the Registration, Programme Guidelines, Study Materials (particularly the 108 Tirukkural
    couplets), and Login pages easily accessible through prominent links on the website homepage") #}
 <nav class="quick-links" aria-label="{{ t('site.quick_links') }}">

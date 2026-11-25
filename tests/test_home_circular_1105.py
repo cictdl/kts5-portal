@@ -21,8 +21,11 @@ def _app(**values):
 
 
 def _band(client, lang="en"):
+    """The band of the circulars alone: up to the band that follows it (the Academic Orientation, the MyGov quiz, the quick links)."""
+    import re
     page = client.get(f"/?lang={lang}").get_data(as_text=True)
-    return page[page.index('<div class="nodal-attention">'):page.index('<section class="hero">')]
+    band = page[page.index('<div class="nodal-attention">'):page.index('<section class="hero">')]
+    return re.split(r'<div class="(?:acad|quiz)-band"|<nav class="quick-links"', band)[0]
 
 
 def test_the_letter_leaves_the_band():

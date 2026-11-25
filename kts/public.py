@@ -23,7 +23,8 @@ from . import finder as FINDER
 from . import heis as HEI
 from . import kural as K
 from . import letters as LETTERS
-from .db import DO_NOTICE_FILE, LAUNCH_NOTICE, RETIRED_LAUNCH_NOTICES, all_settings, audit, execute, get_setting, query, utcnow
+from .db import (DO_NOTICE_FILE, LAUNCH_NOTICE, MYGOV_QUIZ_UNTIL, MYGOV_QUIZ_URL, RETIRED_LAUNCH_NOTICES, all_settings, audit, execute,
+                 get_setting, query, utcnow)
 from . import i18n
 from . import search as S
 from .i18n import get_lang, offered, t
@@ -389,9 +390,15 @@ def home():
     seminars = cict_events()
     ev_years = (min(e["start"][:4] for e in seminars), max(e["start"][:4] for e in seminars)) if seminars else None
     circular, circular_head, circ_new = latest_circular(settings)   # the circular band (1.2.152)
+    # the Quiz on Thirukkural of MyGov, for the band that leads to it (1.2.215; CICT, 25 November 2026: "Highlighting link on Home
+    # page"): its notice (1.2.213) while that is published and the quiz runs; in the words that the notice has now
+    quiz = None
+    if now_ist().strftime("%Y-%m-%dT%H:%M") <= MYGOV_QUIZ_UNTIL:
+        quiz = query("SELECT id, title, link, lang FROM notices WHERE link = ? AND published = 1 AND (publish_at IS NULL OR publish_at <= ?)"
+                     + hide + " ORDER BY pinned DESC, created_at DESC, id DESC LIMIT 1", (MYGOV_QUIZ_URL, utcnow(), *hide_args), one=True)
     # the languages of the lectures of the Academic Orientation, Hindi first, for the band that leads to them (1.2.214)
     acad_langs = [{"code": code, "native": (i18n.LANG_INFO.get(code) or {}).get("native", code)} for code, _rows in academic_lectures()]
-    return render_template("public/home.html", settings=settings, dates=_key_dates(settings), uz=home_uzbek(), acad_langs=acad_langs,
+    return render_template("public/home.html", settings=settings, dates=_key_dates(settings), uz=home_uzbek(), acad_langs=acad_langs, quiz=quiz,
                            circular=circular, circular_head=circular_head, circ_new=circ_new,
                            # "Find your next step" (1.2.140), while shown (home.hub, hidden since 1.2.146)
                            hub=FINDER.hub(settings, lang) if settings.get("home.hub") == "1" else None,

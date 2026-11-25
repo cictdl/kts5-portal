@@ -1145,6 +1145,9 @@ AICTE13_NOTICE_FILE = "notices/KTS5-AICTE-circular-13-November-2026.pdf"
 # The Kashi Tamil Sangamam 5.0 Quiz on Thirukkural of MyGov, as a notice of its own, pinned (1.2.213; CICT, 24 November 2026, with
 # the poster of the Ministry of Education and MyGov: "add this" - "Pinned notice"). Its words are those of the quiz page of MyGov.
 MYGOV_QUIZ_URL = "https://quiz.mygov.in/quiz/kashi-tamil-sangamam-5-0-quiz-on-thirukkural/"
+# the last minute of the quiz, IST (the quiz page of MyGov: "End Date : 12 Dec 2026, 11:45 pm"): the band of the home page that
+# leads to it is shown up to then (1.2.215)
+MYGOV_QUIZ_UNTIL = "2026-12-12T23:45"
 MYGOV_QUIZ_NOTICE = (
     "Kashi Tamil Sangamam 5.0 – Quiz on Thirukkural on MyGov, 24 November – 12 December 2026",
     "\n".join([

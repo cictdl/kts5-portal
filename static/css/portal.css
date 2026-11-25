@@ -363,6 +363,9 @@ mark { background: rgba(255, 196, 0, .45); color: inherit; padding: 0 1px; borde
 .nodal-attention .na-btn { background: #1f3a5f; color: #fff; font-weight: 700; border-radius: 999px; padding: 7px 18px; text-decoration: none; white-space: nowrap; }
 .nodal-attention .na-btn:hover { background: #2b4c78; text-decoration: none; }
 .nodal-attention a:focus-visible { outline: 3px solid var(--saffron); outline-offset: 2px; border-radius: 6px; }
+/* The bands of the home page that lead to the Academic Orientation (1.2.214) and to the Quiz on Thirukkural of MyGov (1.2.215),
+   deep red and deep green: the link that the keyboard is on carries a white outline */
+.acad-band a:focus-visible, .quiz-band a:focus-visible { outline: 3px solid #fff; outline-offset: 3px; border-radius: 2px; }
 /* a long name (Tamil) may take two lines on a phone rather than widen the page (1.2.83) */
 @media (max-width: 599px) { .nodal-attention .na-btn { white-space: normal; max-width: 100%; } .nodal-attention .na-items { flex-direction: column; align-items: flex-start; } }
 /* NEW beside "Circular" (1.2.152): black-on-yellow lettering in a red frame; it blinks once a second for as long as the page is open

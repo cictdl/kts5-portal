@@ -55,7 +55,7 @@ def test_the_link_on_the_home_page():
     # CICT, 25 November 2026: "at home a prominant link should be given with a proper highlighting with color and font highlighting"
     client = make_app(ADMIN_PASSWORD=None).test_client()
     page = client.get("/?lang=en").get_data(as_text=True)
-    band = page[page.index('<div class="acad-band"'):page.index('<nav class="quick-links"')]
+    band = re.split(r'<div class="quiz-band"|<nav class="quick-links"', page[page.index('<div class="acad-band"'):])[0]      # by itself (1.2.215)
     assert 'href="/academic-orientation"' in band and "Academic Orientation: The 108 Thirukkural · Video lectures" in band
     assert '<span class="new-badge">NEW</span>' in band and "color:#ffd166;font-weight:800;font-size:1.4rem" in band
     langs = re.findall(r'<bdi lang="([a-z-]+)">', band)
