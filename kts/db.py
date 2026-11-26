@@ -1499,7 +1499,109 @@ NODAL_LISTS_1126 = (
          ("Maharaja Bir Bikram College", "", "", ""),
          ("Ramthakur College, Agartala", "", "", ""),
          ("Swami Vivekananda Mahavidyalaya, Mohanpur, Tripura", "", "", ""),
-         ("Women's College", "", "", ""))})
+         ("Women's College", "", "", ""))},
+    {"key": "tg", "state": "Telangana", "until": "2026-11-26T09:52:00+00:00",      # 3:22 PM IST, when CICT sent the list
+     "note": "Not among the 28 institutions of the list of the Nodal Institution of Telangana (University of Hyderabad), 26 November 2026", "release": "release 1.2.224",
+     "match": {"Kaveri University": {"ref": "KTS5-HEI-07007"}, "Bhavan's Vivekananda College of Science, Humanities and Commerce": {"ref": "KTS5-HEI-08217"}, "Center for Study of Social Inclusion University of Hyderabad": {"ref": "KTS5-HEI-08507"}, "KU College of Engineering and Technology, Kakatiya University Campus, Warangal": {"ref": "KTS5-HEI-07073"}, "Malla Reddy (MR) Deemed to be University": {"ref": "KTS5-HEI-07387"}, "Malla Reddy Engineering College": {"ref": "KTS5-HEI-07389"}, "Marri Laxman Reddy Institute of Technology and Management": {"ref": "KTS5-HEI-08565"}, "University College of Arts and Social Sciences, Osmania University": {"ref": "KTS5-HEI-08172"}, "UNIVERSITY COLLEGE OF SCIENCE, OU": {"ref": "KTS5-HEI-08528"}, "University of Hyderabad": {"ref": "KTS5-HEI-00172"}, "Trinity College Of Engineering And Technology Autonomous": {"ref": "KTS5-HEI-08201"}, "The English and Foreign Languages University": {"ref": "KTS5-HEI-06593"}, "St.Joseph's Degree & Pg College For Women": {"ref": "KTS5-HEI-08640"}, "MEGHA INSTITUTE OF ENGINEERING AND TECHNOLOGY FOR WOMEN": {"ref": "KTS5-HEI-06814"}, "Helen Keller's Institute of Research & Rehabilitation for the Disabled Children": {"ref": "KTS5-HEI-08581"}, "G.Narayanamma Institute of Technology and Science": {"ref": "KTS5-HEI-06854"}, "ICFAITech IFHE": {"ref": "KTS5-HEI-00478"}, "Avinash college of commerce": {"district": "Rangareddy"}, "Mahindra University": {"ref": "KTS5-HEI-08484"}, "Sammakka Sarakka Central Tribal University": {"ref": "KTS5-HEI-07433"}, "Vignana Bharathi Institute of Technology": {"ref": "KTS5-HEI-00461"}, "KESHAV MEMORIAL INSTITUTE OF COMMERSE SCIENCES": {"ref": "KTS5-HEI-06888"}, "Department of Anthropology University of Hyderabad": {"ref": "KTS5-HEI-08608"}, "Department of History University of Hyderabad": {"ref": "KTS5-HEI-08569"}, "Gurram bala narasaya institute of pharmacy": {"ref": "KTS5-HEI-01142"}, "Geethanjali College of Engineering and Technology": {"ref": "KTS5-HEI-08564"}, "Heartfulness Academy of Research and Innovation": {"ref": "KTS5-HEI-06823"}, "MVS arts and science degree college": {"ref": "KTS5-HEI-00457"}},
+     "listed": (
+         ("Kaveri University", "", "", ""),
+         ("Bhavan's Vivekananda College of Science, Humanities and Commerce", "", "", ""),
+         ("Center for Study of Social Inclusion University of Hyderabad", "", "", ""),
+         ("KU College of Engineering and Technology, Kakatiya University Campus, Warangal", "", "", ""),
+         ("Malla Reddy (MR) Deemed to be University", "", "", ""),
+         ("Malla Reddy Engineering College", "", "", ""),
+         ("Marri Laxman Reddy Institute of Technology and Management", "", "", ""),
+         ("University College of Arts and Social Sciences, Osmania University", "", "", ""),
+         ("UNIVERSITY COLLEGE OF SCIENCE, OU", "", "", ""),
+         ("University of Hyderabad", "", "", ""),
+         ("Trinity College Of Engineering And Technology Autonomous", "", "", ""),
+         ("The English and Foreign Languages University", "", "", ""),
+         ("St.Joseph's Degree & Pg College For Women", "", "", ""),
+         ("MEGHA INSTITUTE OF ENGINEERING AND TECHNOLOGY FOR WOMEN", "", "", ""),
+         ("Helen Keller's Institute of Research & Rehabilitation for the Disabled Children", "", "", ""),
+         ("G.Narayanamma Institute of Technology and Science", "", "", ""),
+         ("ICFAITech IFHE", "", "", ""),
+         ("Avinash college of commerce", "", "", ""),
+         ("Mahindra University", "", "", ""),
+         ("Sammakka Sarakka Central Tribal University", "", "", ""),
+         ("Vignana Bharathi Institute of Technology", "", "", ""),
+         ("KESHAV MEMORIAL INSTITUTE OF COMMERSE SCIENCES", "", "", ""),
+         ("Department of Anthropology University of Hyderabad", "", "", ""),
+         ("Department of History University of Hyderabad", "", "", ""),
+         ("Gurram bala narasaya institute of pharmacy", "", "", ""),
+         ("Geethanjali College of Engineering and Technology", "", "", ""),
+         ("Heartfulness Academy of Research and Innovation", "", "", ""),
+         ("MVS arts and science degree college", "", "", ""))},
+    {"key": "sk", "state": "Sikkim", "until": "2026-11-26T09:57:00+00:00",      # 3:27 PM IST, when CICT sent the list
+     "note": "Not among the 10 institutions of the list of the Nodal Institution of Sikkim (Sikkim University), 26 November 2026", "release": "release 1.2.224",
+     "match": {"The ICFAI University Sikkim": {"ref": "KTS5-HEI-07313"}, "Sikkim National Law University": {"ref": "KTS5-HEI-07382"}, "Sri Venkateshwara University": {"ref": "KTS5-HEI-07332"}, "Sanchaman Limboo Government College, Aarigaon Gyalshing": {"ref": "KTS5-HEI-07299"}, "Sikkim government college Namchi": {"ref": "KTS5-HEI-08424"}, "National Institute of Technology Sikkim": {"ref": "KTS5-HEI-06820"}, "Namgyal Institute of Tibetology": {"ref": "KTS5-HEI-08120"}, "Sikkim Government Science College, Chakung": {"ref": "KTS5-HEI-07451"}, "Sikkim Institute of Science and Technology": {"ref": "KTS5-HEI-08592"}, "Loyola College of Education": {"ref": "KTS5-HEI-08131"}},
+     "listed": (
+         ("The ICFAI University Sikkim", "", "", ""),
+         ("Sikkim National Law University", "", "", ""),
+         ("Sri Venkateshwara University", "", "", ""),
+         ("Sanchaman Limboo Government College, Aarigaon Gyalshing", "", "", ""),
+         ("Sikkim government college Namchi", "", "", ""),
+         ("National Institute of Technology Sikkim", "", "", ""),
+         ("Namgyal Institute of Tibetology", "", "", ""),
+         ("Sikkim Government Science College, Chakung", "", "", ""),
+         ("Sikkim Institute of Science and Technology", "", "", ""),
+         ("Loyola College of Education", "", "", ""))},
+    {"key": "rj", "state": "Rajasthan", "until": "2026-11-26T09:58:00+00:00",      # 3:28 PM IST, when CICT sent the list
+     "note": "Not among the 53 institutions of the list of the Nodal Institution of Rajasthan (Central University of Rajasthan), 26 November 2026", "release": "release 1.2.224",
+     "listed": (
+         ("Agriculture University, Kota", "", "", ""),
+         ("BABA GANGADAS GOVT. GIRLS COLLEGE SHAHPURA JAIPUR", "", "", ""),
+         ("CENTRAL SANSKRIT UNIVERSITY, JAIPUR CAMPUS", "", "", ""),
+         ("CH. BALLURAM GODARA GOVERNMENT GIRLS COLLEGE", "", "", ""),
+         ("COLLEGE OF AGRICULTURE HINDOLI", "", "", ""),
+         ("College of Agriculture, Ummedganj-Kota", "", "", ""),
+         ("COLLEGE OF HORTICULTURE AND FORESTRY. JHALAWAR", "", "", ""),
+         ("Engineering College Bharatpur", "", "", ""),
+         ("Government Bangur PG College Pali", "", "", ""),
+         ("Government College Arain", "", "", ""),
+         ("Government College Bundi", "", "", ""),
+         ("Government College Dholpur", "", "", ""),
+         ("Government College Kanota, Jaipur", "", "", ""),
+         ("Government College Sojat City (Pali)", "", "", ""),
+         ("Government College Vidhyadhar Nagar", "", "", ""),
+         ("Government College, Nahargarh", "", "", ""),
+         ("Government College, Rawatsar", "", "", ""),
+         ("Government College, Tonk", "", "", ""),
+         ("GOVERNMENT COMMERCE COLLEGE, ALWAR", "", "", ""),
+         ("GOVERNMENT DUNGAR COLLEGE BIKANER", "", "", ""),
+         ("GOVERNMENT GIRLS COLLEGE, GALIYAKOT", "", "", ""),
+         ("Government Girls College, Nasirabad", "", "", ""),
+         ("Government Law College Ajmer", "", "", ""),
+         ("GOVERNMENT LAW COLLEGE NAGAUR", "", "", ""),
+         ("GOVERNMENT LAW COLLEGE PALI", "", "", ""),
+         ("Government Law College, Sri Ganganagar", "", "", ""),
+         ("GOVT COLLEGE BANI PARK, JAIPUR", "", "", ""),
+         ("Govt College karauli", "", "", ""),
+         ("Govt College kareda, bhilwara", "", "", ""),
+         ("Govt College, Phagi", "", "", ""),
+         ("GOVT GIRLS COLLEGE BEHROR", "", "", ""),
+         ("Govt Law College, Bikaner", "", "", ""),
+         ("Govt. Girls College Magra Punjala Jodhpur", "", "", ""),
+         ("GOVT. GIRLS COLLEGE, BUNDI", "", "", ""),
+         ("Govt. Girls College, Kishanpole, Jaipur", "", "", ""),
+         ("GOVT. LOHIA COLLEGE, CHURU", "", "", ""),
+         ("Govt. Maharani Sudarshan College for Women Bikaner", "", "", ""),
+         ("Guru Nanak Girl's P.G. College", "", "", ""),
+         ("Indian Institute of Technology Jodhpur", "", "", ""),
+         ("Janardan Rai Nagar Rajasthan Vidyapeeth", "", "", ""),
+         ("Mangilal Bagdi Govt. College, Nokha", "", "", ""),
+         ("Manipal University Jaipur", "", "", ""),
+         ("RAJMATA VIJAYARAJE SCINDIA MEDICAL COLLEGE Bhilwara", "", "", ""),
+         ("Regional Institute of Education, Ajmer (A Constituent Unit of NCERT)", "", "", ""),
+         ("S.M.P.B.J. GOVT. COLLEGE SHEOGANJ", "", "", ""),
+         ("SAMRAT PRITHVIRAJ CHAUHAN GOVERNMENT COLLEGE, AJMER", "", "", ""),
+         ("SGV GOVT PG COLLEGE OSIAN", "", "", ""),
+         ("Sh.P.S.B.GOVT COLLEGE SHAHPURA (BHILWARA)", "", "", ""),
+         ("SHAHEED CAPTAIN RIPUDAMAN SINGH GOVT. COLLEGE SAWAI MADHOPUR", "", "", ""),
+         ("SHRIMATI NARBADA DEVI BIHANI GOVERNMENT POSTGRADUATE COLLEGE, NOHAR", "", "", ""),
+         ("SPDM Govt. Girls College Kotputli", "", "", ""),
+         ("SRI BALDEV RAM MIRDHA GOVERNMENT COLLEGE, NAGAUR", "", "", ""),
+         ("Swami Vivekanand College Sagwara Dungarpur", "", "", ""))})
 # the last minute of the quiz, IST (the quiz page of MyGov: "End Date : 12 Dec 2026, 11:45 pm"): the band of the home page that
 # leads to it is shown up to then (1.2.215)
 MYGOV_QUIZ_UNTIL = "2026-12-12T23:45"
@@ -2095,9 +2197,13 @@ def _apply_nodal_list(conn, now, nodal_list):
     match = nodal_list.get("match") or {}
 
     def pick(name):
-        by_name = [r for r in rows if flat(r["name"]) == flat(name)]
         spec = dict(match.get(name) or {})
         first = spec.pop("first", False)
+        ref = spec.pop("ref", None)
+        if ref:      # by its reference alone, whatever its name on the portal (1.2.224)
+            by_name = [r for r in rows if (r["ref"] or "").strip() == ref]
+        else:
+            by_name = [r for r in rows if flat(r["name"]) == flat(name)]
         narrowed = [r for r in by_name if all(flat(r[field]) == flat(value) for field, value in spec.items())]
         if len(narrowed) == 1 or not first:
             return narrowed
