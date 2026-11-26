@@ -657,7 +657,9 @@ def _registered_lists(path):
         return out
     for n, one in enumerate(json.loads(path.read_text(encoding="utf-8"))["lists"]):
         wanted = {}
-        for name, _district, _itype in one["institutions"]:
+        # with the institutions accepted since the lists were made ("since", 1.2.230): one of them that is declined for the list of
+        # its Nodal Officer stays with the institutions registered, as those of the lists do
+        for name, _district, _itype in one["institutions"] + one.get("since", []):
             wanted[_name_key(name)] = wanted.get(_name_key(name), 0) + 1
         for state in one["states"]:
             out[state] = (n, wanted)

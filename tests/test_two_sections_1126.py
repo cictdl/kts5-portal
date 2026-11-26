@@ -7,8 +7,8 @@ only"; of the institutions accepted since: "Yes, show them"; of the number at a 
 institution that registers after the list of its State/UT: "Under Selected".
 
 The page lists the Participating Institutions registered - those that take part and, with them, the institutions of the 31 lists
-that are declined now - and then the lists of the selected institutions given by the Nodal Officers, the 19 States/UTs whose list
-has come. The number of the Participating Institutions registered follows wherever it is public. Nothing is written: a declined
+that are declined now - and then the lists of the selected institutions given by the Nodal Officers, the States/UTs whose list
+has come (19 in 1.2.229; 21 since 1.2.230, with Tamil Nadu and the Andaman and Nicobar Islands). The number of the Participating Institutions registered follows wherever it is public. Nothing is written: a declined
 institution stays declined at the sign-in, in the Console and for the nominations; no mail.
 
     python -m pytest tests/test_two_sections_1126.py -q
@@ -22,10 +22,10 @@ import pytest
 from conftest import ROOT, make_app
 from test_reserve_1111 import LANGS, _insert
 
-# the 19 States/UTs whose Nodal Officer had given the list by 26 November 2026
+# the 21 States/UTs whose Nodal Officer had given the list by 26 November 2026 (Tamil Nadu and its Union Territory: 1.2.230)
 LISTED = ("Andhra Pradesh", "Arunachal Pradesh", "Assam", "Chhattisgarh", "Goa", "Gujarat", "Himachal Pradesh", "Jharkhand",
-          "Madhya Pradesh", "Maharashtra", "Odisha", "Rajasthan", "Sikkim", "Telangana", "Tripura",
-          "Dadra and Nagar Haveli and Daman and Diu", "Jammu and Kashmir", "Ladakh", "Puducherry")
+          "Madhya Pradesh", "Maharashtra", "Odisha", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
+          "Andaman and Nicobar Islands", "Dadra and Nagar Haveli and Daman and Diu", "Jammu and Kashmir", "Ladakh", "Puducherry")
 SELECTED = "List of selected institutions given by the Nodal Officers"
 REGISTERED = "Participating Institutions registered (verified)"
 LISTS = json.loads((ROOT / "data" / "registered_lists.json").read_text(encoding="utf-8"))
@@ -82,10 +82,16 @@ def test_the_31_lists():
     nodal = json.loads((ROOT / "data" / "nodal_heis.json").read_text(encoding="utf-8"))
     assert sorted([h["state"], *h.get("covers", [])] for h in nodal) == sorted(one["states"] for one in LISTS["lists"])
     # of an institution: its name, its district and its type - what the public page shows; nothing of a person
-    assert set(LISTS) == {"about", "total", "lists"} and all(set(one) == {"states", "nodal", "institutions"} for one in LISTS["lists"])
+    assert set(LISTS) == {"about", "total", "since_total", "lists"}
+    assert all({"states", "nodal", "institutions"} <= set(one) <= {"states", "nodal", "institutions", "since"} for one in LISTS["lists"])
     for one in LISTS["lists"]:
-        for row in one["institutions"]:
+        for row in one["institutions"] + one.get("since", []):
             assert len(row) == 3 and row[0] == row[0].strip() and row[0] and row[2] in states["college_types"], row
+    # "since" (1.2.230): the institutions on the public list on 26 November 2026 that registered after the lists were made
+    since = {one["states"][0]: [row[0] for row in one["since"]] for one in LISTS["lists"] if one.get("since")}
+    assert LISTS["since_total"] == 15 == sum(len(rows) for rows in since.values()) and sorted(since) == [
+        "Gujarat", "Kerala", "Tamil Nadu", "Uttar Pradesh", "Uttarakhand"]
+    assert len(since["Tamil Nadu"]) == 7 and "JAMAL MOHAMED COLLEGE" in since["Tamil Nadu"] and since["Uttarakhand"] == ["IIT Roorkee"]
     flat = json.dumps(LISTS, ensure_ascii=False)
     assert "@" not in flat and not re.search(r"(?<!\d)\d{10}(?!\d)", flat)
     size = {one["states"][0]: len(one["institutions"]) for one in LISTS["lists"]}
@@ -100,7 +106,7 @@ def test_the_states_whose_list_has_been_given():
     app = make_app(ADMIN_PASSWORD=None)
     with app.app_context():
         given = HEI.listed_states()
-        assert given == frozenset(LISTED) and len(given) == 19 and given <= set(every)
+        assert given == frozenset(LISTED) and len(given) == 21 and given <= set(every)
         assert {nodal_list["state"] for nodal_list in NODAL_LISTS_1126} <= given
         # a Union Territory that Annexure-I pairs with a State is with it: Ladakh, Dadra and Nagar Haveli and Daman and Diu
         assert all(set(HEI.group_of(state)) <= given for state in given)
@@ -118,6 +124,7 @@ def test_the_institutions_registered():
     _insert(app, "PSMO COLLEGE", "Kerala", "Malappuram", "declined")                                         # of Kerala and Lakshadweep
     _insert(app, "Government College of Arts and Science, Kadmat", "Lakshadweep", "Lakshadweep", "declined")   # the Union Territory of that list
     _insert(app, "PSMO COLLEGE", "Tamil Nadu", "Chennai", "declined")                                        # the name of another list: not here
+    _insert(app, "IIT Roorkee", "Uttarakhand", "Haridwar", "declined")                                       # registered since the lists: shown still
     _insert(app, "Sree Sankara College Kalady", "Kerala", "Ernakulam", "pending")                            # of the list, not decided again yet
     _insert(app, "Pending and never listed", "Kerala", "Kollam", "pending")
     _insert(app, "Kannur University", "Kerala", "Kannur", "identified", head_name="", invited_by=1, invite_token="t-kannur")
@@ -126,7 +133,7 @@ def test_the_institutions_registered():
         ("Pondicherry University", "Puducherry", "accepted"), ("Tagore Government Arts and science College", "Puducherry", "declined"),
         ("SCHOOL of   physiotherapy", "Puducherry", "declined"), ("New College since the lists", "Puducherry", "accepted"),
         ("PSMO COLLEGE", "Kerala", "declined"), ("Government College of Arts and Science, Kadmat", "Lakshadweep", "declined"),
-        ("Sree Sankara College Kalady", "Kerala", "pending")])
+        ("Sree Sankara College Kalady", "Kerala", "pending"), ("IIT Roorkee", "Uttarakhand", "declined")])
     # in the order of the names, as the list was before
     assert [r[0].casefold() for r in rows] == sorted(r[0].casefold() for r in rows)
 
@@ -179,7 +186,7 @@ def _both_kinds():
         "kochi": _insert(app, "Kochi College", "Kerala", "Ernakulam", "accepted"),
         "psmo": _insert(app, "PSMO COLLEGE", "Kerala", "Malappuram", "declined"),
         "kadmat": _insert(app, "Government College of Arts and Science, Kadmat", "Lakshadweep", "Lakshadweep", "declined"),
-        "madurai": _insert(app, "Madurai College", "Tamil Nadu", "Madurai", "accepted"),
+        "mysuru": _insert(app, "Mysuru College", "Karnataka", "Mysuru", "accepted"),
     }
     return app, ids
 
@@ -196,9 +203,9 @@ def test_the_two_sections_of_the_page():
     registered, selected = sections["registered"], sections["selected"]
     assert "<p><b>9 institutions from 6 States/UTs</b></p>" in registered and "<p><b>4 institutions from 3 States/UTs</b></p>" in selected
     # the institutions registered: every State/UT, the States and then the Union Territories, with the anchors of before
-    assert re.findall(r'<h3 id="([a-z-]+)"', registered) == ["st-goa", "st-kerala", "st-tamil-nadu", "st-ladakh", "st-lakshadweep", "st-puducherry"]
-    assert re.findall(r'<a href="#([a-z-]+)">', registered) == ["st-goa", "st-kerala", "st-tamil-nadu", "st-ladakh", "st-lakshadweep", "st-puducherry"]
-    assert _names(registered) == ["Panaji College", "Kochi College", "PSMO COLLEGE", "Madurai College", "Leh College",
+    assert re.findall(r'<h3 id="([a-z-]+)"', registered) == ["st-goa", "st-karnataka", "st-kerala", "st-ladakh", "st-lakshadweep", "st-puducherry"]
+    assert re.findall(r'<a href="#([a-z-]+)">', registered) == ["st-goa", "st-karnataka", "st-kerala", "st-ladakh", "st-lakshadweep", "st-puducherry"]
+    assert _names(registered) == ["Panaji College", "Mysuru College", "Kochi College", "PSMO COLLEGE", "Leh College",
                                   "Government College of Arts and Science, Kadmat", "Late College", "Pondicherry University",
                                   "Tagore Government Arts and science College"]
     assert '<h3 id="st-puducherry" style="margin-top:28px;font-size:1.3rem">Puducherry <span class="small muted">(3)</span></h3>' in registered
@@ -229,7 +236,7 @@ def test_the_number_everywhere():
     assert '<div class="num">6</div><div class="lbl">' in pi                                    # States and UTs
     bars = dict(re.findall(r'<span class="pi-name">([^<]+)</span>.*?<bdi dir="ltr"><b>(\d+)</b></bdi>', pi, flags=re.S))
     assert (bars["Puducherry"], bars["Kerala and Lakshadweep"], bars["Goa"], bars["Jammu and Kashmir and Ladakh"]) == ("3", "3", "1", "1")
-    assert bars["Tamil Nadu and Andaman and Nicobar Islands"] == "1" and sum(int(n) for n in bars.values()) == 9
+    assert bars["Karnataka"] == "1" and sum(int(n) for n in bars.values()) == 9
     assert sum(int(n) for n in re.findall(r"</span><b>(\d+)</b>", re.findall(r'<ul class="pi-legend">(.*?)</ul>', pi, flags=re.S)[0])) == 9
     # the home page
     home = _page(app, "/?lang=en")
@@ -244,11 +251,11 @@ def test_the_number_everywhere():
         from kts.public import _nodal_table
         rows, total = _nodal_table()
         now = {r["state"]: r["now"] for r in rows}
-        assert (now["Puducherry"], now["Kerala"], now["Goa"], now["Jammu and Kashmir"], now["Tamil Nadu"], total["now"]) == (3, 3, 1, 1, 1, 9)
+        assert (now["Puducherry"], now["Kerala"], now["Goa"], now["Jammu and Kashmir"], now["Karnataka"], total["now"]) == (3, 3, 1, 1, 1, 9)
         from kts import dashboard as D
         fig = D.figures()
         assert fig["total"]["inst_sel"] == 9 and {r["state"]: r["inst_sel"] for r in fig["states"] if r["inst_sel"]} == {
-            "Puducherry": 3, "Kerala": 3, "Goa": 1, "Jammu and Kashmir": 1, "Tamil Nadu": 1}
+            "Puducherry": 3, "Kerala": 3, "Goa": 1, "Jammu and Kashmir": 1, "Karnataka": 1}
         assert len(HEI.registered_rows()) == 9
     # the page of a State/UT: while the institutions assess, of those that take part; after the last day, the number registered
     from kts import drive

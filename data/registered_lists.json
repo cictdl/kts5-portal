@@ -1,5 +1,5 @@
 {
- "about": "The Participating Institutions registered (verified): the 31 lists of CICT of 26 November 2026, one for each row of Annexure-I - the name, the district and the type of each institution. Of their 1,373 rows the ten that carry the name of a person in place of an institution are left out.",
+ "about": "The Participating Institutions registered (verified): the 31 lists of CICT of 26 November 2026, one for each row of Annexure-I - the name, the district and the type of each institution. Of their 1,373 rows the ten that carry the name of a person in place of an institution are left out. \"since\": the institutions that were on the public list on 26 November 2026 and are not in the lists, having registered after them.",
  "total": 1363,
  "lists": [
   {
@@ -934,6 +934,13 @@
      "VJKM College of BSW, Dabhoi",
      "Vadodra",
      "Government-aided college"
+    ]
+   ],
+   "since": [
+    [
+     "Smt. Devkiba Mohansinhji Chauhan College of Commerce and Science, Silvassa",
+     "Silvassa",
+     "Private / self-financing college"
     ]
    ]
   },
@@ -2029,6 +2036,13 @@
      "Thunchath Ezhuthachan Malayalam University",
      "Malappuram",
      "State university department"
+    ]
+   ],
+   "since": [
+    [
+     "BHARATHEEYA VIDYA NIKETHAN COLLEGE OF TEACHER EDUCATION KALLEKKAD",
+     "PALAKKAD",
+     "Private / self-financing college"
     ]
    ]
   },
@@ -5433,6 +5447,43 @@
      "Chennai",
      "Government-aided college"
     ]
+   ],
+   "since": [
+    [
+     "Chennai Institute of Technology",
+     "Kancheepuram",
+     "Autonomous college"
+    ],
+    [
+     "G VENKATASWAMY NAIDU COLLEGE (AUTONOMOUS)",
+     "Thoothukudi",
+     "Government-aided college"
+    ],
+    [
+     "HINDUSTHAN COLLEGE OF ARTS & SCIENCE",
+     "COIMBATORE",
+     "Autonomous college"
+    ],
+    [
+     "JAMAL MOHAMED COLLEGE",
+     "Tiruchirappalli",
+     "Autonomous college"
+    ],
+    [
+     "LATHA MATHAVAN ARTS AND SCIENCE COLLEGE",
+     "MADURAI",
+     "Private / self-financing college"
+    ],
+    [
+     "SIVARAJ SIDDHA MEDICAL COLLEGE, SALEM",
+     "SALEM",
+     "Medical / dental / nursing college"
+    ],
+    [
+     "Sri Sarada College of Education, Autonomous",
+     "Salem",
+     "Government-aided college"
+    ]
    ]
   },
   {
@@ -6582,6 +6633,33 @@
      "Lakhimpur Kheri",
      "Government-aided college"
     ]
+   ],
+   "since": [
+    [
+     "P D D U rajkiy mahavidyal",
+     "Varanasi",
+     "Government college"
+    ],
+    [
+     "Popular college of nursing and allied health care",
+     "Varanasi",
+     "Private / self-financing college"
+    ],
+    [
+     "Rajkiy Mahavidyalay ,Jakkhini ,Varanasi",
+     "Varanasi",
+     "Government college"
+    ],
+    [
+     "Rajkiya mahavidyalaya Jakkhini. varanasi",
+     "Varanasi",
+     "Government college"
+    ],
+    [
+     "Siddharth university kapilvastu, Siddharth nagar(u.p)",
+     "Siddharth nagar",
+     "State university department"
+    ]
    ]
   },
   {
@@ -6619,6 +6697,13 @@
      "UTTRAKHAND SANSKRIT UNIVERSITY HARIDWAR",
      "HARIDWAR",
      "Other"
+    ]
+   ],
+   "since": [
+    [
+     "IIT Roorkee",
+     "Haridwar",
+     "IIT / NIT / IISER / IIIT"
     ]
    ]
   },
@@ -7070,5 +7155,6 @@
     ]
    ]
   }
- ]
+ ],
+ "since_total": 15
 }

@@ -1601,7 +1601,74 @@ NODAL_LISTS_1126 = (
          ("SHRIMATI NARBADA DEVI BIHANI GOVERNMENT POSTGRADUATE COLLEGE, NOHAR", "", "", ""),
          ("SPDM Govt. Girls College Kotputli", "", "", ""),
          ("SRI BALDEV RAM MIRDHA GOVERNMENT COLLEGE, NAGAUR", "", "", ""),
-         ("Swami Vivekanand College Sagwara Dungarpur", "", "", ""))})
+         ("Swami Vivekanand College Sagwara Dungarpur", "", "", ""))},
+    {"key": "an", "state": "Andaman and Nicobar Islands", "until": "2026-11-26T14:00:00+00:00",      # 7:30 PM IST, when CICT sent the list
+     "note": "Not among the 1 institution of the list of the Nodal Institution of Andaman and Nicobar Islands (Central University of Tamil Nadu), 26 November 2026", "release": "release 1.2.230",
+     "listed": (
+         ("Jawaharlal Nehru Rajkeeya Mahavidyala", "", "", ""),)},
+    {"key": "tn", "state": "Tamil Nadu", "until": "2026-11-26T14:00:00+00:00",      # 7:30 PM IST, when CICT sent the list
+     "note": "Not among the 59 institutions of the list of the Nodal Institution of Tamil Nadu (Central University of Tamil Nadu), 26 November 2026", "release": "release 1.2.230",
+     "match": {"Dhanalakshmi Srinivasan agricultural College": {"aishe_code": "C-60420", "first": True}},
+     "listed": (
+         ("SARASWATHY COLLEGE OF ARTS AND SCIENCE OLAKKUR TINDIVANAM TALUK VILLUPURAM DIST 604 305", "", "", ""),
+         ("M.G.R. College, Hosur", "", "", ""),
+         ("Madurai Sivakasi Nadars Pioneer Meenakshi Women's College, Poovanthi", "", "", ""),
+         ("SRIMATH SIVAGNANA BALAYA SWAMIGAL TAMIL, ARTS SCIENCE COLLEGE", "", "", ""),
+         ("BWDA Arts & Science College", "", "", ""),
+         ("Arignar Anna Govt. Arts College, Villupuram -605602", "", "", ""),
+         ("THANTHAI HANS ROEVER COLLEGE", "", "", ""),
+         ("Marudhar Kesari Jain College For Women - Autonomous", "", "", ""),
+         ("Government arts and science college, tirukoilur", "", "", ""),
+         ("Sri S. Ramasamy Naidu Memorial College", "", "", ""),
+         ("Government Arts and science college Kuthalam", "", "", ""),
+         ("A.D.M COLLEGE FOR WOMEN (AUTONOMOUS)NAGAPATTINAM", "", "", ""),
+         ("SACRED HEART ARTS AND SCIENCE COLLEGE - PERANI", "", "", ""),
+         ("Arulmigu Kalasalingam College Of Arts and Science", "", "", ""),
+         ("Vidhyaa Giri College of Arts and science, Puduvayal", "", "", ""),
+         ("SYED HAMEEDHA ARTS AND SCIENCE COLLEGE", "", "", ""),
+         ("A.V.C.College (Autonomous)", "", "", ""),
+         ("Central University of Tamil Nadu", "", "", ""),
+         ("GANDHIGRAM RURAL INSTITUTE", "", "", ""),
+         ("Manonmaniam Sundaranar University College", "", "", ""),
+         ("SASTRA UNIVERSITY", "", "", ""),
+         ("Yadava College", "", "", ""),
+         ("Karpagam Academy of Higher Education", "", "", ""),
+         ("Dr.R.K.S COLLEGE OF ARTS AND SCIENCE", "", "", ""),
+         ("SWAMI VIVEKANANDA ARTS AND SCIENCE COLLEGE, ORATHUR, VILLUPURAM", "", "", ""),
+         ("Thassim Beevi Abdul Kader College for Women, Kilakarai", "", "", ""),
+         ("DON BOSCO COLLEGE(CO-ED), YELAGIRI HILLS", "", "", ""),
+         ("SHRIMATHI DEVKUNVAR NANALAL BHATT VAISHNAV COLLEGE FOR WOMEN", "", "", ""),
+         ("Thiagarajar College", "", "", ""),
+         ("K.R.COLLEGE OF ARTS & SCIENCE", "", "", ""),
+         ("AGURCHAND MANMULL JAIN COLLEGE", "", "", ""),
+         ("Dr.Kalaignar Government Arts College Kulithalai", "", "", ""),
+         ("KONGUNADU ARTS AND SCIENCE COLLEGE (AUTONOMOUS)", "", "", ""),
+         ("Chevalier T. Thomas Elizabeth College for Women", "", "", ""),
+         ("SIR ISSAC NEWTON ARTS & SCIENCE COLLEGE", "", "", ""),
+         ("SRI MUTHUKUMARAN ARTS AND SCIENCE COLLEGE", "", "", ""),
+         ("St. Joseph College of Arts and Science for Women", "", "", ""),
+         ("CSI BISHOP NEWBIGIN COLLEGE OF EDUCATION", "", "", ""),
+         ("Government Arts and Science College", "", "", ""),
+         ("SRI RAMAKRISHNA MISSION VIDYALAYA COLLEGE OF ARTS AND SCIENCE", "", "", ""),
+         ("AUXILIUM COLLEGE (Autonomous)", "", "", ""),
+         ("Fatima College (Autonomous), Mary Land, Madurai, 625 018.", "", "", ""),
+         ("ANNAI VAILANKANNI  ARTS AND SCIENCE COLLEGE", "", "", ""),
+         ("Sethu Institute of Technology", "", "", ""),
+         ("VELS INSTITUTE OF SCIENCE, TECHNOLOGY AND ADVANCED STUDIES(VISTAS)", "", "", ""),
+         ("Shiv Nadar University, Chennai", "", "", ""),
+         ("The M.D.T. Hindu College", "", "", ""),
+         ("Noorul Islam Centre for Higher Education (NICHE) (Deemed-to-be University under Section 3 of the UGC Act, 1956)", "", "", ""),
+         ("B.S. Abdur Rahman Crescent Institute of Science and Technology.", "", "", ""),
+         ("Dhanalakshmi Srinivasan university", "", "", ""),
+         ("KONGUNADU INTEGRATED COLLEGE OF EDUCATION", "", "", ""),
+         ("WAVOO WAJEEHA WOMEN'S COLLEGE OF ARTS AND SCIENCE", "", "", ""),
+         ("VLB JANAKIAMMAL  COLLEGE OF ARTS AND SCIENCE", "", "", ""),
+         ("PARK'S COLLEGE", "", "", ""),
+         ("St.Peter's Institute of Higher Education and Research", "", "", ""),
+         ("Aksheyaa college of arts and science", "", "", ""),
+         ("Government College of Education, Muthambal sathiram", "", "", ""),
+         ("Dhanalakshmi Srinivasan agricultural College", "", "", ""),
+         ("Alagappa University", "", "", ""))})
 # the last minute of the quiz, IST (the quiz page of MyGov: "End Date : 12 Dec 2026, 11:45 pm"): the band of the home page that
 # leads to it is shown up to then (1.2.215)
 MYGOV_QUIZ_UNTIL = "2026-12-12T23:45"
@@ -2171,7 +2238,15 @@ def _match_words(conn, row):
     return words
 
 
-def _strict_kept(conn, now, list_mark, strict_mark, states, state_label, note, actor):
+# Other registrations of institutions that are on the list of Tamil Nadu (1.2.230): of the Kongunadu Arts and Science College
+# (the same AISHE code), of the Thiagarajar College, of the Dhanalakshmi Srinivasan agricultural college (registered twice under one
+# name) and the Chennai campus of the SASTRA university. Where the list step kept one of them for a submitted nomination, the
+# strict step leaves it and its nomination as they are ("spared" in its mark).
+TN_COPIES_1126 = ("Kongunadu Arts and Science College", "Thiyagarajar collage arts and science", "Dhanalakshmi Srinivasan agricultural College",
+                  "Shanmugha Arts, Science, Technology & Reserch Academy (SASTRA CHENNAI CAMPUS)")
+
+
+def _strict_kept(conn, now, list_mark, strict_mark, states, state_label, note, actor, spare=()):
     """
     Only the institutions of a list nominate (1.2.225): the institutions that the list step kept for a submitted nomination - the
     references in the mark of the list ("kept_nominated"), nothing else, and only while they are still of the State/UT of the list -
@@ -2179,7 +2254,9 @@ def _strict_kept(conn, now, list_mark, strict_mark, states, state_label, note, a
     in the Console after the list step stays as it is ("accepted_again"). The nominations of those declined, and of those that the
     Console declined since ("declined_before"), are withdrawn if they are neither withdrawn nor rejected, the earlier remarks kept
     after the new one. Mails waiting for them are withdrawn (by reference; by name only those to their own addresses). Each with a
-    line of the audit log; no mail. Nothing is done where the list has not been applied on this database.
+    line of the audit log; no mail. Nothing is done where the list has not been applied on this database. A kept one whose name is
+    in `spare` (1.2.230: another registration of an institution that is on the list) is left as it is, with its nomination, and
+    named in the mark ("spared").
     """
     if conn.execute("SELECT 1 FROM settings WHERE key = ?", (strict_mark,)).fetchone():
         return
@@ -2198,6 +2275,9 @@ def _strict_kept(conn, now, list_mark, strict_mark, states, state_label, note, a
     found = conn.execute(f"SELECT id, ref, name, state, status, application_id, decided_by, decided_at, head_email, coord_email FROM institutions "
                          f"WHERE ref IN ({','.join('?' * len(kept))}) ORDER BY id", kept).fetchall() if kept else []
     in_state = [r for r in found if r["state"] in states]
+    spared_names = {" ".join(name.lower().split()) for name in spare}
+    spared = [r for r in in_state if " ".join((r["name"] or "").lower().split()) in spared_names]
+    in_state = [r for r in in_state if r not in spared]
     accepted_again = [r for r in in_state if r["status"] in ("accepted", "pending", "reserve")
                       and r["decided_by"] is not None and (r["decided_at"] or "") > since]
     out = [r for r in in_state if r["status"] in ("accepted", "pending", "reserve") and r not in accepted_again]
@@ -2242,7 +2322,8 @@ def _strict_kept(conn, now, list_mark, strict_mark, states, state_label, note, a
                                            "declined_before": [r["ref"] for r in declined_before],
                                            "accepted_again": [r["ref"] for r in accepted_again],
                                            "moved_state": [r["ref"] for r in found if r["state"] not in states],
-                                           "applications_withdrawn": withdrawn_apps, "mails_withdrawn": withdrawn_mails}), now))
+                                           "applications_withdrawn": withdrawn_apps, "mails_withdrawn": withdrawn_mails,
+                                           **({"spared": [r["ref"] for r in spared]} if spare else {})}), now))
 
 
 def _apply_nodal_list(conn, now, nodal_list):
@@ -2461,6 +2542,15 @@ def init_db(app):
         entry = next(nodal_list for nodal_list in NODAL_LISTS_1126 if nodal_list["key"] == key)
         _strict_kept(conn, now, f"migrate.{key}_list_1126", f"migrate.{key}_strict_1126", (entry["state"],), entry["state"], entry["note"],
                      "release 1.2.227")
+    # ... and in Tamil Nadu and the Andaman and Nicobar Islands (1.2.230; CICT, 26 November 2026, asked of an institution not on the
+    # list that has submitted a nomination: "Decline and withdraw"), each once
+    # A second registration of an institution that is on the list of Tamil Nadu (its name written otherwise, or its other campus)
+    # is left as the list step left it: if the nomination of the selected institution was submitted under it, it is not withdrawn
+    # by this step - CICT sees it in the Console and decides (TN_COPIES_1126).
+    for key in ("tn", "an"):
+        entry = next(nodal_list for nodal_list in NODAL_LISTS_1126 if nodal_list["key"] == key)
+        _strict_kept(conn, now, f"migrate.{key}_list_1126", f"migrate.{key}_strict_1126", (entry["state"],), entry["state"], entry["note"],
+                     "release 1.2.230", spare=TN_COPIES_1126 if key == "tn" else ())
     # the reserve list is no more (1.2.198; CICT, 17 November 2026: "remove the reserve list condition" - of the institutions on
     # it: "Selected, like the 551"): each becomes a selected Participating Institution, once, with a line of the audit log. The
     # mark holds the number of them; a second mark holds them, for the mail that tells each of it once the portal has started
