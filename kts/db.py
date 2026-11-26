@@ -1219,7 +1219,29 @@ NODAL_LISTS_1126 = (
          ("MATS University", "", "", ""),
          ("Naveen Govt college Mardapal", "", "", ""),
          ("Naveen Govt. Girls College Mungeli", "", "", ""),
-         ("Shri Shankaracharya Professional University, Bhilai", "", "", ""))})
+         ("Shri Shankaracharya Professional University, Bhilai", "", "", ""))},
+    {"key": "hp", "state": "Himachal Pradesh", "until": "2026-11-26T09:05:00+00:00",      # 2:35 PM IST, when CICT sent the list
+     "note": "Not among the 19 institutions of the list of the Nodal Institution of Himachal Pradesh (Central University of Himachal Pradesh), 26 November 2026", "release": "release 1.2.221",
+     "listed": (
+         ("Career Point University, Hamirpur", "", "", ""),
+         ("Central University of Himachal Pradesh", "", "", ""),
+         ("Dronacharya College of Education Rait,Kangra HP", "", "", ""),
+         ("Gorkashnath Govt college Nahan", "", "", ""),
+         ("Government  Sanskrit College Sunder Nagar", "", "", ""),
+         ("GOVERNMENT DEGREE COLLEGE MULTHAN (CHHOTA BHANGAL AREA)", "", "", ""),
+         ("Govt College Chamba", "", "", ""),
+         ("Govt. College Daulatpur Chowk", "", "", ""),
+         ("Govt. College Dharamshala", "", "", ""),
+         ("Govt. Degree College Ani at Haripur", "", "", ""),
+         ("Govt. Degree College Salooni", "", "", ""),
+         ("Govt. Degree College Shahpur", "", "", ""),
+         ("GOVT. SANSKRIT COLLEGE CHAMBA", "", "", ""),
+         ("Govt. Sanskrit College Dangar, Bilaspur H.P.", "", "", ""),
+         ("Govt. Sanskrit College Tungesh", "", "", ""),
+         ("Himachal Institute of Hotel Management Vidyanagar,Shahpur, Kangra", "", "", ""),
+         ("IIT Mandi", "", "", ""),
+         ("MAHARISHI MARKANDESHAWAR UNIVERSITY", "", "", ""),
+         ("Sanatan dharam adarsh sanskrit college, Dohgi", "", "", ""))})
 # the last minute of the quiz, IST (the quiz page of MyGov: "End Date : 12 Dec 2026, 11:45 pm"): the band of the home page that
 # leads to it is shown up to then (1.2.215)
 MYGOV_QUIZ_UNTIL = "2026-12-12T23:45"
@@ -1814,7 +1836,7 @@ def _apply_nodal_list(conn, now, nodal_list):
                 "matches": {name: [r["ref"] for r in match] for name, match in found.items() if len(match) != 1}}
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, json.dumps(done), now))
         return
-    actor = "release 1.2.220"
+    actor = nodal_list.get("release", "release 1.2.220")      # the release that brought the list (1.2.221)
     from .campus import _coordinator_numbers
     changed, readdressed = [], 0
     for name, head_email, coord_email, coord_mobile in nodal_list["listed"]:
@@ -1856,7 +1878,7 @@ def _apply_nodal_list(conn, now, nodal_list):
         words = _match_words(conn, r)
         if words:
             withdrawn += conn.execute(
-                "UPDATE outbox SET status = 'failed', error = 'withdrawn: the institution is declined (1.2.220)', next_try = NULL "
+                "UPDATE outbox SET status = 'failed', error = 'withdrawn: the institution is declined (" + actor[8:] + ")', next_try = NULL "
                 "WHERE status = 'queued' AND priority >= 0 AND (" + " OR ".join("instr(subject, ?) > 0" for _ in words) + ")",
                 words).rowcount
     conn.executemany("INSERT INTO audit_log(user_id, actor, action, entity, entity_id, detail, ip, created_at) VALUES(NULL,?,?,?,?,?,'',?)",
