@@ -9,7 +9,9 @@
     <p style="margin:0" lang="en" dir="ltr"><b>{{ row.name }}</b> · {{ row.district }}</p>
   </div>
   <p>{{ t('hei.done_next')|replace('{state}', place(row.state)) }}</p>
-  <p><a class="btn ghost" href="{{ url_for('public.institutions') }}">{{ t('hei.list_link') }}</a></p>
+  {# the sign-in of the institution's page, open at once (1.2.217): no code is mailed since 1.2.216 #}
+  <p class="btn-row"><a class="btn" href="{{ url_for('campus.login') }}">{{ t('camp.login_title') }}</a>
+    <a class="btn ghost" href="{{ url_for('public.institutions') }}">{{ t('hei.list_link') }}</a></p>
   {# pass it on (1.2.142): the page of the State/UT for the colleges nearby #}
   {% if pass_on %}
   <section class="card join-pass" style="margin-top:18px">

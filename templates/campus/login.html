@@ -35,11 +35,13 @@
     <form method="post" class="fields" data-once>
       <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
       <div class="field wide"><label for="email">E-mail address of the coordinator or the Head of the Institution</label><input type="email" id="email" name="email" value="{{ email or '' }}" maxlength="160" required autocomplete="email" autofocus></div>
-      <div class="field wide"><label for="mobile">Mobile number of the Institutional Coordinator, as given at registration (10 digits)</label><input type="tel" id="mobile" name="mobile" inputmode="numeric" maxlength="16" required autocomplete="tel-national"></div>
+      <div class="field wide"><label for="mobile">Mobile number of the Institutional Coordinator, as given at registration (10 digits)</label><input type="tel" id="mobile" name="mobile" inputmode="numeric" maxlength="32" required autocomplete="off"></div>
       <div class="field"><label>&nbsp;</label><button class="btn saffron" type="submit">Sign in</button></div>
     </form>
     <p class="small muted" style="margin:10px 0 0">The number is the one in the line “Institutional Coordinator” of the mail that the Head and the
       coordinator received when the institution registered. You stay signed in on this device for 30 days.</p>
+    <p class="small muted" style="margin:6px 0 0">If your e-mail address serves more than one institution, each opens with the mobile number of
+      its own Institutional Coordinator: sign out, then sign in with that number.</p>
     <p class="small muted" style="margin:6px 0 0">If you cannot sign in, write to
       {% if settings.get('contact.email') %}<a href="mailto:{{ settings.get('contact.email') }}">{{ settings.get('contact.email') }}</a>{% else %}CICT{% endif %}
       from the registered e-mail address{% if settings.get('contact.phone') %}, or call <bdi>{{ settings.get('contact.phone') }}</bdi>{% endif %}, with the name and the reference number of the institution.</p>

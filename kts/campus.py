@@ -59,8 +59,8 @@ MOBILE_TRIES = 20            # sign-ins without a code that fail, from one addre
 MOBILE_ERROR = ("The e-mail address and the mobile number do not match the registration of an institution. Enter the e-mail address "
                 "of the Institutional Coordinator or of the Head of the Institution, and the mobile number of the Institutional "
                 "Coordinator, as given when the institution registered.")
-MOBILE_WAIT = ("Too many tries from this connection in the last hour. Please try again after an hour, or write to CICT with the name "
-               "and the reference number of the institution.")
+MOBILE_WAIT = ("Too many tries from this connection in the last hour. Please try again after an hour or from another connection "
+               "(for example the mobile data of a phone), or write to CICT with the name and the reference number of the institution.")
 MOBILE_ASKED = ("No code is mailed any more. Enter the mobile number of the Institutional Coordinator as well, as given when the "
                 "institution registered.")
 SIGNUP_PER_HOUR = 60         # sign-ups of students from one address in an hour
@@ -93,17 +93,32 @@ def _ten_digits(value):
     return digits if len(digits) == 10 and digits[0] != "0" else ""
 
 
+# what may stand between the digits of one phone number as people write it (1.2.217): spaces, hyphens, dots, brackets, a plus
+NUMBER_JOINS = re.compile(r"[\s\-.()+\u00a0\u200b-\u200f\u202a-\u202e\u2060\ufeff]*")
+
+
 def _coordinator_numbers(inst):
     """
-    The mobile numbers of the Institutional Coordinator of this institution, each as ten digits: the field as it is, and its parts
-    where it holds more than one number, as a correction in the Console may have left it ("98765 43210 / 91234 56780") (1.2.216).
+    The mobile numbers of the Institutional Coordinator of this institution, each as ten digits: every number that stands in the
+    field, as the form, a list of a Nodal Institution or a correction in the Console left it - "98765 43210 / 91234 56780",
+    "9876543210 9123456780", "9876543210 Extn 123", "+91 (0) 98765 43210" (1.2.216; 1.2.217: every number of the field). The groups
+    of digits are joined only across what NUMBER_JOINS allows, so no number is read across a slash, a comma or a word.
     """
-    value = inst["coord_mobile"] or ""
+    import unicodedata
+    value = "".join(str(unicodedata.decimal(ch)) if ch.isdecimal() else ch for ch in (inst["coord_mobile"] or ""))[:400]
+    groups = [(m.start(), m.end()) for m in re.finditer(r"[0-9]+", value)]
     numbers = []
-    for part in [value] + re.split(r"[,;/|]|\bor\b", value):
-        number = _ten_digits(part)
-        if number and number not in numbers:
-            numbers.append(number)
+    for i, (start, _end) in enumerate(groups):
+        digits = ""
+        for j in range(i, len(groups)):
+            if j > i and not NUMBER_JOINS.fullmatch(value[groups[j - 1][1]:groups[j][0]]):
+                break
+            digits += value[groups[j][0]:groups[j][1]]
+            if len(digits) > 14:
+                break
+            number = _ten_digits(digits)
+            if number and number not in numbers:
+                numbers.append(number)
     return numbers
 
 
@@ -283,10 +298,12 @@ def code():
     pending = session.get("inst_login") or {}
     typed = (request.form.get("code") or "").strip().replace(" ", "")
     error = None
+    # where to go next: a new code while the codes are mailed; the e-mail address and the mobile number while they are not (1.2.217)
+    again = "ask for a new one." if inst_code_mail() else "sign in with the e-mail address and the mobile number below."
     if not pending or pending.get("until", "") < now_ist().isoformat():
-        error = "The code has expired: ask for a new one."
+        error = "The code has expired: " + again
     elif pending.get("tries", 0) >= CODE_TRIES or limiter.blocked("inst_code", str(pending.get("hash")), CODE_TRIES, CODE_MINUTES * 60):
-        error = "Too many wrong codes: ask for a new one."
+        error = "Too many wrong codes: " + again
     elif _code_hash(pending["email"], typed) != pending["hash"]:
         pending["tries"] = pending.get("tries", 0) + 1
         session["inst_login"] = pending

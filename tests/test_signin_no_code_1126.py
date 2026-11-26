@@ -238,6 +238,7 @@ def test_twenty_tries_that_fail_in_an_hour_and_no_more():
         assert r.status_code == 400, n
     client, r = _sign_in(app)                                           # the right number, too late
     assert r.status_code == 429 and "Too many tries from this connection in the last hour." in r.get_data(as_text=True)
+    assert "or from another connection (for example the mobile data of a phone)" in r.get_data(as_text=True)      # 1.2.217
     assert not _signed_in(client) and i18n.text("reg.err_rate", "en")
     assert len(_audit(app, "institution_login_refused")) == 20
 
