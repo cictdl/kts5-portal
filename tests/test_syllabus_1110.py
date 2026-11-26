@@ -28,7 +28,7 @@ def test_the_four_books():
     import fitz
     from kts import kural as K
     by_lang = {b["lang"]: b for b in BOOKS}
-    assert len(BOOKS) == 22 and set(K.ORIENTATION_LANGS) - set(by_lang) == {"sa"}
+    assert len(BOOKS) == 23 and set(K.ORIENTATION_LANGS) == set(by_lang)      # 22 and no Sanskrit up to 1.2.218
     for lang, (pages, translator, cover_name) in NEW.items():
         b = by_lang[lang]
         assert (b["pages"], b["translator"]) == (pages, translator), lang
@@ -51,7 +51,7 @@ def test_the_page():
     client = make_app(ADMIN_PASSWORD=None).test_client()
     page = _page(client, "/syllabus?lang=en")
     books = page[page.index('id="books"'):]
-    assert books.count('class="card syl-book"') == 22
+    assert books.count('class="card syl-book"') == 23      # 22 up to 1.2.218
     # the Kashmiri book by its script: Perso-Arabic, not Devanagari
     ks = books[books.index('id="book-ks"'):books.index('id="book-kok"')]
     assert 'lang="ks-Arab"' in ks and "کٲشُر" in ks and "Kashmiri (Nastaliq)" in ks and "कॉशुर" not in ks
@@ -68,8 +68,8 @@ def test_the_page():
         assert str(escape(CATALOG[lang]["syl.not_yet"])) not in own, lang
         assert f'href="/static/syllabus/KTS5-Thirukkural-Payilvom-{lang}.pdf" download' in own, lang
     assert '<span lang="ks-Arab">کٲشُر</span></a>' in _page(client, "/syllabus?lang=ks")
-    # Sanskrit alone has no book yet; the two books to come stay announced
-    assert str(escape(CATALOG["sa"]["syl.not_yet"])) in _page(client, "/syllabus?lang=sa")
+    # Sanskrit had no book up to 1.2.218; the two books to come stay announced
+    assert str(escape(CATALOG["sa"]["syl.not_yet"])) not in _page(client, "/syllabus?lang=sa")
     assert "Konkani (Devanagari script) and Manipuri (Meitei Mayek script) content will be added soon." in page
     for lang in NEW:
         r = client.get(f"/static/syllabus/KTS5-Thirukkural-Payilvom-{lang}.pdf")

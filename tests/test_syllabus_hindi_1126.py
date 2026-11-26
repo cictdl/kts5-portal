@@ -52,12 +52,12 @@ def test_its_cover_in_the_list():
 
 def test_the_list_and_the_page():
     rows = json.loads((ROOT / "data" / "syllabus.json").read_text(encoding="utf-8"))
-    assert len(rows) == 22 and rows[0] == {"lang": "hi", "pages": 103, "translator": "डॉ. पि. सरस्वती"}
+    assert len(rows) == 23 and rows[0] == {"lang": "hi", "pages": 103, "translator": "डॉ. पि. सरस्वती"}      # 23 with Sanskrit (1.2.219)
     client = make_app(ADMIN_PASSWORD=None).test_client()
     page = client.get("/syllabus?lang=en").get_data(as_text=True)
     books = page[page.index('id="books"'):]
-    assert books.count('class="card syl-book"') == 22
-    card = books[books.index('id="book-hi"'):books.index('id="book-gu"')]            # the first book, before the Gujarati one
+    assert books.count('class="card syl-book"') == 23
+    card = books[books.index('id="book-hi"'):books.index('id="book-sa"')]            # the first book, before the Sanskrit one (1.2.219)
     assert "हिन्दी" in card and "Hindi" in card and "Translator: <bdi>डॉ. पि. सरस्वती</bdi>" in card
     assert "103 pages · PDF · 1066 KB" in card                                        # 1022 KB up to 1.2.215
     assert f'href="/static/syllabus/{NAME}.pdf" download' in card and f'src="/static/syllabus/thumbs/{NAME}.jpg"' in card

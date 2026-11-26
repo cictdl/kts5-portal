@@ -27,8 +27,8 @@ def test_each_book_has_its_pdf_and_cover():
     # Tamil, English, Hindi, Kannada and Marathi in 1.2.98; Bengali, Maithili and Odia in 1.2.114 (with the new editions of
     # the Hindi and the Marathi book); Gujarati, Santali and Telugu in 1.2.120; in the order CICT asked for since 1.2.143;
     # Assamese, Konkani, Malayalam, Manipuri, Nepali, Sindhi and Urdu in 1.2.144
-    # Bodo, Dogri, Kashmiri and Punjabi in 1.2.169
-    assert [b["lang"] for b in BOOKS] == ["hi", "gu", "bn", "kn", "te", "as", "brx", "doi", "ks", "kok", "mai", "ml", "mni", "mr", "ne", "or", "pa",
+    # Bodo, Dogri, Kashmiri and Punjabi in 1.2.169; Sanskrit in 1.2.219 (tests/test_syllabus_sanskrit_1126.py)
+    assert [b["lang"] for b in BOOKS] == ["hi", "sa", "gu", "bn", "kn", "te", "as", "brx", "doi", "ks", "kok", "mai", "ml", "mni", "mr", "ne", "or", "pa",
                                           "sat", "sd", "ur", "en", "ta"]
     for b in BOOKS:
         assert b["lang"] in K.ORIENTATION_LANGS and b["pages"] > 40
@@ -62,13 +62,14 @@ def test_the_page_offers_the_books_in_cicts_order():
     assert "The original, in Tamil" in books and "61 pages · PDF" in books
     assert 'href="/static/syllabus/KTS5-Thirukkural-Payilvom-hi.pdf" download' in books
     assert "The study book is not yet available in your language" not in page
-    # a language without its book yet (Sanskrit, the only one since 1.2.169): told so, the books in the same order, none framed, no link
-    punjabi = _page(client, "/syllabus?lang=sa")
+    # no language without its book since 1.2.219 (Sanskrit, the last one, then): in Sanskrit, its own book framed, second after the
+    # Hindi one; the note that a book is not yet there is shown in no language
     from kts.i18n import CATALOG
-    assert str(escape(CATALOG["sa"]["syl.not_yet"])) in punjabi
-    p_books = punjabi[punjabi.index('id="books"'):]
-    assert p_books.index("Payilvom-hi.pdf") < p_books.index("Payilvom-gu.pdf") < p_books.index("Payilvom-mr.pdf") < p_books.index("Payilvom-en.pdf") < p_books.index("Payilvom-ta.pdf")
-    assert 'href="#book-' not in punjabi and str(escape(CATALOG["sa"]["syl.yours"])) not in p_books and "border:2px solid var(--saffron)" not in p_books
+    sanskrit = _page(client, "/syllabus?lang=sa")
+    assert str(escape(CATALOG["sa"]["syl.not_yet"])) not in sanskrit
+    s_books = sanskrit[sanskrit.index('id="books"'):]
+    assert s_books.index("Payilvom-hi.pdf") < s_books.index("Payilvom-sa.pdf") < s_books.index("Payilvom-gu.pdf") < s_books.index("Payilvom-mr.pdf") < s_books.index("Payilvom-en.pdf") < s_books.index("Payilvom-ta.pdf")
+    assert '<div class="card syl-book" id="book-sa" lang="sa" style="border:2px solid var(--saffron)">' in s_books and 'href="#book-sa"' in sanskrit
     # in Hindi, the Hindi book first and framed
     hindi = _page(client, "/syllabus?lang=hi")
     h_books = hindi[hindi.index('id="books"'):]
