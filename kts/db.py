@@ -1489,7 +1489,17 @@ NODAL_LISTS_1126 = (
          ("CHEMBUR KARNATAKA SANGHA'S CHEMBUR KARNATAKA NIGHT COLLEGE", "", "", ""),
          ("J.S.S SHRI RAM COLLEGE OF COMMERCE .", "", "", ""),
          ("M. V. Mandali's Colleges of Commerce and Science", "", "", ""),
-         ("Nava Samaj Mandal Degree College", "", "", ""))})
+         ("Nava Samaj Mandal Degree College", "", "", ""))},
+    {"key": "tr", "state": "Tripura", "until": "2026-11-26T09:50:00+00:00",      # 3:20 PM IST, when CICT sent the list
+     "note": "Not among the 7 institutions of the list of the Nodal Institution of Tripura (Tripura University), 26 November 2026", "release": "release 1.2.223",
+     "listed": (
+         ("BIR BIKRAM MEMORIAL COLLEGE", "", "", ""),
+         ("Central Sanskrit University, Ekalavya Campus,Vill- Sipai Para, P.O- Lembucherra,West Tripura-799210", "", "", ""),
+         ("Department of Sanskrit", "", "", ""),
+         ("Maharaja Bir Bikram College", "", "", ""),
+         ("Ramthakur College, Agartala", "", "", ""),
+         ("Swami Vivekananda Mahavidyalaya, Mohanpur, Tripura", "", "", ""),
+         ("Women's College", "", "", ""))})
 # the last minute of the quiz, IST (the quiz page of MyGov: "End Date : 12 Dec 2026, 11:45 pm"): the band of the home page that
 # leads to it is shown up to then (1.2.215)
 MYGOV_QUIZ_UNTIL = "2026-12-12T23:45"
