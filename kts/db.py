@@ -2456,6 +2456,11 @@ def init_db(app):
         entry = next(nodal_list for nodal_list in NODAL_LISTS_1126 if nodal_list["key"] == key)
         _strict_kept(conn, now, f"migrate.{key}_list_1126", f"migrate.{key}_strict_1126", (entry["state"],), entry["state"], entry["note"],
                      "release 1.2.226")
+    # ... and in Sikkim and Rajasthan (1.2.227; CICT, 26 November 2026: "yes, decline Sikkim and Rajasthan too"), each once
+    for key in ("sk", "rj"):
+        entry = next(nodal_list for nodal_list in NODAL_LISTS_1126 if nodal_list["key"] == key)
+        _strict_kept(conn, now, f"migrate.{key}_list_1126", f"migrate.{key}_strict_1126", (entry["state"],), entry["state"], entry["note"],
+                     "release 1.2.227")
     # the reserve list is no more (1.2.198; CICT, 17 November 2026: "remove the reserve list condition" - of the institutions on
     # it: "Selected, like the 551"): each becomes a selected Participating Institution, once, with a line of the audit log. The
     # mark holds the number of them; a second mark holds them, for the mail that tells each of it once the portal has started
