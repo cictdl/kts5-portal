@@ -2447,6 +2447,15 @@ def init_db(app):
     # of the list, kept by 1.2.220 for a nomination they had submitted, are declined too and those nominations withdrawn, once
     _strict_kept(conn, now, "migrate.py_list_1126", "migrate.py_strict_1126", ("Puducherry",), "Puducherry",
                  next(entry for entry in NODAL_LISTS_1126 if entry["key"] == "py")["note"], "release 1.2.225")
+    # ... and in Jammu and Kashmir and Ladakh, Chhattisgarh, Jharkhand, Madhya Pradesh and Maharashtra (1.2.226; CICT, 26 November
+    # 2026, of the institutions kept there for a submitted nomination: "Yes" - declined, their nominations withdrawn, as for
+    # Puducherry), each once; the lists of the other States/UTs are left as they are
+    _strict_kept(conn, now, "migrate.jk_list_1126", "migrate.jk_strict_1126", ("Jammu and Kashmir", "Ladakh"), "Jammu and Kashmir and Ladakh",
+                 JK_LIST_NOTE, "release 1.2.226")
+    for key in ("cg", "jh", "mp", "mh"):
+        entry = next(nodal_list for nodal_list in NODAL_LISTS_1126 if nodal_list["key"] == key)
+        _strict_kept(conn, now, f"migrate.{key}_list_1126", f"migrate.{key}_strict_1126", (entry["state"],), entry["state"], entry["note"],
+                     "release 1.2.226")
     # the reserve list is no more (1.2.198; CICT, 17 November 2026: "remove the reserve list condition" - of the institutions on
     # it: "Selected, like the 551"): each becomes a selected Participating Institution, once, with a line of the audit log. The
     # mark holds the number of them; a second mark holds them, for the mail that tells each of it once the portal has started
