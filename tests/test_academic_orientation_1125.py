@@ -16,16 +16,16 @@ REELS = json.loads((ROOT / "data" / "reels.json").read_text(encoding="utf-8"))
 
 
 def test_the_lectures():
-    assert len(ROWS) == 20 and len({r["youtube"] for r in ROWS}) == 20
+    assert len(ROWS) == 48 and len({r["youtube"] for r in ROWS}) == 48      # 20 up to 1.2.227; 7 languages more in 1.2.228
     assert [r["lang"] for r in ROWS[:4]] == ["hi"] * 4                        # Hindi first
     for r in ROWS:
         assert set(r) == {"lang", "session", "chapters", "youtube", "seconds", "published"}
-        assert re.fullmatch(r"[A-Za-z0-9_-]{11}", r["youtube"]) and 600 < r["seconds"] < 3600
+        assert re.fullmatch(r"[A-Za-z0-9_-]{11}", r["youtube"]) and 300 < r["seconds"] < 3600      # the Odia ones are of 8-9 minutes
         assert r["chapters"] == {1: [1, 27], 2: [28, 54], 3: [55, 81], 4: [82, 108]}[r["session"]]
     langs = {}
     for r in ROWS:
         langs.setdefault(r["lang"], []).append(r["session"])
-    assert langs == {"hi": [1, 2, 3, 4], "en": [1, 2, 3, 4], "ml": [1, 2, 3, 4], "sa": [1, 2, 3, 4], "ta": [1, 2, 3, 4]}
+    assert langs == {code: [1, 2, 3, 4] for code in ("hi", "en", "ml", "sa", "ta", "bn", "gu", "kn", "mr", "or", "te", "ur")}
 
 
 def test_the_page():
@@ -36,10 +36,12 @@ def test_the_page():
     assert "The 108 Thirukkural · Video lectures" in main and 'href="/thirukkural-108"' in main
     # a card for each language, Hindi first, then the others in the order of the languages of the portal
     cards = re.findall(r'<div class="card acad-lang" id="acad-([a-z]+)">', main)
-    assert cards == ["hi", "en", "ml", "sa", "ta"]
+    from kts.i18n import LANG_INFO
+    order = ["hi"] + [c for c in LANG_INFO if c != "hi" and c in {r["lang"] for r in ROWS}]
+    assert cards == order and len(cards) == 12      # 5 up to 1.2.227
     for r in ROWS:
         assert f'href="https://www.youtube.com/watch?v={r["youtube"]}"' in main
-    hindi = main[main.index('id="acad-hi"'):main.index('id="acad-en"')]
+    hindi = main[main.index('id="acad-hi"'):main.index(f'id="acad-{cards[1]}"')]
     assert hindi.count("youtube.com/watch?v=") == 4 and "हिन्दी" in hindi
     assert hindi.index("Chapters <bdi dir=\"ltr\">1–27</bdi>") < hindi.index("Chapters <bdi dir=\"ltr\">82–108</bdi>")
     # each lecture with its first and last chapter, and its length
@@ -59,7 +61,8 @@ def test_the_link_on_the_home_page():
     assert 'href="/academic-orientation"' in band and "Academic Orientation: The 108 Thirukkural · Video lectures" in band
     assert '<span class="new-badge">NEW</span>' in band and "color:#ffd166;font-weight:800;font-size:1.4rem" in band
     langs = re.findall(r'<bdi lang="([a-z-]+)">', band)
-    assert langs == ["hi", "en", "ml", "sa", "ta"] and "हिन्दी" in band
+    from kts.i18n import LANG_INFO
+    assert langs == ["hi"] + [c for c in LANG_INFO if c != "hi" and c in {r["lang"] for r in ROWS}] and len(langs) == 12 and "हिन्दी" in band
     # high on the page: under the band of the circulars, above the quick links and the hero
     assert page.index('class="nodal-attention"') < page.index('class="acad-band"') < page.index('class="quick-links"') < page.index('class="hero"')
     # in every language, in its words
