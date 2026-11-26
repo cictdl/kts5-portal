@@ -1149,6 +1149,19 @@ AICTE13_NOTICE_FILE = "notices/KTS5-AICTE-circular-13-November-2026.pdf"
 # The Kashi Tamil Sangamam 5.0 Quiz on Thirukkural of MyGov, as a notice of its own, pinned (1.2.213; CICT, 24 November 2026, with
 # the poster of the Ministry of Education and MyGov: "add this" - "Pinned notice"). Its words are those of the quiz page of MyGov.
 MYGOV_QUIZ_URL = "https://quiz.mygov.in/quiz/kashi-tamil-sangamam-5-0-quiz-on-thirukkural/"
+# The list of the Nodal Officer of Jammu and Kashmir (Central University of Jammu, which is the Nodal Institution of Ladakh too),
+# "KTS Institutions Selected Details", 26 November 2026: the references of its 46 institutions, 42 of Jammu and Kashmir and 4 of
+# Ladakh (1.2.218). The institutions of the two UTs registered up to JK_LIST_UNTIL and not on it are declined once (init_db).
+JK_SELECTED_1126 = frozenset((
+    "KTS5-HEI-00479", "KTS5-HEI-05556", "KTS5-HEI-06827", "KTS5-HEI-07058", "KTS5-HEI-07071", "KTS5-HEI-07305", "KTS5-HEI-07306", "KTS5-HEI-07310",
+    "KTS5-HEI-07320", "KTS5-HEI-07323", "KTS5-HEI-07408", "KTS5-HEI-07435", "KTS5-HEI-08098", "KTS5-HEI-08101", "KTS5-HEI-08109", "KTS5-HEI-08112",
+    "KTS5-HEI-08117", "KTS5-HEI-08122", "KTS5-HEI-08128", "KTS5-HEI-08133", "KTS5-HEI-08134", "KTS5-HEI-08136", "KTS5-HEI-08141", "KTS5-HEI-08148",
+    "KTS5-HEI-08151", "KTS5-HEI-08158", "KTS5-HEI-08160", "KTS5-HEI-08161", "KTS5-HEI-08162", "KTS5-HEI-08170", "KTS5-HEI-08174", "KTS5-HEI-08181",
+    "KTS5-HEI-08195", "KTS5-HEI-08197", "KTS5-HEI-08198", "KTS5-HEI-08212", "KTS5-HEI-08218", "KTS5-HEI-08236", "KTS5-HEI-08249", "KTS5-HEI-08250",
+    "KTS5-HEI-08420", "KTS5-HEI-08427", "KTS5-HEI-08493", "KTS5-HEI-08521", "KTS5-HEI-08585", "KTS5-HEI-08691"))
+JK_LIST_UNTIL = "2026-11-26T08:30:00+00:00"      # 2:00 PM IST, when CICT sent the list
+JK_LIST_NOTE = ("Not among the 46 institutions of the list of the Nodal Institution of Jammu and Kashmir and Ladakh (Central University "
+                "of Jammu), 26 November 2026")
 # the last minute of the quiz, IST (the quiz page of MyGov: "End Date : 12 Dec 2026, 11:45 pm"): the band of the home page that
 # leads to it is shown up to then (1.2.215)
 MYGOV_QUIZ_UNTIL = "2026-12-12T23:45"
@@ -1760,6 +1773,44 @@ def init_db(app):
                      ("migrate.pending_registered_1117", str(len(moved)), now))
         conn.execute("INSERT OR REPLACE INTO settings(key, value, updated_at) VALUES(?,?,?)",
                      ("mail.pending_registered_1117", json.dumps([r["id"] for r in moved]), now))
+    # The list of the Nodal Officer of Jammu and Kashmir (1.2.218; CICT, 26 November 2026: "Jammu and Kashmir has (67) institutions
+    # registered. But the nodal officer suggests 46. so add new list" - asked what becomes of the others: "Decline them"): the
+    # institutions of Jammu and Kashmir and of Ladakh registered up to JK_LIST_UNTIL (an invited one: when it completed its
+    # registration) that are not on the list are declined, once, each with a line of the audit log and no mail; one whose
+    # nomination is submitted already (and neither withdrawn nor rejected) stays as it is. Mails that wait in the queue for a
+    # declined one (its name or reference in the subject; never a sign-in mail) are withdrawn. The mark holds the references
+    # declined, those kept, those with students of their own, and the number of mails withdrawn; CICT can accept any of them again
+    # in the Console. A declined one cannot register again under its name (heis.duplicate).
+    mark = "migrate.jk_list_1126"
+    if not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
+        rows = conn.execute("SELECT id, ref, name, status, application_id, winner_id FROM institutions "
+                            "WHERE state IN ('Jammu and Kashmir', 'Ladakh') AND status IN ('accepted', 'pending', 'reserve') "
+                            "AND ((invited_by IS NULL AND created_at <= ?) OR (invited_by IS NOT NULL AND COALESCE(decided_at, created_at) <= ?)) "
+                            "ORDER BY id", (JK_LIST_UNTIL, JK_LIST_UNTIL)).fetchall()
+        out = [r for r in rows if (r["ref"] or "").strip() not in JK_SELECTED_1126]
+        kept = [r for r in out if conn.execute(
+            "SELECT 1 FROM applications WHERE (id = ? OR institution_id = ?) AND COALESCE(status, '') NOT IN ('withdrawn', 'rejected')",
+            (r["application_id"] or 0, r["id"])).fetchone()]
+        declined = [r for r in out if r not in kept]
+        with_students = [r["ref"] for r in declined if r["winner_id"] or conn.execute(
+            "SELECT 1 FROM campus_students WHERE institution_id = ?", (r["id"],)).fetchone()]
+        withdrawn = 0
+        for r in declined:
+            words = [w for w in ((r["ref"] or "").strip(), (r["name"] or "").strip()) if len(w) >= 6]
+            if words:
+                withdrawn += conn.execute(
+                    "UPDATE outbox SET status = 'failed', error = 'withdrawn: the institution is declined (1.2.218)', next_try = NULL "
+                    "WHERE status = 'queued' AND priority >= 0 AND (" + " OR ".join("instr(subject, ?) > 0" for _ in words) + ")",
+                    words).rowcount
+        conn.executemany(
+            "INSERT INTO audit_log(user_id, actor, action, entity, entity_id, detail, ip, created_at) VALUES(NULL,?,?,?,?,?,'',?)",
+            [("release 1.2.218", "institution_declined", "institution", r["id"],
+              json.dumps({"ref": r["ref"], "was": r["status"], "note": JK_LIST_NOTE}), now) for r in declined])
+        conn.executemany("UPDATE institutions SET status = 'declined', decision_note = ?, decided_at = ?, invite_token = NULL, "
+                         "updated_at = ? WHERE id = ?", [(JK_LIST_NOTE, now, now, r["id"]) for r in declined])
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)",
+                     (mark, json.dumps({"declined": [r["ref"] for r in declined], "kept_nominated": [r["ref"] for r in kept],
+                                        "declined_with_students": with_students, "mails_withdrawn": withdrawn}), now))
     # the reserve list is no more (1.2.198; CICT, 17 November 2026: "remove the reserve list condition" - of the institutions on
     # it: "Selected, like the 551"): each becomes a selected Participating Institution, once, with a line of the audit log. The
     # mark holds the number of them; a second mark holds them, for the mail that tells each of it once the portal has started
