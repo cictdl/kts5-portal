@@ -30,7 +30,7 @@ def test_the_list():
     assert hp["note"] == ("Not among the 19 institutions of the list of the Nodal Institution of Himachal Pradesh (Central University "
                           "of Himachal Pradesh), 26 November 2026")
     # the lists of 1.2.220 are there as they were
-    assert [nodal_list["key"] for nodal_list in NODAL_LISTS_1126] == ["py", "ap", "cg", "hp"]
+    assert [nodal_list["key"] for nodal_list in NODAL_LISTS_1126][:4] == ["py", "ap", "cg", "hp"]      # more after it (1.2.222)
     assert all("release" not in nodal_list for nodal_list in NODAL_LISTS_1126[:3])
 
 
