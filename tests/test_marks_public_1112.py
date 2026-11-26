@@ -197,8 +197,12 @@ def test_the_marks_may_come_later():
             "Selected College": "accepted", "Zeta College": "reserve", "Alpha College": "reserve", "Marked College": "reserve"}
     # the website: all four in the list of Puducherry, by name, with or without marks (1.2.177)
     public = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    assert re.findall(r'<td class="num">([^<]+)</td><td lang="en" dir="ltr">([^<]+)</td>', public) == [
-        ("1", "Alpha College"), ("2", "Marked College"), ("3", "Selected College"), ("4", "Zeta College")]
+    # under the institutions registered and, Puducherry's list having been given, under the list of its Nodal Officer too (1.2.229)
+    parts = public.split('<section class="hei-sec"')[1:]
+    assert len(parts) == 2
+    for part in parts:
+        assert re.findall(r'<td class="num">([^<]+)</td><td lang="en" dir="ltr">([^<]+)</td>', part) == [
+            ("1", "Alpha College"), ("2", "Marked College"), ("3", "Selected College"), ("4", "Zeta College")]
     # the evaluation sheet: a place only for the one with marks
     ws = load_workbook(BytesIO(officer.get("/console/institutions/evaluation.xlsx?state=Puducherry").data)).active
     rows = {v[4]: v[18] for v in [[c.value for c in row] for row in ws.iter_rows()][1:]}

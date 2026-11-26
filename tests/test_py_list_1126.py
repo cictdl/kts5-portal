@@ -111,12 +111,16 @@ def test_the_five_take_the_details_and_the_others_are_declined_once():
     assert _row(app, ids[OTHERS[0]])["status"] == "accepted"
     # the public list: Puducherry shows the five
     page = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    section = page[page.index('id="st-puducherry"'):]
+    section = page[page.index('id="sel-puducherry"'):]      # the list of the selected institutions (1.2.229)
     section = section[:section.index("</table>")]
     import re
     heading = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", section[:section.index("Nodal Institution")]))
     assert "Puducherry (6)" in heading and all(n in section for n in NAMES) and "School of Physiotherapy" not in section
     assert OTHERS[0] in section          # the one accepted again
+    # under the institutions registered: the same six and, shown still, the declined ones that are of the 31 lists of CICT (1.2.229)
+    registered = page[page.index('id="st-puducherry"'):page.index('<h2 id="hei-selected"')]
+    registered = registered[:registered.index("</table>")]
+    assert all(n in registered for n in NAMES) and OTHERS[0] in registered and "School of Physiotherapy" in registered
 
 
 def test_the_new_coordinator_signs_in_and_the_old_one_does_not():

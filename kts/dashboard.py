@@ -24,7 +24,7 @@ from flask import current_app
 
 from .db import get_setting, query
 from .i18n import dates_public
-from .heis import counted_statuses, reserve_by_row
+from .heis import counted_statuses, registered_rows, reserve_by_row
 from .progress import VERIFIED, institutions, nodal_heis
 from .utils import IST, now_ist
 
@@ -74,12 +74,15 @@ def figures():
     """{"states": [one dict per State/UT, those of Annexure-I first in its order], "total": dict}."""
     states_file = json.loads((current_app.config["DATA_DIR"] / "states.json").read_text(encoding="utf-8"))
     allocation = {h["state"]: h["allocation"] for h in nodal_heis()}
-    # the Participating Institutions selected, with those of the reserve list while it is public (1.2.178)
-    counted = counted_statuses()
+    # the Participating Institutions registered (heis.registered_rows): those that take part now, with those of the reserve list
+    # while it is public (1.2.178), and, since 1.2.229, the institutions of the 31 lists of CICT that are declined now
+    listed = {}
+    for r in registered_rows():
+        if r["state"]:
+            listed[r["state"]] = listed.get(r["state"], 0) + 1
     counts = {
         "inst_reg": _by_state("SELECT state AS st, COUNT(*) AS n FROM institutions WHERE status != 'identified' GROUP BY state"),
-        "inst_sel": _by_state("SELECT state AS st, COUNT(*) AS n FROM institutions WHERE status IN (%s) GROUP BY state"
-                              % ",".join("?" * len(counted)), counted),
+        "inst_sel": listed,
         "inst_res": _by_state("SELECT state AS st, COUNT(*) AS n FROM institutions WHERE status = 'reserve' GROUP BY state"),
         "inst_dec": _by_state("SELECT state AS st, COUNT(*) AS n FROM institutions WHERE status IN ('accepted', 'reserve') GROUP BY state"),
         "inst_marked": _by_state("SELECT state AS st, COUNT(*) AS n FROM institutions WHERE status IN ('accepted', 'reserve') "
@@ -138,9 +141,15 @@ def details(officers):
         block["officers"] += [p for p in people if p not in block["officers"]]
     if get_setting("hei.public") == "1":
         rows = list(institutions())
+        more = []
         # the institutions of the reserve list with them, not told apart, while the reserve list is public (1.2.178)
         if get_setting("hei.reserve_public") == "1":
-            rows += [dict(r, stage="none", app_name=None) for r in query("SELECT * FROM institutions WHERE status = 'reserve'")]
+            more += [dict(r, stage="none", app_name=None) for r in query("SELECT * FROM institutions WHERE status = 'reserve'")]
+        # and, since 1.2.229, the institutions of the 31 lists of CICT that are declined now (heis.registered_rows), as they are counted
+        counted = counted_statuses()
+        more += [dict(r, stage="none", app_name=None) for r in registered_rows() if r["status"] not in counted]
+        if more:
+            rows += more
             rows.sort(key=lambda i: (i["state"] or "", (i["name"] or "").casefold()))
         for i in rows:
             if i["stage"] == "verified":
@@ -204,12 +213,16 @@ def _pipeline():
     tot = board()["total"]
     # the institutions of the reserve list count with the Participating Institutions while it is public (1.2.178)
     reserve = sum(reserve_by_row().values())
+    taking = tot["participating"] + reserve
+    # the Participating Institutions registered, as the public pages count them since 1.2.229 (heis.registered_rows): those that take
+    # part now and, with them, the institutions of the 31 lists of CICT that are declined now
+    listed = len(registered_rows())
     counts = {
         "annexure": tot["allocation"],
         "registered": _one("SELECT COUNT(*) AS n FROM institutions WHERE status != 'identified'"),
         "pending": _one("SELECT COUNT(*) AS n FROM institutions WHERE status = 'pending'"),
         "reserve": _one("SELECT COUNT(*) AS n FROM institutions WHERE status = 'reserve'"),
-        "participating": tot["participating"] + reserve, "testing": tot["testing"], "signed_up": tot["signed_up"], "tested": tot["tested"],
+        "participating": listed, "testing": tot["testing"], "signed_up": tot["signed_up"], "tested": tot["tested"],
         "selected": tot["selected"], "app_registered": tot["registered"], "verified": tot["verified"],
         "not_selected": tot["not_selected"], "not_registered": tot["not_registered"],
         "delegates": _one("SELECT COUNT(*) AS n FROM applications WHERE status != 'withdrawn'"),
@@ -221,7 +234,7 @@ def _pipeline():
 
     # the rings: (key, number, total)
     rings = [("participating", counts["participating"], counts["annexure"]), ("delegates", counts["delegates"], counts["annexure"]),
-             ("verified", counts["delegates_verified"], counts["delegates"]), ("testing", counts["testing"], counts["participating"])]
+             ("verified", counts["delegates_verified"], counts["delegates"]), ("testing", counts["testing"], taking)]
     rings = [{"key": k, "n": n, "total": t, "pct": pct(n, t), "share": round(min(1, n / t), 4) if t else 0} for k, n, t in rings]
     # the stages, each against the first (the width of its bar) and the one before (the percentage)
     order = [("registered", counts["registered"]), ("participating", counts["participating"]), ("testing", counts["testing"]),
@@ -229,7 +242,7 @@ def _pipeline():
     first = order[0][1] or 1
     stages = []
     for i, (k, n) in enumerate(order):
-        prev = order[i - 1][1] if i else n
+        prev = taking if k == "testing" else (order[i - 1][1] if i else n)      # of those that take part, as its ring (1.2.229)
         stages.append({"key": k, "n": n, "width": round(100 * n / first, 1) if first else 0, "pct": pct(n, prev) if i else 100})
     # the last three weeks, day by day, in IST
     days = [today - timedelta(days=20 - i) for i in range(21)]

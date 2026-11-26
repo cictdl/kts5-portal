@@ -30,6 +30,7 @@ import json
 import re
 import secrets
 from datetime import date, time, timedelta
+from functools import lru_cache
 
 from flask import current_app
 
@@ -625,6 +626,118 @@ def accepted_by_state(states, reserve=False):
     for r in rows:
         by.setdefault(r["state"], []).append(r)
     return [(s, by[s]) for s in states if s in by]
+
+
+# ---- the Participating Institutions registered and the lists of the Nodal Officers, on the public pages (1.2.229) -----------------
+
+# The States/UTs whose Nodal Officer has given the list of the selected institutions and whose list was the list of the portal
+# already, so that nothing was to change (CICT sent them on 26 November 2026: Arunachal Pradesh, Assam, Goa, Gujarat with Dadra and
+# Nagar Haveli and Daman and Diu, Odisha). The others are Jammu and Kashmir with Ladakh (1.2.218) and those of NODAL_LISTS_1126.
+NODAL_LISTS_SAME_1126 = ("Arunachal Pradesh", "Assam", "Goa", "Gujarat", "Dadra and Nagar Haveli and Daman and Diu", "Odisha")
+
+
+def listed_states():
+    """
+    The States/UTs whose Nodal Officer has given the list of the selected institutions (1.2.229; CICT, 26 November 2026: "I want two
+    section. Participating Institutions registered (verified) and Nodal Officer given list of selected institutions").
+    """
+    return frozenset(("Jammu and Kashmir", "Ladakh") + NODAL_LISTS_SAME_1126 + tuple(nodal_list["state"] for nodal_list in NODAL_LISTS_1126))
+
+
+def _name_key(name):
+    """The name of an institution as a list is compared with the database: without case, its white space as single spaces."""
+    return re.sub(r"\s+", " ", name or "").strip().casefold()
+
+
+@lru_cache(maxsize=4)
+def _registered_lists(path):
+    """{State/UT: (the number of its list, {name of an institution, as _name_key: how many times the list has it})}."""
+    out = {}
+    if not path.is_file():
+        return out
+    for n, one in enumerate(json.loads(path.read_text(encoding="utf-8"))["lists"]):
+        wanted = {}
+        for name, _district, _itype in one["institutions"]:
+            wanted[_name_key(name)] = wanted.get(_name_key(name), 0) + 1
+        for state in one["states"]:
+            out[state] = (n, wanted)
+    return out
+
+
+def registered_lists():
+    """
+    The 31 lists of CICT of 26 November 2026 (data/registered_lists.json: the workbooks of Annexure-II of the Console, one for each
+    row of Annexure-I - the name, the district and the type of each institution; of their 1,373 rows the ten that carry the name of
+    a person in place of an institution are left out): "Make these lists as Participating registered Insitutions".
+    """
+    return _registered_lists(current_app.config["DATA_DIR"] / "registered_lists.json")
+
+
+def registered_rows():
+    """
+    The Participating Institutions registered, as the public pages list and count them since 1.2.229, in the order of the names:
+    the institutions that take part now (counted_statuses) and, with them, the institutions of the 31 lists of CICT
+    (registered_lists) that are no longer among them - declined since the lists were made, most of them on 26 November 2026 as not
+    on the list of the selected institutions of their Nodal Officer (CICT, asked of them: "Show only"; of the institutions accepted
+    since the lists were made: "Yes, show them").
+
+    An institution of a list is known by its name among the institutions of the States/UTs of that list, as many times as the list
+    has the name: where an institution of that name takes part now, it is that one; where more are declined under one name than
+    the list has left, those declined for the list of a Nodal Institution come first, then the earliest registered. A declined one
+    that would stand on the page exactly as one already there - the same name, district and type: a second registration of one
+    institution - is not repeated.
+
+    Nothing of this is written anywhere: in the Console, at the sign-in of an institution, for the nominations, the reminders and
+    the mails a declined institution is declined as before.
+    """
+    counted = counted_statuses()
+    lists = registered_lists()
+    # what the public pages show and count of an institution, nothing of a person
+    rows = query("SELECT id, ref, name, itype, state, district, status, decision_note FROM institutions WHERE status != 'identified' "
+                 "ORDER BY name COLLATE NOCASE, id")
+    keep, have, shown = set(), {}, set()
+    for r in rows:
+        if r["status"] in counted:
+            keep.add(r["id"])
+            if r["state"] in lists:
+                key = (lists[r["state"]][0], _name_key(r["name"]))
+                have[key] = have.get(key, 0) + 1
+                shown.add(key + (_name_key(r["district"]), _name_key(r["itype"])))
+    notes = (JK_LIST_NOTE,) + tuple(nodal_list["note"] for nodal_list in NODAL_LISTS_1126)
+    others = sorted((r for r in rows if r["status"] not in counted and r["state"] in lists),
+                    key=lambda r: (0 if r["decision_note"] in notes else 1, r["id"]))
+    for r in others:
+        n, wanted = lists[r["state"]]
+        name = _name_key(r["name"])
+        key = (n, name)
+        same = key + (_name_key(r["district"]), _name_key(r["itype"]))
+        if have.get(key, 0) < wanted.get(name, 0) and same not in shown:
+            have[key] = have.get(key, 0) + 1
+            shown.add(same)
+            keep.add(r["id"])
+    return [r for r in rows if r["id"] in keep]
+
+
+def registered_by_state(states):
+    """The Participating Institutions registered (registered_rows), State/UT by State/UT in the order of `states`: [(state, [rows])]."""
+    by = {}
+    for r in registered_rows():
+        by.setdefault(r["state"], []).append(r)
+    return [(s, by[s]) for s in states if s in by]
+
+
+def two_sections(registered, taking):
+    """
+    The two sections of /institutions (1.2.229): the Participating Institutions registered, every State/UT (`registered`, of
+    registered_by_state; their anchors are those of before, st-...), then the lists of the selected institutions given by the Nodal
+    Officers - the States/UTs of listed_states with the institutions that take part there now (`taking`, of accepted_by_state;
+    anchors sel-...). An institution that registers after the list of its State/UT is with it (CICT: "Under Selected"). A section
+    without a State/UT is left out.
+    """
+    given = listed_states()
+    sections = [{"key": "registered", "title": "hei.sec_registered", "anchor": "st-", "groups": list(registered)},
+                {"key": "selected", "title": "hei.sec_selected", "anchor": "sel-", "groups": [group for group in taking if group[0] in given]}]
+    return [dict(section, total=sum(len(items) for _state, items in section["groups"])) for section in sections if section["groups"]]
 
 
 def key_of(data):

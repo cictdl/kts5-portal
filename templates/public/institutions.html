@@ -66,11 +66,24 @@
   </section>
 
   {% if groups %}
-  <p><b>{{ t('hei.count')|replace('{n}', total|string)|replace('{states}', groups|length|string) }}</b></p>
-  <p class="small">{% for state, items in groups %}<a href="#{{ state_anchor(state) }}">{{ place(state) }}</a> ({{ items|length }}){{ ' · ' if not loop.last }}{% endfor %}</p>
-  {% for state, items in groups %}
-  {% set gi = loop.index %}
-  <h2 id="{{ state_anchor(state) }}" style="margin-top:28px">{{ place(state) }} <span class="small muted">({{ items|length }})</span></h2>
+  {# two sections (1.2.229; CICT, 26 November 2026: "I want two section. Participating Institutions registered (verified) and Nodal
+     Officer given list of selected institutions"): the Participating Institutions registered, every State/UT - the 31 lists of CICT
+     ("Make these lists as Participating registered Insitutions") with the institutions accepted since - and then the lists of the
+     selected institutions given by the Nodal Officers (kts/heis.py two_sections). Each State/UT is a heading under its section;
+     under the first with its anchor of before (st-...), under the second with sel-... #}
+  {% if sections|length > 1 %}
+  <ul class="hei-secs" style="margin:0 0 6px;padding-inline-start:22px">
+    {% for sec in sections %}<li style="padding:2px 0"><a href="#hei-{{ sec.key }}"><b>{{ t(sec.title) }}</b></a> <span class="small muted">· <bdi>{{ t('hei.count')|replace('{n}', sec.total|string)|replace('{states}', sec.groups|length|string) }}</bdi></span></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% for sec in sections %}
+  <section class="hei-sec" aria-labelledby="hei-{{ sec.key }}">
+  <h2 id="hei-{{ sec.key }}" style="margin-top:34px;padding:10px 14px;border-inline-start:6px solid var(--saffron);background:var(--bg2);border-radius:6px">{{ t(sec.title) }}</h2>
+  <p><b>{{ t('hei.count')|replace('{n}', sec.total|string)|replace('{states}', sec.groups|length|string) }}</b></p>
+  <p class="small">{% for state, items in sec.groups %}<a href="#{{ sec.anchor ~ state_anchor(state)[3:] }}">{{ place(state) }}</a> ({{ items|length }}){{ ' · ' if not loop.last }}{% endfor %}</p>
+  {% for state, items in sec.groups %}
+  <h3 id="{{ sec.anchor ~ state_anchor(state)[3:] }}" style="margin-top:28px;font-size:1.3rem">{{ place(state) }} <span class="small muted">({{ items|length }})</span></h3>
   {% if nodal.get(state) %}<p class="small dim" style="margin:0 0 8px">{{ t('hei.nodal') }}: <span lang="en" dir="ltr">{{ nodal[state] }}</span></p>{% endif %}
   <div class="table-wrap"><table class="table">
     <thead><tr><th class="num">#</th><th>{{ t('hei.col_name') }}</th><th>{{ t('reg.college_district') }}</th><th>{{ t('reg.college_type') }}</th></tr></thead>
@@ -80,6 +93,8 @@
       <td>{{ t('opt.ctype.%d' % ti) if ti else h.itype }}</td></tr>
     {% endfor %}</tbody>
   </table></div>
+  {% endfor %}
+  </section>
   {% endfor %}
   {% else %}
   <p class="alert info">{{ t('hei.empty') }}</p>

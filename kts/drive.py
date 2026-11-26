@@ -81,7 +81,7 @@ def table():
     out = {}
     for h in _rows():
         out[h["state"]] = {"state": h["state"], "code": code_of(h["state"]), "n": int(h.get("allocation") or 0), "reg": 0, "week": 0,
-                           "participating": 0, "testing": 0, "selected": 0, "covers": list(h.get("covers", []))}
+                           "participating": 0, "listed": 0, "testing": 0, "selected": 0, "covers": list(h.get("covers", []))}
     # registered as the dashboard counts them: every institution but those only identified by a Nodal Institution
     for r in query("SELECT state, created_at FROM institutions WHERE status != 'identified'"):
         row = out.get(HEI.nodal_state_of(r["state"]))
@@ -98,6 +98,16 @@ def table():
     for unit, n in HEI.reserve_by_row().items():
         if unit in out:
             out[unit]["participating"] += n
+    # "listed": the Participating Institutions registered, as the public pages count them since 1.2.229 (HEI.registered_rows) - those
+    # that take part and, with them, the institutions of the 31 lists of CICT that are declined now; "participating" stays those
+    # that take part, for the sentence of the assessment
+    by_state = {}
+    for r in HEI.registered_rows():
+        by_state[r["state"]] = by_state.get(r["state"], 0) + 1
+    for state, n in by_state.items():      # one look at Annexure-I for a State/UT, not for an institution
+        row = out.get(HEI.nodal_state_of(state))
+        if row is not None:
+            row["listed"] += n
     _CACHE.update(at=now, data=out)
     return out
 

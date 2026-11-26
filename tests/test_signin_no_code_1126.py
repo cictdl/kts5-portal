@@ -329,7 +329,7 @@ def test_the_account_of_a_nodal_officer_goes_at_once_past_a_pause(server, monkey
 def test_the_four_texts_without_the_code_in_the_23_languages():
     from kts import i18n
     assert i18n.NOCODE == frozenset(KEYS) and not (i18n.NOCODE & i18n.UNDATED)
-    assert len(i18n.CATALOG) == 23 and len(i18n.CATALOG["en"]) == 1551
+    assert len(i18n.CATALOG) == 23 and len(i18n.CATALOG["en"]) == 1553
     en = i18n.CATALOG["en"]
     assert en["guide.i2_nc"] == ("Sign in with the e-mail address of the Institutional Coordinator or of the Head of the Institution "
                                  "and the mobile number of the Institutional Coordinator given at registration. No code is mailed; "

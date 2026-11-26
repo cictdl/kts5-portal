@@ -354,7 +354,7 @@ def test_the_texts_in_23_languages():
     from kts.i18n import CATALOG
     en = CATALOG["en"]
     new = json.loads((ROOT / "data" / "i18n" / "en.json").read_text(encoding="utf-8"))
-    assert len(en) == 1551 and all(en[k] == new[k] for k in KEYS)
+    assert len(en) == 1553 and all(en[k] == new[k] for k in KEYS)
     # its second sentence since 1.2.201: every institution that registers is a Participating Institution
     assert en["hei.any_number"] == ("Any number of institutions of a State/UT may register. Every institution that registers is a "
                                     "Participating Institution.")

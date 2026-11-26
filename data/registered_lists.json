@@ -1,0 +1,7074 @@
+{
+ "about": "The Participating Institutions registered (verified): the 31 lists of CICT of 26 November 2026, one for each row of Annexure-I - the name, the district and the type of each institution. Of their 1,373 rows the ten that carry the name of a person in place of an institution are left out.",
+ "total": 1363,
+ "lists": [
+  {
+   "states": [
+    "Andhra Pradesh"
+   ],
+   "nodal": "Central University of Andhra Pradesh",
+   "institutions": [
+    [
+     "ACHARYA NAGARJUNA UNIVERSITY",
+     "GUNTUR",
+     "State university department"
+    ],
+    [
+     "Audisankara University",
+     "Nellore",
+     "Deemed university"
+    ],
+    [
+     "Central Tribal University of Andhra Pradesh",
+     "Vizianagaram",
+     "Central university department"
+    ],
+    [
+     "Central Unibversity of Andhra Pradesh",
+     "Anantapuramu",
+     "Central university department"
+    ],
+    [
+     "Dr RVR NRI Institute of Technology",
+     "ELURU",
+     "Deemed university"
+    ],
+    [
+     "Gandhi Institute of Technology and Management Deemed to be University",
+     "Visakhapatnam",
+     "Deemed university"
+    ],
+    [
+     "Godavari Global University",
+     "East Godavari",
+     "State university department"
+    ],
+    [
+     "Government College (A), Ananthapuramu",
+     "Ananthapuramu",
+     "Government college"
+    ],
+    [
+     "IIITDM kurnool",
+     "Kurnool",
+     "Central university department"
+    ],
+    [
+     "Krea University",
+     "Tirupati",
+     "Private / self-financing college"
+    ],
+    [
+     "National Sanskrit University, Turupati",
+     "Turupati",
+     "Central university department"
+    ],
+    [
+     "Sarat Chandra Degree College",
+     "Krishna",
+     "Private / self-financing college"
+    ],
+    [
+     "SGT & JVB DEGREE COLLEGE(149)THULLUR",
+     "Guntur",
+     "Private / self-financing college"
+    ],
+    [
+     "Sri Gorantla Venkanna Oriental College",
+     "Prakasam",
+     "Government-aided college"
+    ],
+    [
+     "Sri Sathya Sai Institute of Higher Learning",
+     "Anantapur",
+     "Deemed university"
+    ],
+    [
+     "SVJV SANSKRIT COLLEGE",
+     "East Godavari",
+     "Government-aided college"
+    ],
+    [
+     "Vignan institute of engineering for women",
+     "Visakhapatnam",
+     "Autonomous college"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Arunachal Pradesh"
+   ],
+   "nodal": "Rajiv Gandhi University",
+   "institutions": [
+    [
+     "Apex Professional University",
+     "East Siang",
+     "Other"
+    ],
+    [
+     "Arunachal Pradesh University, Pasighat",
+     "East Siang",
+     "State university department"
+    ],
+    [
+     "ARUNODAYA UNIVERSITY",
+     "Papum Pare",
+     "Private / self-financing college"
+    ],
+    [
+     "Dorjee Khandu Government College, Tawang",
+     "Tawang",
+     "Government college"
+    ],
+    [
+     "Hills College of Teacher Education",
+     "Papum Pare",
+     "Private / self-financing college"
+    ],
+    [
+     "Rajiv Gandhi University",
+     "Papum Pare",
+     "Central university department"
+    ],
+    [
+     "VKCTE COLLEGE, Nirjuli, Arunachal Pradesh Arun",
+     "Papum pare",
+     "Private / self-financing college"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Assam"
+   ],
+   "nodal": "Assam University",
+   "institutions": [
+    [
+     "ABHAYAPURI COLLEGE",
+     "Bongaigaon",
+     "Arts and science college"
+    ],
+    [
+     "Assam down town University",
+     "Kamrup Metro",
+     "Other"
+    ],
+    [
+     "Assam University silchar",
+     "CACHAR",
+     "Central university department"
+    ],
+    [
+     "Chaiduar College",
+     "Biswanath",
+     "Autonomous college"
+    ],
+    [
+     "DIBRUGARH UNIVERSITY",
+     "DIBRUGARH",
+     "State university department"
+    ],
+    [
+     "Gauhati University",
+     "Kamrup Metro",
+     "State university department"
+    ],
+    [
+     "Gurucharan University",
+     "Cachar",
+     "State university department"
+    ],
+    [
+     "Jagannath Barooah University",
+     "Jorhat",
+     "Autonomous college"
+    ],
+    [
+     "Nagaon University",
+     "Nagaon",
+     "Autonomous college"
+    ],
+    [
+     "Pandu College",
+     "Kamrup (Metro)",
+     "Autonomous college"
+    ],
+    [
+     "Paschim Guwahati Mahavidyalaya",
+     "Kamrup Metro",
+     "Other"
+    ],
+    [
+     "Pragjyotishpur University",
+     "Kamrup Metro",
+     "Private / self-financing college"
+    ],
+    [
+     "Rangapara College (Autonomous)",
+     "Sonitpur",
+     "Autonomous college"
+    ],
+    [
+     "Saraighat College",
+     "Kamrup",
+     "Government-aided college"
+    ],
+    [
+     "Satindra Mohan Dev College",
+     "CACHAR",
+     "Government college"
+    ],
+    [
+     "West Silchar College",
+     "Cachar",
+     "Government-aided college"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Bihar"
+   ],
+   "nodal": "Central University of South Bihar",
+   "institutions": [
+    [
+     "Akhil Bhartiya Sanskrit-Hindi Vidyapeeth Khamhar Begusarai Bihar",
+     "Begusarai",
+     "Government college"
+    ],
+    [
+     "AMITY UNIVERSITY PATNA",
+     "PATNA",
+     "Other"
+    ],
+    [
+     "Central University of South Bihar",
+     "Gaya",
+     "Central university department"
+    ],
+    [
+     "CIMAGE professional college",
+     "Patna",
+     "Engineering college"
+    ],
+    [
+     "CIPET:IPT,Bihta, Patna",
+     "patna",
+     "Government college"
+    ],
+    [
+     "College of Veterinary and Animal Sciences Kishanganj",
+     "Kishanganj",
+     "Agricultural / veterinary college"
+    ],
+    [
+     "IIT Patna",
+     "Patna",
+     "IIT / NIT / IISER / IIIT"
+    ],
+    [
+     "Jagjiwan College, Ara",
+     "Bhojpur",
+     "Other"
+    ],
+    [
+     "Kameshwar Singh Darbhanga Sanskrit University",
+     "Darbhanga",
+     "State university department"
+    ],
+    [
+     "Mahatma Gandhi Central University, Motihari",
+     "East Champaran",
+     "Central university department"
+    ],
+    [
+     "MUZAFFARPUR INSTITUTE OF TECHNOLOGY MUZAFFARPUR",
+     "MUZAFFARPUR",
+     "Engineering college"
+    ],
+    [
+     "Narayan Mahavidyalaya Goreakothi",
+     "Siwan",
+     "Government-aided college"
+    ],
+    [
+     "National Institute of Technology Patna",
+     "Patna",
+     "IIT / NIT / IISER / IIIT"
+    ],
+    [
+     "Sent Paul Teachers training College birsinghpur",
+     "Samastipur",
+     "Other"
+    ],
+    [
+     "St. Paul teachers training college birsinghpur",
+     "Samastipur",
+     "Private / self-financing college"
+    ],
+    [
+     "ST. PAUL TEACHERS' TRAINING COLELGE BIRSINGHPUR",
+     "SAMASTIPUR",
+     "Private / self-financing college"
+    ],
+    [
+     "Tapindu Institute of Higher Studies(TIHS), Patna",
+     "PATNA",
+     "Private / self-financing college"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Chhattisgarh"
+   ],
+   "nodal": "Guru Ghasidas Vishwavidyalaya",
+   "institutions": [
+    [
+     "ACHARYA PANTH SHRI GRINDH MUNI NAAM SAHEB GOVT. P.G. COLLEGE, KAWARDHA DIST. KABIRDHAM (C.G.)",
+     "KABIRDHAM",
+     "Government college"
+    ],
+    [
+     "Amity University Chhattisgarh",
+     "RAIPUR",
+     "Deemed university"
+    ],
+    [
+     "Chaitanya College, Pamgarh",
+     "Janjgir-Champa",
+     "Private / self-financing college"
+    ],
+    [
+     "Chaitanya Science and Arts College Autonomous Pamgarh",
+     "Janjgir Champa",
+     "Autonomous college"
+    ],
+    [
+     "DR. C. V. RAMAN UNIVERSITY",
+     "BILASPUR",
+     "Deemed university"
+    ],
+    [
+     "Government V.Y.T. P.G. Autonomous College Durg",
+     "Durg",
+     "Government college"
+    ],
+    [
+     "GOVT BILASA GIRLS P G (AUTONOMOUS) COLLEGE BILASPUR CHHATTISGARH",
+     "BILASPUR",
+     "Autonomous college"
+    ],
+    [
+     "Govt Lahiri P.G. Collage",
+     "M.C.B.",
+     "Government college"
+    ],
+    [
+     "Govt Model Residential Girls College Kondagaon C.G.",
+     "Kondagaon",
+     "Government college"
+    ],
+    [
+     "Govt Rajmata Vijaya Raje Sindhiya Girls College Kawardha",
+     "Kabirdham",
+     "Government college"
+    ],
+    [
+     "GOVT WWP GIRLS' PG COLLEGE DURG (C.G.)",
+     "Durg",
+     "Government college"
+    ],
+    [
+     "Govt. Arvind College Kirandul",
+     "Dantewada",
+     "Government college"
+    ],
+    [
+     "Govt. D.B. Girls' P. G. College, Raipur, C.G.",
+     "Raipur",
+     "Government college"
+    ],
+    [
+     "Govt.N.P.G.College of Sciege Raipur",
+     "RAIPUR",
+     "Autonomous college"
+    ],
+    [
+     "Guru Ghasidas Vishwavidyalaya",
+     "Bilaspur",
+     "Central university department"
+    ],
+    [
+     "Hemchand Yadav Vishwavidyalaya Durg",
+     "Durg",
+     "State university department"
+    ],
+    [
+     "Hidayatullah National Law University",
+     "Raipur",
+     "Other"
+    ],
+    [
+     "Kalinga University",
+     "Raipur",
+     "Private / self-financing college"
+    ],
+    [
+     "MATS University",
+     "Raipur",
+     "Deemed university"
+    ],
+    [
+     "Naveen Govt college Mardapal",
+     "Kondagaon",
+     "Government college"
+    ],
+    [
+     "Naveen Govt. Girls College Mungeli",
+     "Mungeli",
+     "Government college"
+    ],
+    [
+     "Saraswati Mahavidyalay Koni Bilaspur",
+     "Bilaspur",
+     "Private / self-financing college"
+    ],
+    [
+     "Sarswati mahavidyalaya subhashnagar ambikapur surguja Chattisgarh",
+     "Sarguja",
+     "Private / self-financing college"
+    ],
+    [
+     "Shri Shankaracharya Institute of Professional Management & Technology Raipur",
+     "Raipur",
+     "Private / self-financing college"
+    ],
+    [
+     "Shri Shankaracharya Professional University, Bhilai",
+     "Durg",
+     "Other"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Delhi"
+   ],
+   "nodal": "University of Delhi",
+   "institutions": [
+    [
+     "Aacharya Narendra Dev College",
+     "South East Delhi",
+     "Government college"
+    ],
+    [
+     "ADITI MAHAVIDYALAYA",
+     "NORTH WEST",
+     "Autonomous college"
+    ],
+    [
+     "Aditi Mahavidyalya, University of Delhi",
+     "North West",
+     "Autonomous college"
+    ],
+    [
+     "Bhagini Nivedita College",
+     "South West",
+     "Autonomous college"
+    ],
+    [
+     "Bharati College",
+     "West",
+     "Government college"
+    ],
+    [
+     "Bhaskaracharya College of Applied Sciences",
+     "South West",
+     "Government-aided college"
+    ],
+    [
+     "College of vocational studies",
+     "Delhi",
+     "Autonomous college"
+    ],
+    [
+     "COMM-IT Career Academy",
+     "New delhi",
+     "Other"
+    ],
+    [
+     "Delhi College of Arts  and Commerce",
+     "New Delhi",
+     "Autonomous college"
+    ],
+    [
+     "Department of Indian Languages and literary studies ,University of Delhi",
+     "Delhi",
+     "Central university department"
+    ],
+    [
+     "DESHBANDHU COLLEGE UNIVERSITY OF DELHI",
+     "SOUTH",
+     "Government college"
+    ],
+    [
+     "Dr. Bhim Rao Ambedkar College, University Of Delhi",
+     "North-East District",
+     "Government college"
+    ],
+    [
+     "Dyal Singh Evening  College",
+     "South Delhi",
+     "Government college"
+    ],
+    [
+     "Gargi College",
+     "South West Delhi",
+     "Government college"
+    ],
+    [
+     "HANSRAJ COLLEGE",
+     "DELHI",
+     "Government-aided college"
+    ],
+    [
+     "Hindu college",
+     "North Delhi",
+     "Government college"
+    ],
+    [
+     "Institute of Home Economics ( University of Delhi )",
+     "South Delhi",
+     "Government college"
+    ],
+    [
+     "Jamia Millia Islamia, New Delhi",
+     "New Delhi",
+     "Central university department"
+    ],
+    [
+     "JAWAHARLAL NEHRU UNIVERSITY",
+     "New Delhi",
+     "Central university department"
+    ],
+    [
+     "JESUS AND MARY COLLEGE",
+     "NEW DELHI",
+     "Central university department"
+    ],
+    [
+     "Kamala Nehru College, University of Delhi",
+     "South Delhi",
+     "Government college"
+    ],
+    [
+     "Keshav Mahavidyalaya",
+     "North West",
+     "Government college"
+    ],
+    [
+     "Lakshmibai College, University of Delhi",
+     "North West Delhi",
+     "Government college"
+    ],
+    [
+     "Miranda House",
+     "North",
+     "Government college"
+    ],
+    [
+     "MOTILAL NEHRU COLLEGE (EVENING)",
+     "NEW DELHI",
+     "Central university department"
+    ],
+    [
+     "Motilal Nehru College,University Of Delhi",
+     "New Delhi",
+     "Government college"
+    ],
+    [
+     "NATIONAL INSTITUTE OF EDUCATION",
+     "Central Delhi",
+     "Other"
+    ],
+    [
+     "PGDAV COLLEGE",
+     "DELHI",
+     "Government college"
+    ],
+    [
+     "Rajdhani College",
+     "West Delhi",
+     "Autonomous college"
+    ],
+    [
+     "Ramanujan College, University of Delhi",
+     "South Delhi",
+     "Government college"
+    ],
+    [
+     "Satyawati College (Evening)",
+     "NORTH WEST",
+     "Government college"
+    ],
+    [
+     "Shaheed Bhagat Singh College University of Delhi",
+     "New Delhi",
+     "Government-aided college"
+    ],
+    [
+     "Shivaji College",
+     "Raja Garden, Ring Road, New Delhi-110027",
+     "Government college"
+    ],
+    [
+     "Shri Lal Bahadur Shastri National Sanskrit University, New Delhi",
+     "South Delhi",
+     "Central university department"
+    ],
+    [
+     "Shyam lal college",
+     "Shahdara",
+     "Government college"
+    ],
+    [
+     "SRI AUROBINDO COLLEGE (EVENING)",
+     "SOUTH DELHI",
+     "Autonomous college"
+    ],
+    [
+     "Sri Guru Tegh Bahadur Khalsa College",
+     "Delhi",
+     "Other"
+    ],
+    [
+     "SRI VENKATESWARA COLLEGE UNIVERSITY OF DELHI",
+     "SOUTH WEST DELHI",
+     "Arts and science college"
+    ],
+    [
+     "Swami Shraddhanand College",
+     "North West",
+     "Government college"
+    ],
+    [
+     "Vivekananda College (University of Delhi)",
+     "East",
+     "Government-aided college"
+    ],
+    [
+     "Zakir Husain delhi college evening",
+     "Delhi",
+     "Central university department"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Goa"
+   ],
+   "nodal": "NIT Goa",
+   "institutions": [
+    [
+     "CES's Parvatibai Chowgule College of Arts and Science (Autonomous) Margao-Goa",
+     "South - Goa",
+     "Government-aided college"
+    ],
+    [
+     "GOA COLLEGE OF AGRICULTURE ELA FARM OLD GOA GOA",
+     "NORTH GOA",
+     "Government college"
+    ],
+    [
+     "Goa College of Music, Altinho Panaji-Goa",
+     "North-Goa",
+     "Government college"
+    ],
+    [
+     "Indian Institute of Technology Goa",
+     "South Goa",
+     "IIT / NIT / IISER / IIIT"
+    ],
+    [
+     "National Institute of Technology",
+     "SouthGoa",
+     "IIT / NIT / IISER / IIIT"
+    ],
+    [
+     "Vidya Prabodhini College of Commerce, Education, Computer and Management, Parvari - Goa",
+     "North Goa",
+     "Government-aided college"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Gujarat",
+    "Dadra and Nagar Haveli and Daman and Diu"
+   ],
+   "nodal": "Central University of Gujarat",
+   "institutions": [
+    [
+     "Anand Arts College, Anand",
+     "Anand",
+     "Government-aided college"
+    ],
+    [
+     "Bhakta Kavi Narsinh Mehta University, Junagadh",
+     "JUNAGADH",
+     "State university department"
+    ],
+    [
+     "Bhaktraj Dada Khachar Arts and Commerce College, gadhada",
+     "Botad",
+     "Government college"
+    ],
+    [
+     "Bhavan's Sheth R A College of Arts and Commerce",
+     "Ahmedabad",
+     "Government-aided college"
+    ],
+    [
+     "Central University of Gujarat",
+     "Vadodara",
+     "Central university department"
+    ],
+    [
+     "Charotar University of Science and Technology",
+     "Anand",
+     "Private / self-financing college"
+    ],
+    [
+     "Children's Research University, Gandhinagar",
+     "Gandhinagar",
+     "State university department"
+    ],
+    [
+     "College of Agriculture, Junagadh Agricultural University, mota bhandariya",
+     "Amreli",
+     "Agricultural / veterinary college"
+    ],
+    [
+     "Dada Dukhayal College of Education",
+     "Kachchh",
+     "Private / self-financing college"
+    ],
+    [
+     "Dr. Babasaheb Ambedkar Open University",
+     "Ahmedabad",
+     "Other"
+    ],
+    [
+     "Government Arts and Commerce College Babra",
+     "Amreli",
+     "Government college"
+    ],
+    [
+     "Government Arts and Science College, Bavla",
+     "Ahmedabad",
+     "Government college"
+    ],
+    [
+     "Government Arts College Talaja",
+     "Bhavnagar",
+     "Government college"
+    ],
+    [
+     "Gujarat Technological University",
+     "Ahmedabad",
+     "State university department"
+    ],
+    [
+     "Gyanmanjari Innovative University",
+     "Bhavnagar",
+     "Deemed university"
+    ],
+    [
+     "H M Patel Institute of English Training and Research",
+     "Anand",
+     "Government-aided college"
+    ],
+    [
+     "Hemchandracharya North Gujarat University,Patan",
+     "Patan",
+     "State university department"
+    ],
+    [
+     "IIITM EDUCATION INDIA",
+     "daman",
+     "Private / self-financing college"
+    ],
+    [
+     "J KCOLLEGE OF NURSING",
+     "Dahod",
+     "Medical / dental / nursing college"
+    ],
+    [
+     "K J INSTITUTE OF PHYSIOTHERAPY",
+     "Vadodra",
+     "Medical / dental / nursing college"
+    ],
+    [
+     "Kamani Science and Prataprai Arts College Amreli",
+     "Amreli",
+     "Government-aided college"
+    ],
+    [
+     "KHYATI SCHOOL OF BUSINESS ADMINISTRATION",
+     "AHMEDABAD",
+     "Private / self-financing college"
+    ],
+    [
+     "Krantiguru Shyamji Krishna Verma Kachchh University, Bhuj",
+     "Kachchh-Bhuj",
+     "State university department"
+    ],
+    [
+     "L D College of Engineering, Ahmedabad",
+     "Ahmedabad",
+     "Government college"
+    ],
+    [
+     "MUNICIPAL ARTS & URBAN BANK SCIENCE COLLEGE, MEHSANA",
+     "MEHSANA",
+     "Government-aided college"
+    ],
+    [
+     "N S Patel Arts College, Anand (Autonomous)",
+     "Anand",
+     "Government-aided college"
+    ],
+    [
+     "Panchshil College Of Education",
+     "Rajkot",
+     "Private / self-financing college"
+    ],
+    [
+     "PratapRai arts College",
+     "Amreli",
+     "Government college"
+    ],
+    [
+     "SARDAR PATEL UNIVERSITY, VALLABHVIDYANAGAR",
+     "ANAND",
+     "State university department"
+    ],
+    [
+     "Saurashtra University",
+     "Rajkot",
+     "State university department"
+    ],
+    [
+     "Sheth Dosabhai Lalchand Law College, Bhuj-Kachchh",
+     "Kachchh",
+     "Government-aided college"
+    ],
+    [
+     "Shree Muktjivan Swamibapa Mahila Arts & Commerce college",
+     "KACHCHH-BHUJ",
+     "Private / self-financing college"
+    ],
+    [
+     "Shree Vallabhacharya College of Social Work",
+     "Vadodra",
+     "Private / self-financing college"
+    ],
+    [
+     "Shri Govind Guru University, Vinzol, Godhra",
+     "Panchmahal",
+     "State university department"
+    ],
+    [
+     "Shri J B Thacker Commerce College, Bhuj",
+     "Kachchh",
+     "Government-aided college"
+    ],
+    [
+     "Shri Mirambika College of Education",
+     "Rajkot",
+     "Private / self-financing college"
+    ],
+    [
+     "Shri R. R. Lalan College, Bhuj",
+     "Kutch",
+     "Government college"
+    ],
+    [
+     "Shri Saraswati College of Social Work",
+     "Bharuch",
+     "Government-aided college"
+    ],
+    [
+     "Shri somnath sanskrit university.veraval.gir somnath.Gujarat.",
+     "GIR SOMNATH",
+     "State university department"
+    ],
+    [
+     "SSR COLLEGE OF EDUCATION",
+     "Silvassa",
+     "Private / self-financing college"
+    ],
+    [
+     "Ved College of Social Work",
+     "Vadodra",
+     "Government college"
+    ],
+    [
+     "Ved MSW College",
+     "Vadodra",
+     "Private / self-financing college"
+    ],
+    [
+     "Veer Narmad South Gujarat University Surat",
+     "Surat",
+     "State university department"
+    ],
+    [
+     "Vidhyadeep University",
+     "Surat",
+     "Private / self-financing college"
+    ],
+    [
+     "VJKM College of BSW, Dabhoi",
+     "Vadodra",
+     "Government-aided college"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Haryana"
+   ],
+   "nodal": "Central University of Haryana",
+   "institutions": [
+    [
+     "Apeejay Stya University",
+     "Gurugram",
+     "Other"
+    ],
+    [
+     "C.R. COLLEGE OF EDUCATION HISAR",
+     "Hisar",
+     "Government-aided college"
+    ],
+    [
+     "CBS Group of Institutions",
+     "Jajhar",
+     "Private / self-financing college"
+    ],
+    [
+     "Dayanand Mahila Mahavidyalaya, Kurukshetra",
+     "Kurukshetra",
+     "Government-aided college"
+    ],
+    [
+     "Government College for Girls, Palwal (Kurukshetra)",
+     "Kurukshetra",
+     "Government college"
+    ],
+    [
+     "Gurugram University",
+     "Gurgaon",
+     "State university department"
+    ],
+    [
+     "Jagan Nath University Bahadurgarh Haryana",
+     "Jhajjar",
+     "Other"
+    ],
+    [
+     "Rishihood University",
+     "Sonipat",
+     "Private / self-financing college"
+    ],
+    [
+     "university institute of engineering and technology kurukshetra, haryana",
+     "kurukshetra",
+     "Government college"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Himachal Pradesh"
+   ],
+   "nodal": "Central University of Himachal Pradesh",
+   "institutions": [
+    [
+     "Career Point University, Hamirpur",
+     "Hamirpur",
+     "Other"
+    ],
+    [
+     "Central University of Himachal Pradesh",
+     "Kangra",
+     "Central university department"
+    ],
+    [
+     "Dronacharya College of Education Rait,Kangra HP",
+     "Kangra",
+     "Private / self-financing college"
+    ],
+    [
+     "Gorkashnath Govt college Nahan",
+     "Sirmour",
+     "Government college"
+    ],
+    [
+     "Government  Sanskrit College Sunder Nagar",
+     "Mandi",
+     "Government college"
+    ],
+    [
+     "GOVERNMENT DEGREE COLLEGE MULTHAN (CHHOTA BHANGAL AREA)",
+     "KANGRA",
+     "Government college"
+    ],
+    [
+     "Govt College Chamba",
+     "CHAMBA",
+     "Government college"
+    ],
+    [
+     "Govt. College Daulatpur Chowk",
+     "Una",
+     "Government college"
+    ],
+    [
+     "Govt. College Dharamshala",
+     "Kangra",
+     "Government college"
+    ],
+    [
+     "Govt. Degree College Ani at Haripur",
+     "Kullu",
+     "Government college"
+    ],
+    [
+     "Govt. Degree College Salooni",
+     "Chamba",
+     "Government college"
+    ],
+    [
+     "Govt. Degree College Shahpur",
+     "Kangra",
+     "Government college"
+    ],
+    [
+     "GOVT. SANSKRIT COLLEGE CHAMBA",
+     "Chamba",
+     "Government college"
+    ],
+    [
+     "Govt. Sanskrit College Dangar, Bilaspur H.P.",
+     "Bilaspur",
+     "Government college"
+    ],
+    [
+     "Govt. Sanskrit College Tungesh",
+     "Shimla",
+     "Government college"
+    ],
+    [
+     "Himachal Institute of Hotel Management Vidyanagar,Shahpur, Kangra",
+     "Kangra",
+     "Other"
+    ],
+    [
+     "IIT Mandi",
+     "Mandi",
+     "IIT / NIT / IISER / IIIT"
+    ],
+    [
+     "MAHARISHI MARKANDESHAWAR UNIVERSITY",
+     "SOLAN",
+     "Private / self-financing college"
+    ],
+    [
+     "Sanatan dharam adarsh sanskrit college, Dohgi",
+     "Una",
+     "Government college"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Jammu and Kashmir",
+    "Ladakh"
+   ],
+   "nodal": "Central University of Jammu",
+   "institutions": [
+    [
+     "Altaf Memorial Government Degree College Kilam Kulgam",
+     "Kulgam",
+     "Government college"
+    ],
+    [
+     "Baba Ghulam Shah Badshah University",
+     "Rajouri",
+     "State university department"
+    ],
+    [
+     "Central Sanskrit University, Shri Maharaja Ranbir Singh Campus Jammu",
+     "Jammu",
+     "Central university department"
+    ],
+    [
+     "Central University of Jammu",
+     "Samba",
+     "Central university department"
+    ],
+    [
+     "Cluster University of Jammu",
+     "Jammu",
+     "State university department"
+    ],
+    [
+     "Eliezer Joldan Memoral College Leh",
+     "Leh",
+     "Government college"
+    ],
+    [
+     "Gandhi Memorial College",
+     "Srinagar",
+     "Government-aided college"
+    ],
+    [
+     "GDC Budhal",
+     "Rajouri",
+     "Government college"
+    ],
+    [
+     "GDC Pouni",
+     "REASI",
+     "Government college"
+    ],
+    [
+     "GDC PURMANDAL",
+     "SAMBA",
+     "Government college"
+    ],
+    [
+     "GDC R.S. PURA",
+     "Jammu",
+     "Government college"
+    ],
+    [
+     "GDC Rajpora",
+     "Pulwama",
+     "Government college"
+    ],
+    [
+     "GDC Soibugh Budgam",
+     "Budgam",
+     "Government college"
+    ],
+    [
+     "GDC Thandapani",
+     "Rajouri",
+     "Government college"
+    ],
+    [
+     "GDC Vilgam",
+     "KUPWARA",
+     "Government college"
+    ],
+    [
+     "GDC Women, Anantnag",
+     "Anantnag",
+     "Government college"
+    ],
+    [
+     "GDC, Paloura (Mishriwala), Jammu",
+     "Jammu",
+     "Government college"
+    ],
+    [
+     "Government Amar Singh College Srinagar",
+     "Srinagar",
+     "Government college"
+    ],
+    [
+     "Government College for Women MA Road Srinagar",
+     "Srinagar",
+     "Government college"
+    ],
+    [
+     "Government Degree College ( Boys) Udhampur",
+     "Udhampur",
+     "Government college"
+    ],
+    [
+     "Government Degree College Batote.",
+     "Ramban",
+     "Government college"
+    ],
+    [
+     "GOVERNMENT DEGREE COLLEGE DRASS",
+     "DRASS",
+     "Government college"
+    ],
+    [
+     "Government Degree College Kangan",
+     "Ganderbal",
+     "Government college"
+    ],
+    [
+     "Government Degree College Kishtwar",
+     "Kishtwar",
+     "Government college"
+    ],
+    [
+     "Government Degree College Magam",
+     "Budgam",
+     "Government college"
+    ],
+    [
+     "Government Degree College Marh",
+     "Jammu",
+     "Government college"
+    ],
+    [
+     "Government Degree College Marheen",
+     "Kathua",
+     "Government college"
+    ],
+    [
+     "Government Degree College Shopian",
+     "Shopian",
+     "Government college"
+    ],
+    [
+     "Government Degree College Sopore Baramulla Kashmir",
+     "Baramulla",
+     "Government college"
+    ],
+    [
+     "Government Degree College Sumbal",
+     "Bandipora",
+     "Government college"
+    ],
+    [
+     "GOVERNMENT DEGREE COLLEGE THANNAMANDI",
+     "RAJOURI",
+     "Government college"
+    ],
+    [
+     "Government Degree College Tral",
+     "Pulwama",
+     "Government college"
+    ],
+    [
+     "Government Degree College, Bani.",
+     "Kathua",
+     "Government college"
+    ],
+    [
+     "Government Degree College, Chenani",
+     "Udhampur",
+     "Government college"
+    ],
+    [
+     "Government Degree College, Kalakote",
+     "Rajouri",
+     "Government college"
+    ],
+    [
+     "GOVERNMENT DEGREE COLLEGE, KHALTSE",
+     "Khaltse",
+     "Government college"
+    ],
+    [
+     "Government Degree Khansahib",
+     "Budgam",
+     "Government college"
+    ],
+    [
+     "Government Dy. SP Aman Thakur Memorial Degree College Kastigarh",
+     "Doda",
+     "Government college"
+    ],
+    [
+     "Govt Degree College Beerwah",
+     "Budgam",
+     "Government college"
+    ],
+    [
+     "GOVT DEGREE COLLEGE CHADOORA",
+     "BUDGAM",
+     "Government college"
+    ],
+    [
+     "Govt Degree College DH Pora",
+     "Kulgam",
+     "Government college"
+    ],
+    [
+     "Govt Degree College for  women Sopore",
+     "Baramulla",
+     "Government college"
+    ],
+    [
+     "Govt Degree College Handwara",
+     "Handwara",
+     "Government college"
+    ],
+    [
+     "Govt Degree College Majalta",
+     "UDHAMPUR",
+     "Government college"
+    ],
+    [
+     "Govt Degree College Rajouri",
+     "Rajouri",
+     "Government college"
+    ],
+    [
+     "Govt Degree College Zanskar",
+     "Zanskar",
+     "Government college"
+    ],
+    [
+     "Govt. Degree College Aishmuqam",
+     "Anantnag",
+     "Government college"
+    ],
+    [
+     "Govt. Degree College Billawar",
+     "KATHUA",
+     "Government college"
+    ],
+    [
+     "Govt. Degree College Jourian",
+     "Jammu",
+     "Government college"
+    ],
+    [
+     "GOVT. DEGREE COLLEGE KARGIL",
+     "KARGIL",
+     "Government college"
+    ],
+    [
+     "Govt. Degree College Kathua",
+     "Kathua",
+     "Government college"
+    ],
+    [
+     "Govt. Degree College Kotranka",
+     "Rajouri",
+     "Government college"
+    ],
+    [
+     "Govt. Degree College Kulgam",
+     "Kulgam",
+     "Government college"
+    ],
+    [
+     "Govt. Degree College Kunjwani/Sainik Colony, Jammu",
+     "Jammu",
+     "Government college"
+    ],
+    [
+     "Govt. Degree College Ramgarh",
+     "Samba",
+     "Government college"
+    ],
+    [
+     "GOVT. DEGREE COLLEGE RAMNAGAR",
+     "Udhampur",
+     "Government college"
+    ],
+    [
+     "Govt. Degree College Sunderbani",
+     "Rajouri",
+     "Government college"
+    ],
+    [
+     "Govt. Degree College Vijaypur",
+     "Samba",
+     "Government college"
+    ],
+    [
+     "Govt. Gandhi Memorial Science College Jammu",
+     "Jammu",
+     "Government college"
+    ],
+    [
+     "Govt. Girdari Lal Dogra Memorial Degree College Hiranagar",
+     "Kathua",
+     "Government college"
+    ],
+    [
+     "GOVT.DEGREE COLLEGE WOMEN KUPWARA",
+     "KUPWARA",
+     "Government college"
+    ],
+    [
+     "HKM GDC Bandipora",
+     "Bandipora",
+     "Government college"
+    ],
+    [
+     "Islamia College of science and commerce",
+     "Srinagar",
+     "Autonomous college"
+    ],
+    [
+     "SG.GDC DOONGI",
+     "Rajouri",
+     "Government college"
+    ],
+    [
+     "SHRI KRISHAN CHANDER GOVERNMENT DEGREE COLLEGE POONCH",
+     "POONCH",
+     "Government college"
+    ],
+    [
+     "Shri Mata Vaishno Devi University",
+     "Reasi",
+     "State university department"
+    ],
+    [
+     "Sindhu Central University",
+     "Sham, Leh",
+     "Central university department"
+    ],
+    [
+     "Sri Pratap College",
+     "Srinagar",
+     "Government college"
+    ],
+    [
+     "Srinagar Women's College, Batapora, Zakura",
+     "Srinagar",
+     "Government college"
+    ],
+    [
+     "University of Jammu",
+     "Jammu",
+     "State university department"
+    ],
+    [
+     "University of Kashmir",
+     "Srinagar",
+     "State university department"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Jharkhand"
+   ],
+   "nodal": "Central University of Jharkhand",
+   "institutions": [
+    [
+     "Amity University Jharkhand",
+     "Ranchi",
+     "Private / self-financing college"
+    ],
+    [
+     "B.S. College Lohardga",
+     "Lohardaga",
+     "Government college"
+    ],
+    [
+     "BABU DINESH SINGH UNIVERSITY",
+     "GARHWA",
+     "Other"
+    ],
+    [
+     "Bindeshwari Dubey Awasiya Mahavidyalaya, Pichhri, Bermo, Bokaro",
+     "Bokaro",
+     "Government-aided college"
+    ],
+    [
+     "Binod Bihari Mahto Koyalanchal University",
+     "Dhanbad",
+     "State university department"
+    ],
+    [
+     "Cambridge Institute of Technology",
+     "Ranchi",
+     "Private / self-financing college"
+    ],
+    [
+     "Central University of Jharkhand",
+     "Ranchi",
+     "Central university department"
+    ],
+    [
+     "DEGREE COLLEGE GOMIA",
+     "BOKARO",
+     "Government college"
+    ],
+    [
+     "Dr. Shyama Prasad Mukherjee University, Ranchi",
+     "Ranchi",
+     "State university department"
+    ],
+    [
+     "Government engineering College bokaro",
+     "Bokaro",
+     "Government college"
+    ],
+    [
+     "Government Engineering College Godda",
+     "GODDA",
+     "Engineering college"
+    ],
+    [
+     "Government Engineering College Godda",
+     "Godda",
+     "Government college"
+    ],
+    [
+     "Government Polytechnic Kharsawan",
+     "Seraikela-Kharsawan",
+     "Other"
+    ],
+    [
+     "Government Polytechnic Simdega",
+     "Simdega",
+     "Government college"
+    ],
+    [
+     "Guru Gobind Singh Educational Society's Technical Campus",
+     "Bokaro Steel City",
+     "Private / self-financing college"
+    ],
+    [
+     "GURU NANAK COLLEGE, DHANBAD",
+     "DHANBAD",
+     "Government-aided college"
+    ],
+    [
+     "INDIAN INSTITUTE OF INFORMATION TECHNOLOGY",
+     "RANCHI",
+     "IIT / NIT / IISER / IIIT"
+    ],
+    [
+     "Indian Institute of Technology (Indian School of Mines), Dhanbad",
+     "Dhanbad",
+     "IIT / NIT / IISER / IIIT"
+    ],
+    [
+     "Jagannath Nagar College, Dhurwa",
+     "Ranchi",
+     "Government college"
+    ],
+    [
+     "Jamshedpur Women's University",
+     "East Singhbhum",
+     "State university department"
+    ],
+    [
+     "JHARKHAND RAI UNIVERSITY",
+     "RANCHI",
+     "Private / self-financing college"
+    ],
+    [
+     "Jharkhand Raksha Shakti University",
+     "Ranchi",
+     "Government college"
+    ],
+    [
+     "Jharkhand state Open university",
+     "RANCHI",
+     "State university department"
+    ],
+    [
+     "JHARKHAND STATE OPEN UNIVERSITY",
+     "Garhwa",
+     "Government college"
+    ],
+    [
+     "K.B. WOMEN'S COLLEGE HAZARIBAG",
+     "Hazaribag",
+     "Government college"
+    ],
+    [
+     "Kolhan University, Chaibasa",
+     "West-Singhbhum",
+     "State university department"
+    ],
+    [
+     "KRISHNA BALLAV COLLEGE, BERMO",
+     "BOKARO",
+     "Government college"
+    ],
+    [
+     "Model college, pakur",
+     "Pakur",
+     "Government college"
+    ],
+    [
+     "National Institute of Advanced Manufacturing Technology",
+     "Ranchi",
+     "Deemed university"
+    ],
+    [
+     "Netaji Subhas University Jamshedpur",
+     "East Singhbhum",
+     "Private / self-financing college"
+    ],
+    [
+     "NILAI EDUCATIONAL TRUST'S GROUP OF INSTITUTIONS",
+     "RANCHI",
+     "Private / self-financing college"
+    ],
+    [
+     "PARASNATH MAHAVIDYALAY, ISRI BAZAR",
+     "GIRIDIH",
+     "Government-aided college"
+    ],
+    [
+     "RAM KRISHNA DHARMARTH FOUNDATION(RKDF) UNIVERSITY",
+     "ranchi",
+     "Other"
+    ],
+    [
+     "Ramgovind Institute of Technology",
+     "Koderma",
+     "Engineering college"
+    ],
+    [
+     "RANCHI UNIVERSITY",
+     "Ranchi",
+     "Other"
+    ],
+    [
+     "S.S.L.N.T. Mahila Mahavidyalaya",
+     "Dhanbad",
+     "Government college"
+    ],
+    [
+     "SAHIBGANJ COLLEGE, SAHIBGANJ",
+     "SAHIBGANJ",
+     "Government college"
+    ],
+    [
+     "Santhal pargana college, Dumka",
+     "Dumka",
+     "Government college"
+    ],
+    [
+     "Sarala Birla University, Ranchi, Jharkhand",
+     "Ranchi",
+     "Private / self-financing college"
+    ],
+    [
+     "Tata College, Chaibasa",
+     "West Singhbhum",
+     "Government college"
+    ],
+    [
+     "Vinoba Bhave University",
+     "Hazaribagh",
+     "Other"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Karnataka"
+   ],
+   "nodal": "Central University of Karnataka",
+   "institutions": [
+    [
+     "ABBS School Of Law",
+     "Bengaluru",
+     "Law college"
+    ],
+    [
+     "Alliance University",
+     "Bengaluru",
+     "Private / self-financing college"
+    ],
+    [
+     "B.M.S. College of Law",
+     "Bengaluru Urban",
+     "Autonomous college"
+    ],
+    [
+     "B.V.V Sangha's Institute of Management Studies, Bagalkot",
+     "Bagalkot",
+     "Private / self-financing college"
+    ],
+    [
+     "Bapuji Institute of Engineering and Technology",
+     "Davangere",
+     "Autonomous college"
+    ],
+    [
+     "Bishop Cotton Women's Christian Law College",
+     "Bangalore",
+     "Law college"
+    ],
+    [
+     "Central Sanskrit University,  Sri Bharati teertha shastra samutkarsha kendram, Rajiv Gandhi Campus",
+     "Chikkamagaluru",
+     "Central university department"
+    ],
+    [
+     "Central University of Karnataka",
+     "Kalaburagi",
+     "Central university department"
+    ],
+    [
+     "Chanakya University",
+     "Bengaluru Rural",
+     "Other"
+    ],
+    [
+     "Darshan first grade evening college",
+     "Bangalore urban",
+     "Private / self-financing college"
+    ],
+    [
+     "Dr.T. Thimmaiah Institute of Technology",
+     "KOLAR",
+     "Private / self-financing college"
+    ],
+    [
+     "DVS POLYTECHNIC",
+     "Shivamogga",
+     "Government-aided college"
+    ],
+    [
+     "GM University",
+     "Davanagere",
+     "Other"
+    ],
+    [
+     "Government First Grade College Kadugudi Bangalore",
+     "Bangalore urban",
+     "Government college"
+    ],
+    [
+     "Government first grade college thenkanadiyur, udupi",
+     "Udupi",
+     "Government college"
+    ],
+    [
+     "IIIT Raichur",
+     "Raichur",
+     "IIT / NIT / IISER / IIIT"
+    ],
+    [
+     "J.N.R.Ladda Law College Sedam",
+     "Kalaburagi",
+     "Law college"
+    ],
+    [
+     "Jyothy Institute of Commerce and Management",
+     "Bangalore",
+     "Private / self-financing college"
+    ],
+    [
+     "Karnatak arts ,science, commerce,Bidar",
+     "Bidar",
+     "Government-aided college"
+    ],
+    [
+     "Karnatak arts ,science, commerce,Bidar",
+     "Bidar",
+     "Government-aided college"
+    ],
+    [
+     "Karnatak University Sir Siddappa kambli law college dharwad",
+     "Dharwad",
+     "Law college"
+    ],
+    [
+     "N V Society's N V Arts Sri Kanhayalal Malu Science and Dr Pandurangrao College of Commerce",
+     "GULBARGA/KALABURAGI",
+     "Government-aided college"
+    ],
+    [
+     "National Forensic Sciences University, Dharwad Campus",
+     "Dharwad",
+     "IIT / NIT / IISER / IIIT"
+    ],
+    [
+     "PARIVARTHANA BUSINESS SCHOOL",
+     "MYSURU",
+     "Private / self-financing college"
+    ],
+    [
+     "Ramaiah College of Law Autonomous",
+     "Bangalore Urban",
+     "Law college"
+    ],
+    [
+     "Regional Institute of Education(NCERT)",
+     "Mysuru",
+     "Government college"
+    ],
+    [
+     "RNS FIRST GRADE COLLEGE BANGLORE",
+     "Bangalore",
+     "Autonomous college"
+    ],
+    [
+     "S G Balekundri Institute of Technology",
+     "Belagavi",
+     "Private / self-financing college"
+    ],
+    [
+     "S,C, Nandimath Law College Bagalkote",
+     "Bagalkote",
+     "Law college"
+    ],
+    [
+     "Sarada Vilas law College",
+     "Mysuru",
+     "Law college"
+    ],
+    [
+     "Sir M V Government Science College Bommanakatte Bhadravathi",
+     "Shimoga",
+     "State university department"
+    ],
+    [
+     "Sir Siddappa Kambali Law College & Department of Law",
+     "Dharwad",
+     "State university department"
+    ],
+    [
+     "Sri Dharmasthala Manjunatheshwara College (Autonomous), Ujire",
+     "Dakshina Kannada",
+     "Autonomous college"
+    ],
+    [
+     "Sri Sai Law College",
+     "Bangaluru",
+     "Law college"
+    ],
+    [
+     "SRI VISHWABHARATHI FIRST GRADE COLLEGE H D KOTE",
+     "MYSORE",
+     "Private / self-financing college"
+    ],
+    [
+     "ST ALOYSIUS DEEMED TO BE UNIVERISTY, MANGALURU 575003, KARNATAKA, INDIA",
+     "DAKSHINA KANNADA",
+     "Deemed university"
+    ],
+    [
+     "St Joseph University",
+     "Bangalore",
+     "Deemed university"
+    ],
+    [
+     "The National College, Jayanagar, Bangalore-82(Autonomous)",
+     "Bengaluru Urban",
+     "Autonomous college"
+    ],
+    [
+     "TUMKUR UNIVERSITY",
+     "TUMKUR",
+     "State university department"
+    ],
+    [
+     "University of Horticultural Sciences, Bagalkot",
+     "Bagalkote",
+     "State university department"
+    ],
+    [
+     "VIDHYA SHEKHAR LAW COLLEGE",
+     "Bengaluru rurual",
+     "Law college"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Kerala",
+    "Lakshadweep"
+   ],
+   "nodal": "Central University of Kerala",
+   "institutions": [
+    [
+     "ADI SANKARA TRAINING COLLEGE,KALADY",
+     "ERNAKULAM",
+     "Private / self-financing college"
+    ],
+    [
+     "BHARATHEEYA VIDYA NIKETHAN COLLEGE OF TEACHER EDUCATION",
+     "PALAKKAD",
+     "Private / self-financing college"
+    ],
+    [
+     "BHARATHEEYA VIDYA NIKETHAN COLLEGE OF TEACHER EDUCATION KALLEKKAD PALAKKAD",
+     "PALAKKAD",
+     "Private / self-financing college"
+    ],
+    [
+     "Bishop Jesudasan CSI Arts and Science College, Mulayara",
+     "Thiruvananthapuram",
+     "Government-aided college"
+    ],
+    [
+     "Calicut Adarsha Sanskrit Vidyappetha",
+     "Kozhikode",
+     "Central university department"
+    ],
+    [
+     "CAPE COLLEGE OF NURSING PATHANAPURAM",
+     "KOLLAM",
+     "Medical / dental / nursing college"
+    ],
+    [
+     "CENTRAL SANSKRIT UNIVERSITY ,GURUVAYOOR CAMPUS",
+     "THRISSUR",
+     "Other"
+    ],
+    [
+     "CHRIST COLLEGE (AUTONOMOUS), IRINJALAKUDA",
+     "THRISSUR",
+     "Autonomous college"
+    ],
+    [
+     "College of Applied Science Kodungallur",
+     "Thrissur",
+     "Arts and science college"
+    ],
+    [
+     "DB PAMPA COLLEGE Parumala",
+     "Pathanamthitta",
+     "Government-aided college"
+    ],
+    [
+     "Devaswom Board College ,Thalayolaparambu",
+     "Kottayam",
+     "Government-aided college"
+    ],
+    [
+     "Don bosco",
+     "Kollam",
+     "Private / self-financing college"
+    ],
+    [
+     "Government College of Arts and Science, Kadmat",
+     "Lakshadweep",
+     "Government college"
+    ],
+    [
+     "Government Sanskrit College",
+     "Thiruvananthapuram",
+     "Government college"
+    ],
+    [
+     "Indian Institute of science education and research Thiruvananthapuram",
+     "Thiruvananthapuram",
+     "IIT / NIT / IISER / IIIT"
+    ],
+    [
+     "INDIAN INSTITUTE OF TECHNOLOGY PALAKKAD",
+     "PALAKKAD",
+     "IIT / NIT / IISER / IIIT"
+    ],
+    [
+     "INDIAN MARITIME UNIVERSITY KOCHI CAMPUS",
+     "Ernakulam",
+     "Central university department"
+    ],
+    [
+     "Kannur University",
+     "Kannur",
+     "State university department"
+    ],
+    [
+     "Namboodiris college Of Teacher Education",
+     "THRISSUR",
+     "Private / self-financing college"
+    ],
+    [
+     "NSS COLLEGE, PANDALAM",
+     "Pathanamthitta",
+     "Government-aided college"
+    ],
+    [
+     "PSMO COLLEGE",
+     "MALAPPURAM",
+     "Autonomous college"
+    ],
+    [
+     "SAFI Institute of Advanced Study (Autonomous)",
+     "Malappuram",
+     "Autonomous college"
+    ],
+    [
+     "Saraswathi College of Arts and Science, Vilappil",
+     "Thiruvananthapuram",
+     "Private / self-financing college"
+    ],
+    [
+     "SCMS SCHOOL OF TECHNOLOGY AND MANAGEMENT",
+     "Ernakulam",
+     "Private / self-financing college"
+    ],
+    [
+     "Sir Syed College, Taliparamba , kannur",
+     "KANNUR",
+     "Government-aided college"
+    ],
+    [
+     "SREE NARAYANA COLLEGE OF TECHNOLOGY",
+     "KOLLAM",
+     "Private / self-financing college"
+    ],
+    [
+     "Sree Sankara College Kalady",
+     "ERNAKULAM",
+     "Government-aided college"
+    ],
+    [
+     "Thunchath Ezhuthachan Malayalam University",
+     "Malappuram",
+     "State university department"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Madhya Pradesh"
+   ],
+   "nodal": "Dr. Harisingh Gour Vishwavidyalaya",
+   "institutions": [
+    [
+     "Awadhesh Pratap Singh University",
+     "Rewa",
+     "State university department"
+    ],
+    [
+     "B.S.B. Govt. College Timarni",
+     "Harda",
+     "Government college"
+    ],
+    [
+     "Bethesda Institute of Technology and Sciences",
+     "Gwalior",
+     "Private / self-financing college"
+    ],
+    [
+     "Central Sanskrit University, Bhopal Campus",
+     "Bhopal",
+     "Central university department"
+    ],
+    [
+     "Devi Ahilya Vishwavidyalaya, Indore",
+     "INDORE",
+     "State university department"
+    ],
+    [
+     "Devi Ahilya Vishwavidyalaya, Indore",
+     "INDORE",
+     "State university department"
+    ],
+    [
+     "Dr Harisingh Gour University, Sagar, Madhya Pradesh",
+     "Sagar",
+     "Central university department"
+    ],
+    [
+     "Dr Harisingh Gour University, Sagar, Madhya Pradesh",
+     "Sagar",
+     "Central university department"
+    ],
+    [
+     "Dr. B.R. Ambadekar University of Social Sciences",
+     "Indore",
+     "State university department"
+    ],
+    [
+     "Dr. C V Raman University Khandwa",
+     "Khandwa",
+     "Other"
+    ],
+    [
+     "Government Geetanjali Girls' P.G. Autonomous College Bhopal",
+     "Bhopal",
+     "Government college"
+    ],
+    [
+     "Government Holkar (Model, Autonomous) Science College Indore",
+     "INDORE",
+     "Autonomous college"
+    ],
+    [
+     "GOVERNMENT MAHARANI LAXMI BAI GIRLS PG AUTONOMOUS COLLEGE BHOPAL",
+     "BHOPAL",
+     "Autonomous college"
+    ],
+    [
+     "GOVERNMENT POLYTECHNIC COLLEGE SHAJAPUR",
+     "Shajapur",
+     "Government college"
+    ],
+    [
+     "Government polytechnic College Shajapur",
+     "Shajapur",
+     "Engineering college"
+    ],
+    [
+     "GOVERNMENT THAKUR RANMAT SINGH COLLEGE REWA",
+     "REWA",
+     "Autonomous college"
+    ],
+    [
+     "Govt college Bilaspur Umaria Madhya Pradesh",
+     "Umaria",
+     "Government college"
+    ],
+    [
+     "GOVT M H COLLEGE OF HOME SCIENCE & SCIENCE FOR WOMEN AUTONOMOUS JABALPUR",
+     "JABALPUR",
+     "Government college"
+    ],
+    [
+     "Govt MB Arts & Commerce, Autonomous collage",
+     "Jabalpur",
+     "Autonomous college"
+    ],
+    [
+     "Govt PG college Damoh",
+     "Damoh",
+     "Government college"
+    ],
+    [
+     "Govt Rajnarayan Smriti College Waidhan Singrauli",
+     "singrauli",
+     "Government college"
+    ],
+    [
+     "Govt. Kamla Raja Girls PG Autonomous College Gwalior",
+     "Gwalior",
+     "Government college"
+    ],
+    [
+     "Govt. P.G.College Datia",
+     "Datia",
+     "Government college"
+    ],
+    [
+     "Govt. S.K. College Mauganj MP",
+     "Mauganj",
+     "Government college"
+    ],
+    [
+     "Govt.Auto.PG College Satna",
+     "SATNA",
+     "Autonomous college"
+    ],
+    [
+     "Govt.college Kurai",
+     "seoni",
+     "Government college"
+    ],
+    [
+     "Govt.college Lalbarra",
+     "Balaghat",
+     "Government college"
+    ],
+    [
+     "GOVT.VIVEKANAND MAHAVIDYALAYA MAIHAR .",
+     "MAIHAR",
+     "Government college"
+    ],
+    [
+     "GYANODAYA UNIVERSITY",
+     "NEEMUCH",
+     "Other"
+    ],
+    [
+     "IES COLLEGE OF TECHNOLOGY",
+     "BHOPAL",
+     "Private / self-financing college"
+    ],
+    [
+     "IES UNIVERSITY, BHOPAL",
+     "BHOPAL",
+     "Deemed university"
+    ],
+    [
+     "Indian Institute of Science Education and Research, Bhopal",
+     "Bhopal",
+     "IIT / NIT / IISER / IIIT"
+    ],
+    [
+     "Indira Priyadarshini College, Chhindwara",
+     "Chhindwara",
+     "Private / self-financing college"
+    ],
+    [
+     "Institute For Excellence In Higher Education, Bhopal",
+     "Bhopal",
+     "Government college"
+    ],
+    [
+     "JIWAJI UNIVERSITY, GWALIOR (MP)",
+     "GWALIOR",
+     "State university department"
+    ],
+    [
+     "JNCT Professional University",
+     "Bhopal",
+     "Private / self-financing college"
+    ],
+    [
+     "Krantivir Tatya Tope Vishwavidyalaya",
+     "GUNA",
+     "State university department"
+    ],
+    [
+     "Lakshmi Narain College of Technology",
+     "Bhopal",
+     "Private / self-financing college"
+    ],
+    [
+     "Lakshmi Narain college of technology",
+     "Bhopal",
+     "Engineering college"
+    ],
+    [
+     "Lakshmi Narain group of college of technology bhopal",
+     "Bhopal",
+     "Engineering college"
+    ],
+    [
+     "LNCT University, BHOPAL (MP)",
+     "BHOPAL - MP",
+     "Private / self-financing college"
+    ],
+    [
+     "M.L.B ARTSAND COMMERCE COLLEGE,GWALIOR",
+     "GWALIOR",
+     "Government college"
+    ],
+    [
+     "M.P. BHOJ (OPEN) UNIVERSITY BHOPAL M.P.",
+     "Bhopal",
+     "State university department"
+    ],
+    [
+     "Maharaja Chhatrasal Bundelkhand University, Chhatarpur (MP)",
+     "Chhatarpur",
+     "State university department"
+    ],
+    [
+     "Mahatma Gandhi Chitrakoot Gramodaya Vishwavidyalaya",
+     "Satna",
+     "State university department"
+    ],
+    [
+     "Mata Jijabai Govt. Girls P.G. College Indore",
+     "Indore",
+     "Government college"
+    ],
+    [
+     "MP Bhoj Open University",
+     "Bhopal",
+     "State university department"
+    ],
+    [
+     "National Institute of Design Madhya Pradesh",
+     "Bhopal",
+     "Other"
+    ],
+    [
+     "Orange city college sausar",
+     "Pandhurna",
+     "Private / self-financing college"
+    ],
+    [
+     "Oriental University",
+     "Indore",
+     "Private / self-financing college"
+    ],
+    [
+     "Pandit S. N. Shukla University, Shahdol (Pandit Shambhu Nath Shukla University, Shahdol)",
+     "Shahdol",
+     "State university department"
+    ],
+    [
+     "PM College Of Excellence Rani Drugawati Govt P G College Mandla",
+     "Mandla",
+     "Government college"
+    ],
+    [
+     "PMCOE Amar Shaheed Chandrashekhar Azad Government P.G.College, Niwari, District Niwari M.P.",
+     "Niwari",
+     "Government college"
+    ],
+    [
+     "PMCOE B.K.S.N. GOVT COLLEGE SHAJAPUR",
+     "SHAJAPUR",
+     "Government college"
+    ],
+    [
+     "PMCoE Chhatrasal Govt. P.G. College Panna (M.P.)",
+     "PANNA",
+     "Government college"
+    ],
+    [
+     "PMCoE CSA GOVT P G COLLEGE SEHORE",
+     "SEHORE",
+     "Government college"
+    ],
+    [
+     "PMCOE GOVENMENT NEHRU PG COLLEGE ASHOKNAGAR",
+     "ASHOKNAGAR",
+     "Government college"
+    ],
+    [
+     "PMCoE Government Bapu College Nowgong",
+     "Chhatarpur",
+     "Government college"
+    ],
+    [
+     "PMCOE Government College, Vidisha",
+     "Vidisha",
+     "Government college"
+    ],
+    [
+     "PMCOE Govt Autonomous P.G. College Chhindwara",
+     "Chhindwara",
+     "Government college"
+    ],
+    [
+     "PMCOE Govt Hamidia College Bhopal",
+     "Bhopal",
+     "Government college"
+    ],
+    [
+     "PMCOE Govt Madhav College Ujjain",
+     "Ujjain",
+     "Government college"
+    ],
+    [
+     "PMCOE GOVT NEHRU PG COLLEGE BURHAR",
+     "SHAHDOL",
+     "Government college"
+    ],
+    [
+     "PMCOE GOVT PG COLLEGE MORENA",
+     "MORENA",
+     "Government college"
+    ],
+    [
+     "PMCOE GOVT PG COLLEGE RAJGARH",
+     "RAJGARH",
+     "Government college"
+    ],
+    [
+     "PMCOE GOVT POST GRADUATE COLLEGE",
+     "Guna",
+     "Government college"
+    ],
+    [
+     "PMCOE Govt.  College Umaria",
+     "Umaria",
+     "Government college"
+    ],
+    [
+     "PMCOE GOVT. P.G. COLLEGE KHARGONE",
+     "KHARGONE",
+     "Government college"
+    ],
+    [
+     "PMCOE GOVT. P.G. College Sheopur",
+     "Sheopur",
+     "Government college"
+    ],
+    [
+     "PMCOE Govt. PG. College Tikamgarh Madhya Pradesh",
+     "Tikamgarh[  M.P.]",
+     "Government college"
+    ],
+    [
+     "PMCOE GOVT. SMSPG COLLEGE SHIVPURI M.P.",
+     "Shivpuri",
+     "Government college"
+    ],
+    [
+     "PMCOE Govt.Nehru PG College Agar Malwa",
+     "Agar Malwa",
+     "Government college"
+    ],
+    [
+     "PMCOE Jaywanti Haksar Govt PG College Betul",
+     "Betul",
+     "Government college"
+    ],
+    [
+     "PMCOE Maharaja Bhoj Govt. P. G. College Dhar",
+     "Dhar",
+     "Government college"
+    ],
+    [
+     "PMCOE MJS GOVT PG COLLEGE BHIND",
+     "BHIND",
+     "Government college"
+    ],
+    [
+     "PMCOE PT.J.N.GOVT.COLLEGE NEPANAGAR",
+     "BURHANPUR",
+     "Government college"
+    ],
+    [
+     "PMCOE SAHEED BHIMA NAYAK GOVT. P.G. COLLEGE, BARWANI",
+     "BARWANI",
+     "Government college"
+    ],
+    [
+     "PMCOE Shri Atal Bihari Vajpayee Govt. Arts and Commerce College. Indore M.P.",
+     "INDORE",
+     "Government college"
+    ],
+    [
+     "PMCoE Shri Neelkantheshwar Government Post-Graduate College, Khandwa MP",
+     "Khandwa",
+     "Government college"
+    ],
+    [
+     "PMCOE SKP Govt PG College Dewas",
+     "Dewas",
+     "Government college"
+    ],
+    [
+     "PMCOE SLP GOVT. P.G. COLLEGE MORAR GWALIOR",
+     "Gwalior",
+     "Government college"
+    ],
+    [
+     "PMCOE SWAMI VIVEKANAND GOVERNMENT POST GRADUATE COLLEGE HARDA",
+     "Harda",
+     "Government college"
+    ],
+    [
+     "PMCOE Swami Vivekanand Govt PG College Neemuch",
+     "Neemuch",
+     "Government college"
+    ],
+    [
+     "PMCoE, Government Chandra Vijay PG College Dindori M.P.",
+     "Dindori",
+     "Government college"
+    ],
+    [
+     "PMCoE, Government Jatashankar Trivedi Post Graduate College Balaghat",
+     "BALAGHAT",
+     "Government college"
+    ],
+    [
+     "PMCoE, Govt PG College, Seoni",
+     "seoni",
+     "Government college"
+    ],
+    [
+     "PMCOE, GOVT TULSI COLLEGE ANUPPUR (M.P.)",
+     "Anuppur",
+     "Government college"
+    ],
+    [
+     "PMCOE, Govt. College Makroniya Bujurg, Sagar",
+     "SAGAR",
+     "Government college"
+    ],
+    [
+     "PMCoE, Govt. Mahakoshal Arts & Commerce Autonomous College Jabalpur",
+     "Jabalpur",
+     "Government college"
+    ],
+    [
+     "PMCOE, Govt. Narmada College Narmadapuram",
+     "Narmadapuram",
+     "Government college"
+    ],
+    [
+     "PMCOE, Krantikari Sahid Chhitusingh Kirad ,Govt. P.G.College  Alirajpur",
+     "Alirajpur",
+     "Government college"
+    ],
+    [
+     "PMCOE, S.G.S. Govt. Autonomous PG College Sidhi (M.P.)",
+     "Sidhi",
+     "Autonomous college"
+    ],
+    [
+     "PMCOE,S.C.A., Govt. P.G. College Jhabua (M.P.)",
+     "Jhabua",
+     "Government college"
+    ],
+    [
+     "Pradhan Mantri College of Excellence, Government Model Science College, Rewa (M.P.)",
+     "Rewa",
+     "Government college"
+    ],
+    [
+     "Rabindranath Tagore University",
+     "Raisen",
+     "Private / self-financing college"
+    ],
+    [
+     "Raja Shankar Shah University Chhindwara",
+     "Chhindwara",
+     "Other"
+    ],
+    [
+     "Rani Awantibai Lodhi University Sagar (M.P.)",
+     "Sagar",
+     "State university department"
+    ],
+    [
+     "RANI DURGAVATI VISHWAVIDYALAYA, JABALPUR",
+     "JABALPUR",
+     "State university department"
+    ],
+    [
+     "Regional Institute of Education, (NCERT) Bhopal",
+     "BHOPAL",
+     "Government college"
+    ],
+    [
+     "SAM GLOBAL UNIVERSITY",
+     "Raisen",
+     "Other"
+    ],
+    [
+     "Samrat Vikramaditya Vishwavidyalaya Ujjain",
+     "ujjain",
+     "State university department"
+    ],
+    [
+     "Sardar Ajeet Singh Smriti Mahavidhyalay, Bhopal 071",
+     "Bhopal",
+     "Private / self-financing college"
+    ],
+    [
+     "Sarojini Naidu Govt. Girls Post Graduate (Autonomous) College, Shivaji Nagar",
+     "Bhopal",
+     "Government college"
+    ],
+    [
+     "School of journalism and mass communication davv Indore",
+     "Indore",
+     "Government college"
+    ],
+    [
+     "SCHOOL OF PLANNING AND ARCHITECTURE",
+     "Bhopal",
+     "Central university department"
+    ],
+    [
+     "School of Planning and Architecture, Bhopal",
+     "Bhopal",
+     "Central university department"
+    ],
+    [
+     "Shri Krishna University Chhatarpur, Madhya Pradesh",
+     "Chhatarpur",
+     "State university department"
+    ],
+    [
+     "Symbiosis University of Applied Sciences",
+     "Indore",
+     "Private / self-financing college"
+    ],
+    [
+     "SYNA INTERNATIONAL COLLEGE OF MANAGEMENT",
+     "KATNI",
+     "Private / self-financing college"
+    ],
+    [
+     "VIJAYARAJE GOVT GIRLS PG COLLEGE MORAR GWALIOR",
+     "GWALIOR",
+     "Government college"
+    ],
+    [
+     "Vikrant University Gwalior",
+     "Gwalior",
+     "Other"
+    ],
+    [
+     "VIT Bhopal University",
+     "Sehore",
+     "Other"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Maharashtra"
+   ],
+   "nodal": "Mahatma Gandhi Antarrashtriya Hindi Vishwavidyalaya",
+   "institutions": [
+    [
+     "A T Pawar Women's College",
+     "NASHIK",
+     "Arts and science college"
+    ],
+    [
+     "A. P. Shah Institute of Technology",
+     "Thane",
+     "Engineering college"
+    ],
+    [
+     "Abhinav college of Arts, Commerce and Science",
+     "Thane",
+     "Other"
+    ],
+    [
+     "Aishabai College of Education",
+     "Mumbai",
+     "Private / self-financing college"
+    ],
+    [
+     "Amdar Deepakbhai kesarkar science college Dodamarg",
+     "Sindhudurg",
+     "Government-aided college"
+    ],
+    [
+     "Anandibai Damodar Kale Degree College of Arts and commerce",
+     "Mumbai",
+     "Private / self-financing college"
+    ],
+    [
+     "Anjuman Islam Janjira Degree College of Science",
+     "Raigad",
+     "Government-aided college"
+    ],
+    [
+     "Annasaheb Magar Mahavidyalaya",
+     "Pune",
+     "Government-aided college"
+    ],
+    [
+     "Atharva College of Engineering",
+     "Mumbai",
+     "Engineering college"
+    ],
+    [
+     "Atharva University Mumbai",
+     "Mumbai",
+     "Private / self-financing college"
+    ],
+    [
+     "Athavale College of Social Work, Chimur",
+     "Chandrapur",
+     "Government-aided college"
+    ],
+    [
+     "B N Bandodkar College of Dcience Thane",
+     "THANE",
+     "Autonomous college"
+    ],
+    [
+     "B.G.PATLE COLLEGE OF EDUCATION (B.Ed) GUMADHAWDA TIRORA TAH-TIRORA DIST-GONDIA",
+     "GONDIA",
+     "Private / self-financing college"
+    ],
+    [
+     "B.K.L. Walawalkar College of Physiotherapy, At Post Kasarwadi, Sawarde, Tal. Chiplun, Ratnagiri-415606",
+     "Ratnagiri",
+     "Private / self-financing college"
+    ],
+    [
+     "Bajaj Institute Of Technology",
+     "Wardha",
+     "Engineering college"
+    ],
+    [
+     "BHARAT COLLEGE OF ARTS AND COMMERCE",
+     "THANE",
+     "Government-aided college"
+    ],
+    [
+     "Bharati Vidyapeeth College of Engineering, Navimumbai",
+     "Raigad",
+     "Engineering college"
+    ],
+    [
+     "Bharati Vidyapeeth's College of Pharmacy, Navi Mumbai",
+     "Thane",
+     "Private / self-financing college"
+    ],
+    [
+     "Bharatiya Vidya Bhavan's M. M. College of Arts, N.M. Institute of Science and H. R. J. College of Commerce, Bhavan's College (Empowered Autonomous) Munshi Nagar Andheri (West), Mumbai-400058",
+     "Mumbai Suburban",
+     "Government-aided college"
+    ],
+    [
+     "Bhavna trust junior and degree college of commerce and science",
+     "Mumba",
+     "Other"
+    ],
+    [
+     "Bombay Teachers' Training College, a constituent college of HSNC University, Mumbai",
+     "MUMBAI",
+     "Government-aided college"
+    ],
+    [
+     "CENTRAL SANSKRIT UNIVERSITY NASHIK CAMPUS",
+     "NASHIK",
+     "Central university department"
+    ],
+    [
+     "Chandrabhan sharma college",
+     "Mumbai",
+     "Autonomous college"
+    ],
+    [
+     "Chembur Karnataka College of Law",
+     "Mumbai",
+     "Law college"
+    ],
+    [
+     "CHEMBUR KARNATAKA SANGHA'S CHEMBUR KARNATAKA NIGHT COLLEGE",
+     "Mumbai Suburban",
+     "Private / self-financing college"
+    ],
+    [
+     "COEP TECHNOLOGICAL UNIVERSITY",
+     "PUNE",
+     "State university department"
+    ],
+    [
+     "Datey College Yavatmal",
+     "Yavatmal",
+     "Government-aided college"
+    ],
+    [
+     "Datta Meghe College Of Engineering",
+     "Thane",
+     "Private / self-financing college"
+    ],
+    [
+     "Dr. Dadasaheb Waradkar Arts & Commerce College, Katta",
+     "SINDHUDURG",
+     "Private / self-financing college"
+    ],
+    [
+     "Dr. L. H. Hiranandani College of Pharmacy",
+     "Thane",
+     "Private / self-financing college"
+    ],
+    [
+     "Dr. Rafiq Zakaria College for Women College",
+     "Chhtrapati Sambhajinagar",
+     "Government-aided college"
+    ],
+    [
+     "Dr.Ambedkar college of social work wardha",
+     "wardha",
+     "Government-aided college"
+    ],
+    [
+     "Finolex Academy of Management and Technology",
+     "Ratnagiri",
+     "Engineering college"
+    ],
+    [
+     "G H Raisoni College of Engineering",
+     "NAGPUR",
+     "Autonomous college"
+    ],
+    [
+     "G H Raisoni College of Engineering and Management Nagpur",
+     "Nagpur",
+     "Autonomous college"
+    ],
+    [
+     "G.M.Vedak Institute of Technology, Tala",
+     "Raigad",
+     "Engineering college"
+    ],
+    [
+     "Gandhi Natha Rangaji Homoeopathy College, Solapur",
+     "Solapur",
+     "Other"
+    ],
+    [
+     "Ghanshyamdas Saraf College",
+     "Mumbai",
+     "Autonomous college"
+    ],
+    [
+     "Gogate joglekar college",
+     "Ratnagiri",
+     "Autonomous college"
+    ],
+    [
+     "Government college of engineering yavatmal",
+     "Yavatmal",
+     "Government college"
+    ],
+    [
+     "Guru Nanak College of Arts, Science and Commerce (Autonomous)",
+     "Mumbai",
+     "Autonomous college"
+    ],
+    [
+     "HINDI VIDYA PRACHAR SAMITI'S COLLEGE OF LAW",
+     "MUMBAI SUBURBAN",
+     "Law college"
+    ],
+    [
+     "HOUSABAI COLLEGE OF PHYSIOTHERAPY",
+     "Kolhapur",
+     "Government college"
+    ],
+    [
+     "HSNC UNIVERSITY, Worli, Mumbai",
+     "Mumbai",
+     "State university department"
+    ],
+    [
+     "Humera Khan College of Education, Jogeshwari, Mumbai, Maharashtra",
+     "Mumbai",
+     "Other"
+    ],
+    [
+     "HVPM's Degree College of Physical Education, Amravati",
+     "Amravati",
+     "Autonomous college"
+    ],
+    [
+     "IDEAL INSTITUTE OF PHARMACY",
+     "Palghar",
+     "Other"
+    ],
+    [
+     "Indian Institute of Technology Bombay",
+     "Mumbai",
+     "IIT / NIT / IISER / IIIT"
+    ],
+    [
+     "Institute of Science Nagpur",
+     "Nagpur",
+     "Autonomous college"
+    ],
+    [
+     "J.S.S SHRI RAM COLLEGE OF COMMERCE .",
+     "MUMBAI SUBURBAN",
+     "Private / self-financing college"
+    ],
+    [
+     "Janata Shikshan Prasarak Mandal Umardaris Janta BEd College, Mahavir society, Nanded",
+     "Nanded",
+     "Private / self-financing college"
+    ],
+    [
+     "Jeevan Jyot Educational Chartitable Trust Reena Mehta College of Arts, Science, Commerce and Management Studies",
+     "Thane",
+     "Autonomous college"
+    ],
+    [
+     "Jeevandeep Arts Commerce and science college Khardi",
+     "Thane",
+     "Arts and science college"
+    ],
+    [
+     "JSSP COLLEGE GOVELI",
+     "Thane",
+     "Private / self-financing college"
+    ],
+    [
+     "JVM's Mehta Degree College, Airoli",
+     "Thane",
+     "Private / self-financing college"
+    ],
+    [
+     "K J Somaiya College of Science and Commerce, Vidyavihar Mumbai",
+     "Mumbai",
+     "Autonomous college"
+    ],
+    [
+     "K J Somaiya Institute of Technology, Mumbai",
+     "Mumbai",
+     "Autonomous college"
+    ],
+    [
+     "K.M.E Society's G.M.Momin Women's College, Bhiwandi",
+     "Thane",
+     "Government-aided college"
+    ],
+    [
+     "K.P.B.Hinduja College of Commerce",
+     "Mumbai",
+     "Autonomous college"
+    ],
+    [
+     "KARNATAKA SANGHA'S MANJUNATHA COLLEGE OF COMMERCE",
+     "THANE",
+     "Other"
+    ],
+    [
+     "Kasturi Charitable trust Guardian Degree college of Art's Commerce and Science",
+     "Thane",
+     "Private / self-financing college"
+    ],
+    [
+     "Kavayitri Bahinabai Chaudhari North Maharashtra University",
+     "Jalgaon",
+     "State university department"
+    ],
+    [
+     "KAVIKULAGURU KALIDAS SANSKRIT UNIVERSITY",
+     "NAGPUR",
+     "State university department"
+    ],
+    [
+     "KAVYA MAHILA MAHAVIDYALYA",
+     "Beed",
+     "Other"
+    ],
+    [
+     "KCES COLLEGE OF ENGINEERING & MANAGEMENT JALGAON",
+     "JALGAON",
+     "Autonomous college"
+    ],
+    [
+     "KINKAR COLLEGE OF EDUCATION SELOO",
+     "SELOO",
+     "Private / self-financing college"
+    ],
+    [
+     "LATE MRS HOUSABAI HOMOEOPATHIC MEDICAL COLLEGE AND HOSPITAL NIMSHIRGAON",
+     "Kolhapur",
+     "Private / self-financing college"
+    ],
+    [
+     "LATE PARVATABAI MADANKAR ARTS COLLEGE WARTHI",
+     "BHANDARA",
+     "Private / self-financing college"
+    ],
+    [
+     "Lilavati Lalji Dayal Night College of Commerce",
+     "Mumbai",
+     "Private / self-financing college"
+    ],
+    [
+     "Lok Mahavidyalaya Wardha",
+     "Wardha",
+     "Government-aided college"
+    ],
+    [
+     "Lokmanya Tilak College of Engineering",
+     "Thane",
+     "Engineering college"
+    ],
+    [
+     "Loknete Ma.Hanmantrao Patil Charitable Trust_x0092_s, Adarsh Institute of Technology & Reserch Centre Tal. Khanapur Dist. Sangli",
+     "Sangli",
+     "Other"
+    ],
+    [
+     "LSHGCT's Gahlot Institute of Pharmacy",
+     "Thane",
+     "Private / self-financing college"
+    ],
+    [
+     "M. L. DAHANUKAR COLLEGE OF COMMERCE",
+     "Mumbai",
+     "Autonomous college"
+    ],
+    [
+     "M. V. Mandali's Colleges of Commerce and Science",
+     "Mumbai Suburban",
+     "State university department"
+    ],
+    [
+     "Mahatma Basweshwar Mahavidyalaya,Latur",
+     "LATUR",
+     "Government-aided college"
+    ],
+    [
+     "Mahatma Gandhi Antarrashtriya Hindi Vishwavidyalaya",
+     "Wardha",
+     "Central university department"
+    ],
+    [
+     "Mahatma Gandhi Institute of Medical Sciences,Wardha,Wardha",
+     "Wardha",
+     "Government-aided college"
+    ],
+    [
+     "Mahatma Jyotiba Fule College of Social Work Yavatmal",
+     "Yavatmal",
+     "Government-aided college"
+    ],
+    [
+     "Mahendra Pratap Sharada Prashad Singh college of commerce and Science",
+     "Mumbai",
+     "Private / self-financing college"
+    ],
+    [
+     "Malini Kishor Sanghvi College of Commerce and Economics",
+     "Mumbai",
+     "Private / self-financing college"
+    ],
+    [
+     "Mangur Naik anudanit aashram ladu",
+     "Nashik",
+     "Government college"
+    ],
+    [
+     "Manjara Charitable Trust's Rajiv Gandhi Institute of Technology, Juhu Versova Link Road, Versova, Andheri (West), Mumbai-400053",
+     "Mumbai Suburban",
+     "Engineering college"
+    ],
+    [
+     "MARATHI BHASHA VIDYAPEETH, RIDDHPUR, AMRAVATI",
+     "AMRAVATI",
+     "State university department"
+    ],
+    [
+     "MES Senior College, Pune",
+     "Pune",
+     "Private / self-financing college"
+    ],
+    [
+     "MES's The D.G. Ruparel College of arts, Science and Commerce",
+     "Mumbai",
+     "Arts and science college"
+    ],
+    [
+     "MET INSTITUTE OF PGDM",
+     "Mumbai",
+     "Private / self-financing college"
+    ],
+    [
+     "Mohsinbhai Zaweri Mahavidyalaya Desaiganj",
+     "Gadchiroli",
+     "Arts and science college"
+    ],
+    [
+     "MTES' Smt. Godavaribai Ganpatrao Khadse College, Muktainagar, Tal-Muktainagar, Dist: Jalgaon 425306",
+     "Jalgaon",
+     "Government-aided college"
+    ],
+    [
+     "MUMBAI INSTITUTE OF MANAGEMENT & RESEARCH",
+     "Mumbai",
+     "Private / self-financing college"
+    ],
+    [
+     "Nalanda Nritya Kala Mahavidyalaya (Autonomous)",
+     "Mumbai Suburban",
+     "Government-aided college"
+    ],
+    [
+     "Nava Samaj Mandal Degree College",
+     "Mumbai Suburban",
+     "Other"
+    ],
+    [
+     "Navnirman Shikshan Sansthas College of Arts,Commerce & Science Sangameshwar",
+     "RATNAGIRI",
+     "Private / self-financing college"
+    ],
+    [
+     "NCRD's Sterling college of Arts, Commerce & Science, Plot No.43, Sector -19, Nerul-Seawoods, Navi Mumbai, Thane - 400706",
+     "Thane",
+     "Private / self-financing college"
+    ],
+    [
+     "NES Ratnam College of Arts Science and Commerce",
+     "Mumbai Suburban",
+     "Autonomous college"
+    ],
+    [
+     "New horizon College of commerce",
+     "Navi Mumbai",
+     "Private / self-financing college"
+    ],
+    [
+     "NKES COLLEGE OF ARTS COMMERCE AND SCIENCE",
+     "Mumbai",
+     "Private / self-financing college"
+    ],
+    [
+     "NKES COLLEGE OF ARTS COMMERCE AND SCIENCE",
+     "Mumbai",
+     "Private / self-financing college"
+    ],
+    [
+     "Oaasis Mahavidyalaya, ( Night) , Bela, Bhandara.",
+     "Bhandara",
+     "Other"
+    ],
+    [
+     "ORANGE CITY COLLEGE OF SOCIAL WORK, NAGPUR",
+     "NAGPUR",
+     "Government-aided college"
+    ],
+    [
+     "Oriental Education Society's Oriental College of Education",
+     "Thane",
+     "Private / self-financing college"
+    ],
+    [
+     "Our Lady og Grace Trust's St. gonsalo Garcia College of Arts & Commerce, Vasai, Dist- Palghar, maharashtra, PIN 401201",
+     "Palghar",
+     "Government-aided college"
+    ],
+    [
+     "P.M.B.S.Arts,Commerce & Computer Science College,Nagpur.",
+     "Nagpur",
+     "Arts and science college"
+    ],
+    [
+     "PDEA'S Waghire college saswad",
+     "PUNE",
+     "Government-aided college"
+    ],
+    [
+     "Pillai HOC College of Arts, Science and Commerce (Autonomous) Rasayani",
+     "Raigad",
+     "Autonomous college"
+    ],
+    [
+     "Post Graduate Teaching Department of English",
+     "Amravati",
+     "State university department"
+    ],
+    [
+     "Pragati Degree College",
+     "Palghar",
+     "Private / self-financing college"
+    ],
+    [
+     "Principal K M Kundnani College of Pharmacy",
+     "Mumbai",
+     "Government-aided college"
+    ],
+    [
+     "PTVA's Sathaye College (Autonomous)",
+     "Mumbai",
+     "Government-aided college"
+    ],
+    [
+     "Pundalik Ambaji Karle Arts & Commerce College,Shirgaon",
+     "Sindhudurg",
+     "Private / self-financing college"
+    ],
+    [
+     "PUNE VIDYARTHI GRIHA'S COLLEGE OF SCIENCE AND TECHNOLOGY",
+     "MUMBAI",
+     "Private / self-financing college"
+    ],
+    [
+     "R A PODAR COLLEGE OF COMMERCE AND ECONOMICS",
+     "Mumbai",
+     "Government-aided college"
+    ],
+    [
+     "R. K. Talreja College of Arts, Science & Commerce, Ulhasnagar (West) - 421 003",
+     "Thane",
+     "Government-aided college"
+    ],
+    [
+     "R. P.  Gogate College of Arts and Science and R. V. Jogalekar College of Commerce (Autonomous) Ratnagiri",
+     "Ratnagiri",
+     "Autonomous college"
+    ],
+    [
+     "R.R.EDUCATIONAL TRUST'S B.ED. COLLEGE",
+     "MUMBAI SUBURBAN",
+     "Private / self-financing college"
+    ],
+    [
+     "Rachana Sansad College of Applied Art and Craft",
+     "Mumbai",
+     "Private / self-financing college"
+    ],
+    [
+     "Ramanand Arya DAV College",
+     "Mumbai",
+     "Autonomous college"
+    ],
+    [
+     "Ramkrishna Wagh College of Arts and Commerce",
+     "Nagpur",
+     "Private / self-financing college"
+    ],
+    [
+     "Rayat Shikshan Sanstha's, Karmaveer Bhaurao Patil College, Vashi, Navi Mumbai",
+     "Thane",
+     "Autonomous college"
+    ],
+    [
+     "REGAL COLLEGE OF TECHNOLOGY, MAHAD",
+     "RAIGAD",
+     "Private / self-financing college"
+    ],
+    [
+     "Renukadevi Mahavidyalya",
+     "Nanded",
+     "Arts and science college"
+    ],
+    [
+     "Royal College of Science & Commerce,Dombivili East",
+     "Thane",
+     "Arts and science college"
+    ],
+    [
+     "RTCCS Kharghar",
+     "Raigad",
+     "Private / self-financing college"
+    ],
+    [
+     "S.S.T.College of Arts and Commerce",
+     "Thane",
+     "Private / self-financing college"
+    ],
+    [
+     "Sanpada college of commerce and Technology",
+     "Thane",
+     "Other"
+    ],
+    [
+     "Sanpada college of commerce and technology",
+     "Thane",
+     "Private / self-financing college"
+    ],
+    [
+     "Saraswathi vidya bhavan college of pharmacy",
+     "Thane",
+     "Other"
+    ],
+    [
+     "Satish Pradhan Dnyanasadhana College Thane (Autonomous)",
+     "Thane",
+     "Government-aided college"
+    ],
+    [
+     "SBES College of Science , Chhatrapati Sambhajinagar",
+     "Chhatrapati Sambhajinagar",
+     "Government-aided college"
+    ],
+    [
+     "SEMT's M.B.Harris College of Arts & A.E.Kalsekar College of Commerce & Management",
+     "Palghar",
+     "Other"
+    ],
+    [
+     "SENIOR ARTS MAHILA MAHAVIDYALAY, SHAHADA",
+     "NANDURBAR",
+     "Private / self-financing college"
+    ],
+    [
+     "Shiv Mahavidyalya",
+     "Yavatmal",
+     "Arts and science college"
+    ],
+    [
+     "Shivajirao S. Jondhale College of Engineering Dombivli East",
+     "Thane",
+     "Engineering college"
+    ],
+    [
+     "Shivajirao S. Jondhle College of Engineering & Technology, Asangaon",
+     "Thane",
+     "Engineering college"
+    ],
+    [
+     "Shree Goraksha College of Pharmacy and Research Center Khamgaon",
+     "Chh.Sambhajinagar",
+     "Medical / dental / nursing college"
+    ],
+    [
+     "SHREE L. R. TIWARI COLLEGE OF ENGINEERING",
+     "MUMBAI",
+     "Autonomous college"
+    ],
+    [
+     "Shree L. R. Tiwari Degree College of Arts, Commerce and Science",
+     "Thane",
+     "Private / self-financing college"
+    ],
+    [
+     "Shree Shankar Narayan Education Trusts' Shankar Narayan College of Arts and Commerce",
+     "THANE",
+     "Government-aided college"
+    ],
+    [
+     "Shree Siddheshwar Womens college of engineering solapur",
+     "Solapur",
+     "Private / self-financing college"
+    ],
+    [
+     "Shri Chhatrapati Shivaji College Omerga",
+     "Dharashiv",
+     "Government-aided college"
+    ],
+    [
+     "Shri gpm degree college",
+     "Mumbai Suburban",
+     "Private / self-financing college"
+    ],
+    [
+     "Shri GPM Degree college of science and commerce",
+     "Mumbai",
+     "Private / self-financing college"
+    ],
+    [
+     "Shri Guru Gobind Singhji Institute of Engineering & Technology",
+     "Nanded",
+     "Government-aided college"
+    ],
+    [
+     "Shri Pancham Khemraj Mahavidyalaya, Sawantwadi (Autonomous)",
+     "Sindhudurg",
+     "Autonomous college"
+    ],
+    [
+     "Shri Rajasthani Seva Sangh's S.P.D.T College of Arts, Commerce and Science",
+     "Mumbai",
+     "Autonomous college"
+    ],
+    [
+     "Shri shahaji chhatrapati mahavidyalaya Kolhapur",
+     "Kolhapur",
+     "Arts and science college"
+    ],
+    [
+     "SIES COLLEGE OF ARTS SCIENCE AND COMMERCE SION WEST",
+     "Mumbai",
+     "Autonomous college"
+    ],
+    [
+     "SIES Graduate School of Technology",
+     "Thane",
+     "Private / self-financing college"
+    ],
+    [
+     "SIES Nerul College of Arts Science and Commerce Autonomous",
+     "Thane",
+     "Autonomous college"
+    ],
+    [
+     "Sm shetty college of science commerce and management studies powai",
+     "Mumbai suburban district",
+     "Autonomous college"
+    ],
+    [
+     "Smt. Janakibai Rama Salvi College",
+     "Thane",
+     "Private / self-financing college"
+    ],
+    [
+     "Smt. K. L. Tiwari Degree College of Commerce & Science",
+     "Palghar",
+     "Private / self-financing college"
+    ],
+    [
+     "SMT. KAMALA MEHTA VWA COLLEGE OF COMMERCE",
+     "Mumbai",
+     "Private / self-financing college"
+    ],
+    [
+     "Smt. Mithibai Motiram Kundnani College of Commerce & Economics",
+     "Mumbai",
+     "Private / self-financing college"
+    ],
+    [
+     "Smt.Yashoda Arts commerce and science mahila mahavidyalay Kodamendhi",
+     "Nagpur",
+     "Arts and science college"
+    ],
+    [
+     "SNJB's Shriman Sureshdada Jain College of Pharmacy",
+     "Nashik",
+     "Private / self-financing college"
+    ],
+    [
+     "Sree Narayana Guru College of Commerce(Autonomous)",
+     "Mumbai",
+     "Autonomous college"
+    ],
+    [
+     "St. John College of Engineering and Management",
+     "Palghar",
+     "Autonomous college"
+    ],
+    [
+     "ST. Wilfred's college of arts commerce and science",
+     "Raigad",
+     "Private / self-financing college"
+    ],
+    [
+     "Suman madhav mahila mahavidyalay Zari nanded",
+     "NANDED",
+     "Private / self-financing college"
+    ],
+    [
+     "SUNDARRAO MORE ARTS, COMMERCE & SCIENCE COLLEGE POLADPUR RAIGAD",
+     "RAIGAD",
+     "Government-aided college"
+    ],
+    [
+     "SVKM's DWRKADAS J SANGHVI COLLEGE OF ENGINEERING",
+     "Mumbai Suburban",
+     "Autonomous college"
+    ],
+    [
+     "SVKM's Narsee Monjee College of Commerce & Economics (Empowered Auto.)",
+     "Mumbai",
+     "Autonomous college"
+    ],
+    [
+     "Swami Hansmuni Maharaj Degree College of Commerce",
+     "Thane",
+     "Private / self-financing college"
+    ],
+    [
+     "Swami Ramanand Teerth Mahavidyala Ambajogai",
+     "Beed",
+     "Government-aided college"
+    ],
+    [
+     "SWAYAM SIDDHI MITRA SANGH'S DEGREE COLLEGE",
+     "THANE",
+     "Private / self-financing college"
+    ],
+    [
+     "Terna Engineering College",
+     "Thane",
+     "Autonomous college"
+    ],
+    [
+     "Thadomal Shahani Engineering College",
+     "Mumbai",
+     "Autonomous college"
+    ],
+    [
+     "THAKUR COLLEGE OF ENGINEERING AND TECHNOLOGY",
+     "Brihan Mumbai",
+     "Private / self-financing college"
+    ],
+    [
+     "Thakur College of Science and Commerce",
+     "Mumbai",
+     "Autonomous college"
+    ],
+    [
+     "Thakur Shyamnarayan Engineering College, Kandivali",
+     "Mumbai Suburban",
+     "Private / self-financing college"
+    ],
+    [
+     "THE IPA MSB's Bombay College of Pharmacy",
+     "Mumbai",
+     "Autonomous college"
+    ],
+    [
+     "The S.I.A. College of Higher Education",
+     "Thane",
+     "Autonomous college"
+    ],
+    [
+     "Tilak Education Society's  J.K. College of Science and Commerce, Ghansoli",
+     "Navi Mumbai",
+     "Autonomous college"
+    ],
+    [
+     "Tolani College of Commerce (Autonomous)",
+     "Mumbai",
+     "Autonomous college"
+    ],
+    [
+     "University of Mumbai",
+     "Mumbai",
+     "State university department"
+    ],
+    [
+     "Uran Education Society's College of Management and Technology",
+     "Raigad",
+     "Private / self-financing college"
+    ],
+    [
+     "Veena college of commerce and science",
+     "Borivali",
+     "Private / self-financing college"
+    ],
+    [
+     "Vidya Prasarak Mandal s K.G.Joshi College of Arts and N.G. Bedekar college of Commerce Autonomous Thane",
+     "Thane",
+     "Autonomous college"
+    ],
+    [
+     "Vidya Prasarak Mandal's College of Engineering Thane",
+     "Thane",
+     "Engineering college"
+    ],
+    [
+     "Vidya Vikas College of Arts, Science, Commerce, B.M.M, B.M.S",
+     "Mumbai Suburban",
+     "Private / self-financing college"
+    ],
+    [
+     "Vidya Vikas Education Trusts Lords Universal College",
+     "MUMBAI SUBURBAN",
+     "Private / self-financing college"
+    ],
+    [
+     "Vidyavardhini's Annasaheb Vartak College of Arts, Kedarnath Malhotra College of Commerce, E. S. Andrades College of Science",
+     "Palghar",
+     "Government-aided college"
+    ],
+    [
+     "VIDYAVIHAR MAHAVIDYALAY KALAMB DIST YAVATMAL",
+     "YAVATAMAL",
+     "Private / self-financing college"
+    ],
+    [
+     "Vivek College of Commerce",
+     "Borivali",
+     "Autonomous college"
+    ],
+    [
+     "VIVEKANAND EDUCATION SOCIETY'S COLLEGE OF ARTS, SCIENCE AND COMMERCE",
+     "CHEMBUR MUMBAI",
+     "Autonomous college"
+    ],
+    [
+     "Vivekanand Education Society's College of Pharmacy",
+     "Mumbai",
+     "Autonomous college"
+    ],
+    [
+     "VMV Commerce JMT Arts and JJP Science College",
+     "Nagpur",
+     "Government-aided college"
+    ],
+    [
+     "VPM's R Z Shah College of Arts, Science & Commerce, Mithagar Road, Mulund East - 400081",
+     "Mumbai Suburban",
+     "Private / self-financing college"
+    ],
+    [
+     "VPM's TMC Law College, Thane",
+     "Thane",
+     "Government-aided college"
+    ],
+    [
+     "Western College of Commerce and Business Management",
+     "Thane",
+     "Autonomous college"
+    ],
+    [
+     "ZSCT's Thakur Shyamnarayan Degree College",
+     "Mumbai",
+     "Private / self-financing college"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Manipur"
+   ],
+   "nodal": "Manipur University",
+   "institutions": [
+    [
+     "Biramangol College, Sawombung",
+     "Imphal East",
+     "Government college"
+    ],
+    [
+     "Churachandpur College",
+     "Churachandpur",
+     "Government college"
+    ],
+    [
+     "Don Bosco College (Autonomous), Maram",
+     "Senapati",
+     "Autonomous college"
+    ],
+    [
+     "Government Hindi Teachers' Training College",
+     "Imphal West",
+     "Government college"
+    ],
+    [
+     "Jiri College",
+     "Jiribam",
+     "Government college"
+    ],
+    [
+     "Kakching Khunou College",
+     "Kakching",
+     "Government college"
+    ],
+    [
+     "Kha Manipur College",
+     "Kakching",
+     "Government college"
+    ],
+    [
+     "KUMBI COLLEGE, KUMBI",
+     "BISHNUPUR",
+     "Government-aided college"
+    ],
+    [
+     "Manipur College",
+     "Imphal West",
+     "Government college"
+    ],
+    [
+     "MANIPUR TECHNICAL UNIVERSITY",
+     "Imphal west",
+     "State university department"
+    ],
+    [
+     "Modern College, Imphal",
+     "Imphal East",
+     "Government college"
+    ],
+    [
+     "N G.College Imphal",
+     "Imphal West",
+     "Government college"
+    ],
+    [
+     "Oriental College (Autonomous)",
+     "Imphal West",
+     "Government college"
+    ],
+    [
+     "Presidency College Motbung",
+     "Kangpokpi",
+     "Government college"
+    ],
+    [
+     "RK Sanatombi Devi College of Education",
+     "Imphal East",
+     "Private / self-financing college"
+    ],
+    [
+     "Shree Shree Gourgobind Girls' College",
+     "Imphal East",
+     "Government-aided college"
+    ],
+    [
+     "Tamenglong College",
+     "Tamenglong",
+     "Government college"
+    ],
+    [
+     "THAMBAL MARIK COLLEGE, OINAM",
+     "Bishnupur",
+     "Government college"
+    ],
+    [
+     "The Maharaja Bodhchandra College",
+     "Imphal East",
+     "Government college"
+    ],
+    [
+     "Thoubal College",
+     "THOUBAL",
+     "Government college"
+    ],
+    [
+     "Waikhom Mani Girls' College",
+     "Thoubal",
+     "Government college"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Meghalaya"
+   ],
+   "nodal": "North-Eastern Hill University",
+   "institutions": [
+    [
+     "Mahatma Gandhi University, Meghalaya",
+     "Ri-Bhoi",
+     "Other"
+    ],
+    [
+     "NORTH EAST REGIONAL INSTITUTE OF EDUCATION",
+     "RI BHOI",
+     "Government college"
+    ],
+    [
+     "NORTH-EASTERN HILL UNIVERSITY",
+     "EAST KHASI HILLS",
+     "Central university department"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Mizoram"
+   ],
+   "nodal": "Mizoram University",
+   "institutions": [
+    [
+     "Central University of Mizoram",
+     "Aizawl",
+     "Central university department"
+    ],
+    [
+     "National Institute of Technology Mizoram",
+     "Aizawl",
+     "IIT / NIT / IISER / IIIT"
+    ],
+    [
+     "Pachhunga University College",
+     "Aizawl",
+     "Central university department"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Nagaland"
+   ],
+   "nodal": "Nagaland University",
+   "institutions": [
+    [
+     "Nagaland University",
+     "Zunheboto",
+     "Central university department"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Odisha"
+   ],
+   "nodal": "Central University of Odisha",
+   "institutions": [
+    [
+     "AERONAUTICS COLLEGE",
+     "KORAPUT",
+     "Other"
+    ],
+    [
+     "Anandapur Anchalik Training College",
+     "Keonjhar",
+     "Government college"
+    ],
+    [
+     "Central University of Odisha, Koraput",
+     "Koraput",
+     "Central university department"
+    ],
+    [
+     "COLLEGE OF TEACHER EDUCATION BHAWANIPATNA",
+     "KALAHANDI",
+     "Government college"
+    ],
+    [
+     "Deogarh College",
+     "Debagada",
+     "Government-aided college"
+    ],
+    [
+     "DHENKANAL AUTONOMOUS COLLEGE",
+     "DHENKANAL",
+     "Government college"
+    ],
+    [
+     "DIBAKAR PATNAIK IASE, BERHAMPUR",
+     "Ganjam",
+     "Government college"
+    ],
+    [
+     "Dr Parshuram Mishra Intitute of Advanced Study in Education, Sambalpur",
+     "Sambalpur",
+     "Government college"
+    ],
+    [
+     "Dr. B. R. Ambedkar Jr. College",
+     "Koraput",
+     "Government-aided college"
+    ],
+    [
+     "Government Women's College, Kendujhar",
+     "Kendujhar",
+     "Government college"
+    ],
+    [
+     "Govt. DAV College, Koraput",
+     "Koraput",
+     "Government college"
+    ],
+    [
+     "Govt. Model Degree College Nabarangpur",
+     "Nabarangpur",
+     "Government college"
+    ],
+    [
+     "GOVT. WOMEN'S COLLEGE, SAMBALPUR",
+     "SAMBALPUR",
+     "Government college"
+    ],
+    [
+     "H.N.S. Mahavidyalaya, Chandol, Kendrapara",
+     "KENDRAPARA",
+     "Government-aided college"
+    ],
+    [
+     "JASHIPUR (DEGREE) COLLEGE,JASHIPUR",
+     "MAYURBHANJ",
+     "Government-aided college"
+    ],
+    [
+     "KISHORE CHANDRA DEGREE COLLEGE,TARABHATTA",
+     "Koraput",
+     "Private / self-financing college"
+    ],
+    [
+     "Konark Bhagabati Mahabidyalaya, konark, Puri, Odisha",
+     "PURI",
+     "Government-aided college"
+    ],
+    [
+     "KOTPAD COLLEGE KOTPAD",
+     "KORAPUT",
+     "Government-aided college"
+    ],
+    [
+     "Kuntala Kumari Sabat Women's (Degree) College, Balasore",
+     "Baleswar",
+     "Government college"
+    ],
+    [
+     "LARAMBHA DEGREE COLLEGE, LARAMBHA",
+     "Bargarh",
+     "Government-aided college"
+    ],
+    [
+     "MAYURBHANJ SCHOOL OF ENGINEERING",
+     "MAYURBHANJ",
+     "Private / self-financing college"
+    ],
+    [
+     "MODEL DEGREE COLLEGE",
+     "MALKANGIRI",
+     "Government college"
+    ],
+    [
+     "Model Degree College Malkangiri",
+     "Malkangiri",
+     "Government college"
+    ],
+    [
+     "Model degree college malkangiri",
+     "Malkangiri",
+     "Government college"
+    ],
+    [
+     "Model Degree College Nuapada",
+     "Nuapada",
+     "Government college"
+    ],
+    [
+     "Municipal College Rourkela",
+     "Sundargarah",
+     "Government-aided college"
+    ],
+    [
+     "Parbati Giri Women's College,Baragada",
+     "Baragada",
+     "Government-aided college"
+    ],
+    [
+     "Parjang mahavidyalaya, parjang dhenkanal",
+     "Dhenkanal",
+     "Government-aided college"
+    ],
+    [
+     "Pathani samanta college khanadapada",
+     "Nayagarh",
+     "Government college"
+    ],
+    [
+     "PATHANI SAMANTA COLLEGE KHANDAPARA",
+     "Nayagarh",
+     "Government-aided college"
+    ],
+    [
+     "Rayagada Autonomous College Rayagada",
+     "Rayagada",
+     "Government-aided college"
+    ],
+    [
+     "SARALA MOHAVIDYALAYA, RAHAMA",
+     "Jagatsinghapur",
+     "Government-aided college"
+    ],
+    [
+     "Semiliguda College",
+     "Koraput",
+     "Government-aided college"
+    ],
+    [
+     "Sunabeda Women's Degree College, Sunabeda",
+     "Koraput",
+     "Government-aided college"
+    ],
+    [
+     "UDALA COLLEGE, UDALA",
+     "MAYURBHANJ",
+     "Government-aided college"
+    ],
+    [
+     "UPENDRA NATH COLLEGE SORA",
+     "BALESHWAR",
+     "Government-aided college"
+    ],
+    [
+     "vidyarthi college",
+     "Baleshwar Town",
+     "Private / self-financing college"
+    ],
+    [
+     "VIKRAM DEV UNIVERSITY",
+     "Koraput",
+     "State university department"
+    ],
+    [
+     "WOMEN'S COLLEGE, RAYAGADA",
+     "RAYAGADA",
+     "Government-aided college"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Puducherry"
+   ],
+   "nodal": "Pondicherry University",
+   "institutions": [
+    [
+     "Aarupadai Veedu Medical College & Hospital",
+     "Pondicherry",
+     "Medical / dental / nursing college"
+    ],
+    [
+     "AVVAIYAR GOVERNMENT COLLEGE FOR WOMEN",
+     "Karaikal",
+     "Government college"
+    ],
+    [
+     "Bharathiar palkalai koodam",
+     "Puducherry",
+     "Government-aided college"
+    ],
+    [
+     "IDHAYA COLLEGE OF ARTS AND SCIENCE FOR WOMEN",
+     "PUDUCHERRY",
+     "Private / self-financing college"
+    ],
+    [
+     "Jawaharlal Institute of Postgraduate Medical Education and Research",
+     "Puducherry",
+     "Medical / dental / nursing college"
+    ],
+    [
+     "Kasturba Gandhi Nursing College",
+     "PUDUCHERRY",
+     "Deemed university"
+    ],
+    [
+     "MOTHER THERESA POST GRADUATE AND RESEARCH INSTITUTE OF HEALTH SCIENCS",
+     "PUDUCHERRY",
+     "Medical / dental / nursing college"
+    ],
+    [
+     "National Institute of Technology Puducherry",
+     "Karikal",
+     "IIT / NIT / IISER / IIIT"
+    ],
+    [
+     "Perunthalaivar Kamarajar Arts College",
+     "Puducherry",
+     "Government college"
+    ],
+    [
+     "Perunthalaivar Kamarajar college of Education",
+     "Karaikal",
+     "Government college"
+    ],
+    [
+     "Pondicherry University",
+     "Pondicherry",
+     "Central university department"
+    ],
+    [
+     "Rashtriya Raksha University",
+     "Puducherry",
+     "Central university department"
+    ],
+    [
+     "School of Physiotherapy",
+     "Pondicherry",
+     "Medical / dental / nursing college"
+    ],
+    [
+     "Sri Manakula Vinayagar Engineering College - School of Arts and Science College",
+     "Puducherry",
+     "Autonomous college"
+    ],
+    [
+     "Tagore Government Arts and science College",
+     "Pondicherry",
+     "Government college"
+    ],
+    [
+     "Vivekanandha College of Education",
+     "Pondicherry",
+     "Private / self-financing college"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Punjab",
+    "Chandigarh"
+   ],
+   "nodal": "Central University of Punjab",
+   "institutions": [
+    [
+     "Central University of Punjab",
+     "Bathinda",
+     "Central university department"
+    ],
+    [
+     "DAV College Bathinda",
+     "Bathinda",
+     "Government-aided college"
+    ],
+    [
+     "DESH BHAGAT UNIVERSITY",
+     "FATEHGARH SAHIB",
+     "Other"
+    ],
+    [
+     "Government College of Commerce and Business Administration",
+     "Chandigarh",
+     "Government college"
+    ],
+    [
+     "Government Home Science College, Sector -10, Chandigarh",
+     "Chandigarh",
+     "Government college"
+    ],
+    [
+     "GURU KASHI UNIVERSITY",
+     "BATHINDA",
+     "Agricultural / veterinary college"
+    ],
+    [
+     "GURU TEG BAHADUR KHALSA COLLEGE FOR WOMEN, DASUYA",
+     "HOSHIARPUR",
+     "Private / self-financing college"
+    ],
+    [
+     "Sri Guru Granth Sahib World University",
+     "Fatehgarh Sahib",
+     "Deemed university"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Rajasthan"
+   ],
+   "nodal": "Central University of Rajasthan",
+   "institutions": [
+    [
+     "Agriculture University, Kota",
+     "Kota",
+     "State university department"
+    ],
+    [
+     "BABA GANGADAS GOVT. GIRLS COLLEGE SHAHPURA JAIPUR",
+     "JAIPUR",
+     "Government college"
+    ],
+    [
+     "CENTRAL SANSKRIT UNIVERSITY, JAIPUR CAMPUS",
+     "JAIPUR",
+     "Central university department"
+    ],
+    [
+     "CH. BALLURAM GODARA GOVERNMENT GIRLS COLLEGE",
+     "SRI GANGANAGAR",
+     "Government college"
+    ],
+    [
+     "College",
+     "Tonk",
+     "Private / self-financing college"
+    ],
+    [
+     "COLLEGE OF AGRICULTURE HINDOLI",
+     "Bundi",
+     "Agricultural / veterinary college"
+    ],
+    [
+     "College of Agriculture, Ummedganj-Kota",
+     "Kota",
+     "Agricultural / veterinary college"
+    ],
+    [
+     "COLLEGE OF HORTICULTURE AND FORESTRY. JHALAWAR",
+     "JHALAWAR",
+     "Agricultural / veterinary college"
+    ],
+    [
+     "CSU jaipur campus",
+     "Jaipur",
+     "Central university department"
+    ],
+    [
+     "Engineering College Bharatpur",
+     "Bharatpur",
+     "Autonomous college"
+    ],
+    [
+     "Government Bangur PG College Pali",
+     "Pali",
+     "Government college"
+    ],
+    [
+     "Government College Arain",
+     "Ajmer",
+     "Government college"
+    ],
+    [
+     "Government College Bundi",
+     "Bundi",
+     "Government college"
+    ],
+    [
+     "Government College Dholpur",
+     "Dholpur",
+     "Government college"
+    ],
+    [
+     "Government College Kanota, Jaipur",
+     "JAIPUR",
+     "Government college"
+    ],
+    [
+     "Government College Sojat City (Pali)",
+     "Pali",
+     "Government college"
+    ],
+    [
+     "Government College Sridungargarh",
+     "Bikaner",
+     "Government college"
+    ],
+    [
+     "Government College Vidhyadhar Nagar",
+     "Jaipur",
+     "Government college"
+    ],
+    [
+     "Government College, Kalwar (Jaipur)",
+     "JAIPUR",
+     "Government college"
+    ],
+    [
+     "Government College, Nahargarh",
+     "Baran",
+     "Government college"
+    ],
+    [
+     "Government College, Rawatsar",
+     "Hanumangarh",
+     "Government college"
+    ],
+    [
+     "GOVERNMENT COLLEGE, SAPOTRA",
+     "KARAULI",
+     "Government college"
+    ],
+    [
+     "Government College, Tonk",
+     "Tonk",
+     "Government college"
+    ],
+    [
+     "GOVERNMENT COMMERCE COLLEGE, ALWAR",
+     "ALWAR",
+     "Government college"
+    ],
+    [
+     "GOVERNMENT DUNGAR COLLEGE BIKANER",
+     "BIKANER",
+     "Government college"
+    ],
+    [
+     "GOVERNMENT GIRLS COLLEGE OSIAN",
+     "JODHPUR",
+     "Government college"
+    ],
+    [
+     "GOVERNMENT GIRLS COLLEGE, GALIYAKOT",
+     "DUNGARPUR",
+     "Government college"
+    ],
+    [
+     "Government Girls College, Nasirabad",
+     "Ajmer",
+     "Government college"
+    ],
+    [
+     "Government Law College Ajmer",
+     "AJMER",
+     "Government college"
+    ],
+    [
+     "GOVERNMENT LAW COLLEGE NAGAUR",
+     "NAGAUR",
+     "Government college"
+    ],
+    [
+     "GOVERNMENT LAW COLLEGE PALI",
+     "PALI",
+     "Law college"
+    ],
+    [
+     "Government Law College, Sri Ganganagar",
+     "Sri Ganganagar (Rajasthan)",
+     "Law college"
+    ],
+    [
+     "GOVT COLLEGE ASIND",
+     "BHILWARA",
+     "Government college"
+    ],
+    [
+     "GOVT COLLEGE BANI PARK, JAIPUR",
+     "JAIPUR",
+     "Government college"
+    ],
+    [
+     "GOVT COLLEGE CHAKSU",
+     "JAIPUR",
+     "Government college"
+    ],
+    [
+     "Govt College karauli",
+     "Karauli",
+     "Government college"
+    ],
+    [
+     "Govt College kareda, bhilwara",
+     "bhilwara",
+     "Government college"
+    ],
+    [
+     "Govt College, Phagi",
+     "Jaipur",
+     "Government college"
+    ],
+    [
+     "GOVT GIRLS COLLEGE BEHROR",
+     "Kotputli-Behror",
+     "Government college"
+    ],
+    [
+     "govt girls college dholpur rajasthan",
+     "dholpur",
+     "Government college"
+    ],
+    [
+     "Govt Law College, Bikaner",
+     "BIKANER",
+     "Law college"
+    ],
+    [
+     "Govt. Girls College Magra Punjala Jodhpur",
+     "Jodhpur",
+     "Government college"
+    ],
+    [
+     "GOVT. GIRLS COLLEGE, BUNDI",
+     "BUNDI",
+     "Government college"
+    ],
+    [
+     "Govt. Girls College, Kishanpole, Jaipur",
+     "Jaipur",
+     "Government college"
+    ],
+    [
+     "GOVT. GIRLS COLLEGE, SANGANER",
+     "JAIPUR",
+     "Government college"
+    ],
+    [
+     "GOVT. LOHIA COLLEGE, CHURU",
+     "CHURU",
+     "Government college"
+    ],
+    [
+     "Govt. Maharani Sudarshan College for Women Bikaner",
+     "BIKANER",
+     "Government college"
+    ],
+    [
+     "Guru Nanak Girl's P.G. College",
+     "Udaipur",
+     "Private / self-financing college"
+    ],
+    [
+     "Indian Institute of Technology Jodhpur",
+     "Jodhpur",
+     "IIT / NIT / IISER / IIIT"
+    ],
+    [
+     "Janardan Rai Nagar Rajasthan Vidyapeeth",
+     "Udaipur",
+     "Deemed university"
+    ],
+    [
+     "Maharshi Dayanand Saraswati University, Ajmer (Rajasthan)",
+     "Ajmer",
+     "State university department"
+    ],
+    [
+     "Mangilal Bagdi Govt. College, Nokha",
+     "Bikaner",
+     "Government college"
+    ],
+    [
+     "Manipal University Jaipur",
+     "Jaipur",
+     "Private / self-financing college"
+    ],
+    [
+     "RAJ RISHI COLLEGE,ALWAR",
+     "ALWAR",
+     "Government college"
+    ],
+    [
+     "RAJMATA VIJAYARAJE SCINDIA MEDICAL COLLEGE Bhilwara",
+     "Bhilwara",
+     "Medical / dental / nursing college"
+    ],
+    [
+     "Regional Institute of Education, Ajmer (A Constituent Unit of NCERT)",
+     "Ajmer",
+     "Government college"
+    ],
+    [
+     "S.M.P.B.J. GOVT. COLLEGE SHEOGANJ",
+     "SIROHI",
+     "Government college"
+    ],
+    [
+     "S.S.B.B. GOVT. COLLEGE, SAGWARA",
+     "DUNGARPUR",
+     "Government college"
+    ],
+    [
+     "SAMRAT PRITHVIRAJ CHAUHAN GOVERNMENT COLLEGE, AJMER",
+     "AJMER",
+     "Government college"
+    ],
+    [
+     "SGV GOVT PG COLLEGE OSIAN",
+     "JODHPUR",
+     "Government college"
+    ],
+    [
+     "Sh.P.S.B.GOVT COLLEGE SHAHPURA (BHILWARA)",
+     "BHILWARA",
+     "Government college"
+    ],
+    [
+     "SHAHEED CAPTAIN RIPUDAMAN SINGH GOVT. COLLEGE SAWAI MADHOPUR",
+     "SAWAI MADHOPUR",
+     "Government college"
+    ],
+    [
+     "Shri Kallaji vedic vishavavidhyalaya Jawda, Nimbaheda , chittorgarh (Rajasthan)",
+     "Chittorgarh",
+     "Private / self-financing college"
+    ],
+    [
+     "SHRIMATI NARBADA DEVI BIHANI GOVERNMENT POSTGRADUATE COLLEGE, NOHAR",
+     "HANUMANGARH",
+     "Government college"
+    ],
+    [
+     "SPDM Govt. Girls College Kotputli",
+     "kotputli - Behror",
+     "Government college"
+    ],
+    [
+     "SRI BALDEV RAM MIRDHA GOVERNMENT COLLEGE, NAGAUR",
+     "NAGAUR",
+     "Government college"
+    ],
+    [
+     "Swami vivekaanand college",
+     "Dungarpur",
+     "Arts and science college"
+    ],
+    [
+     "Swami Vivekanand College Sagwara Dungarpur",
+     "Sagwara",
+     "Arts and science college"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Sikkim"
+   ],
+   "nodal": "Sikkim University",
+   "institutions": [
+    [
+     "Loyola College of Education",
+     "Namchi",
+     "Private / self-financing college"
+    ],
+    [
+     "Namgyal Institute of Tibetology",
+     "East",
+     "Autonomous college"
+    ],
+    [
+     "National Institute of Technology Sikkim",
+     "Namchi",
+     "Autonomous college"
+    ],
+    [
+     "Sanchaman Limboo Government College, Aarigaon Gyalshing",
+     "Gyalshing District",
+     "Government college"
+    ],
+    [
+     "Sikkim government college Namchi",
+     "South Sikkim (Namchi )",
+     "Government college"
+    ],
+    [
+     "Sikkim government college namchi kamrang",
+     "South",
+     "Government college"
+    ],
+    [
+     "Sikkim Government College, Mangshila",
+     "Mangan",
+     "Government college"
+    ],
+    [
+     "Sikkim Government Science College, Chakung",
+     "Soreng",
+     "Government college"
+    ],
+    [
+     "Sikkim Government Vocational College Dentam",
+     "Gyalshing",
+     "Government college"
+    ],
+    [
+     "Sikkim Govt College Namchi",
+     "South",
+     "Government college"
+    ],
+    [
+     "Sikkim Institute of Science and Technology",
+     "South",
+     "Government college"
+    ],
+    [
+     "Sikkim National Law University",
+     "Gangtok",
+     "State university department"
+    ],
+    [
+     "Sikkim Professional College of Allied Sciences",
+     "Gangtok",
+     "Private / self-financing college"
+    ],
+    [
+     "Sikkim Sardar Patel University",
+     "Namchi District",
+     "Other"
+    ],
+    [
+     "Sri Venkateshwara University",
+     "Pakyong",
+     "Other"
+    ],
+    [
+     "The ICFAI University Sikkim",
+     "Gangtok",
+     "Other"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Tamil Nadu",
+    "Andaman and Nicobar Islands"
+   ],
+   "nodal": "Central University of Tamil Nadu",
+   "institutions": [
+    [
+     "A.D.M COLLEGE FOR WOMEN (AUTONOMOUS)NAGAPATTINAM",
+     "Nagapattinam",
+     "Autonomous college"
+    ],
+    [
+     "A.V.C.College (Autonomous)",
+     "Mayiladuthurai",
+     "Autonomous college"
+    ],
+    [
+     "A.V.P. College of Arts and Science",
+     "Tirupur",
+     "Autonomous college"
+    ],
+    [
+     "Academy of Maritime Education and Training (AMET) Deemed to be University",
+     "Chenagalpattu",
+     "Deemed university"
+    ],
+    [
+     "AGURCHAND MANMULL JAIN COLLEGE",
+     "CHENGALPET",
+     "Government-aided college"
+    ],
+    [
+     "AJK COLLEGE OF ARTS AND SCIENCE",
+     "Coimbatore",
+     "Autonomous college"
+    ],
+    [
+     "Akshaya College of Engineering and technology",
+     "Coimbatore",
+     "Private / self-financing college"
+    ],
+    [
+     "Aksheyaa college of arts and science",
+     "Chengalpattu",
+     "Private / self-financing college"
+    ],
+    [
+     "Alagappa University",
+     "shivaganga",
+     "Autonomous college"
+    ],
+    [
+     "Amet university",
+     "Chennai",
+     "Deemed university"
+    ],
+    [
+     "ANAND INSTITUTE OF HIGHER TECHNOLOGY",
+     "CHENGALPETTU",
+     "Private / self-financing college"
+    ],
+    [
+     "ANNAI VAILANKANNI  ARTS AND SCIENCE COLLEGE",
+     "THANJAVUR",
+     "Private / self-financing college"
+    ],
+    [
+     "Arignar Anna Govt. Arts College, Villupuram -605602",
+     "Villupuram",
+     "Government college"
+    ],
+    [
+     "Arul Anandar college (autonomous) karumathur, Madurai",
+     "Madurai",
+     "Autonomous college"
+    ],
+    [
+     "Arulmigu Kalasalingam College Of Arts and Science",
+     "Virudhunagar",
+     "Arts and science college"
+    ],
+    [
+     "Arulmugu palaniandavar arts and science college for women,oddanchatram",
+     "Dindigul",
+     "Private / self-financing college"
+    ],
+    [
+     "AUXILIUM COLLEGE (Autonomous)",
+     "VELLORE",
+     "Autonomous college"
+    ],
+    [
+     "Avs college of art and science",
+     "Salem",
+     "Autonomous college"
+    ],
+    [
+     "AVS COLLEGE OF TECHNOLOGY",
+     "SALEM",
+     "Private / self-financing college"
+    ],
+    [
+     "AVS Engineering College",
+     "Salem",
+     "Autonomous college"
+    ],
+    [
+     "B.S. Abdur Rahman Crescent Institute of Science and Technology.",
+     "Chengelpet",
+     "Deemed university"
+    ],
+    [
+     "Barathiar university",
+     "Coimbatore",
+     "Central university department"
+    ],
+    [
+     "BWDA Arts & Science College",
+     "VILLUPURAM",
+     "Private / self-financing college"
+    ],
+    [
+     "CENTRAL INSTITUTE OF PETROCHEMICALS ENGINEERING AND TECHNOLOGY",
+     "MADURAI",
+     "Other"
+    ],
+    [
+     "Central University of Tamil Nadu",
+     "Thiruvarur",
+     "Central university department"
+    ],
+    [
+     "Chellammal Womens College",
+     "Chennai",
+     "Government-aided college"
+    ],
+    [
+     "Chennai Institute of Technology",
+     "Kancheepuram",
+     "Autonomous college"
+    ],
+    [
+     "Chettinad College of Engineering and Technology",
+     "Karur",
+     "Engineering college"
+    ],
+    [
+     "Chevalier T. Thomas Elizabeth College for Women",
+     "Chennai",
+     "Private / self-financing college"
+    ],
+    [
+     "CMS COLLEGE OF SCIENCE AND COMMERCE",
+     "COIMBATORE",
+     "Autonomous college"
+    ],
+    [
+     "Coimbatore Institute of Enginnering and Technology",
+     "Coimbatore",
+     "Autonomous college"
+    ],
+    [
+     "COIMBATORE INSTITUTE OF TECHNOLOGY, COIMBATORE.",
+     "COIMBATORE",
+     "Government-aided college"
+    ],
+    [
+     "College of Fish Nutrition and Food Technology",
+     "Chennai",
+     "Government college"
+    ],
+    [
+     "College of Fisheries Engineering",
+     "Nagapattinam",
+     "Government college"
+    ],
+    [
+     "CSI BISHOP NEWBIGIN COLLEGE OF EDUCATION",
+     "Chennai",
+     "Private / self-financing college"
+    ],
+    [
+     "Department of Arabic Persian and Urdu University of Madras",
+     "Chennai",
+     "State university department"
+    ],
+    [
+     "Dhanalakshmi Srinivasan agricultural College",
+     "Perambalur",
+     "Agricultural / veterinary college"
+    ],
+    [
+     "Dhanalakshmi Srinivasan agricultural College",
+     "Perambalur",
+     "Agricultural / veterinary college"
+    ],
+    [
+     "Dhanalakshmi Srinivasan College of Engineering and Technology (Autonomous)",
+     "Chengalpattu",
+     "Autonomous college"
+    ],
+    [
+     "Dhanalakshmi Srinivasan Institute of Research and Technology",
+     "Perambalur",
+     "Deemed university"
+    ],
+    [
+     "Dhanalakshmi Srinivasan university",
+     "Trichy",
+     "Deemed university"
+    ],
+    [
+     "DON BOSCO COLLEGE(CO-ED), YELAGIRI HILLS",
+     "TIRUPATHUR DISTRICT",
+     "Private / self-financing college"
+    ],
+    [
+     "Dr.Kalaignar Government Arts College Kulithalai",
+     "Karur",
+     "Government college"
+    ],
+    [
+     "Dr.R.K.S COLLEGE OF ARTS AND SCIENCE",
+     "Kallakkurichi",
+     "Private / self-financing college"
+    ],
+    [
+     "Dwaraka doss Goverdhan doss vaishnav college",
+     "Chennai",
+     "Autonomous college"
+    ],
+    [
+     "Easwari engineering college",
+     "Chennai",
+     "Autonomous college"
+    ],
+    [
+     "Fatima College (Autonomous), Mary Land, Madurai, 625 018.",
+     "Madurai",
+     "Autonomous college"
+    ],
+    [
+     "GANDHIGRAM RURAL INSTITUTE",
+     "DINDIGUL",
+     "Deemed university"
+    ],
+    [
+     "Gaovermnt college",
+     "Csc",
+     "Engineering college"
+    ],
+    [
+     "Gourmet arts and sciences college vellore serkude",
+     "Vellore",
+     "Government college"
+    ],
+    [
+     "Government Arts and Science College",
+     "Tiruvannamalai",
+     "Government college"
+    ],
+    [
+     "Government Arts and science college Kuthalam",
+     "Mayiladuthurai",
+     "Government college"
+    ],
+    [
+     "Government arts and science college, tirukoilur",
+     "KALLAKURICHI",
+     "Government college"
+    ],
+    [
+     "Government College of Education, Muthambal sathiram",
+     "THANJAVUR",
+     "Government college"
+    ],
+    [
+     "GOVERNMENT MEDICAL COLLEGE, TIRUPPUR",
+     "TIRUPPUR",
+     "Medical / dental / nursing college"
+    ],
+    [
+     "GOVINDAMMAL ADITANAR COLLEGE FOR WOMEN, TIRUCHENDUR, TUTICORIN DIST, TAMIL NADU, PIN - 628215",
+     "Thoothukudi",
+     "Private / self-financing college"
+    ],
+    [
+     "Govindammal aditanar college Tiruchendur",
+     "Thuthukoodi",
+     "Private / self-financing college"
+    ],
+    [
+     "Hindusthan College of Engineering",
+     "Erode",
+     "Private / self-financing college"
+    ],
+    [
+     "IMAYAM ARTS AND SCIENCE COLLEGE",
+     "THIRUPATTUR",
+     "Private / self-financing college"
+    ],
+    [
+     "Institute of Advanced Study In Education",
+     "Chennai",
+     "Arts and science college"
+    ],
+    [
+     "Islamiah women's arts and science college Autonomous Vaniyambadi",
+     "Tirupathur",
+     "Autonomous college"
+    ],
+    [
+     "Jai Shriram engineering college",
+     "Tiruppur",
+     "Autonomous college"
+    ],
+    [
+     "Jawaharlal Nehru Rajkeeya Mahavidyala",
+     "South Andaman",
+     "Government college"
+    ],
+    [
+     "JERUSALEM COLLEGE OF ENGINEERING",
+     "CHENGALPATTU",
+     "Autonomous college"
+    ],
+    [
+     "K.R.COLLEGE OF ARTS & SCIENCE",
+     "Thoothukudi",
+     "Private / self-financing college"
+    ],
+    [
+     "K.S.Rangasamy College of Technology",
+     "Namakkal",
+     "Autonomous college"
+    ],
+    [
+     "Kamaraj College of Engineering & Technology (Autonomous)",
+     "MADURAI",
+     "Autonomous college"
+    ],
+    [
+     "Kangeyam institute of technology",
+     "Tiruppur",
+     "Engineering college"
+    ],
+    [
+     "Karan arts and science College",
+     "Tiruvannamalai",
+     "Arts and science college"
+    ],
+    [
+     "Karpagam Academy of Higher Education",
+     "Coimbatore",
+     "Deemed university"
+    ],
+    [
+     "KCG College of Technology",
+     "Chennai",
+     "Autonomous college"
+    ],
+    [
+     "KG College of Arts and Science",
+     "Ciombatore",
+     "Autonomous college"
+    ],
+    [
+     "Kolonjiyapar College",
+     "Kallakurichi",
+     "Other"
+    ],
+    [
+     "Kongu Engineering College",
+     "Perundurai, Erode District",
+     "Autonomous college"
+    ],
+    [
+     "Kongunadu Arts and Science College",
+     "Coimbatore",
+     "Government-aided college"
+    ],
+    [
+     "KONGUNADU ARTS AND SCIENCE COLLEGE (AUTONOMOUS)",
+     "COIMBATORE",
+     "Autonomous college"
+    ],
+    [
+     "KONGUNADU INTEGRATED COLLEGE OF EDUCATION",
+     "Namakkal",
+     "Private / self-financing college"
+    ],
+    [
+     "kovai kalalimagal arts and science kovai Narasipuram",
+     "Coimbatore",
+     "Arts and science college"
+    ],
+    [
+     "KPR Institute of Engineering and Technology",
+     "Coimbatore",
+     "Autonomous college"
+    ],
+    [
+     "Kumaraguru College of Technology(Self financing& Autonomous )",
+     "Coimbatore",
+     "Engineering college"
+    ],
+    [
+     "Lakshmi College of Education, Gandhigram",
+     "Dindigul",
+     "Government-aided college"
+    ],
+    [
+     "Lekshmipuram College of Arts and Science, Neyyoor-629802",
+     "Kanniyakumari",
+     "Government-aided college"
+    ],
+    [
+     "M.A.M.School of Engineering",
+     "Tiruchirappalli",
+     "Autonomous college"
+    ],
+    [
+     "M.G.R. College, Hosur",
+     "Krishnagiri",
+     "Private / self-financing college"
+    ],
+    [
+     "Madras Christian College",
+     "Chengalpattu",
+     "Government-aided college"
+    ],
+    [
+     "Madurai Sivakasi Nadars Pioneer Meenakshi Women's College, Poovanthi",
+     "Sivagangai",
+     "Private / self-financing college"
+    ],
+    [
+     "Mannar Thirumalai Naicker College, Pasumalai,  Madurai.",
+     "Madurai",
+     "Autonomous college"
+    ],
+    [
+     "Manonmaniam Sundaranar University College",
+     "Thoothukudi",
+     "Government college"
+    ],
+    [
+     "Marudhar Kesari Jain College For Women - Autonomous",
+     "Thirupattur",
+     "Autonomous college"
+    ],
+    [
+     "Meenakshi College of Arts and Science",
+     "Chennai",
+     "Deemed university"
+    ],
+    [
+     "Michael Job college of arts and science for women",
+     "Coimbatore",
+     "Arts and science college"
+    ],
+    [
+     "National College (Autonomous)",
+     "Tiruchirappalli",
+     "Autonomous college"
+    ],
+    [
+     "National Institute of Food Technology, Entrepreneurship and Management, Thanjavur (NIFTEM-T)",
+     "Thanjavur",
+     "Other"
+    ],
+    [
+     "NGM College",
+     "Coimbatore",
+     "Arts and science college"
+    ],
+    [
+     "Noorul Islam Centre for Higher Education (NICHE) (Deemed-to-be University under Section 3 of the UGC Act, 1956)",
+     "Kanniyakumari",
+     "Private / self-financing college"
+    ],
+    [
+     "PACHAIYAPPAS COLLEGE FOR MEN",
+     "Kanchipuram",
+     "Government-aided college"
+    ],
+    [
+     "Panimalar Engineering College",
+     "Thiruvallur",
+     "Private / self-financing college"
+    ],
+    [
+     "PARK'S COLLEGE",
+     "TIRUPUR",
+     "Autonomous college"
+    ],
+    [
+     "Pasumpon Muthuramalinga Thevar college",
+     "Madurai",
+     "Arts and science college"
+    ],
+    [
+     "PERIYAR UNIVERSITY",
+     "SALEM",
+     "State university department"
+    ],
+    [
+     "PSG COLLEGE OF ARTS AND SCIENCE",
+     "Coimbatore",
+     "Autonomous college"
+    ],
+    [
+     "QUEEN MARY'S COLLEGE(A),CHENNAI-600004",
+     "CHENNAI",
+     "Government college"
+    ],
+    [
+     "RAJA,SH COLLEGE THIRUVAIYARU",
+     "Thiruchirapalli",
+     "Government college"
+    ],
+    [
+     "RAJAH SERFOJI GOVERNMENT COLLEGE (AUTONOMOUS)",
+     "Thanjavur",
+     "Autonomous college"
+    ],
+    [
+     "RAJAH SERFOJI GOVERNMENT COLLEGE (AUTONOMOUS), THANJAVUR",
+     "Thanjavur",
+     "Autonomous college"
+    ],
+    [
+     "RAJALAKSHMI ENGINEERING COLLEGE",
+     "Kancheepuram",
+     "Private / self-financing college"
+    ],
+    [
+     "RAJIV GANDHI NATIONAL INSTITUTE OF YOUTH DEVELOPMENT",
+     "KANCHEEPURAM",
+     "Central university department"
+    ],
+    [
+     "Rathinam Global Deemed to be University",
+     "Coimbatote",
+     "Deemed university"
+    ],
+    [
+     "RATHINAM TECHNICAL CAMPUS",
+     "Coimbatore",
+     "Autonomous college"
+    ],
+    [
+     "RVS College of Arts and Science (Autonomous)",
+     "Coimbatore",
+     "Private / self-financing college"
+    ],
+    [
+     "RVS Kumaran College of Arts and Science - Ayyalur, Dindigul",
+     "DINDIGUL",
+     "Private / self-financing college"
+    ],
+    [
+     "SACRED HEART ARTS AND SCIENCE COLLEGE - PERANI",
+     "VILLUPURAM",
+     "Private / self-financing college"
+    ],
+    [
+     "SACRED HEART COLLEG (AUTONOMOUS), TIRUPATTUR",
+     "TIRUPATTUR",
+     "Government-aided college"
+    ],
+    [
+     "Sanghamam arts and science college",
+     "Sanghamam arts and science college",
+     "Private / self-financing college"
+    ],
+    [
+     "SANKARA COLLEGE OF SCIENCE AND COMMERCE (Autonomous)",
+     "COIAMBATORE",
+     "Private / self-financing college"
+    ],
+    [
+     "SARASWATHI NARAYANAN COLLEGE",
+     "Madurai",
+     "Government-aided college"
+    ],
+    [
+     "SARASWATHY COLLEGE OF ARTS AND SCIENCE OLAKKUR TINDIVANAM TALUK VILLUPURAM DIST 604 305",
+     "VILLUPURAM",
+     "Private / self-financing college"
+    ],
+    [
+     "SASTRA UNIVERSITY",
+     "Thanjavur",
+     "Deemed university"
+    ],
+    [
+     "SASURIE COLLEGE OF ENGINEERING",
+     "TIRUPPUR",
+     "Engineering college"
+    ],
+    [
+     "Saveetha School of Management",
+     "THIRUVALLUR",
+     "Deemed university"
+    ],
+    [
+     "Sethu Institute of Technology",
+     "virudhunagar",
+     "Private / self-financing college"
+    ],
+    [
+     "Shanmugha Arts, Science, Technology & Reserch Academy (SASTRA CHENNAI CAMPUS)",
+     "CHENNAI",
+     "Deemed university"
+    ],
+    [
+     "Shiv Nadar University, Chennai",
+     "Chengalpattu",
+     "Private / self-financing college"
+    ],
+    [
+     "SHRI BARANI HOMOEOPATHY MEDICAL COLLEGE AND HOSPITAL",
+     "NAMAKKAL",
+     "Medical / dental / nursing college"
+    ],
+    [
+     "Shri Indra Ganesan College of Medical Sciences (Yoga and Naturopathy Medical College)",
+     "Tiruchirapalli",
+     "Private / self-financing college"
+    ],
+    [
+     "SHRI KRISHNASWAMY COLLEGE FOR WOMEN",
+     "CHENNAI",
+     "Private / self-financing college"
+    ],
+    [
+     "SHRIMATHI DEVKUNVAR NANALAL BHATT VAISHNAV COLLEGE FOR WOMEN",
+     "CHENGALPATTU",
+     "Government-aided college"
+    ],
+    [
+     "SIR ISSAC NEWTON ARTS & SCIENCE COLLEGE",
+     "NAGAPATTINAM",
+     "Arts and science college"
+    ],
+    [
+     "SIVARAJ SIDDHA MEDICAL COLLEGE, SALEM",
+     "SALEM",
+     "Medical / dental / nursing college"
+    ],
+    [
+     "Sourashtra College",
+     "Madurai",
+     "Government-aided college"
+    ],
+    [
+     "Sree Narayana Guru College",
+     "COIMBATORE",
+     "Autonomous college"
+    ],
+    [
+     "Sri Chandrasekharendra Saraswathi Viswa Maha Vidyalaya",
+     "Kancheepuram",
+     "Deemed university"
+    ],
+    [
+     "Sri Eshwar College of Engineering",
+     "Coimbatore",
+     "Autonomous college"
+    ],
+    [
+     "SRI KRISHNA KNOWLEDGE FOUNDATION (Deemed to be University )",
+     "Coimbatore",
+     "Deemed university"
+    ],
+    [
+     "SRI MUTHUKUMARAN ARTS AND SCIENCE COLLEGE",
+     "KANCHEEPURAM",
+     "Private / self-financing college"
+    ],
+    [
+     "SRI RAMAKRISHNA ENGINEERING COLLEGE",
+     "COIMBATORE",
+     "Private / self-financing college"
+    ],
+    [
+     "SRI RAMAKRISHNA MISSION VIDYALAYA COLLEGE OF ARTS AND SCIENCE",
+     "COIMBATORE",
+     "Government-aided college"
+    ],
+    [
+     "Sri Ramakrishna Mission Vidyalaya College of Education (Autonomous)",
+     "Coimbatore",
+     "Government-aided college"
+    ],
+    [
+     "Sri Ramakrishna Mission Vidyalaya Maruthi College of Physical Education",
+     "Coimbatore",
+     "Government-aided college"
+    ],
+    [
+     "Sri Ranga Poopathi College Of Engineering,Alampoondi",
+     "Vilupuram",
+     "Autonomous college"
+    ],
+    [
+     "Sri S. Ramasamy Naidu Memorial College",
+     "virudhunagar",
+     "Government-aided college"
+    ],
+    [
+     "SRI SAI RAM ENGINEERING COLLEGE",
+     "KANCHEEPURAM",
+     "Private / self-financing college"
+    ],
+    [
+     "SRI SANKARA ARTS AND SCIENCE COLLEGE",
+     "KANCHIPURAM",
+     "Private / self-financing college"
+    ],
+    [
+     "Sri Sarada Niketan College of Arts and Science for Women",
+     "Salem",
+     "Private / self-financing college"
+    ],
+    [
+     "SRIMATH SIVAGNANA BALAYA SWAMIGAL TAMIL, ARTS SCIENCE COLLEGE",
+     "VILLUPURAM",
+     "Government-aided college"
+    ],
+    [
+     "SRM INSTITUTE OF SCIENCE AND TECHNOLOGY",
+     "CHENGALPATTU",
+     "Deemed university"
+    ],
+    [
+     "ST PAUL'S HIGHSCHOOL CHEYYAR",
+     "THIRUVANNAMALAI",
+     "Other"
+    ],
+    [
+     "St. Ignatius College of Education (Autonomous), Palayamkottai",
+     "Tirunelveli",
+     "Government-aided college"
+    ],
+    [
+     "St. Joseph College of Arts and Science for Women",
+     "Salem",
+     "Private / self-financing college"
+    ],
+    [
+     "St. Peter's College of Engineering and Technology",
+     "Chennai -54",
+     "Engineering college"
+    ],
+    [
+     "St.Antony's College of Arts and Sciences for Women",
+     "Dindigul",
+     "Autonomous college"
+    ],
+    [
+     "St.Jeromes Arts and Science college",
+     "Kanyakumari",
+     "Autonomous college"
+    ],
+    [
+     "St.Peter's Institute of Higher Education and Research",
+     "Tiruvallur",
+     "Deemed university"
+    ],
+    [
+     "SWAMI VIVEKANANDA ARTS AND SCIENCE COLLEGE, ORATHUR, VILLUPURAM",
+     "Villupuram",
+     "Arts and science college"
+    ],
+    [
+     "SYED HAMEEDHA ARTS AND SCIENCE COLLEGE",
+     "RAMANATHAPURAM",
+     "Private / self-financing college"
+    ],
+    [
+     "TAGORE COLLEGE OF ARTS AND SCIENCE",
+     "CHENGALPATTU",
+     "Private / self-financing college"
+    ],
+    [
+     "Tagore Engineering College",
+     "Chengalpattu",
+     "Private / self-financing college"
+    ],
+    [
+     "Tamil Nadu Agricultural University",
+     "Coimbatore",
+     "State university department"
+    ],
+    [
+     "THANTHAI HANS ROEVER COLLEGE",
+     "Perambalur",
+     "Autonomous college"
+    ],
+    [
+     "Thassim Beevi Abdul Kader College for Women, Kilakarai",
+     "Ramanathapuram",
+     "Autonomous college"
+    ],
+    [
+     "Thavathiru Santhalinga Adigalar Arts Science Tamil College",
+     "Coimbatore",
+     "Government-aided college"
+    ],
+    [
+     "The M.D.T. Hindu College",
+     "Tirunelveli",
+     "Government-aided college"
+    ],
+    [
+     "The Madras Sanskrit College",
+     "Chennai",
+     "Private / self-financing college"
+    ],
+    [
+     "Thiagarajar College",
+     "Madurai",
+     "Government-aided college"
+    ],
+    [
+     "THIRUVALLUVAR ARTS AND SCIENCE COLLEGE, KURINJIPADI",
+     "CUDDALORE",
+     "Private / self-financing college"
+    ],
+    [
+     "Thiyagarajar collage arts and science",
+     "Madurai",
+     "Autonomous college"
+    ],
+    [
+     "Tiruppur kumaran college for womens",
+     "Tiruppur",
+     "Arts and science college"
+    ],
+    [
+     "UNIVERSITY COLLEGE OF ENGINEERING KANCHIPURAM",
+     "Kanchipuram",
+     "Government college"
+    ],
+    [
+     "University college of engineering, villupuram",
+     "Cuddalore",
+     "Government-aided college"
+    ],
+    [
+     "V V COLLEGE OF ENGINEERING",
+     "THOOTHUKUDI DISTRICT",
+     "Engineering college"
+    ],
+    [
+     "VALLUVAR COLLEGE OF SCIENCE AND MANAGEMENT",
+     "Karur",
+     "Autonomous college"
+    ],
+    [
+     "Vellore Institute of Technology Chennai",
+     "Chennai",
+     "Deemed university"
+    ],
+    [
+     "VELS INSTITUTE OF SCIENCE, TECHNOLOGY AND ADVANCED STUDIES(VISTAS)",
+     "Chengalpattu",
+     "Deemed university"
+    ],
+    [
+     "VET Institute Of Arts and Science (C0-education) College",
+     "Erode",
+     "Private / self-financing college"
+    ],
+    [
+     "Vidhyaa Giri College of Arts and science, Puduvayal",
+     "Sivagangai",
+     "Private / self-financing college"
+    ],
+    [
+     "VINAYAKA MISSION SHANKARACHARYAR DENTAL COLLEGE",
+     "SALEM",
+     "Other"
+    ],
+    [
+     "VINAYAKA MISSION'S KIRUPANANDA VARIYAR ARTS AND SCIENCE COLLEGE - SALEM",
+     "SALEM",
+     "Deemed university"
+    ],
+    [
+     "Vinayaka Mission's Kirupananda Variyar Engineering College",
+     "Salem",
+     "Deemed university"
+    ],
+    [
+     "VLB JANAKIAMMAL  COLLEGE OF ARTS AND SCIENCE",
+     "COIMBATORE",
+     "Arts and science college"
+    ],
+    [
+     "WAVOO WAJEEHA WOMEN'S COLLEGE OF ARTS AND SCIENCE",
+     "THOOTHUKUDI",
+     "Private / self-financing college"
+    ],
+    [
+     "Yadava College",
+     "Madurai",
+     "Autonomous college"
+    ],
+    [
+     "YMCA College of Physical Education",
+     "Chennai",
+     "Government-aided college"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Telangana"
+   ],
+   "nodal": "University of Hyderabad",
+   "institutions": [
+    [
+     "Avinash college of commerce",
+     "Rangareddy",
+     "Private / self-financing college"
+    ],
+    [
+     "Avinash college of commerce",
+     "Hyderabad",
+     "Private / self-financing college"
+    ],
+    [
+     "Avinash College of Commerce",
+     "Hyderabad",
+     "Private / self-financing college"
+    ],
+    [
+     "Bhavan's Vivekananda College of Science, Humanities and Commerce",
+     "Medchal-Malkajgiri",
+     "Private / self-financing college"
+    ],
+    [
+     "Center for Study of Social Inclusion University of Hyderabad",
+     "Ranga Reddy",
+     "Central university department"
+    ],
+    [
+     "Department of Anthropology University of Hyderabad",
+     "Hyderabad",
+     "Central university department"
+    ],
+    [
+     "Department of History University of Hyderabad",
+     "Hyderabad",
+     "Central university department"
+    ],
+    [
+     "G.Narayanamma Institute of Technology and Science",
+     "Hyderabad",
+     "Autonomous college"
+    ],
+    [
+     "GBNIP",
+     "Medchal",
+     "Medical / dental / nursing college"
+    ],
+    [
+     "Geethanjali College of Engineering and Technology",
+     "Medchal-Malkajgiri",
+     "Autonomous college"
+    ],
+    [
+     "Heartfulness Academy of Research and Innovation",
+     "Ranga Reddy",
+     "Deemed university"
+    ],
+    [
+     "Helen Keller's Institute of Research & Rehabilitation for the Disabled Children",
+     "Medchal-Malkajgiri",
+     "Private / self-financing college"
+    ],
+    [
+     "ICFAITech IFHE",
+     "Rangareddy",
+     "Private / self-financing college"
+    ],
+    [
+     "KAVERI UNIVERSITY",
+     "Siddipet",
+     "Private / self-financing college"
+    ],
+    [
+     "KESHAV MEMORIAL INSTITUTE OF COMMERSE SCIENCES",
+     "HYDERABAD",
+     "Private / self-financing college"
+    ],
+    [
+     "KU College of Engineering and Technology, Kakatiya University Campus, Warangal",
+     "Warangal",
+     "Engineering college"
+    ],
+    [
+     "Mahindra University",
+     "Medchal-Malkajgiri",
+     "Private / self-financing college"
+    ],
+    [
+     "Malla Reddy (MR) Deemed to be University",
+     "Medchal-Malkajgiri",
+     "Deemed university"
+    ],
+    [
+     "Malla Reddy deemed to be university",
+     "Hyderabad",
+     "Deemed university"
+    ],
+    [
+     "Malla Reddy Engineering College",
+     "Medchal-Malkajgiri",
+     "Autonomous college"
+    ],
+    [
+     "Malla reddy engineering college",
+     "medchal",
+     "State university department"
+    ],
+    [
+     "Marri Laxman Reddy Institute of Technology and Management",
+     "Medchal - Malkajgiri",
+     "Private / self-financing college"
+    ],
+    [
+     "MEGHA INSTITUTE OF ENGINEERING AND TECHNOLOGY FOR WOMEN",
+     "RANGA REDDY",
+     "Autonomous college"
+    ],
+    [
+     "MVS arts and science degree college",
+     "Mahabubnagar",
+     "Government college"
+    ],
+    [
+     "Sammakka Sarakka Central Tribal University",
+     "Mulugu",
+     "Central university department"
+    ],
+    [
+     "St.Joseph's Degree  & Pg College For Women",
+     "Hyderabad",
+     "Private / self-financing college"
+    ],
+    [
+     "The English and Foreign Languages University",
+     "Hyderabad",
+     "Central university department"
+    ],
+    [
+     "Trinity College Of Engineering And Technology Autonomous Peddapalli",
+     "peddapalli",
+     "Engineering college"
+    ],
+    [
+     "University College of Arts and Social Sciences, Osmania University",
+     "Hyderabad",
+     "Autonomous college"
+    ],
+    [
+     "UNIVERSITY COLLEGE OF SCIENCE, OU",
+     "Hyderabad",
+     "Autonomous college"
+    ],
+    [
+     "University of Hyderabad",
+     "Rangareddy916",
+     "Central university department"
+    ],
+    [
+     "Vignana Bharathi Institute of Technology",
+     "Ranga Reddy",
+     "Autonomous college"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Tripura"
+   ],
+   "nodal": "Tripura University",
+   "institutions": [
+    [
+     "BIR BIKRAM MEMORIAL COLLEGE",
+     "WEST TRIPURA",
+     "Government college"
+    ],
+    [
+     "Central Sanskrit University, Ekalavya Campus,Vill- Sipai Para, P.O- Lembucherra,West Tripura-799210",
+     "West Tripura",
+     "Central university department"
+    ],
+    [
+     "Department of Sanskrit",
+     "Tripura West",
+     "Central university department"
+    ],
+    [
+     "Maharaja Bir Bikram College",
+     "West Tripura",
+     "Government college"
+    ],
+    [
+     "Ramthakur College, Agartala",
+     "West Tripura",
+     "Government college"
+    ],
+    [
+     "Swami Vivekananda Mahavidyalaya, Mohanpur, Tripura",
+     "West",
+     "Government college"
+    ],
+    [
+     "Tripura University",
+     "West Tripura District",
+     "Central university department"
+    ],
+    [
+     "Women's College",
+     "West",
+     "Government college"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Uttar Pradesh"
+   ],
+   "nodal": "Banaras Hindu University",
+   "institutions": [
+    [
+     "672 MAHENDRA SINGH MAHAVIDHAYALAY TALBEHAT",
+     "LALITPUR",
+     "Private / self-financing college"
+    ],
+    [
+     "Agar College agar",
+     "Agra",
+     "Government college"
+    ],
+    [
+     "Ajay Kumar Garg Institute of Management, Ghaziabad",
+     "Ghaziabad",
+     "Private / self-financing college"
+    ],
+    [
+     "AMITY INSTITUTE OF EDUCATION, AMITY UNIVERSITY UTTAR PRADESH",
+     "LUCKNOW",
+     "Private / self-financing college"
+    ],
+    [
+     "Amity School of Architecture and Planning, Amity University Uttar Pradesh (Lucknow Campus)",
+     "Lucknow",
+     "Private / self-financing college"
+    ],
+    [
+     "Apex Trust Nursing College",
+     "Mirzapur",
+     "Medical / dental / nursing college"
+    ],
+    [
+     "Arya Mahila P. G. College",
+     "Varanasi",
+     "Government-aided college"
+    ],
+    [
+     "Asharfi Lal Shukla Mahavidyalaya Kirwaha",
+     "Jalaun",
+     "Private / self-financing college"
+    ],
+    [
+     "AZAMGARH MAHILA MAHAVIDYALAYA",
+     "AZAMGARH",
+     "Private / self-financing college"
+    ],
+    [
+     "B.N.K.B.P.G.COLLEGE",
+     "AMBEDKARNAGAR",
+     "Government-aided college"
+    ],
+    [
+     "BABA KASHI VISHWANATH MAHAVIDYALAYA BHUDKUDA CHANDAULI",
+     "Chandauli",
+     "Private / self-financing college"
+    ],
+    [
+     "Banaras Hindu University",
+     "Varanasi",
+     "Central university department"
+    ],
+    [
+     "Bhagvan adinath gurop of education",
+     "Lalitpur",
+     "Agricultural / veterinary college"
+    ],
+    [
+     "Bhagwan Aadinath College of Education Lalitpur",
+     "Lalitpur",
+     "Autonomous college"
+    ],
+    [
+     "BUDDHA DEGREE COLLEGE",
+     "Gorakhpur",
+     "Private / self-financing college"
+    ],
+    [
+     "Buddha Institute of Management",
+     "Gorakhpur",
+     "Private / self-financing college"
+    ],
+    [
+     "BUDDHA INSTITUTE OF PHARMACY",
+     "Gorakhpur",
+     "Private / self-financing college"
+    ],
+    [
+     "Buddha Institute of Technology",
+     "Gorakhpur",
+     "Private / self-financing college"
+    ],
+    [
+     "Budhni Devi smarak PG College Shastri Nagar Risia Bahraich",
+     "BAHRAICH",
+     "Private / self-financing college"
+    ],
+    [
+     "Chaudhary Digvijay Singh Mahavidhyalaya Dakore Jalaun",
+     "Jalaun",
+     "Private / self-financing college"
+    ],
+    [
+     "D.A.V. PG. COLLEGE, AZAMGARH",
+     "AZAMGARH",
+     "Government-aided college"
+    ],
+    [
+     "DAV College Bulandshahr",
+     "Bulandshahr",
+     "Government-aided college"
+    ],
+    [
+     "DAV PG college Varanasi",
+     "Varanasi",
+     "Central university department"
+    ],
+    [
+     "DAYANAND VEDIC COLLEGE, ORAI",
+     "JALAUN",
+     "Government-aided college"
+    ],
+    [
+     "DDU Saidabad handia Pryagaraj",
+     "mahautar post dumduma",
+     "Government college"
+    ],
+    [
+     "DEEN DAYAL UPADHYAY GOVERNMENT P.G. COLLEGE, SITAPUR",
+     "SITAPUR",
+     "Government college"
+    ],
+    [
+     "Deendayal Government PG College Saidabad Prayagraj",
+     "Prayagraj",
+     "Government college"
+    ],
+    [
+     "DEVENDRA P.G. COLLEGE",
+     "Ballia",
+     "Government-aided college"
+    ],
+    [
+     "Dr A H Rizvi Degree College Karari Kaushambi",
+     "KAUSHAMBI",
+     "Private / self-financing college"
+    ],
+    [
+     "DR RAM MANOHAR LOHIYA PG COLLEGE SHANTI NAGAR LALUMAU KHAJURGAON RAEBARELI",
+     "RAEBARELI",
+     "Private / self-financing college"
+    ],
+    [
+     "Dr. B.R. Ambedkar Govt Girls P. G. College Fatehpur UP",
+     "Fatehpur",
+     "Government college"
+    ],
+    [
+     "Dr. Rajeshwar Sewashram Degree College Dhindhui Pratapgarh",
+     "Pratapgarh",
+     "Government-aided college"
+    ],
+    [
+     "Dr. RAM MANOHAR LOHIA MAHILA MQHAVIDALAY Gursari  Jhansi",
+     "Jhansi",
+     "Private / self-financing college"
+    ],
+    [
+     "G.S.P.G.COLLEGE SULTANPUR",
+     "Sultanpur",
+     "Government-aided college"
+    ],
+    [
+     "Gandhi Shatabdi Smarak Snatkottar mahavidyalay Koilsa Azamgarh",
+     "Azamgarh",
+     "Government-aided college"
+    ],
+    [
+     "Gandhi Smarak Triveni PG College Bardah Azamgarh",
+     "Azamgarh",
+     "Government-aided college"
+    ],
+    [
+     "Gautam Buddha Government Degree College, Ayodhya",
+     "AYODHYA",
+     "Government college"
+    ],
+    [
+     "Gautam Buddha Mahavidyalaya",
+     "Sant kabir Nagar",
+     "Private / self-financing college"
+    ],
+    [
+     "GLA UNIVERSITY, MATHURA",
+     "MATHURA",
+     "Other"
+    ],
+    [
+     "GOSWAMI TULSIDAS GOVT PG COLLEGE KARWI CHITRAKOOT",
+     "CHITRAKOOT",
+     "Government college"
+    ],
+    [
+     "Government Degree College Dhadha Bujurg Hata-Kushinagar",
+     "Gorakhpur",
+     "Government college"
+    ],
+    [
+     "Government Degree College Haripur Nihastha Raebareli",
+     "Raebareli",
+     "Government college"
+    ],
+    [
+     "Government Degree College Jahangirabad",
+     "Bulandshahr",
+     "Government college"
+    ],
+    [
+     "Government Degree College Jakhini Varanasi",
+     "Varanasi",
+     "Government college"
+    ],
+    [
+     "Government Degree College Saiyan khairagarh Agra",
+     "Agra",
+     "Government college"
+    ],
+    [
+     "GOVERNMENT DEGREE COLLEGE, GONDA ALIGARH",
+     "ALIGARH",
+     "Government college"
+    ],
+    [
+     "GOVERNMENT GIRLS DEGREE COLLEGE, AHIRAULA, AZAMGARH",
+     "AZAMGARH",
+     "Government college"
+    ],
+    [
+     "Government Girls PG College Bindki Fatehpur UP",
+     "Fatehpur",
+     "Government college"
+    ],
+    [
+     "GOVERNMENT MODEL DEGREE COLLEGE",
+     "Bulandshahr",
+     "Government college"
+    ],
+    [
+     "Government PG College, Noida",
+     "Gautambuddhanagar",
+     "Government college"
+    ],
+    [
+     "Gulab Devi Mahila P. G. College, Ballia",
+     "Ballia",
+     "Government-aided college"
+    ],
+    [
+     "Guru Vashishtha Mahavidyalay Mankapur Gonda",
+     "Gonda",
+     "Private / self-financing college"
+    ],
+    [
+     "Handia PG College",
+     "Prayagraj",
+     "Government-aided college"
+    ],
+    [
+     "Harish Chandra P. G. College Varanasi",
+     "VARANASI",
+     "Government-aided college"
+    ],
+    [
+     "HEMWATI NANDAN BAHUGUNA P.G. COLLEGE LALGANJ PRATAPGARH",
+     "PRATAPGARH",
+     "Government-aided college"
+    ],
+    [
+     "INDIAN INSTITUTE OF CARPET TECHNOLOGY, BHADOHI",
+     "BHADOHI",
+     "Government-aided college"
+    ],
+    [
+     "Indian Institute of Technology (BHU) Varanasi",
+     "Varanasi",
+     "IIT / NIT / IISER / IIIT"
+    ],
+    [
+     "INDIAN INSTITUTE OF TECHNOLOGY KANPUR",
+     "KANPUR",
+     "IIT / NIT / IISER / IIIT"
+    ],
+    [
+     "Indira Gandhi Government Girls Degree College, Raebareli",
+     "Raebareli",
+     "Government college"
+    ],
+    [
+     "Indira Gandhi P G College Gauriganj Amethi",
+     "Amethi",
+     "Government-aided college"
+    ],
+    [
+     "ITS",
+     "Ghaziabad",
+     "Private / self-financing college"
+    ],
+    [
+     "JAGADGURU RAMBHADRACHARYA DIVYANG STATE UNIVERSITY,CHITRAKOOT,U.P.",
+     "Chitrakoot",
+     "State university department"
+    ],
+    [
+     "JAWAHAR LAL NEHRU MEMORIAL PG COLLEGE BARABANKI",
+     "BARABANKI",
+     "Government-aided college"
+    ],
+    [
+     "JAWAHAR LAL NEHRU SMARAK P.G. COLLEGE MAHARAJGANJ",
+     "MAHARAJGANJ",
+     "Government-aided college"
+    ],
+    [
+     "Jhinki Devi smark pg College AnandNagar maharajganj",
+     "Maharajganj",
+     "Private / self-financing college"
+    ],
+    [
+     "K S SAKET PG COLLEGE AYODHYA",
+     "AYODHYA",
+     "Government-aided college"
+    ],
+    [
+     "Kailashi Devi Shravan Kumari Mahavidyalaya Jalaun",
+     "Jalaun",
+     "Private / self-financing college"
+    ],
+    [
+     "Kalpi College, Kalpi, Jalaun (U.P.)",
+     "Jalaun",
+     "Government-aided college"
+    ],
+    [
+     "KAMLA ARYA KANYA P G COLLEGE",
+     "MIRZAPUR",
+     "Government-aided college"
+    ],
+    [
+     "Kamla Devi Bajoriya Degree College Dubahar Ballia",
+     "Ballia",
+     "Government-aided college"
+    ],
+    [
+     "Kamla Nehru Institute of Physical and Social Sciences, Sultanpur",
+     "Sultanpur",
+     "Autonomous college"
+    ],
+    [
+     "Kashev Prasad Mishra Government Girls College Aurai Bhadohi",
+     "Bhadohi",
+     "Government college"
+    ],
+    [
+     "Kendriya Hindi Sansthan",
+     "Agra",
+     "Other"
+    ],
+    [
+     "Khwaja Moinuddin Chishti University Lucknow",
+     "Lucknow",
+     "State university department"
+    ],
+    [
+     "Kisan Post Graduate College",
+     "Bahraich",
+     "Autonomous college"
+    ],
+    [
+     "Km Mayawati Govt Girls PG college Badalpur GB Nagar",
+     "Gautambuddh Nagar",
+     "Autonomous college"
+    ],
+    [
+     "KPS .pg.College Kakaruwa Lalitpur",
+     "Uttar Pradesh",
+     "Private / self-financing college"
+    ],
+    [
+     "Krishna Ballabh Shravan Kumar mahavidhaly laharaua chhiriya jalaun",
+     "Jalaun",
+     "Private / self-financing college"
+    ],
+    [
+     "Krishna Devi Girls' Degree College",
+     "Lucknow",
+     "Government-aided college"
+    ],
+    [
+     "KULBHASKAR ASHRAM POSTGRADUATE COLLEGE",
+     "PRAYAGRAJ",
+     "Government-aided college"
+    ],
+    [
+     "Kunwar singh pg college ballia",
+     "Ballia",
+     "Government-aided college"
+    ],
+    [
+     "Lal Bahudar shastri PG College Chandauli",
+     "Chandauli",
+     "Government-aided college"
+    ],
+    [
+     "LALA ALOPIDEEN COLLEGE OF TEACHER EDUCATION",
+     "JALAUN",
+     "Private / self-financing college"
+    ],
+    [
+     "LALA KISHAN CHAND GOVERNMENT P. G. COLLEGE GANGOH",
+     "SAHARANPUR",
+     "Government college"
+    ],
+    [
+     "M L K P G College Balrampur",
+     "Balrampur",
+     "Government college"
+    ],
+    [
+     "Maa Kamla Devi Mahavidyalaya",
+     "Bahraich",
+     "Arts and science college"
+    ],
+    [
+     "Maa Pateswari University",
+     "BALRAMPUR",
+     "State university department"
+    ],
+    [
+     "MAA SHAKUMBHARI UNIVERSITY, SAHARANPUR",
+     "SAHARANPUR",
+     "State university department"
+    ],
+    [
+     "MADANMOHAN MALVIYA P G COLLEGE KALAKANKAR PRATAPGARH",
+     "PRATAPGARH",
+     "Government-aided college"
+    ],
+    [
+     "Maharaj Balwant Singh P.G. College Gangapur Varanasi",
+     "VARANASI",
+     "Government-aided college"
+    ],
+    [
+     "Maharaja Suhel Dev State University Azamgarh",
+     "Azamgarh",
+     "Central university department"
+    ],
+    [
+     "Mahatma Gandhi Kashi Vidyapith",
+     "Varanasi",
+     "State university department"
+    ],
+    [
+     "Mahila Sewa Sadan Degree College",
+     "Prayagraj",
+     "Government-aided college"
+    ],
+    [
+     "Mannu Lal Dwivedi Mahavidyalaya Sahar Auraiya Uttar Pradesh",
+     "Auraiya",
+     "Private / self-financing college"
+    ],
+    [
+     "Manyawar kanshiram gautam buddh PG college sauraha Gangi bazar Maharajganj UP",
+     "Maharajganj",
+     "Private / self-financing college"
+    ],
+    [
+     "Maryada Purushottam Mahavidyalaya Bhudsuri Ratanpura Mau",
+     "Mau",
+     "Government-aided college"
+    ],
+    [
+     "Mathura P. G. College, Rasra, Ballia",
+     "Ballia",
+     "Government-aided college"
+    ],
+    [
+     "Medai prasad yadav mahavidyalaya raypur bhatni Pratapgarh",
+     "Lalganj",
+     "Private / self-financing college"
+    ],
+    [
+     "Nehru Mahavidhyalaya Lalitpur Uttar Pradesh",
+     "Lalitpur",
+     "Government-aided college"
+    ],
+    [
+     "NETAJI SUBHASH CHANDRA BOSE GOVT. GIRLS P.G. COLLEGE, ALIGANJ, LUCKNOW",
+     "LUCKNOW",
+     "Government college"
+    ],
+    [
+     "NOIDA INSTITUTE OF ENGINEERING AND TECHNOLOGY GREATER NOIDA",
+     "Gautam Budh Nagar",
+     "Autonomous college"
+    ],
+    [
+     "NREC COLLEGE KHURJA",
+     "BULANDSHAHR",
+     "Government-aided college"
+    ],
+    [
+     "Popular College of Nursing Varanasi",
+     "Varanasi",
+     "Private / self-financing college"
+    ],
+    [
+     "PRAYAG MAHILA VIDYAPEETH DEGREE COLLEGE PRAYAGRAJ",
+     "PRAYAGRAJ",
+     "Government-aided college"
+    ],
+    [
+     "Pt Gangadhar Pandey Shravan Kumar mahavidyalay kuthond jalaun",
+     "Jalaun",
+     "Private / self-financing college"
+    ],
+    [
+     "Pt parashuram dwivedi mahavidyalaya jagammanpur jalaun",
+     "Jalaun",
+     "Private / self-financing college"
+    ],
+    [
+     "Pt. Deendayal Upadhyay Government Girls Degree College Sewapuri Varanasi",
+     "Varanasi",
+     "Government college"
+    ],
+    [
+     "Pt.Deendayal Upadhyay Rajkiya Mahavidyalaya, Palhipatti, Varanasi",
+     "Varanasi",
+     "Government college"
+    ],
+    [
+     "Raghuveer Singh Govt. Degree College, Lalitpur, Uttar Pradesh",
+     "Lalitpur",
+     "Government college"
+    ],
+    [
+     "Raja Mahendra Pratap Singh University",
+     "Aligarh",
+     "State university department"
+    ],
+    [
+     "Rajakeeya Mahavidyalaya Padiyapar, Jaswali, Deoria",
+     "Deoria",
+     "Government college"
+    ],
+    [
+     "Rajiv Gandhi Institute of Petroleum Technology",
+     "Amethi",
+     "Autonomous college"
+    ],
+    [
+     "RAJKEEYA MAHAVIDYALAYA, RUDHAULI, BASTI",
+     "BASTI",
+     "Government college"
+    ],
+    [
+     "Rajkiya Mahavidhyalaya B.B.Nagar, Bulandshahr",
+     "Bulandshahr",
+     "Government college"
+    ],
+    [
+     "Rajkiya Mahavidyalay Ramkola Kushinagar",
+     "Kushinagar",
+     "Government college"
+    ],
+    [
+     "RAJKIYA MAHAVIDYALAYA BARKI SEWAPURI VARANASI",
+     "Varanasi",
+     "Government college"
+    ],
+    [
+     "Rajkiya Mahavidyalaya Beekapur",
+     "Ayodhya",
+     "Government college"
+    ],
+    [
+     "Rajkiya Mahavidyalaya Modinagar Ghaziabad",
+     "GHAZIABAD",
+     "Government college"
+    ],
+    [
+     "RAJKIYA MAHILA MAHAVIDYALAY ROBERTSGANJ SONBHADRA",
+     "SONBHADRA",
+     "Government college"
+    ],
+    [
+     "Rajkiya Mahila Mahavidyalaya DLW, Varanasi",
+     "Varanasi",
+     "Government college"
+    ],
+    [
+     "RAJKIYA MAHILA MAHAVIDYALAYA SAIYADRAJA CHANDAULI",
+     "CHANDAULI",
+     "Government college"
+    ],
+    [
+     "RAM LAKHAN PATEL MAHAVIDYALAY AIT JALAUN",
+     "JALAUN",
+     "Private / self-financing college"
+    ],
+    [
+     "Ramabai Govt Women PG College Akbarpur Ambedkar Nagar",
+     "Ambedkar Nagar",
+     "Government college"
+    ],
+    [
+     "Ramdev Memorial PG College",
+     "AZAMGARH",
+     "Private / self-financing college"
+    ],
+    [
+     "RAMDHANI SINGH NOHARA DEVI GOVERNMENT COLLEGE KAPTANGANJ, BASTI, UTTAR PRADESH",
+     "Basti",
+     "Government college"
+    ],
+    [
+     "Ramnagar P.G College, Ramnagar, Barabanki, Uttar Pradesh",
+     "BARABANKI",
+     "Government-aided college"
+    ],
+    [
+     "Ramtej Bhagauti Prasad Mahavidyalaya Dharswan Bahraich",
+     "Bahraich",
+     "Private / self-financing college"
+    ],
+    [
+     "RANA BENI MADHAV VEER VEERA PASI MAHAVIDYALAYA",
+     "RAEBARELI",
+     "Private / self-financing college"
+    ],
+    [
+     "RANVEER RANANJAI SNATKOTTAR MAHAVIDYALAYA, AMETHI",
+     "Amethi",
+     "Government-aided college"
+    ],
+    [
+     "RAVINDRA KISHORE SHAHI RAJKEEYA MAHAVIDYALAY, PATHERDEVA",
+     "DEORIA",
+     "Government college"
+    ],
+    [
+     "REC Sonbhadra",
+     "Sonbhadra",
+     "Government college"
+    ],
+    [
+     "S.K.B.B.Govt.P.G.College,Harakh,Barabanki",
+     "Barabanki",
+     "Government college"
+    ],
+    [
+     "SAKET GIRLS P.G. COLLEGE",
+     "Pratapgarh",
+     "Private / self-financing college"
+    ],
+    [
+     "Saket girls PG College Dhailamau Pratapgarh",
+     "Pratapgarh",
+     "Private / self-financing college"
+    ],
+    [
+     "Sampurnanand sanskrit university",
+     "Varanasi",
+     "State university department"
+    ],
+    [
+     "SANT GANINATH GOVERNMENT POST GRADUATE COLLEGE MUHAMMADABAD GOHANA MAU",
+     "MAU",
+     "Government college"
+    ],
+    [
+     "Sant Tulsidas PG College",
+     "Sultanpur",
+     "Government-aided college"
+    ],
+    [
+     "Sarla Dwivedi Mahavidyalaya Akbarpur Kanpur Dehat",
+     "Kanpur Dehat",
+     "Private / self-financing college"
+    ],
+    [
+     "SARVJEET KAUSHAL PUBLIC MAHAVIDYALAYA PENDARI BUZURG SIDDHARTH NAGAR",
+     "SIDDHARTH NAGAR",
+     "Arts and science college"
+    ],
+    [
+     "Sarvoday Sanskrit Shiksha Niketan Mahavidyalaya",
+     "kannauj",
+     "Private / self-financing college"
+    ],
+    [
+     "Sarvodaya PG College Ghosi Mau",
+     "Mau",
+     "Government-aided college"
+    ],
+    [
+     "Satish Chandra College",
+     "Ballia",
+     "Government-aided college"
+    ],
+    [
+     "Savitri Bai Fule Government PG College, Chakia, Chandauli",
+     "Chandauli",
+     "Government college"
+    ],
+    [
+     "Seemawarti Degree College",
+     "Bahraich",
+     "Private / self-financing college"
+    ],
+    [
+     "Shaheed Hira Singh Government PG College Dhanapur Chandauli",
+     "Chandauli",
+     "Government college"
+    ],
+    [
+     "Shaheed Mangal Pandey Rajkiya Mahila Mahavidyalay, Ballia,U.P.",
+     "Ballia",
+     "Government college"
+    ],
+    [
+     "Shahid Mangal Pandey Government Girls' PG College Meerut",
+     "Meerut",
+     "Government college"
+    ],
+    [
+     "SHAKUNTALA MEMORIAL EDUCATIONAL INSTITUTE",
+     "BAHRAICH",
+     "Other"
+    ],
+    [
+     "Shatabdi Center for educational excellence mahavidyalaya rath road Orai",
+     "JALAUN",
+     "Private / self-financing college"
+    ],
+    [
+     "Shibli National College Azamgarh",
+     "Azamgarh",
+     "Government-aided college"
+    ],
+    [
+     "SHIV SHANTI SANSKRIT MHAVIDYALAY KADIPUR KHURD CHAUBEYPUR VARANASI",
+     "VARANASI",
+     "Private / self-financing college"
+    ],
+    [
+     "Shivpati p g college shohratgarh siddharthnagar",
+     "Siddharthnagar",
+     "Government-aided college"
+    ],
+    [
+     "SHREE DEEPCHAND CHOUDHARY MAHAVIDYALAYA LALITPUR",
+     "LALITPUR",
+     "Private / self-financing college"
+    ],
+    [
+     "Shree Krishna Geeta Rashtreey Post-Graduate College, Lalganj.",
+     "Azamgarh",
+     "Government-aided college"
+    ],
+    [
+     "Shree Siddhivinayak college of law",
+     "Madhura",
+     "Law college"
+    ],
+    [
+     "Shri Agrasen Kanya P.G. College Varanasi",
+     "Varanasi",
+     "Autonomous college"
+    ],
+    [
+     "SHRI BILVESHWAR SANSKRIT MAHAVIDYALYA SADAR MEERUT",
+     "MEERUT",
+     "Government-aided college"
+    ],
+    [
+     "Shri Durga Ji Post Graduate College Chandeshwar Azamgarh",
+     "Azamgarh",
+     "Government-aided college"
+    ],
+    [
+     "Shri Durga Ji Sanskrit Mahavidyalaya Chandeshwar Azamgarh",
+     "Azamgarh",
+     "Government-aided college"
+    ],
+    [
+     "Shri Durga Shiksha Niketan mahavidyalaya BKT Lucknow",
+     "Lucknow",
+     "Private / self-financing college"
+    ],
+    [
+     "SHRI LAL BAHADUR SHASTRI DEGREE COLLEGE",
+     "GONDA",
+     "Government-aided college"
+    ],
+    [
+     "Shri Murli Manohar Town Post Graduate College Ballia",
+     "Ballia",
+     "Government-aided college"
+    ],
+    [
+     "SHRI PN SHARMA DEGREE COLLEGE SAIDPUR",
+     "Lalitpur",
+     "Private / self-financing college"
+    ],
+    [
+     "Shri Shiva Degree college Terhi kaptanganj Azamgarh",
+     "Azamgarh",
+     "Government-aided college"
+    ],
+    [
+     "SITARAM SAMARPAN MAHAVIDYALAY NARAINI-BANDA",
+     "BANDA",
+     "Private / self-financing college"
+    ],
+    [
+     "Sri Baldeo P.G. College, Baragaon, Varanasi-221204",
+     "VARANASI",
+     "Government-aided college"
+    ],
+    [
+     "SRI DEVIKUND SHANSKRIT MAHAVIDYALYA DEOBAND SAHARANPUR",
+     "SAHARANPUR",
+     "Government-aided college"
+    ],
+    [
+     "Sri satydev degree college",
+     "Prayagraj",
+     "Private / self-financing college"
+    ],
+    [
+     "SRI SUDRISTI BABA SANTKOTTAR MAHAVIDYALAY",
+     "BALLIA",
+     "Government-aided college"
+    ],
+    [
+     "Sri vishwnath sanskrit mhavidy koraoan, pryagraj",
+     "Pryagraj",
+     "Government-aided college"
+    ],
+    [
+     "SUDARSHAN DEGREE COLLEGE, BANSI, LALITPUR",
+     "LALITPUR",
+     "Private / self-financing college"
+    ],
+    [
+     "Sunbeam Women's College Varuna",
+     "Varanasi",
+     "Private / self-financing college"
+    ],
+    [
+     "sw bhagwanti Devi degree College Bhuska mejaroad prayagraj",
+     "prayagraj",
+     "Private / self-financing college"
+    ],
+    [
+     "SWARGIYA RAMVILASH SINGH SHIKSHAN SANSTHA VIJAYPURVA SIKANDARPUR CHAKIA CHANDAULI",
+     "CHANDAULI",
+     "Private / self-financing college"
+    ],
+    [
+     "Udai pratap College Autonomous",
+     "Varanasi",
+     "Autonomous college"
+    ],
+    [
+     "Udai Pratap college, Varanasi",
+     "Varanasi",
+     "Autonomous college"
+    ],
+    [
+     "United Institute of Management",
+     "Prayagraj",
+     "Private / self-financing college"
+    ],
+    [
+     "Uttar Pradesh state institute of forensic science UPSIFS",
+     "Lucknow",
+     "Government college"
+    ],
+    [
+     "Vasant Kanya Mahavidyalaya",
+     "Varanasi",
+     "Government-aided college"
+    ],
+    [
+     "Vasanta college for women",
+     "Varanasi",
+     "Central university department"
+    ],
+    [
+     "Veer Bahadur Singh Purvanchal University Jaunpur",
+     "Jaunpur",
+     "State university department"
+    ],
+    [
+     "Veer Bahadur Singh Rajkeeya Mahavidyalaya Campierganj Gorakhpur",
+     "Gorakhpur",
+     "Government college"
+    ],
+    [
+     "Veerangna Avantibai Government Degree College Atrauli Aligarh",
+     "Aligarh",
+     "Government college"
+    ],
+    [
+     "Vindhyavasini krishan bihari mahila mahavidhyalay",
+     "Fatehpur",
+     "Private / self-financing college"
+    ],
+    [
+     "Yuveraj Dutta Postgraduate College, Lakhimpur Kheri",
+     "Lakhimpur Kheri",
+     "Government-aided college"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "Uttarakhand"
+   ],
+   "nodal": "Hemvati Nandan Bahuguna Garhwal University",
+   "institutions": [
+    [
+     "Gurukula Kangri Deemed to be University",
+     "Haridwar",
+     "Deemed university"
+    ],
+    [
+     "Hemvati Nandan Bahuguna Garhwal University",
+     "Pauri",
+     "Central university department"
+    ],
+    [
+     "Hemvati Nandan Bahuguna Garhwal University (A Central University)",
+     "Pauri Garhwal",
+     "Central university department"
+    ],
+    [
+     "Hemwati nandan bahuguna garhwal university swami ramtirth campus",
+     "Tehri garhwal",
+     "Central university department"
+    ],
+    [
+     "Shri Raghunath Kirti Campus",
+     "Pauri Gadhwalyoutu",
+     "Central university department"
+    ],
+    [
+     "UTTRAKHAND SANSKRIT UNIVERSITY HARIDWAR",
+     "HARIDWAR",
+     "Other"
+    ]
+   ]
+  },
+  {
+   "states": [
+    "West Bengal"
+   ],
+   "nodal": "Visva-Bharati",
+   "institutions": [
+    [
+     "Acharya Prafulla Chandra College",
+     "North 24 Parganas",
+     "Government-aided college"
+    ],
+    [
+     "Acharya Sukumar Sen Mahavidyalaya",
+     "Purba Bardhaman",
+     "Government-aided college"
+    ],
+    [
+     "Adamas University",
+     "North 24 Paragana",
+     "Private / self-financing college"
+    ],
+    [
+     "Ananda Chandra College",
+     "Jalpaiguri",
+     "Government-aided college"
+    ],
+    [
+     "Ananda Chandra College of Commerce",
+     "Jalpaiguri",
+     "Government-aided college"
+    ],
+    [
+     "BAKSHIRHAT MAHAVIDYALAYA",
+     "COOCHBEHAR",
+     "Government-aided college"
+    ],
+    [
+     "Balagarh Bijoy Krishna Mahavidyalaya",
+     "HOOGHLY",
+     "Government-aided college"
+    ],
+    [
+     "BANESWAR SARATHIBALA MAHAVIDYALAYA",
+     "COOCH BEHAR",
+     "Government-aided college"
+    ],
+    [
+     "Bankura University",
+     "Bankura",
+     "State university department"
+    ],
+    [
+     "Bengal college of engineering and technology",
+     "Paschim Bardhaman",
+     "Private / self-financing college"
+    ],
+    [
+     "BERHAMPORE GIRLS' COLLEGE",
+     "MURSHIDABAD",
+     "Government-aided college"
+    ],
+    [
+     "BHAIRAB GANGULY COLLEGE",
+     "NORTH TWENTY FOUR PARGANAS",
+     "Government-aided college"
+    ],
+    [
+     "Bidhannagar College",
+     "North 24 Parganas",
+     "Government college"
+    ],
+    [
+     "BIRBHUM MAHAVIDYALAYA",
+     "BIRBHUM",
+     "Government-aided college"
+    ],
+    [
+     "Birpara College",
+     "Alipurduar",
+     "Government-aided college"
+    ],
+    [
+     "CALCUTTA GIRLS' B.T. COLLEGE",
+     "KOLKATA",
+     "Government-aided college"
+    ],
+    [
+     "Chandrakona Vidyasagar Mahavidyalaya",
+     "Paschim Medinipur",
+     "Government-aided college"
+    ],
+    [
+     "College of Engineering & Management, Kolaghat",
+     "MEDINIPUR",
+     "Engineering college"
+    ],
+    [
+     "Cooch Behar College",
+     "COOCH BEHAR",
+     "Government-aided college"
+    ],
+    [
+     "Darjeeling Hills University",
+     "Darjeeling",
+     "State university department"
+    ],
+    [
+     "gandhi centenary b.t. college   habra",
+     "north 24 pgs",
+     "Government-aided college"
+    ],
+    [
+     "Gopal Chandra Memorial College of Education",
+     "24 parganas North",
+     "Government-aided college"
+    ],
+    [
+     "Government Centre of Legal Education",
+     "HOOGHLY",
+     "Government college"
+    ],
+    [
+     "Government College of Education, Banipur",
+     "North 24 Parganas",
+     "Government college"
+    ],
+    [
+     "Government College of Engineering & Textile Technology, Berhampore",
+     "Murshidabad",
+     "Government college"
+    ],
+    [
+     "Government General Degree College at Kharagpur-II",
+     "Paschim Medinipur",
+     "Government college"
+    ],
+    [
+     "Government General Degree College Lalgarh",
+     "Jhargram",
+     "Government college"
+    ],
+    [
+     "Government General Degree College, Mohanpur",
+     "Paschim Medinipur",
+     "Government college"
+    ],
+    [
+     "Government General Degree College, Ranibandh",
+     "Bankura",
+     "Government college"
+    ],
+    [
+     "Government General Degree College, Singur",
+     "Hooghly",
+     "Government college"
+    ],
+    [
+     "GOVERNMENT TRAINING COLLEGE, HOOGHLY",
+     "HOOGHLY",
+     "Government college"
+    ],
+    [
+     "Govt Teachers' Training College, Malda",
+     "Malda",
+     "Government college"
+    ],
+    [
+     "Govt. College of Education, Burdwan",
+     "Purba Bardhaman",
+     "Government college"
+    ],
+    [
+     "GURUNANAK INSTITUTE OF HOTEL MANAGEMENT",
+     "NORTH 24 PARGANAS",
+     "Private / self-financing college"
+    ],
+    [
+     "Hazi A. K. Khan College",
+     "Murshidabad",
+     "Government-aided college"
+    ],
+    [
+     "Hindi University",
+     "South 24 Parganas",
+     "State university department"
+    ],
+    [
+     "Hiralal college for girls",
+     "North 24 parganas",
+     "Government college"
+    ],
+    [
+     "Hiralal Mazumdar Memorial College for Women",
+     "North 24 Parganas",
+     "Government-aided college"
+    ],
+    [
+     "IMI KOLKATA",
+     "Kolkata",
+     "Private / self-financing college"
+    ],
+    [
+     "INSTITUTE OF EDUCATION FOR WOMEN, HASTINGS HOUSE, KOLKATA",
+     "KOLKATA",
+     "Government college"
+    ],
+    [
+     "Jagannath Kishore College",
+     "PURULIA",
+     "Government-aided college"
+    ],
+    [
+     "Jangipur College",
+     "Murshidabad",
+     "Government-aided college"
+    ],
+    [
+     "Kabikankan Mukundaram Mahavidyalaya",
+     "Hooghly",
+     "Government-aided college"
+    ],
+    [
+     "KALIMPONG COLLEGE",
+     "KALIMPONG",
+     "Government-aided college"
+    ],
+    [
+     "KANDRA RADHA KANTA KUNDU MAHAVIDYALAYA",
+     "PURBA BARDHAMAN",
+     "Government-aided college"
+    ],
+    [
+     "Krishnagar Government College",
+     "Nadia",
+     "Government college"
+    ],
+    [
+     "Maharaja Srischandra  College",
+     "Kolkata",
+     "Government-aided college"
+    ],
+    [
+     "MIDNAPORE COLLEGE (AUTONOMOUS)",
+     "PASCHIM MEDINIPUR",
+     "Autonomous college"
+    ],
+    [
+     "Muzaffar Ahmed Mahavidyalaya",
+     "Murshidabad",
+     "Government-aided college"
+    ],
+    [
+     "NABA BALLYGUNGE MAHAVIDYALAYA",
+     "KOLKATA",
+     "Government-aided college"
+    ],
+    [
+     "NABA Barrackpur Prafulla chandara mahavidya",
+     "North 24 pargana",
+     "Government college"
+    ],
+    [
+     "NABAGRAM HIRALAL PAUL COLLEGE",
+     "Hooghly",
+     "Government-aided college"
+    ],
+    [
+     "Nahata Jogendranath Mondal Smriti Mahavidyalaya",
+     "North 24 Parganas",
+     "Government-aided college"
+    ],
+    [
+     "Nakshalbari College",
+     "Darjeeling",
+     "Government-aided college"
+    ],
+    [
+     "NETAJI NAGAR COLLEGE FOR WOMEN",
+     "KOLKATA",
+     "Government-aided college"
+    ],
+    [
+     "NEW ALIPORE COLLEE",
+     "KOLKATA",
+     "Government-aided college"
+    ],
+    [
+     "NIKHIL BANGA SIKSHAN MAHAVIDYALAYA",
+     "BANKURA",
+     "Government-aided college"
+    ],
+    [
+     "OmDayal Group of Institutions",
+     "Howrah",
+     "Private / self-financing college"
+    ],
+    [
+     "P.N. Das College",
+     "North 24 Parganas",
+     "Government-aided college"
+    ],
+    [
+     "PINGLA THANA MAHAVIDYALAYA",
+     "Paschim Medinipur",
+     "Government-aided college"
+    ],
+    [
+     "PRABHAT KUMAR COLLEGE",
+     "Purba Medinipur",
+     "Government-aided college"
+    ],
+    [
+     "Rabindra Mahavidyalaya",
+     "Hooghly",
+     "Government-aided college"
+    ],
+    [
+     "Ramakrishna Mision Brahmananda College of Education",
+     "North 24 Parganas",
+     "Government-aided college"
+    ],
+    [
+     "RBC College For Women",
+     "North 24 Parganas",
+     "Government-aided college"
+    ],
+    [
+     "Rishi Bankim Chandra College",
+     "North 24 Parganas",
+     "Government-aided college"
+    ],
+    [
+     "SADHU RAMCHAND MURMU UNIVERSITY OF JHARGRAM",
+     "Jhargram",
+     "State university department"
+    ],
+    [
+     "Santal Bidroha Sardha Satabarshiki Mahavidyalaya",
+     "Paschim Medinipur",
+     "Government-aided college"
+    ],
+    [
+     "SARSUNA COLLEGE",
+     "SOUTH TWENTY FOUR PARGANAS",
+     "Government-aided college"
+    ],
+    [
+     "SATYAPRIYA ROY COLLEGE OF EDUCATION",
+     "NORTH 24 PARGANAS",
+     "Government-aided college"
+    ],
+    [
+     "Seth Anandram Jaipuria college",
+     "Kolkata",
+     "Government-aided college"
+    ],
+    [
+     "SEVAYATN SIKSHAN MAHAVIDYALAYA",
+     "JHARGRAM",
+     "Government-aided college"
+    ],
+    [
+     "Shibpur Dinobondhu Institute",
+     "Howrah",
+     "Government-aided college"
+    ],
+    [
+     "Shimurali Sachinandan College of Education",
+     "Nadia",
+     "Government-aided college"
+    ],
+    [
+     "SILIGURI B.ED. COLLEGE",
+     "DARJEELING",
+     "Government-aided college"
+    ],
+    [
+     "SOUTH CALCUTTA GIRLS' COLLEGE",
+     "KOLKATA",
+     "Government-aided college"
+    ],
+    [
+     "Sponsored Teachers' Training College",
+     "Purulia",
+     "Government-aided college"
+    ],
+    [
+     "SRIKRISHNA COLLEGE",
+     "Nadia",
+     "Government-aided college"
+    ],
+    [
+     "Sukumar Sengupta Mahavidyalaya",
+     "Paschim Medinipur",
+     "Government-aided college"
+    ],
+    [
+     "SUNDARBAN HAZI DESARAT COLLEGE",
+     "SOUTH 24 PARGANAS",
+     "Government-aided college"
+    ],
+    [
+     "SURI VIDYASAGAR COLLEGE",
+     "Birbhum",
+     "Government-aided college"
+    ],
+    [
+     "SVICEM.CU",
+     "Kolkata",
+     "State university department"
+    ],
+    [
+     "The University of Burdwan",
+     "Purba Bardhaman",
+     "State university department"
+    ],
+    [
+     "Union Christian Training College",
+     "Murshidabad",
+     "Government-aided college"
+    ],
+    [
+     "University of Kalyani",
+     "Nadia",
+     "State university department"
+    ],
+    [
+     "Vidyasagar Techers Training College",
+     "Paschim Medinipur",
+     "Government-aided college"
+    ],
+    [
+     "Vidyasagar University",
+     "Paschim Medinipur",
+     "State university department"
+    ],
+    [
+     "Visva-Bharati",
+     "Birbhum",
+     "Central university department"
+    ],
+    [
+     "WEST BENGAL STATE UNIVERSITY",
+     "NORTH 24 PARGANAS",
+     "State university department"
+    ]
+   ]
+  }
+ ]
+}

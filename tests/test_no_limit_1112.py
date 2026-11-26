@@ -73,11 +73,11 @@ def test_the_reserve_list_in_the_list_of_its_state():
     _insert(app, "Marked Reserve College", "Kerala", "reserve", 70)
     _insert(app, "Unmarked Reserve College", "Kerala", "reserve")
     page = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    kerala = page[page.index('<h2 id="st-kerala"'):]
+    kerala = page[page.index('<h3 id="st-kerala"'):]      # a heading under its section since 1.2.229
     kerala = kerala[:kerala.index("</table>")]
     assert re.findall(r'<td class="num">([^<]+)</td><td lang="en" dir="ltr">([^<]+)</td>', kerala) == [
         ("1", "Marked Reserve College"), ("2", "Selected Kochi College"), ("3", "Unmarked Reserve College")]
-    assert '<span class="small muted">(3)</span></h2>' in kerala and "3 institutions from 1 States/UTs" in page
+    assert '<span class="small muted">(3)</span></h3>' in kerala and "3 institutions from 1 States/UTs" in page
     assert 'id="reserve' not in page and CATALOG["en"]["hei.reserve_unmarked"] not in page and "Reserve list" not in page
     pi = page[page.index('<section class="pi"'):page.index('<p><b>')]
     assert '<div class="num">3</div><div class="lbl">Participating Institutions registered</div>' in pi   # counted together (1.2.178)

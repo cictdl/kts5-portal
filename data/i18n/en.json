@@ -828,6 +828,8 @@
   "nav.institutions": "Participating institutions",
   "hei.intro": "The Participating Institutions of KTS 5.0 – Thirukkural Payilvom, State/UT by State/UT, as they have registered on this portal. Each of them assesses its interested students and nominates one on merit on this portal, with a Faculty Supervisor/Guide, endorsed by the Head of the Institution.",
   "hei.count": "{n} institutions from {states} States/UTs",
+  "hei.sec_registered": "Participating Institutions registered (verified)",
+  "hei.sec_selected": "List of selected institutions given by the Nodal Officers",
   "hei.empty": "No institution has been accepted yet.",
   "hei.nodal": "Nodal Institution",
   "hei.col_name": "Institution",

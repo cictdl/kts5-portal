@@ -170,9 +170,9 @@ def test_the_number_of_annexure_i_and_a_reserve_list_without_an_upper_limit():
     # the website: the reserve list in the table of its State/UT with the Participating Institutions, by name, not told apart,
     # without the marks (1.2.177; a list of its own in 1.2.174-1.2.176)
     public = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    table = public[public.index('<h2 id="st-puducherry"'):]
+    table = public[public.index('<h3 id="st-puducherry"'):]      # a heading under its section since 1.2.229
     table = table[:table.index("</table>")]
-    assert '<h2 id="st-puducherry" style="margin-top:28px">Puducherry <span class="small muted">(10)</span></h2>' in public
+    assert '<h3 id="st-puducherry" style="margin-top:28px;font-size:1.3rem">Puducherry <span class="small muted">(10)</span></h3>' in public
     assert re.findall(r'<tr><td class="num">(\d+)</td><td lang="en" dir="ltr">(College [A-J])</td>', table) == [
         (str(n), f"College {c}") for n, c in enumerate("ABCDEFGHIJ", start=1)]
     assert 'id="reserve' not in public and "Reserve list" not in public and "/100" not in public
@@ -190,7 +190,7 @@ def test_the_number_of_annexure_i_and_a_reserve_list_without_an_upper_limit():
     with app.app_context():
         set_setting("hei.reserve_public", "0")
     public = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    assert "College F" not in public and "College A<" in public and "(5)</span></h2>" in public
+    assert "College F" not in public and "College A<" in public and "(5)</span></h3>" in public
     _act(officer, ids["J"], "pending")
     _act(officer, ids["J"], "reserve")
     with app.app_context():
@@ -323,7 +323,8 @@ def test_an_institution_of_the_reserve_list_does_not_register_again():
                    head_email="head2@twice.example", coord_email="coord2@twice.example")
     assert again.status_code == 400 and "already applied" in again.get_data(as_text=True)
     public = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    assert public.count("Twice College") == 1
+    assert public.count("Twice College") == 2      # once in each of the two sections (1.2.229): Puducherry's list has been given
+    assert all(part.count("Twice College") == 1 for part in public.split('<section class="hei-sec"')[1:]) and public.count('<section class="hei-sec"') == 2
     # declined, it may apply again, as before
     _act(officer, twice, "decline")
     assert _apply(app.test_client(), name="Twice College", state="Puducherry", district="Karaikal", aishe_code="",

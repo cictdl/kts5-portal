@@ -378,11 +378,11 @@ def home():
     if settings.get("stats.public") == "1" and settings.get("reg.public") != "1":
         # the States/UTs: those that have a Participating Institution, as /institutions counts them (1.2.174)
         # with the institutions of the reserve list while it is public (1.2.178)
-        counted = HEI.counted_statuses()
-        marks = ",".join("?" * len(counted))
-        row = query(f"SELECT SUM(status IN ({marks})) AS sel, COUNT(*) AS reg, COUNT(DISTINCT CASE WHEN status IN ({marks}) THEN state END) AS s "
-                    "FROM institutions WHERE status != 'identified'", counted + counted, one=True)
-        inst_stats = {"selected": row["sel"] or 0, "registered": row["reg"], "states": row["s"]}
+        # since 1.2.229 with the institutions of the 31 lists of CICT that are declined now (HEI.registered_rows; CICT, 26 November
+        # 2026: "Registered total everywhere")
+        listed = HEI.registered_rows()
+        row = query("SELECT COUNT(*) AS reg FROM institutions WHERE status != 'identified'", one=True)
+        inst_stats = {"selected": len(listed), "registered": row["reg"], "states": len({r["state"] for r in listed if r["state"] is not None})}
     k = K.daily()
     kotd_lang, kotd_dir = _stream()
     if not K.lines(k, kotd_lang):
@@ -991,9 +991,13 @@ def institutions():
     nodal = {s: n["name"] for n in nodal_heis() for s in HEI.group_of(n["state"])}   # a paired Union Territory: its State's (1.2.135)
     # the list: with the institutions of the reserve list, in the table of their State/UT, not told apart (1.2.177; a list of
     # their own in 1.2.174-1.2.176)
-    listed = HEI.accepted_by_state(ref["all_states"], reserve=settings.get("hei.reserve_public") == "1")
-    return render_template("public/institutions.html", groups=listed, nodal=nodal, ref=ref, state_anchor=state_anchor,
-                           total=sum(len(items) for _state, items in listed), window=HEI.window(settings),
+    taking = HEI.accepted_by_state(ref["all_states"], reserve=settings.get("hei.reserve_public") == "1")
+    # since 1.2.229 in two sections: the Participating Institutions registered - those that take part and, with them, the
+    # institutions of the 31 lists of CICT that are declined now (HEI.registered_rows) - which "At a glance" counts too; then the
+    # lists of the selected institutions given by the Nodal Officers
+    listed = HEI.registered_by_state(ref["all_states"])
+    return render_template("public/institutions.html", groups=listed, sections=HEI.two_sections(listed, taking), nodal=nodal, ref=ref,
+                           state_anchor=state_anchor, total=sum(len(items) for _state, items in listed), window=HEI.window(settings),
                            settings=settings, most=HEI.max_per_state(), pi=_institutions_at_a_glance(listed, ref))   # the list counted (1.2.178)
 
 
@@ -1871,9 +1875,13 @@ def _nodal_table():
     """
     heis = nodal_heis()
     now = {}
-    counted = HEI.counted_statuses()   # with the reserve list while it is public (1.2.178)
-    for r in query(f"SELECT state, COUNT(*) AS n FROM institutions WHERE status IN ({','.join('?' * len(counted))}) GROUP BY state", counted):
-        now[HEI.nodal_state_of(r["state"])] = now.get(HEI.nodal_state_of(r["state"]), 0) + r["n"]
+    # the Participating Institutions registered (HEI.registered_rows): with the reserve list while it is public (1.2.178) and, since
+    # 1.2.229, with the institutions of the 31 lists of CICT that are declined now
+    by_state = {}
+    for r in HEI.registered_rows():
+        by_state[r["state"]] = by_state.get(r["state"], 0) + 1
+    for state, n in by_state.items():      # one look at Annexure-I for a State/UT, not for an institution
+        now[HEI.nodal_state_of(state)] = now.get(HEI.nodal_state_of(state), 0) + n
     officers = _nodal_officers_by_state()
     rows = [dict(h, label=HEI.label_of(h["state"]), now=now.get(h["state"], 0), anchor=state_anchor(h["state"]), code=DRIVE.code_of(h["state"]),
                  officers=_officers_of(officers, HEI.group_of(h["state"]))) for h in heis]

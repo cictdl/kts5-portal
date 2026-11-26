@@ -132,10 +132,14 @@ def test_the_institutions_not_on_the_list_are_declined_once():
         execute("UPDATE institutions SET status = 'accepted' WHERE id = ?", (ids["not on it"],))
     init_db(app)
     assert _status(app, ids["not on it"])["status"] == "accepted" and _count(app, "audit_log") == audits + len(declined)
-    # the public list of the institutions: the declined ones are gone
+    # the public list of the selected institutions (under sel-..., 1.2.229): the declined ones are gone from it
     page = app.test_client().get("/institutions?lang=en").get_data(as_text=True)
-    jk = page[page.index('id="st-jammu-and-kashmir"'):]
-    assert "Altaf Memorial Government Degree College Kilam Kulgam" in jk and "GDC Budhal" not in jk and "Govt Degree College Zanskar" not in page
+    selected = page[page.index('<h2 id="hei-selected"'):]
+    jk = selected[selected.index('id="sel-jammu-and-kashmir"'):]
+    assert "Altaf Memorial Government Degree College Kilam Kulgam" in jk and "GDC Budhal" not in jk and "Govt Degree College Zanskar" not in selected
+    # under the institutions registered they are shown still, being of the 31 lists of CICT (1.2.229: "Show only")
+    registered = page[page.index('<h2 id="hei-registered"'):page.index('<h2 id="hei-selected"')]
+    assert "Altaf Memorial Government Degree College Kilam Kulgam" in registered and "GDC Budhal" in registered
 
 
 def test_a_declined_institution_cannot_register_again_under_its_name():

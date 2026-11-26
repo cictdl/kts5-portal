@@ -1084,7 +1084,7 @@ def test_alt_texts_use_keys_that_exist():
     # 1.2.189: the line of the dashboard without the students who took an institution's online test (1)
     # 1.2.192: "Online Assessment", and that the Participating Institutions shall use it (2)
     # 1.2.209: the texts that give a last day, once more without it (<key>_nd), for the switch dates.public (26)
-    assert len(CATALOG["en"]) == 1551
+    assert len(CATALOG["en"]) == 1553
 
 
 def test_chapter_names_keep_the_english(app):
@@ -1116,7 +1116,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.228" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.229" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 
