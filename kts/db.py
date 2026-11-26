@@ -1162,6 +1162,64 @@ JK_SELECTED_1126 = frozenset((
 JK_LIST_UNTIL = "2026-11-26T08:30:00+00:00"      # 2:00 PM IST, when CICT sent the list
 JK_LIST_NOTE = ("Not among the 46 institutions of the list of the Nodal Institution of Jammu and Kashmir and Ladakh (Central University "
                 "of Jammu), 26 November 2026")
+# The lists of the Nodal Institutions of other States/UTs, 26 November 2026 (1.2.220): for each, its institutions by name, each with
+# the Head's e-mail, the coordinator's e-mail and the coordinator's mobile that the list gives ("" where it gives none, or where
+# nothing is to change). The institutions of the State/UT registered up to "until" and not on the list are declined once with the
+# "note", and those on it take the details of the list (init_db). Puducherry: "This is the new list Puducherry. decline others. add
+# the new list details" - the details: "E-mails and mobile". Andhra Pradesh: the portal's own Annexure-II of 22 November.
+# Chhattisgarh: the list the Nodal Institution sent to CICT on 23 November.
+NODAL_LISTS_1126 = (
+    {"key": "py", "state": "Puducherry", "until": "2026-11-26T08:50:00+00:00",      # 2:20 PM IST, when CICT sent the list
+     "note": "Not among the 5 institutions of the list of the Nodal Institution of Puducherry (Pondicherry University), 26 November 2026",
+     "listed": (
+         ("Perunthalaivar Kamarajar college of Education", "kandedu@gmail.com", "bavanig80@gmail.com", "9944267630"),
+         ("Pondicherry University", "registrar@pondiuni.ac.in", "lakshmi.duttai@pondiuni.ac.in", "9944758909"),
+         ("Perunthalaivar Kamarajar Arts College", "pkartscollege@gmail.com", "sivkmr.ji@gmail.com", "9159106424 / 9994477028"),
+         ("IDHAYA COLLEGE OF ARTS AND SCIENCE FOR WOMEN", "idhayacollegepdy@gmail.com", "sripadma388@gmail.com", "9789688373"),
+         ("Rashtriya Raksha University", "py.campusdirector@rru.ac.in", "tcro7.py@rru.ac.in", "9894881203 / 7550225772"))},
+    {"key": "ap", "state": "Andhra Pradesh", "until": "2026-11-26T08:55:00+00:00",      # 2:25 PM IST, when CICT sent the list
+     "note": "Not among the 17 institutions of the list of the Nodal Institution of Andhra Pradesh (Central University of Andhra Pradesh), 26 November 2026",
+     "listed": (
+         ("ACHARYA NAGARJUNA UNIVERSITY", "", "", ""),
+         ("Audisankara University", "", "", ""),
+         ("Central Tribal University of Andhra Pradesh", "", "", ""),
+         ("Central Unibversity of Andhra Pradesh", "", "", ""),
+         ("Dr RVR NRI Institute of Technology", "", "", ""),
+         ("Gandhi Institute of Technology and Management Deemed to be University", "", "", ""),
+         ("Godavari Global University", "", "", ""),
+         ("Government College (A), Ananthapuramu", "", "", ""),
+         ("IIITDM kurnool", "", "", ""),
+         ("Krea University", "", "", ""),
+         ("National Sanskrit University, Turupati", "", "", ""),
+         ("Sarat Chandra Degree College", "", "", ""),
+         ("SGT & JVB DEGREE COLLEGE(149)THULLUR", "", "", ""),
+         ("Sri Gorantla Venkanna Oriental College", "", "", ""),
+         ("Sri Sathya Sai Institute of Higher Learning", "", "", ""),
+         ("SVJV SANSKRIT COLLEGE", "", "", ""),
+         ("Vignan institute of engineering for women", "", "", ""))},
+    {"key": "cg", "state": "Chhattisgarh", "until": "2026-11-26T09:00:00+00:00",      # 2:30 PM IST, when CICT sent the list
+     "note": "Not among the 20 institutions of the list of the Nodal Institution of Chhattisgarh (Guru Ghasidas Vishwavidyalaya), 26 November 2026",
+     "listed": (
+         ("ACHARYA PANTH SHRI GRINDH MUNI NAAM SAHEB GOVT. P.G. COLLEGE, KAWARDHA DIST. KABIRDHAM (C.G.)", "", "", ""),
+         ("Amity University Chhattisgarh", "", "", ""),
+         ("Chaitanya Science and Arts College Autonomous Pamgarh", "", "", ""),
+         ("DR. C. V. RAMAN UNIVERSITY", "", "", ""),
+         ("Government V.Y.T. P.G. Autonomous College Durg", "", "", ""),
+         ("GOVT BILASA GIRLS P G (AUTONOMOUS) COLLEGE BILASPUR CHHATTISGARH", "", "", ""),
+         ("Govt Lahiri P.G. Collage", "", "", ""),
+         ("Govt Model Residential Girls College Kondagaon C.G.", "", "", ""),
+         ("Govt Rajmata Vijaya Raje Sindhiya Girls College Kawardha", "", "", ""),
+         ("GOVT WWP GIRLS' PG COLLEGE DURG (C.G.)", "", "", ""),
+         ("Govt. Arvind College Kirandul", "", "", ""),
+         ("Govt. D.B. Girls' P. G. College, Raipur, C.G.", "", "", ""),
+         ("Govt.N.P.G.College of Sciege Raipur", "", "", ""),
+         ("Guru Ghasidas Vishwavidyalaya", "", "", ""),
+         ("Hemchand Yadav Vishwavidyalaya Durg", "", "", ""),
+         ("Kalinga University", "", "", ""),
+         ("MATS University", "", "", ""),
+         ("Naveen Govt college Mardapal", "", "", ""),
+         ("Naveen Govt. Girls College Mungeli", "", "", ""),
+         ("Shri Shankaracharya Professional University, Bhilai", "", "", ""))})
 # the last minute of the quiz, IST (the quiz page of MyGov: "End Date : 12 Dec 2026, 11:45 pm"): the band of the home page that
 # leads to it is shown up to then (1.2.215)
 MYGOV_QUIZ_UNTIL = "2026-12-12T23:45"
@@ -1717,6 +1775,101 @@ def nodal_notice(heis):
     return "State/UT-wise list of Nodal Higher Educational Institutions", body
 
 
+def _match_words(conn, row):
+    """
+    What names a mail of this institution in its subject (1.2.220): its reference, and its name where no other institution's name
+    holds it ("Government Degree College" is in many names: such a name is not used, its reference only).
+    """
+    words = []
+    ref, name = (row["ref"] or "").strip(), (row["name"] or "").strip()
+    if len(ref) >= 6:
+        words.append(ref)
+    if len(name) >= 6 and not conn.execute("SELECT 1 FROM institutions WHERE id != ? AND instr(name, ?) > 0", (row["id"], name)).fetchone():
+        words.append(name)
+    return words
+
+
+def _apply_nodal_list(conn, now, nodal_list):
+    """
+    The list of a Nodal Institution (1.2.220; an entry of NODAL_LISTS_1126), once (mark migrate.<key>_list_1126): its institutions,
+    found by their names among those of its State/UT (each must match exactly one, or nothing is done and the mark says why), take
+    the Head's e-mail, the coordinator's e-mail and the coordinator's mobile of the list where it gives them and they differ, each
+    change with a line of the audit log that keeps the old value; the others registered up to the time of the list (an invited one:
+    when it completed its registration) are declined - a line of the audit log, no mail; a submitted nomination (neither withdrawn
+    nor rejected) keeps one; mails waiting for a declined one (its name or reference in the subject; never a sign-in mail) are
+    withdrawn. CICT can accept any of them again in the Console.
+    """
+    mark = f"migrate.{nodal_list['key']}_list_1126"
+    if conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
+        return
+    flat = lambda s: " ".join((s or "").lower().split())  # noqa: E731
+    until = nodal_list["until"]
+    rows = conn.execute("SELECT id, ref, name, status, application_id, winner_id, head_email, coord_email, coord_mobile FROM institutions "
+                        "WHERE state = ? AND status IN ('accepted', 'pending', 'reserve') "
+                        "AND ((invited_by IS NULL AND created_at <= ?) OR (invited_by IS NOT NULL AND COALESCE(decided_at, created_at) <= ?)) "
+                        "ORDER BY id", (nodal_list["state"], until, until)).fetchall()
+    found = {name: [r for r in rows if flat(r["name"]) == flat(name)] for name, *_details in nodal_list["listed"]}
+    if any(len(match) != 1 for match in found.values()):
+        done = {"skipped": f"the list does not match the institutions of {nodal_list['state']} one to one",
+                "matches": {name: [r["ref"] for r in match] for name, match in found.items() if len(match) != 1}}
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, json.dumps(done), now))
+        return
+    actor = "release 1.2.220"
+    from .campus import _coordinator_numbers
+    changed, readdressed = [], 0
+    for name, head_email, coord_email, coord_mobile in nodal_list["listed"]:
+        r = found[name][0]
+        for field, new in (("head_email", head_email), ("coord_email", coord_email), ("coord_mobile", coord_mobile)):
+            if not new:
+                continue
+            old = r[field] or ""
+            if field.endswith("email"):
+                same = old.strip() == new
+            else:
+                held = _coordinator_numbers({"coord_mobile": old})
+                same = all(number in held for number in _coordinator_numbers({"coord_mobile": new}))
+            if not same:
+                conn.execute(f"UPDATE institutions SET {field} = ?, updated_at = ? WHERE id = ?", (new, now, r["id"]))
+                if field.endswith("email") and old.strip():
+                    # what waits in the queue for this institution at the old address goes to the new one (never a sign-in mail)
+                    words = [w for w in _match_words(conn, r) if w]
+                    if words:
+                        readdressed += conn.execute(
+                            "UPDATE outbox SET to_addr = ? WHERE status = 'queued' AND priority >= 0 AND lower(to_addr) = ? AND ("
+                            + " OR ".join("instr(subject, ?) > 0" for _ in words) + ")", (new, old.strip().lower(), *words)).rowcount
+                conn.execute("INSERT INTO audit_log(user_id, actor, action, entity, entity_id, detail, ip, created_at) VALUES(NULL,?,?,?,?,?,'',?)",
+                             (actor, "institution_updated", "institution", r["id"],
+                              json.dumps({"ref": r["ref"], "field": field, "was": old, "now": new,
+                                          "note": f"the details of the list of the Nodal Institution of {nodal_list['state']}, 26 November 2026"}),
+                              now))
+                changed.append([r["ref"], field])
+    listed = {match[0]["id"] for match in found.values()}
+    out = [r for r in rows if r["id"] not in listed]
+    kept = [r for r in out if conn.execute(
+        "SELECT 1 FROM applications WHERE (id = ? OR institution_id = ?) AND COALESCE(status, '') NOT IN ('withdrawn', 'rejected')",
+        (r["application_id"] or 0, r["id"])).fetchone()]
+    declined = [r for r in out if r not in kept]
+    with_students = [r["ref"] for r in declined if r["winner_id"] or conn.execute(
+        "SELECT 1 FROM campus_students WHERE institution_id = ?", (r["id"],)).fetchone()]
+    withdrawn = 0
+    for r in declined:
+        words = _match_words(conn, r)
+        if words:
+            withdrawn += conn.execute(
+                "UPDATE outbox SET status = 'failed', error = 'withdrawn: the institution is declined (1.2.220)', next_try = NULL "
+                "WHERE status = 'queued' AND priority >= 0 AND (" + " OR ".join("instr(subject, ?) > 0" for _ in words) + ")",
+                words).rowcount
+    conn.executemany("INSERT INTO audit_log(user_id, actor, action, entity, entity_id, detail, ip, created_at) VALUES(NULL,?,?,?,?,?,'',?)",
+                     [(actor, "institution_declined", "institution", r["id"],
+                       json.dumps({"ref": r["ref"], "was": r["status"], "note": nodal_list["note"]}), now) for r in declined])
+    conn.executemany("UPDATE institutions SET status = 'declined', decision_note = ?, decided_at = ?, invite_token = NULL, updated_at = ? "
+                     "WHERE id = ?", [(nodal_list["note"], now, now, r["id"]) for r in declined])
+    done = {"listed": [match[0]["ref"] for match in found.values()], "changed": changed, "declined": [r["ref"] for r in declined],
+            "kept_nominated": [r["ref"] for r in kept], "declined_with_students": with_students, "mails_withdrawn": withdrawn,
+            "mails_readdressed": readdressed}
+    conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, json.dumps(done), now))
+
+
 def init_db(app):
     """Create tables, apply additive migrations and seed reference data."""
     path = app.config["DATABASE"]
@@ -1811,6 +1964,9 @@ def init_db(app):
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)",
                      (mark, json.dumps({"declined": [r["ref"] for r in declined], "kept_nominated": [r["ref"] for r in kept],
                                         "declined_with_students": with_students, "mails_withdrawn": withdrawn}), now))
+    # The lists of the Nodal Institutions of Puducherry and of Andhra Pradesh (1.2.220): once for each list
+    for nodal_list in NODAL_LISTS_1126:
+        _apply_nodal_list(conn, now, nodal_list)
     # the reserve list is no more (1.2.198; CICT, 17 November 2026: "remove the reserve list condition" - of the institutions on
     # it: "Selected, like the 551"): each becomes a selected Participating Institution, once, with a line of the audit log. The
     # mark holds the number of them; a second mark holds them, for the mail that tells each of it once the portal has started

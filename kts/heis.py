@@ -33,7 +33,7 @@ from datetime import date, time, timedelta
 
 from flask import current_app
 
-from .db import JK_LIST_NOTE, execute, get_db, get_setting, query, utcnow
+from .db import JK_LIST_NOTE, NODAL_LISTS_1126, execute, get_db, get_setting, query, utcnow
 from .i18n import dates_public
 from .utils import college_key, inst_signin_words, now_ist, send_later, send_mail
 
@@ -634,11 +634,13 @@ def key_of(data):
 def duplicate(data, exclude_id=None):
     """
     An application of the same institution that is identified, pending, selected or on the reserve list (the last since 1.2.174),
-    or that was declined as not on the list of the Nodal Institution of Jammu and Kashmir and Ladakh (1.2.218): it cannot register
-    again under its name; CICT can accept it again in the Console.
+    or that was declined as not on the list of its Nodal Institution (Jammu and Kashmir and Ladakh, 1.2.218; Puducherry and Andhra
+    Pradesh, 1.2.220): it cannot register again under its name; CICT can accept it again in the Console.
     """
+    notes = (JK_LIST_NOTE,) + tuple(nodal_list["note"] for nodal_list in NODAL_LISTS_1126)
     return query("SELECT * FROM institutions WHERE inst_key = ? AND (status IN ('identified', 'pending', 'accepted', 'reserve') "
-                 "OR (status = 'declined' AND decision_note = ?)) AND id != ?", (key_of(data), JK_LIST_NOTE, exclude_id or 0), one=True)
+                 f"OR (status = 'declined' AND decision_note IN ({','.join('?' * len(notes))}))) AND id != ?",
+                 (key_of(data), *notes, exclude_id or 0), one=True)
 
 
 def _details(row):
