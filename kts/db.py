@@ -803,6 +803,10 @@ DEFAULT_SETTINGS = {
     "mail.daily_limit": "1800",
     "mail.per_minute": "30",
     "mail.paused": "0",
+    # the sign-in codes mailed to the participating institutions (kts/campus.py). Off since 1.2.216 (CICT, 26 November 2026: "i want
+    # sign-in codes stopped"; "only sign in code for the nodal officers should go"): an institution signs in with the e-mail address
+    # and the coordinator's mobile number of its registration, and no mail is sent; "1" brings the mailed code back
+    "inst.code_mail": "0",
     # the count of visitors in the footer of every page (1.2.31)
     "site.visitors": "1",
     "quiz.max_players": "200",

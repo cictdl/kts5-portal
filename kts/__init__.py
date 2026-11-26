@@ -284,6 +284,8 @@ def create_app(config_object=Config):
             "dates_public": i18n.dates_public,
             # the students' registration shown on the public pages (1.2.147: hidden by default)
             "students_public": lambda: db.get_setting("reg.public") == "1",
+            # the sign-in codes mailed to the institutions (1.2.216: off; they sign in with the e-mail address and the mobile number)
+            "inst_code_mail": lambda: db.get_setting("inst.code_mail") == "1",
             # KTS 5.0 – Key dates (1.2.152) and the steps of /how-to-submit-the-student with their English button names
             "key_dates_box": public.key_dates_box,
             # the nomination by the Participating Institutions open (1.2.154)

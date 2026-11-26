@@ -924,7 +924,10 @@ def _create_account(email, name, role, phone="", states=(), agency_id=None, acti
               f"Dear {name},\n\nAn account has been created for you on the Kashi Tamil Sangamam 5.0 portal.\n\n"
               + (NODAL.account_paragraph(list(states)) if role == "nodal" else "") +
               f"Sign in: {current_app.config['BASE_URL']}/console/login\nEmail: {email}\n"
-              f"Temporary password: {temp_password}\n\nYou will be asked to set a new password at first sign-in.\n\nCICT, Chennai")
+              f"Temporary password: {temp_password}\n\nYou will be asked to set a new password at first sign-in.\n\nCICT, Chennai",
+              # the account of a Nodal Officer goes at once, past a pause of the Console and the limits of the queue (1.2.216; CICT,
+              # 26 November 2026: "only sign in code for the nodal officers should go")
+              urgent=role == "nodal")
     return uid, temp_password
 
 
@@ -1858,6 +1861,11 @@ def institution_edit(iid):
                 errors[f] = "not a valid e-mail address"
         if data["state"] not in known or (scope is not None and data["state"] not in scope):
             errors["state"] = "choose a State/UT" + (" of your own" if scope is not None else "")
+        # the institution signs in with the mobile number of its coordinator (1.2.216): a number that the sign-in can read
+        # (asked of a number that is changed: a row whose number cannot be read yet can still be corrected elsewhere)
+        from .campus import _coordinator_numbers
+        if data["coord_mobile"] and data["coord_mobile"] != (row["coord_mobile"] or "") and not _coordinator_numbers(data):
+            errors["coord_mobile"] = "a 10-digit mobile number: the institution signs in with it"
         if data["itype"] not in ref["college_types"]:
             errors["itype"] = "choose a type"
         data["aishe_code"] = data["aishe_code"].upper().replace(" ", "")[:20]
@@ -2138,7 +2146,8 @@ SETTING_GROUPS = [
     ("Orientation", [("orientation.note", "Note shown on the orientation page", "text")]),
     ("Mail", [("mail.daily_limit", "Mails sent in 24 hours at most (a Google Workspace account sends about 2,000 a day)", "number"),
               ("mail.per_minute", "Mails sent in one minute at most", "number"),
-              ("mail.paused", "Sending paused (new mails wait in the queue; the sign-in codes go at once all the same)", "bool")]),
+              ("mail.paused", "Sending paused (new mails wait in the queue; the mail of the account of a Nodal Officer and, while they are mailed, the sign-in codes of the institutions go at once all the same)", "bool"),
+              ("inst.code_mail", "Sign-in codes mailed to the participating institutions (off: an institution signs in with the e-mail address and the coordinator's mobile number of its registration, and no mail is sent)", "bool")]),
     ("Contact", [("contact.email", "Helpdesk email", "text"), ("contact.phone", "Helpdesk phone", "text"), ("contact.address", "Postal address", "text"),
                  ("contact.notify", "Every message of the contact form is also e-mailed to this address (empty: none)", "text")]),
     ("Social media (an empty address hides the link)", [(key, name, "text") for key, name, _address in SOCIAL_LINKS]),

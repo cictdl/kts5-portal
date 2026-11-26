@@ -81,6 +81,9 @@ def make_app(**settings):
         # 27 November 2026, 5:00 PM (tests/test_dates_hidden_1122.py, which also switches the days off the public pages)
         for key, value in (("hei.end", "2026-11-21"), ("camp.to", "2026-11-23"), ("reg.end_time", ""), ("dates.public", "1")):
             set_setting(key, value)
+        # the sign-in code mailed to an institution, as up to 1.2.215: the tests made before sign in with it. From 1.2.216 no code
+        # is mailed and the institution signs in with its e-mail address and mobile number (tests/test_signin_no_code_1126.py)
+        set_setting("inst.code_mail", "1")
     return app
 
 

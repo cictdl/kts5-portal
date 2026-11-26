@@ -17,7 +17,8 @@
 <h2>For participating institutions</h2>
 <ol>
   <li><a href="{{ url_for('public.hei_register') }}">Register your institution</a>{% if dates_public() %} by <bdi>{{ hei_until() }}</bdi>{% endif %}, or complete the registration from the invitation e-mail of your Nodal Institution.</li>
-  <li><a href="{{ url_for('campus.login') }}">Sign in to the institution's page</a> with the e-mail address of the Institutional Coordinator or of the Head of the Institution: a six-digit code is mailed to you.</li>
+  {% if inst_code_mail() %}<li><a href="{{ url_for('campus.login') }}">Sign in to the institution's page</a> with the e-mail address of the Institutional Coordinator or of the Head of the Institution: a six-digit code is mailed to you.</li>
+  {% else %}<li><a href="{{ url_for('campus.login') }}">Sign in to the institution's page</a> with the e-mail address of the Institutional Coordinator or of the Head of the Institution and the mobile number of the Institutional Coordinator given at registration: no code is mailed.</li>{% endif %}
   <li>Assess your students{% if dates_public() %} by <bdi>{{ settings['camp.to']|date }}</bdi>{% endif %}, select one on merit, and make sure the student registers{% if dates_public() %} by <bdi>{{ reg_until() }}</bdi>{% endif %}. The <a href="{{ url_for('public.guide_institutions') }}">guide for institutions</a> can be printed.</li>
 </ol>
 

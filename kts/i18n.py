@@ -88,6 +88,18 @@ def _undated(catalog):
 
 UNDATED = _undated(CATALOG)
 
+
+def _uncoded(catalog):
+    """
+    The keys of the texts that tell an institution how it signs in and say that a code is mailed: each has a second text,
+    <key>_nc, for the sign-in without a mail (1.2.216; CICT, 26 November 2026: "i want sign-in codes stopped"), which the portal
+    gives while the setting inst.code_mail is off.
+    """
+    return frozenset(k[:-3] for k in catalog["en"] if k.endswith("_nc") and k[:-3] in catalog["en"])
+
+
+NOCODE = _uncoded(CATALOG)
+
 # Kept for tools that expect the old three-language table (the static-site builder).
 STRINGS = {key: (text, CATALOG["ta"].get(key, text), CATALOG["hi"].get(key, text))
            for key, text in CATALOG["en"].items()}
@@ -95,9 +107,10 @@ STRINGS = {key: (text, CATALOG["ta"].get(key, text), CATALOG["hi"].get(key, text
 
 def reload():
     """Re-read the JSON files (used by the console after a translation file is replaced)."""
-    global CATALOG, UNDATED
+    global CATALOG, UNDATED, NOCODE
     CATALOG = _load()
     UNDATED = _undated(CATALOG)
+    NOCODE = _uncoded(CATALOG)
     return {code: len(table) for code, table in CATALOG.items()}
 
 
@@ -152,13 +165,40 @@ def _dates_public_now():
         return False
 
 
+def codes_mailed():
+    """
+    The sign-in codes are mailed to the participating institutions (the setting inst.code_mail, off since 1.2.216): read once in a
+    request; not mailed outside the portal (the tools, the tests of the texts), as the setting is when nobody has changed it.
+    """
+    from flask import has_app_context, has_request_context
+    if has_request_context():
+        env = request.environ
+        if "kts.codes_mailed" not in env:
+            env["kts.codes_mailed"] = _codes_mailed_now()
+        return env["kts.codes_mailed"]
+    if has_app_context():
+        return _codes_mailed_now()
+    return False
+
+
+def _codes_mailed_now():
+    from .db import get_setting
+    try:
+        return get_setting("inst.code_mail") == "1"
+    except Exception:  # noqa: BLE001 - no database to ask: no code is promised
+        return False
+
+
 def text(key, lang):
     """
     Translation of `key` in the interface language `lang`, falling back to English; while the last days are kept off the public
-    pages, the text without the day where the key has one (1.2.209).
+    pages, the text without the day where the key has one (1.2.209); while the sign-in codes of the institutions are not mailed,
+    the text without the code where the key has one (1.2.216).
     """
     if key in UNDATED and not dates_public():
         key += "_nd"
+    elif key in NOCODE and not codes_mailed():
+        key += "_nc"
     value = CATALOG.get(lang, {}).get(key)
     if value:
         return value

@@ -310,7 +310,7 @@ def test_the_texts_without_a_date_in_the_23_languages():
             text = i18n.CATALOG[code].get(key + "_nd")
             assert text, (code, key)
             assert not re.search(r"\{(date|hei_end|camp_to|reg_end|select)\}", text), (code, key)
-    assert len(i18n.CATALOG["en"]) == 1547
+    assert len(i18n.CATALOG["en"]) == 1551
     # outside a request the texts are as they were; in one, as the setting says
     assert "{camp_to}" in i18n.text("hub.i_shut_t", "en")
     app = _hidden()

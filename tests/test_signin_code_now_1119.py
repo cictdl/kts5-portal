@@ -134,4 +134,5 @@ def test_without_a_mail_server_the_code_waits_in_the_outbox():
 def test_the_label_of_the_pause():
     from kts.admin import SETTING_GROUPS
     rows = {k: label for _g, items in SETTING_GROUPS for k, label, _kind in items}
-    assert rows["mail.paused"] == "Sending paused (new mails wait in the queue; the sign-in codes go at once all the same)"
+    assert rows["mail.paused"] == ("Sending paused (new mails wait in the queue; the mail of the account of a Nodal Officer and, while "
+                                   "they are mailed, the sign-in codes of the institutions go at once all the same)")      # 1.2.216

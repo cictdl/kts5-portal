@@ -4,9 +4,18 @@
 <div class="wrap-narrow section" lang="en" dir="ltr">
   <span class="eyebrow">{{ t('nav.institutions') }}</span>
   <h1>{{ t('camp.login_title') }}</h1>
+  {# The sign-in of an institution. With the mailed code (the setting inst.code_mail on), as up to 1.2.215; without a mail
+     (off since 1.2.216; CICT, 26 November 2026: "i want sign-in codes stopped"): the e-mail address of the coordinator or of the
+     Head and the mobile number of the coordinator, as the institution gave them when it registered. #}
+  {% if by_code %}
   <p class="dim" style="max-width:62ch">The Institutional Coordinator or the Head of a participating institution signs in with the e-mail address given
     when the institution registered. The portal mails a six-digit code; no password is needed.</p>
+  {% else %}
+  <p class="dim" style="max-width:62ch">The Institutional Coordinator or the Head of a participating institution signs in with the e-mail address and
+    the mobile number of the Institutional Coordinator given when the institution registered. No code is mailed and no password is needed.</p>
+  {% endif %}
   {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+  {% if note %}<div class="alert info">{{ note }}</div>{% endif %}
   <div class="card accent" style="max-width:560px">
     {% if sent %}
     <p>If <b>{{ sent }}</b> belongs to a participating institution, a six-digit code has been mailed to it. It is valid for 60 minutes.</p>
@@ -16,12 +25,24 @@
       <div class="field"><label>&nbsp;</label><button class="btn saffron" type="submit">Sign in</button></div>
     </form>
     <p class="small muted" style="margin:10px 0 0"><a href="{{ url_for('campus.login') }}">Ask for a new code</a></p>
-    {% else %}
+    {% elif by_code %}
     <form method="post" class="fields" data-once>
       <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
       <div class="field wide"><label for="email">E-mail address of the coordinator or the Head of the Institution</label><input type="email" id="email" name="email" required autocomplete="email" autofocus></div>
       <div class="field"><label>&nbsp;</label><button class="btn saffron" type="submit">Send me the code</button></div>
     </form>
+    {% else %}
+    <form method="post" class="fields" data-once>
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <div class="field wide"><label for="email">E-mail address of the coordinator or the Head of the Institution</label><input type="email" id="email" name="email" value="{{ email or '' }}" maxlength="160" required autocomplete="email" autofocus></div>
+      <div class="field wide"><label for="mobile">Mobile number of the Institutional Coordinator, as given at registration (10 digits)</label><input type="tel" id="mobile" name="mobile" inputmode="numeric" maxlength="16" required autocomplete="tel-national"></div>
+      <div class="field"><label>&nbsp;</label><button class="btn saffron" type="submit">Sign in</button></div>
+    </form>
+    <p class="small muted" style="margin:10px 0 0">The number is the one in the line “Institutional Coordinator” of the mail that the Head and the
+      coordinator received when the institution registered. You stay signed in on this device for 30 days.</p>
+    <p class="small muted" style="margin:6px 0 0">If you cannot sign in, write to
+      {% if settings.get('contact.email') %}<a href="mailto:{{ settings.get('contact.email') }}">{{ settings.get('contact.email') }}</a>{% else %}CICT{% endif %}
+      from the registered e-mail address{% if settings.get('contact.phone') %}, or call <bdi>{{ settings.get('contact.phone') }}</bdi>{% endif %}, with the name and the reference number of the institution.</p>
     {% endif %}
   </div>
   <p class="small muted" style="margin-top:14px">Not yet a participating institution? <a href="{{ url_for('public.hei_register') }}">{{ t('hei.cta') }}</a> ·

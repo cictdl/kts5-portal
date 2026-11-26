@@ -38,7 +38,7 @@ def empty_limiter():
 def test_the_texts_in_23_languages():
     from kts.i18n import CATALOG
     en = CATALOG["en"]
-    assert len(en) == 1547 and len(KEYS) == 37
+    assert len(en) == 1551 and len(KEYS) == 37
     for key in KEYS:
         assert not GONE.search(en[key]), key
     assert en["reg.intro"].startswith("Each Participating Institution assesses its students, selects one on merit")

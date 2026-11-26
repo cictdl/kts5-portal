@@ -44,8 +44,12 @@ def texts(lang):
         v["portal"] = "kts.cict.in"
         # without the last days while they are kept off the public pages (dates.public of DEFAULT_SETTINGS, 1.2.209)
         hide = DEFAULT_SETTINGS.get("dates.public") == "0"
-        t = {k: L.fill(k + "_nd" if hide and k + "_nd" in portal_i18n.CATALOG["en"] else k, lang, v)
-             for k in portal_i18n.CATALOG["en"] if k.startswith("nl.art_") and not k.endswith("_nd")}
+        # without the mailed code while the sign-in codes of the institutions are off (inst.code_mail of DEFAULT_SETTINGS, 1.2.216)
+        nocode = DEFAULT_SETTINGS.get("inst.code_mail") != "1"
+        pick = lambda k: (k + "_nd" if hide and k + "_nd" in portal_i18n.CATALOG["en"] else  # noqa: E731
+                          k + "_nc" if nocode and k + "_nc" in portal_i18n.CATALOG["en"] else k)
+        t = {k: L.fill(pick(k), lang, v)
+             for k in portal_i18n.CATALOG["en"] if k.startswith("nl.art_") and not k.endswith(("_nd", "_nc"))}
         get = DEFAULT_SETTINGS.get
         day = lambda key: L.day_text(L._day(key, get), lang, year=False)  # noqa: E731
         by = lambda s: portal_i18n.text("nl.by", lang).replace("{date}", s)  # noqa: E731

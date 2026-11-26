@@ -626,6 +626,28 @@ def qr_data_uri(text):
 
 # ---- mail -------------------------------------------------------------------
 
+# the subject of the mail with the sign-in code of an institution (kts/campus.py): the sender of the queue knows the mail by it
+INST_CODE_SUBJECT = "KTS 5.0: your sign-in code"
+
+
+def inst_code_mail():
+    """
+    The sign-in codes are mailed to the participating institutions (the setting inst.code_mail). Off since 1.2.216 (CICT, 26 November
+    2026: "i want sign-in codes stopped"; "only sign in code for the nodal officers should go"): an institution signs in with the
+    e-mail address and the coordinator's mobile number of its registration, and no mail is sent.
+    """
+    from .db import get_setting
+    return get_setting("inst.code_mail") == "1"
+
+
+def inst_signin_words(short=False):
+    """How an institution signs in, after "with the e-mail address ..." in the mails that invite it to nominate and remind it."""
+    if inst_code_mail():
+        return " (a code is mailed to you, no password)" if short else " (a six-digit code is mailed; there is no password)"
+    return (" and the mobile number of the Institutional Coordinator given at registration (no code is mailed"
+            + (", no password)" if short else "; there is no password)"))
+
+
 def send_mail(to_addr, subject, body, now=False, urgent=False):
     """
     Queue a message to one person in the outbox (kts/mailq.py sends it in the background, before the
@@ -637,6 +659,10 @@ def send_mail(to_addr, subject, body, now=False, urgent=False):
     Console, so that the page answers at once and the mail leaves within seconds. The outbox keeps it, first of all (priority -1,
     claimed as 'sending' until the thread is done). If the mail server does not take it, it waits in the queue before every other
     mail and the sender tries it again, past the limits.
+
+    Since 1.2.216 the codes of the institutions are mailed only while the setting inst.code_mail is on, and the mail of the account
+    of a Nodal Officer, with its temporary password, goes in this way (CICT, 26 November 2026: "only sign in code for the nodal
+    officers should go").
     """
     urgent_now = urgent and bool(current_app.config.get("SMTP_HOST"))
     row_id = execute(
@@ -711,8 +737,10 @@ def send_again(rows):
     if not ids:
         return 0
     conn = get_db()
+    # ... but not a sign-in code of an institution (1.2.216): it has run out, and it would go past the pause and the limits
     conn.executemany("UPDATE outbox SET status = 'queued', attempts = 0, next_try = NULL, error = '' "
-                     "WHERE id = ? AND status IN ('queued', 'failed')", [(i,) for i in ids])
+                     "WHERE id = ? AND status IN ('queued', 'failed') AND NOT (priority < 0 AND subject = ?)",
+                     [(i, INST_CODE_SUBJECT) for i in ids])
     conn.commit()
     from . import mailq
     mailq.wake()

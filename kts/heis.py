@@ -35,7 +35,7 @@ from flask import current_app
 
 from .db import execute, get_db, get_setting, query, utcnow
 from .i18n import dates_public
-from .utils import college_key, now_ist, send_later, send_mail
+from .utils import college_key, inst_signin_words, now_ist, send_later, send_mail
 
 # identified: in the list of the Nodal Institution (Annexure-II), invited, not yet registered (1.2.43); accepted: a selected
 # Participating Institution; reserve: in the reserve list of the Nodal Institution, to replace one that drops out (1.2.111)
@@ -789,7 +789,7 @@ def mail_decision(row, lead=None, heading=None):
                 f"the Head of the Institution or an authorised committee) and nominate one student on merit, with one Faculty "
                 f"Supervisor/Guide{_by_when('reg.end', ',')}.\n\n"
                 f"How to nominate: sign in to the institution's page at {base}/institution/login with the e-mail address of the "
-                f"Institutional Coordinator or of the Head of the Institution (a six-digit code is mailed; there is no password). "
+                f"Institutional Coordinator or of the Head of the Institution{inst_signin_words()}. "
                 f"There you may switch on the portal's ready online test for your students; then select the student on merit and "
                 f"submit the nomination there: the Institutional Coordinator fills in the student's form with a photograph, an ID "
                 f"proof and the nomination form signed and sealed by the Head of the Institution "

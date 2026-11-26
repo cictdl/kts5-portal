@@ -9,6 +9,9 @@ merit, and registers that student's details on the portal. CICT consolidates the
 * The Institutional Coordinator (or the Head of the Institution) signs in at /institution/login
   with the e-mail address given when the institution registered: the portal mails a six-digit
   code, valid for CODE_MINUTES (60 since 1.2.212); signed in on that device for DEVICE_DAYS. No password is kept.
+  Since 1.2.216 the code is mailed only while the setting inst.code_mail is on. While it is off, as it is by default (CICT,
+  26 November 2026: "i want sign-in codes stopped"), the coordinator or the Head signs in with that e-mail address and the
+  mobile number of the coordinator given at registration, and no mail is sent.
 * /institution is the institution's page: its status, the steps and dates of the programme, the
   online assessment, the students who took it with their scores, the winner, and the registration
   of the winner.
@@ -25,6 +28,7 @@ merit, and registers that student's details on the portal. CICT consolidates the
   page, the selection and the merit list work as before.
 """
 import hashlib
+import hmac
 import json
 import random
 import re
@@ -39,8 +43,8 @@ from . import kural as K
 from .candidate import _build_paper, _load_paper
 from .db import all_settings, audit, execute, get_db, get_setting, query, utcnow
 from .i18n import dates_public, t
-from .utils import (check_captcha, client_ip, limiter, new_captcha, now_ist, parse_iso, plain_english, send_mail,
-                    valid_email, valid_mobile, xlsx_bytes)
+from .utils import (INST_CODE_SUBJECT, check_captcha, client_ip, inst_code_mail, limiter, new_captcha, now_ist, parse_iso,
+                    plain_english, send_mail, valid_email, valid_mobile, xlsx_bytes)
 
 bp = Blueprint("campus", __name__)
 
@@ -51,6 +55,14 @@ DEVICE_DAYS = 30
 DEVICE_COOKIE = "kts_inst"
 CODE_TRIES = 5
 LOGIN_PER_HOUR = 12          # codes asked for from one address in an hour
+MOBILE_TRIES = 20            # sign-ins without a code that fail, from one address of the network in an hour (1.2.216)
+MOBILE_ERROR = ("The e-mail address and the mobile number do not match the registration of an institution. Enter the e-mail address "
+                "of the Institutional Coordinator or of the Head of the Institution, and the mobile number of the Institutional "
+                "Coordinator, as given when the institution registered.")
+MOBILE_WAIT = ("Too many tries from this connection in the last hour. Please try again after an hour, or write to CICT with the name "
+               "and the reference number of the institution.")
+MOBILE_ASKED = ("No code is mailed any more. Enter the mobile number of the Institutional Coordinator as well, as given when the "
+                "institution registered.")
 SIGNUP_PER_HOUR = 60         # sign-ups of students from one address in an hour
 RANK_SQL = "ORDER BY CASE WHEN t.status IN ('submitted', 'expired') THEN 0 ELSE 1 END, t.score DESC, t.time_taken_sec ASC, s.id ASC"
 
@@ -65,6 +77,60 @@ def institutions_of(email):
     """The institutions whose coordinator or head has this e-mail address, the accepted first."""
     return query("SELECT * FROM institutions WHERE (coord_email = ? OR head_email = ?) AND status != 'declined' "
                  "ORDER BY CASE status WHEN 'accepted' THEN 0 WHEN 'pending' THEN 1 ELSE 2 END, id", (email, email))
+
+
+def _ten_digits(value):
+    """
+    A phone number of India as ten digits 0-9, or '' when it is none: with +91, 0091 or a 0 before it, with spaces and hyphens in
+    it, and also when it is typed with the digits of an Indian script, as a keyboard of Hindi, Bengali or Tamil gives them (1.2.216).
+    """
+    import unicodedata
+    digits = re.sub(r"\D", "", "".join(str(unicodedata.decimal(ch)) if ch.isdecimal() else ch for ch in value or ""))
+    for prefix in ("0091", "910", "091", "91", "0"):
+        if len(digits) == 10 + len(prefix) and digits.startswith(prefix):
+            digits = digits[len(prefix):]
+            break
+    return digits if len(digits) == 10 and digits[0] != "0" else ""
+
+
+def _coordinator_numbers(inst):
+    """
+    The mobile numbers of the Institutional Coordinator of this institution, each as ten digits: the field as it is, and its parts
+    where it holds more than one number, as a correction in the Console may have left it ("98765 43210 / 91234 56780") (1.2.216).
+    """
+    value = inst["coord_mobile"] or ""
+    numbers = []
+    for part in [value] + re.split(r"[,;/|]|\bor\b", value):
+        number = _ten_digits(part)
+        if number and number not in numbers:
+            numbers.append(number)
+    return numbers
+
+
+def _number_mark(number):
+    """
+    A keyed mark of a mobile number of ten digits, for the session and the cookie of the device: they carry the mark, never the
+    number (1.2.216).
+    """
+    key = current_app.config["SECRET_KEY"]
+    key = key.encode("utf-8") if isinstance(key, str) else key
+    return hmac.new(key, b"kts-institution-mobile|" + number.encode("ascii"), hashlib.sha256).hexdigest()[:32]
+
+
+def _opens(inst, email, mark=None):
+    """
+    This sign-in opens this institution: the address is that of its coordinator or of its Head, and it is not declined; and, for a
+    sign-in with the mobile number (1.2.216: the mark of the number that was proved), that number is its coordinator's. So an
+    address alone opens no other institution that carries it - anybody can register an institution with somebody else's address,
+    and until 1.2.215 the code went to the mailbox of that address. A sign-in with the mailed code has no mark. A number corrected
+    in the Console ends the sign-ins made with the old one.
+    """
+    if inst is None or not _email_matches(inst, email) or inst["status"] == "declined":
+        return False
+    if mark:
+        return any(hmac.compare_digest(_number_mark(number).encode("ascii"), str(mark).encode("utf-8"))
+                   for number in _coordinator_numbers(inst))
+    return True
 
 
 def _device_signer():
@@ -85,9 +151,14 @@ def _device_sign_in():
     try:
         data = _device_signer().loads(value, max_age=DEVICE_DAYS * 24 * 3600)
         email, iid = str(data["e"]), int(data["i"])
-    except (BadSignature, KeyError, TypeError, ValueError):
+        mark = str(data["m"]) if data.get("m") else None      # the cookie of a sign-in with the mobile number (1.2.216)
+    except (BadSignature, KeyError, TypeError, ValueError, AttributeError):
         return
     session["inst_email"], session["inst_id"] = email, iid
+    if mark:
+        session["inst_m"] = mark
+    else:
+        session.pop("inst_m", None)
     session.permanent = True
 
 
@@ -102,7 +173,7 @@ def current_institution():
     iid, email = session.get("inst_id"), session.get("inst_email")
     if iid and email:
         inst = query("SELECT * FROM institutions WHERE id = ?", (iid,), one=True)
-        if inst is None or not _email_matches(inst, email) or inst["status"] == "declined":
+        if not _opens(inst, email, session.get("inst_m")):      # with the number that was proved, where there is one (1.2.216)
             inst = None
     g.inst = inst
     return inst
@@ -112,14 +183,77 @@ def _code_hash(email, code):
     return hashlib.sha256(f"{email}|{code}|{current_app.config['SECRET_KEY']}".encode("utf-8")).hexdigest()
 
 
+def _signed_in(email, iid, by="", number=""):
+    """
+    The institution is signed in, after the mailed code or (1.2.216) the mobile number: the session of the portal, and the cookie of
+    the device for DEVICE_DAYS days (1.2.212). A sign-in with the mobile number carries the mark of that number, in the session and
+    in the cookie: it opens the institutions of that number only (_opens).
+    """
+    session.pop("inst_login", None)
+    session.pop("uid", None)
+    session["inst_email"] = email
+    session["inst_id"] = iid
+    device = {"e": email, "i": iid}
+    if number:
+        session["inst_m"] = device["m"] = _number_mark(number)
+    else:
+        session.pop("inst_m", None)
+    session.permanent = True
+    audit("institution_login", "institution", iid, detail=f"{email} ({by})" if by else email, ip=client_ip())
+    response = redirect(url_for("campus.home"))
+    # signed in on this device for DEVICE_DAYS days (1.2.212): no new sign-in each day
+    response.set_cookie(DEVICE_COOKIE, _device_signer().dumps(device),
+                        max_age=DEVICE_DAYS * 24 * 3600, httponly=True, samesite="Lax", path="/",
+                        secure=bool(current_app.config.get("SESSION_COOKIE_SECURE")))
+    return response
+
+
+def _mobile_matches(inst, typed):
+    """The number typed, as ten digits, is a mobile number of the Institutional Coordinator of this institution (1.2.216)."""
+    return bool(typed) and any(hmac.compare_digest(number.encode("ascii"), typed.encode("ascii"))
+                               for number in _coordinator_numbers(inst))
+
+
+def _login_by_mobile(email, ip):
+    """
+    The sign-in without a mail (1.2.216; CICT, 26 November 2026: "i want sign-in codes stopped"): the e-mail address of the
+    Institutional Coordinator or of the Head of the Institution, and the mobile number of the coordinator, as the institution gave
+    them when it registered. Only the tries that fail count against the address of the network. An e-mail address that belongs to
+    no institution is answered as a wrong number is, and noted in the audit log as one: the page does not say which addresses the
+    portal knows.
+    """
+    error, note, status = None, None, 400
+    if limiter.blocked("inst_mobile", ip, MOBILE_TRIES, 3600):
+        error, status = MOBILE_WAIT, 429
+    elif not valid_email(email):
+        error = t("reg.err_email")
+    elif "mobile" not in request.form:
+        # the form of before 1.2.216, still open in a browser, had the address alone: the number is asked for, nothing is counted
+        note, status = MOBILE_ASKED, 200
+    else:
+        typed = _ten_digits(request.form.get("mobile"))
+        known = institutions_of(email)
+        rows = [r for r in known if _mobile_matches(r, typed)]
+        if rows:
+            return _signed_in(email, rows[0]["id"], "e-mail address and mobile number", typed)
+        limiter.hit("inst_mobile", ip, 3600)
+        audit("institution_login_refused", "institution", known[0]["id"] if known else None, detail=email[:160], ip=ip)
+        error = MOBILE_ERROR
+    return render_template("campus/login.html", error=error, note=note, sent=None, by_code=False, email=email[:160],
+                           settings=all_settings()), status
+
+
 @bp.route("/institution/login", methods=["GET", "POST"])
 def login():
     if current_institution():
         return redirect(url_for("campus.home"))
     error = sent = None
+    by_code = inst_code_mail()
     if request.method == "POST":
         ip = client_ip()
         email = (request.form.get("email") or "").strip().lower()
+        if not by_code:
+            return _login_by_mobile(email, ip)      # no code is mailed (1.2.216)
         if limiter.blocked("inst_login", ip, LOGIN_PER_HOUR, 3600):
             error = t("reg.err_rate")
         elif not valid_email(email):
@@ -132,7 +266,7 @@ def login():
                 session["inst_login"] = {"email": email, "hash": _code_hash(email, code),
                                          "until": (now_ist() + timedelta(minutes=CODE_MINUTES)).isoformat(), "tries": 0}
                 names = "; ".join(r["name"] for r in rows[:3])
-                send_mail(email, "KTS 5.0: your sign-in code",
+                send_mail(email, INST_CODE_SUBJECT,
                           f"Dear Sir/Madam,\n\nYour code to sign in to the institution's page of the KTS 5.0 portal "
                           f"({names}):\n\n    {code}\n\nIt is valid for {CODE_MINUTES} minutes. If you did not ask for it, "
                           f"ignore this mail.\n\nCentral Institute of Classical Tamil, Chennai",
@@ -141,7 +275,7 @@ def login():
             # an address that belongs to no institution is answered in the same way: the page does not say which
             # addresses the portal knows
             sent = email
-    return render_template("campus/login.html", error=error, sent=sent, settings=all_settings())
+    return render_template("campus/login.html", error=error, sent=sent, by_code=by_code, settings=all_settings())
 
 
 @bp.route("/institution/code", methods=["POST"])
@@ -151,33 +285,24 @@ def code():
     error = None
     if not pending or pending.get("until", "") < now_ist().isoformat():
         error = "The code has expired: ask for a new one."
-    elif pending.get("tries", 0) >= CODE_TRIES:
+    elif pending.get("tries", 0) >= CODE_TRIES or limiter.blocked("inst_code", str(pending.get("hash")), CODE_TRIES, CODE_MINUTES * 60):
         error = "Too many wrong codes: ask for a new one."
     elif _code_hash(pending["email"], typed) != pending["hash"]:
         pending["tries"] = pending.get("tries", 0) + 1
         session["inst_login"] = pending
+        limiter.hit("inst_code", str(pending.get("hash")), CODE_MINUTES * 60)
         error = "The code is wrong."
     if error:
         if "expired" in error or "Too many" in error:
             session.pop("inst_login", None)
         return render_template("campus/login.html", error=error, sent=pending.get("email") if not error.startswith(("The code has", "Too")) else None,
-                               settings=all_settings()), 400
+                               by_code=inst_code_mail(), settings=all_settings()), 400
     rows = institutions_of(pending["email"])
     session.pop("inst_login", None)
     if not rows:
         return render_template("campus/login.html", error="No institution is registered with this e-mail address.", sent=None,
-                               settings=all_settings()), 400
-    session.pop("uid", None)
-    session["inst_email"] = pending["email"]
-    session["inst_id"] = rows[0]["id"]
-    session.permanent = True
-    audit("institution_login", "institution", rows[0]["id"], detail=pending["email"], ip=client_ip())
-    response = redirect(url_for("campus.home"))
-    # signed in on this device for DEVICE_DAYS days (1.2.212): no new code each day
-    response.set_cookie(DEVICE_COOKIE, _device_signer().dumps({"e": pending["email"], "i": rows[0]["id"]}),
-                        max_age=DEVICE_DAYS * 24 * 3600, httponly=True, samesite="Lax", path="/",
-                        secure=bool(current_app.config.get("SESSION_COOKIE_SECURE")))
-    return response
+                               by_code=inst_code_mail(), settings=all_settings()), 400
+    return _signed_in(pending["email"], rows[0]["id"])
 
 
 @bp.route("/institution/switch/<int:iid>")
@@ -186,9 +311,10 @@ def switch(iid):
     if inst is None:
         return redirect(url_for("campus.login"))
     other = query("SELECT * FROM institutions WHERE id = ?", (iid,), one=True)
-    if other is None or not _email_matches(other, session.get("inst_email")) or other["status"] == "declined":
+    if not _opens(other, session.get("inst_email"), session.get("inst_m")):
         abort(404)
     session["inst_id"] = other["id"]
+    audit("institution_switch", "institution", other["id"], detail=session.get("inst_email") or "", ip=client_ip())
     return redirect(url_for("campus.home"))
 
 
@@ -196,6 +322,7 @@ def switch(iid):
 def logout():
     session.pop("inst_id", None)
     session.pop("inst_email", None)
+    session.pop("inst_m", None)
     response = redirect(url_for("public.home"))
     # ... and on this device (1.2.212)
     response.delete_cookie(DEVICE_COOKIE, path="/", samesite="Lax", httponly=True,
@@ -274,7 +401,9 @@ def _winner(inst):
 def home():
     inst = current_institution()
     settings = all_settings()
-    others = [r for r in institutions_of(session["inst_email"]) if r["id"] != inst["id"]]
+    # the other institutions that this sign-in opens (1.2.216: with the mobile number, those of that number)
+    others = [r for r in institutions_of(session["inst_email"])
+              if r["id"] != inst["id"] and _opens(r, session["inst_email"], session.get("inst_m"))]
     winner = _winner(inst)
     application = query("SELECT * FROM applications WHERE id = ?", (inst["application_id"],), one=True) if inst["application_id"] else None
     start, end = assessment_period(settings)

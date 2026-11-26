@@ -23,7 +23,7 @@ from flask import current_app
 from .db import get_db, get_setting, query, utcnow
 from .i18n import dates_public
 from .heis import label_of, nodal_state_of, nominate_hour_words, row_of, unit_name, with_covered
-from .utils import now_ist, send_later
+from .utils import inst_signin_words, now_ist, send_later
 
 STAGES = ("none", "testing", "selected", "registered", "verified")
 STAGE_NAMES = {"none": "nothing done yet", "testing": "assessing, no student selected", "selected": "selected, not registered",
@@ -173,7 +173,7 @@ def mails_for(inst, kind, reminder=True):
     reg_day = long_date(reg_end) + nominate_hour_words("en")      # the last day of the nomination with its hour
     by_camp, by_reg = (f" by {long_date(camp_to)}", f" by {reg_day}") if shown else ("", "")
     head = "Reminder – " if reminder else ""
-    sign_in = (f"Sign in to the institution's page with this e-mail address (a code is mailed to you, no password): "
+    sign_in = (f"Sign in to the institution's page with this e-mail address{inst_signin_words(short=True)}: "
                f"{base}/institution/login\n\n")
     footer = f"Questions: {_contact()}\n\nCentral Institute of Classical Tamil, Chennai"
     dear = f"Dear {inst['coord_name'] or 'Coordinator'},\n\n"

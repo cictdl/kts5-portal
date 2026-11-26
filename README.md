@@ -258,8 +258,9 @@ institution assesses its students, selects one on merit and registers that stude
   participating institution at once. The Excel file of the console is in the format of Annexure-II,
   with the state of each institution's assessment and registration (the tracker of the letter).
 * *The institution's page* (`kts/campus.py`): the Institutional Coordinator or the Head signs in at
-  `/institution/login` with the e-mail address of the registration; the portal mails a six-digit
-  code (15 minutes). `/institution` shows the steps and dates, the online assessment, the students
+  `/institution/login` with the e-mail address of the registration and the mobile number of the
+  coordinator given there; no mail is sent (1.2.216; the setting `inst.code_mail` brings back the six-digit
+  code that the portal mailed up to 1.2.215, valid for 60 minutes). `/institution` shows the steps and dates, the online assessment, the students
   and their scores, and the selected student.
 * *The online assessment.* The coordinator switches it on for days within `camp.from`–`camp.to`
   and gives the students the link `/assessment/<slug>` and the access code. A student signs up

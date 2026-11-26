@@ -38,6 +38,8 @@ MAX_ATTEMPTS = 5
 QUOTA_PAUSE_MINUTES = 60
 LOGIN_PAUSE_MINUTES = 15
 CLAIM_MINUTES = 10
+# what the outbox says of a sign-in code of an institution that waited when the codes were stopped (1.2.216)
+CODES_OFF = "not sent: the sign-in codes of the institutions are not mailed (Settings, Mail)"
 DEFAULTS = {"mail.daily_limit": 1800, "mail.per_minute": 30}
 
 
@@ -99,12 +101,20 @@ def run_once(app, now=None):
         conn.execute("UPDATE outbox SET status = 'queued' WHERE status = 'sending' AND (next_try IS NULL OR next_try < ?)",
                      (_iso(now - timedelta(minutes=CLAIM_MINUTES)),))
         conn.commit()
+        # the sign-in codes of the institutions are not mailed while the setting inst.code_mail is off (1.2.216; CICT, 26 November
+        # 2026: "i want sign-in codes stopped"): one that still waits is not sent
+        if get_setting("inst.code_mail") != "1":
+            from .utils import INST_CODE_SUBJECT
+            conn.execute("UPDATE outbox SET status = 'failed', error = ?, next_try = NULL WHERE status = 'queued' AND priority < 0 "
+                         "AND subject = ?", (CODES_OFF, INST_CODE_SUBJECT))
+            conn.commit()
         cfg = app.config
         if not cfg.get("SMTP_HOST"):
             result["waiting"] = "mail is not configured"
             return result
         # a sign-in code that waits (priority -1, 1.2.207; CICT: "no wait") goes past the limits of the portal and a pause of the
-        # Console; only Google's refusal of the day holds it, as it holds every mail of the account
+        # Console; only Google's refusal of the day holds it, as it holds every mail of the account. Since 1.2.216 these are the
+        # mails of the accounts of the Nodal Officers; the codes of the institutions only while inst.code_mail is on
         urgent = query("SELECT COUNT(*) AS n FROM outbox WHERE status = 'queued' AND priority < 0 AND (next_try IS NULL OR next_try <= ?)",
                        (_iso(now),), one=True)["n"]
         paused = get_setting("mail.paused") == "1"
