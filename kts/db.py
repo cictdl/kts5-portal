@@ -2171,6 +2171,80 @@ def _match_words(conn, row):
     return words
 
 
+def _strict_kept(conn, now, list_mark, strict_mark, states, state_label, note, actor):
+    """
+    Only the institutions of a list nominate (1.2.225): the institutions that the list step kept for a submitted nomination - the
+    references in the mark of the list ("kept_nominated"), nothing else, and only while they are still of the State/UT of the list -
+    are declined, once (strict_mark), if they are still participating; one that CICT or the Nodal Officer declined and accepted again
+    in the Console after the list step stays as it is ("accepted_again"). The nominations of those declined, and of those that the
+    Console declined since ("declined_before"), are withdrawn if they are neither withdrawn nor rejected, the earlier remarks kept
+    after the new one. Mails waiting for them are withdrawn (by reference; by name only those to their own addresses). Each with a
+    line of the audit log; no mail. Nothing is done where the list has not been applied on this database.
+    """
+    if conn.execute("SELECT 1 FROM settings WHERE key = ?", (strict_mark,)).fetchone():
+        return
+    row = conn.execute("SELECT value, updated_at FROM settings WHERE key = ?", (list_mark,)).fetchone()
+    if not row:
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)",
+                     (strict_mark, json.dumps({"skipped": "the list has not been applied on this database"}), now))
+        return
+    try:
+        value = json.loads(row["value"])
+    except (ValueError, TypeError):
+        value = None
+    refs = value.get("kept_nominated") if isinstance(value, dict) else None
+    kept = [str(ref) for ref in refs] if isinstance(refs, list) else []
+    since = row["updated_at"] or ""
+    found = conn.execute(f"SELECT id, ref, name, state, status, application_id, decided_by, decided_at, head_email, coord_email FROM institutions "
+                         f"WHERE ref IN ({','.join('?' * len(kept))}) ORDER BY id", kept).fetchall() if kept else []
+    in_state = [r for r in found if r["state"] in states]
+    accepted_again = [r for r in in_state if r["status"] in ("accepted", "pending", "reserve")
+                      and r["decided_by"] is not None and (r["decided_at"] or "") > since]
+    out = [r for r in in_state if r["status"] in ("accepted", "pending", "reserve") and r not in accepted_again]
+    declined_before = [r for r in in_state if r["status"] == "declined"]
+    withdrawn_apps, withdrawn_mails = [], 0
+    for r in out + declined_before:
+        for a in conn.execute("SELECT id, app_no, status, remarks FROM applications "
+                              "WHERE (institution_id = ? OR (id = ? AND (institution_id IS NULL OR institution_id = ?))) "
+                              "AND COALESCE(status, '') NOT IN ('withdrawn', 'rejected')",
+                              (r["id"], r["application_id"] or 0, r["id"])).fetchall():
+            remark = "Withdrawn: the institution is not on the list of the Nodal Institution of " + state_label
+            if (a["remarks"] or "").strip():
+                remark += "\nEarlier: " + a["remarks"].strip()
+            conn.execute("UPDATE applications SET status = 'withdrawn', withdrawn_at = ?, remarks = ?, updated_at = ? WHERE id = ?",
+                         (now, remark, now, a["id"]))
+            conn.execute("INSERT INTO audit_log(user_id, actor, action, entity, entity_id, detail, ip, created_at) VALUES(NULL,?,?,?,?,?,'',?)",
+                         (actor, "application_withdrawn", "application", a["id"],
+                          json.dumps({"app_no": a["app_no"], "was": a["status"], "remarks_was": a["remarks"] or "", "institution": r["ref"],
+                                      "note": note}), now))
+            withdrawn_apps.append(a["app_no"])
+    for r in out:
+        ref, name = (r["ref"] or "").strip(), (r["name"] or "").strip()
+        own = [(e or "").strip().lower() for e in (r["head_email"], r["coord_email"]) if (e or "").strip()]
+        terms, args = [], []
+        if len(ref) >= 6:
+            terms.append("instr(subject, ?) > 0")
+            args.append(ref)
+        if len(name) >= 6 and own:
+            terms.append(f"(instr(subject, ?) > 0 AND lower(to_addr) IN ({','.join('?' * len(own))}))")
+            args += [name, *own]
+        if terms:
+            withdrawn_mails += conn.execute(
+                "UPDATE outbox SET status = 'failed', error = 'withdrawn: the institution is declined (" + actor[8:] + ")', next_try = NULL "
+                "WHERE status = 'queued' AND priority >= 0 AND (" + " OR ".join(terms) + ")", args).rowcount
+        conn.execute("INSERT INTO audit_log(user_id, actor, action, entity, entity_id, detail, ip, created_at) VALUES(NULL,?,?,?,?,?,'',?)",
+                     (actor, "institution_declined", "institution", r["id"],
+                      json.dumps({"ref": r["ref"], "was": r["status"], "note": note + "; only the institutions of the list nominate"}), now))
+        conn.execute("UPDATE institutions SET status = 'declined', decision_note = ?, decided_at = ?, invite_token = NULL, updated_at = ? "
+                     "WHERE id = ?", (note, now, now, r["id"]))
+    conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)",
+                 (strict_mark, json.dumps({"kept_before": kept, "declined": [r["ref"] for r in out],
+                                           "declined_before": [r["ref"] for r in declined_before],
+                                           "accepted_again": [r["ref"] for r in accepted_again],
+                                           "moved_state": [r["ref"] for r in found if r["state"] not in states],
+                                           "applications_withdrawn": withdrawn_apps, "mails_withdrawn": withdrawn_mails}), now))
+
+
 def _apply_nodal_list(conn, now, nodal_list):
     """
     The list of a Nodal Institution (1.2.220; an entry of NODAL_LISTS_1126), once (mark migrate.<key>_list_1126): its institutions,
@@ -2368,6 +2442,11 @@ def init_db(app):
     # The lists of the Nodal Institutions of Puducherry and of Andhra Pradesh (1.2.220): once for each list
     for nodal_list in NODAL_LISTS_1126:
         _apply_nodal_list(conn, now, nodal_list)
+    # Puducherry: nominations only from the institutions of its list (1.2.225; CICT, 26 November 2026: "from the selected
+    # institutions of Puducherry only i have to get the students registration / nomination"): the others registered up to the time
+    # of the list, kept by 1.2.220 for a nomination they had submitted, are declined too and those nominations withdrawn, once
+    _strict_kept(conn, now, "migrate.py_list_1126", "migrate.py_strict_1126", ("Puducherry",), "Puducherry",
+                 next(entry for entry in NODAL_LISTS_1126 if entry["key"] == "py")["note"], "release 1.2.225")
     # the reserve list is no more (1.2.198; CICT, 17 November 2026: "remove the reserve list condition" - of the institutions on
     # it: "Selected, like the 551"): each becomes a selected Participating Institution, once, with a line of the audit log. The
     # mark holds the number of them; a second mark holds them, for the mail that tells each of it once the portal has started
