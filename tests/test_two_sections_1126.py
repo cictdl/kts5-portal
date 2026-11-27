@@ -327,7 +327,7 @@ def test_one_section_alone():
 def test_the_two_headings_in_23_languages():
     from kts.i18n import CATALOG
     en = CATALOG["en"]
-    assert en["hei.sec_selected"] == SELECTED and en["hei.sec_registered"] == REGISTERED and len(en) == 1553
+    assert en["hei.sec_selected"] == SELECTED and en["hei.sec_registered"] == REGISTERED and len(en) == 1557
     assert sorted(CATALOG) == sorted(LANGS) and len(LANGS) == 23
     app = make_app(ADMIN_PASSWORD=None)
     _insert(app, "Panaji College", "Goa", "North Goa", "accepted")

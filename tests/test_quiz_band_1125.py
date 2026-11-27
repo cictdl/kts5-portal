@@ -57,7 +57,7 @@ def test_the_band_on_the_home_page(monkeypatch):
     # the keyboard sees where it is on the two bands: a white outline, in the style sheet (its version 54)
     css = (ROOT / "static" / "css" / "portal.css").read_text(encoding="utf-8")
     assert ".acad-band a:focus-visible, .quiz-band a:focus-visible { outline: 3px solid #fff; outline-offset: 3px;" in css
-    assert '<link rel="stylesheet" href="/static/css/portal.css?v=54">' in page and "<style" not in page
+    assert '<link rel="stylesheet" href="/static/css/portal.css?v=55">' in page and "<style" not in page
     # ... and to the notice, for what the quiz is
     nid = _sql(app, "SELECT id FROM notices WHERE title = ?", (TITLE,))[0][0]
     assert f'<a class="quiz-notice" href="/notices/{nid}"' in band and "Read more" in band

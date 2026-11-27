@@ -7,7 +7,10 @@ session, the Sangamam itself). The files lie in uploads/gallery/ and are served 
 no thumbnail is made (the live server has no image library), so the browser scales the photograph
 as uploaded. A photograph that is not published is seen in the console only.
 """
+import json
 import posixpath
+from functools import lru_cache
+from pathlib import Path
 
 from flask import abort, current_app, flash, redirect, render_template, request, url_for
 
@@ -29,6 +32,38 @@ def albums(published_only=True):
                  "ORDER BY last DESC, album")
 
 
+# the YouTube channels of the shorts of KTS 5.0 (1.2.231), the Ministry's first
+SHORT_CHANNELS = (
+    {"key": "moe", "name": "Ministry of Education, Government of India", "account": "Eduminofindia",
+     "url": "https://www.youtube.com/@Eduminofindia/shorts"},
+    {"key": "kts", "name": "Kashi Tamil Sangamam", "account": "KashiTamilSangamam", "url": "https://www.youtube.com/@KashiTamilSangamam/shorts"},
+)
+
+
+@lru_cache(maxsize=4)
+def _shorts(path, static):
+    rows = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else []
+    videos = []
+    for r in rows:
+        cover = f"img/shorts/{r['id']}.webp"
+        if not (static / cover).is_file():      # a short is shown with its cover only
+            continue
+        videos.append(dict(r, cover=cover, url=f"https://www.youtube.com/shorts/{r['id']}", duration=f"{r['seconds'] // 60}:{r['seconds'] % 60:02d}"))
+    channels = [dict(c, videos=[v for v in videos if v["channel"] == c["key"]]) for c in SHORT_CHANNELS]
+    latest = sorted(videos, key=lambda v: (v["date"], v.get("time", "")), reverse=True)[:6]      # by the day and the hour (IST)
+    return {"count": len(videos), "channels": [c for c in channels if c["videos"]], "latest": latest}
+
+
+def shorts():
+    """
+    The shorts of KTS 5.0 on YouTube (1.2.231; CICT, 27 November 2026: "kts5.0 2026 ministry of education add all shorts in the
+    youtube"): data/shorts.json, those of the Ministry of Education's channel and of the Kashi Tamil Sangamam channel, each with its
+    cover kept on the portal (static/img/shorts/), newest first within its channel; the six latest of both for the page of all the
+    albums.
+    """
+    return _shorts(Path(current_app.config["DATA_DIR"]) / "shorts.json", Path(current_app.static_folder))
+
+
 @public.route("/gallery")
 def gallery():
     album = (request.args.get("album") or "").strip()
@@ -38,7 +73,13 @@ def gallery():
         sql += " AND album = ?"
         args.append(album)
     photos = query(sql + " ORDER BY taken_on DESC, sort_order, id DESC", args)
-    return render_template("public/gallery.html", photos=photos, albums=albums(), album=album)
+    return render_template("public/gallery.html", photos=photos, albums=albums(), album=album, shorts=shorts(), shorts_page=False)
+
+
+@public.route("/gallery/shorts")
+def gallery_shorts():
+    """The shorts of KTS 5.0 on YouTube, channel by channel (1.2.231): played on the page."""
+    return render_template("public/gallery.html", photos=[], albums=albums(), album="", shorts=shorts(), shorts_page=True)
 
 
 # ---- the console ----------------------------------------------------------------------------------

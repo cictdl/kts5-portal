@@ -1,0 +1,27 @@
+{# The shorts of KTS 5.0 on YouTube (1.2.231; CICT, 27 November 2026: "kts5.0 2026 ministry of education add all shorts in the
+   youtube" - of the Ministry of Education's channel and of the Kashi Tamil Sangamam channel, "News page + play on portal"). Each
+   is shown by its cover, kept on the portal (static/img/shorts/); pressed, the cover plays the short in the page in YouTube's
+   player from youtube-nocookie.com (static/js/portal.js, as the video guide); nothing of YouTube loads before that, and without
+   scripts the cover opens the short on YouTube. kts/gallery.py shorts(). #}
+{% macro sh_card(v) %}<div class="gv-card sh-card"><a class="gv-poster" lang="{{ v.lang|langtag }}" href="{{ v.url }}" target="_blank" rel="noopener" data-yt="{{ v.id }}" aria-label="▶ {{ v.title }}"><img src="{{ url_for('static', filename=v.cover) }}" alt="" width="270" height="480" loading="lazy"><span class="gv-play" aria-hidden="true">▶</span><span class="gv-len" dir="ltr">{{ v.duration }}</span></a><span class="gv-text"><span class="gv-name" lang="{{ v.lang|langtag }}" dir="auto">{{ v.title }}</span><span class="sh-meta"><bdi>{{ v.date|date }}</bdi></span><a class="gv-watch" href="{{ v.url }}" target="_blank" rel="noopener">{{ t('home.reel_watch_yt') }} <span aria-hidden="true">↗</span></a></span></div>{% endmacro %}
+
+{% macro shorts_all(sh) %}
+<section class="gv-block sh-block" id="shorts" aria-labelledby="shorts-h">
+  <h2 class="gv-h" id="shorts-h"><span aria-hidden="true">▶</span> {{ t('sh.title') }}</h2>
+  <p class="dim gv-lead">{{ t('sh.lead') }}</p>
+  {% for c in sh.channels %}
+  <section class="sh-chan" id="shorts-{{ c.key }}" aria-labelledby="shorts-{{ c.key }}-h">
+    <h3 id="shorts-{{ c.key }}-h" style="margin:0 0 10px"><span lang="en" dir="ltr">{{ c.name }}</span> <span class="small muted"><span lang="en" dir="ltr">· <a href="{{ c.url }}" target="_blank" rel="noopener">@{{ c.account }}</a></span> · <bdi>{{ t('sh.count')|replace('{n}', c.videos|length|string) }}</bdi></span></h3>
+    <div class="gv-grid sh-grid">{% for v in c.videos %}{{ sh_card(v) }}{% endfor %}</div>
+  </section>
+  {% endfor %}
+</section>
+{% endmacro %}
+
+{% macro shorts_strip(sh) %}
+<section class="gv-block sh-block sh-strip" id="shorts" aria-labelledby="shorts-h">
+  <h2 class="gv-h" id="shorts-h"><span aria-hidden="true">▶</span> {{ t('sh.title') }}</h2>
+  <div class="gv-grid sh-grid">{% for v in sh.latest %}{{ sh_card(v) }}{% endfor %}</div>
+  <p class="small gv-all"><a href="{{ url_for('public.gallery_shorts') }}">{{ t('sh.all')|replace('{n}', sh.count|string) }} →</a></p>
+</section>
+{% endmacro %}

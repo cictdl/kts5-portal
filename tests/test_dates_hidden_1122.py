@@ -310,7 +310,7 @@ def test_the_texts_without_a_date_in_the_23_languages():
             text = i18n.CATALOG[code].get(key + "_nd")
             assert text, (code, key)
             assert not re.search(r"\{(date|hei_end|camp_to|reg_end|select)\}", text), (code, key)
-    assert len(i18n.CATALOG["en"]) == 1553
+    assert len(i18n.CATALOG["en"]) == 1557
     # outside a request the texts are as they were; in one, as the setting says
     assert "{camp_to}" in i18n.text("hub.i_shut_t", "en")
     app = _hidden()
@@ -368,7 +368,7 @@ def test_switched_off_the_pages_say_it_without_the_day(monkeypatch):
     # after the hour: closed, without the day
     _at(monkeypatch, "2026-11-27T17:00:00")
     page = _get(client, "/institutions/register?lang=en")
-    assert 'name="head_name"' not in page and "Applications of institutions are closed." in page and not NEW_DAY.search(page)
+    assert 'name="head_name"' not in page and "Applications of institutions are closed." in page and not NEW_DAY.search(_without_own_days(page))
     schedule = _get(client, "/schedule?lang=en")
     assert "Last date for the registration of institutions" not in schedule and "Last date for the assessment" not in schedule
 

@@ -279,6 +279,10 @@ def test_the_news_added_on_3_november():
     # Tamil Sangamam), one card per announcement with a button for each network, each at its hour among the reports of the day
     # (the hour of a post on X read from its id); the Hindi reports of Akashvani News and DD News, in Hindi, as versions
     social = [n for n in NEWS if n["kind"] == "social" and n["date"] <= "2026-11-02"]   # those of 3-4 November: tests/test_news_1107.py
+    # without the shorts of YouTube of 1.2.231 (tests/test_shorts_1127.py): five cards of their own, five links on these cards
+    shorts = [n for n in social if n["links"][0]["site"] == "YouTube"]
+    assert len(shorts) == 5 and sum(1 for n in social for l in n["links"] if l["site"] == "YouTube") == 10
+    social = [dict(n, links=[l for l in n["links"] if l["site"] != "YouTube"]) for n in social if n not in shorts]
     assert len(social) == 21 and sum(len(n["links"]) for n in social) == 39
     assert {n["source"] for n in social} == {"CICT", "Kashi Tamil Sangamam", "Ministry of Education", "Press Information Bureau",
                                              "Shri Pralhad Joshi, Union Minister of Education", "PIB Chennai"}

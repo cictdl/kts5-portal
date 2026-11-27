@@ -20,7 +20,8 @@
       <p class="reel-quote" style="margin:6px 0 0" lang="en" dir="ltr">“{{ p.quote }}”</p>
       <p class="reel-tags" style="margin:6px 0 0" lang="en" dir="ltr">{% for tag in p.tags %}#{{ tag }}{% if not loop.last %} {% endif %}{% endfor %}</p>
       <p class="reel-links" style="margin:12px 0 0"><a class="btn saffron sm" href="{{ p.shown.url }}" target="_blank" rel="noopener">{{ t('home.reel_watch') }} <span aria-hidden="true">↗</span></a>
-        {% if p.facebook %}<a class="btn sm reel-fb" href="{{ p.facebook }}" target="_blank" rel="noopener">{{ t('home.reel_watch_fb') }} <span aria-hidden="true">↗</span></a>{% endif %}</p>
+        {% if p.facebook %}<a class="btn sm reel-fb" href="{{ p.facebook }}" target="_blank" rel="noopener">{{ t('home.reel_watch_fb') }} <span aria-hidden="true">↗</span></a>{% endif %}
+        {% if p.youtube %}<a class="btn sm reel-yt" href="{{ p.youtube }}" target="_blank" rel="noopener">{{ t('home.reel_watch_yt') }} <span aria-hidden="true">↗</span></a>{% endif %}</p>
       {% elif p.kind == 'post' %}
       {# posts on the social media of others, told with a title and a text of the portal in every language (1.2.106: the
          Thirukkural in Uzbek, as on the home page): links that open them there, nothing of theirs on the page #}

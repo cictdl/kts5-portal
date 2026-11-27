@@ -1,16 +1,23 @@
 {% extends "base.html" %}
-{% block title %}{{ t('gallery.title') }}{% endblock %}
+{% block title %}{{ t('sh.title') if shorts_page else t('gallery.title') }}{% endblock %}
 {% block content %}
+{% from "public/_shorts.html" import shorts_all, shorts_strip with context %}
 <div class="wrap section">
   <span class="eyebrow">{{ t('site.name') }} · {{ t('site.theme') }}</span>
   <h1>{{ t('gallery.title') }}</h1>
   <p class="lead dim" style="max-width:74ch">{{ t('gallery.intro') }}</p>
-  {% if albums %}
+  {% if albums or shorts.count %}
   <div class="res-tabs">
-    <a href="{{ url_for('public.gallery') }}" class="{{ 'on' if not album }}">{{ t('gallery.all') }}</a>
+    <a href="{{ url_for('public.gallery') }}" class="{{ 'on' if not album and not shorts_page }}">{{ t('gallery.all') }}</a>
+    {% if shorts.count %}<a href="{{ url_for('public.gallery_shorts') }}" class="{{ 'on' if shorts_page }}"><span aria-hidden="true">▶ </span>{{ t('sh.title') }} <span class="muted">{{ shorts.count }}</span></a>{% endif %}
     {% for a in albums %}<a href="{{ url_for('public.gallery', album=a.album) }}" class="{{ 'on' if album == a.album }}"><bdi>{{ a.album }}</bdi> <span class="muted">{{ a.n }}</span></a>{% endfor %}
   </div>
   {% endif %}
+  {# the shorts of KTS 5.0 on YouTube (1.2.231): all of them on their own tab, the six latest above the photographs of all albums #}
+  {% if shorts_page %}
+  {{ shorts_all(shorts) }}
+  {% else %}
+  {% if not album and shorts.count %}{{ shorts_strip(shorts) }}{% endif %}
   {% if photos %}
   <p class="small muted">{{ photos|length }} {{ t('gallery.photos') }}</p>
   <div class="photo-grid">
@@ -25,6 +32,7 @@
   </div>
   {% else %}
   <div class="card"><p class="muted" style="margin:0">{{ t('gallery.empty') }}</p></div>
+  {% endif %}
   {% endif %}
 </div>
 {% endblock %}
