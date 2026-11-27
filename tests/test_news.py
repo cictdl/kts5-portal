@@ -23,7 +23,8 @@ def test_the_press_release_of_the_launch_in_eleven_languages():
     # ten languages in 1.2.99, Punjabi (PIB Chandigarh) in 1.2.112
     from kts import kural as K
     press = [n for n in NEWS if n["kind"] == "press" and n["date"] == "2026-10-22"]      # one more on 21 November (1.2.209)
-    assert len(press) == 1 and len([n for n in NEWS if n["kind"] == "press"]) == 3      # and one of 4 November (1.2.211)
+    # and one of 4 November (1.2.211), one of 27 November (1.2.232)
+    assert len(press) == 1 and len([n for n in NEWS if n["kind"] == "press"]) == 4
     versions = press[0]["versions"]
     assert [v["lang"] for v in versions] == ["en", "as", "gu", "hi", "kn", "ml", "mr", "or", "pa", "ta", "ur"]
     assert all(v["lang"] in K.ORIENTATION_LANGS and v["title"] and v["office"].startswith("PIB ") for v in versions)

@@ -85,12 +85,14 @@ def _without_own_days(page):
     """
     The page without the days that are its own - the day of the Kural of the day, and the day of the release ("Last updated", in
     the footer and on the pages of the policies) - which may fall on a day that the tests look for, as the release of 23 November
-    2026 did (1.2.211).
+    2026 did (1.2.211); and the day of the press release of the Ministry in the band at the top of the home page (1.2.232: 27
+    November 2026, the day of the release, not a last day).
     """
     import html
     from kts.i18n import CATALOG
     labels = sorted({html.escape(c["pol.updated"]) for c in CATALOG.values() if c.get("pol.updated")}, key=len, reverse=True)
     page = re.sub(r'<div class="label">[^<]*</div>', "", page)
+    page = re.sub(r'(<span class="pib-from"[^>]*>(?:(?!</a>).)*?)<bdi>[^<]*</bdi>', r"\1", page, count=1, flags=re.S)
     return re.sub("(?:" + "|".join(re.escape(label) for label in labels) + r"): <bdi>[^<]*</bdi>", "", page)
 
 

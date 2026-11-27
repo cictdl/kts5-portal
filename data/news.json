@@ -3868,5 +3868,22 @@
         "time": "11:26 AM"
       }
     ]
+  },
+  {
+    "key": "pib-2026-11-27-kts5-inauguration",
+    "date": "2026-11-27",
+    "kind": "press",
+    "source": "Press Information Bureau",
+    "versions": [
+      {
+        "lang": "en",
+        "office": "PIB Delhi",
+        "ministry": "Ministry of Education",
+        "title": "Vice-President Shri C. P. Radhakrishnan to inaugurate the fifth edition of Kashi Tamil Sangamam 5.0",
+        "subtitle": "KTS 5.0 to be held from November 28 to December 12, 2026 in Varanasi",
+        "time": "1:58 PM",
+        "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2342468"
+      }
+    ]
   }
 ]

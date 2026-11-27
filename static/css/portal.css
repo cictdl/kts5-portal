@@ -366,6 +366,10 @@ mark { background: rgba(255, 196, 0, .45); color: inherit; padding: 0 1px; borde
 /* The bands of the home page that lead to the Academic Orientation (1.2.214) and to the Quiz on Thirukkural of MyGov (1.2.215),
    deep red and deep green: the link that the keyboard is on carries a white outline */
 .acad-band a:focus-visible, .quiz-band a:focus-visible { outline: 3px solid #fff; outline-offset: 3px; border-radius: 2px; }
+/* ... and on the band of the press release of the Ministry of 27 November 2026 (1.2.232), deep blue; its day stays on one line on a
+   phone (27-11-2026 would break at a hyphen), as on the reels */
+.pib-band a:focus-visible { outline: 3px solid #fff; outline-offset: 3px; border-radius: 2px; }
+.pib-band .pib-from bdi { white-space: nowrap; }
 /* a long name (Tamil) may take two lines on a phone rather than widen the page (1.2.83) */
 @media (max-width: 599px) { .nodal-attention .na-btn { white-space: normal; max-width: 100%; } .nodal-attention .na-items { flex-direction: column; align-items: flex-start; } }
 /* NEW beside "Circular" (1.2.152): black-on-yellow lettering in a red frame; it blinks once a second for as long as the page is open

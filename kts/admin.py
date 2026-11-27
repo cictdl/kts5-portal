@@ -2048,6 +2048,7 @@ SETTING_GROUPS = [
               ("schedule.central_test", "Show CICT's central online test (its days: exam.date to exam.date_to) in the schedule and among the upcoming events of the home page", "bool"),
               ("circular.new_days", "The newest circular of the Ministry (a circular notice with the letter attached) carries a blinking ‘NEW’ on the home page for so many days after it is put in (0: never)", "text"),
               ("home.circular", "Show the newest circular of the Ministry, with its PDF, first in the circular band of the home page (the notice stays under Notices either way)", "bool"),
+              ("home.pib", "Show the press release of the Ministry of Education of 27 November 2026 (PIB: the Vice-President to inaugurate Kashi Tamil Sangamam 5.0) in a band of its own at the top of the home page, with its link to pib.gov.in", "bool"),
               ("institutions.registered", "Show the number of institutions registered on the public pages: At a glance (home page, Participating Institutions), the Progress page, the dashboard by State/UT, the State/UT pages of the registration drive and “Find your next step” (the Console always shows it)", "bool"),
               ("nodal.covered", "Show the ring “Participating Institutions under a Nodal Officer” on the page of the Nodal Institutions", "bool"),
               ("nodal.pending", "Show the card “Yet to nominate a Nodal Officer” on the page of the Nodal Institutions", "bool"),

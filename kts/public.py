@@ -398,7 +398,10 @@ def home():
                      + hide + " ORDER BY pinned DESC, created_at DESC, id DESC LIMIT 1", (MYGOV_QUIZ_URL, utcnow(), *hide_args), one=True)
     # the languages of the lectures of the Academic Orientation, Hindi first, for the band that leads to them (1.2.214)
     acad_langs = [{"code": code, "native": (i18n.LANG_INFO.get(code) or {}).get("native", code)} for code, _rows in academic_lectures()]
+    # the press release of the Ministry of 27 November 2026 in a band at the top (1.2.232), while the Console shows it (home.pib)
+    press = home_press() if settings.get("home.pib") == "1" else None
     return render_template("public/home.html", settings=settings, dates=_key_dates(settings), uz=home_uzbek(), acad_langs=acad_langs, quiz=quiz,
+                           press=press,
                            circular=circular, circular_head=circular_head, circ_new=circ_new,
                            # "Find your next step" (1.2.140), while shown (home.hub, hidden since 1.2.146)
                            hub=FINDER.hub(settings, lang) if settings.get("home.hub") == "1" else None,
@@ -596,6 +599,17 @@ def home_uzbek():
     University on the translation (YouTube), the words quoted and the day of that meeting; None without the file.
     """
     path = current_app.config["DATA_DIR"] / "home_uzbek.json"
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
+
+
+def home_press():
+    """
+    The press release of the Ministry of Education on the home page (data/home_press.json, 1.2.232; CICT, 27 November 2026: "Link
+    on the Home page"): PIB Delhi, 27 November 2026, "Vice-President Shri C. P. Radhakrishnan to inaugurate the fifth edition of
+    Kashi Tamil Sangamam 5.0" - its day, hour and office, the headline and the line under it as PIB gives them, and the link;
+    None without the file.
+    """
+    path = current_app.config["DATA_DIR"] / "home_press.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
 

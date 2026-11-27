@@ -92,7 +92,7 @@ def test_the_news_page():
     ids = {s["id"] for s in SHORTS}
     cards = [x for x in NEWS if any(l.get("url", "").rsplit("/", 1)[-1] in ids for l in x.get("links", []))]
     new = [x for x in cards if x["key"] not in MERGED]
-    assert len(NEWS) == 158 and len(new) == 61 and len({x["key"] for x in NEWS}) == 158
+    assert len(NEWS) == 159 and len(new) == 61 and len({x["key"] for x in NEWS}) == 159        # 159: the press release of 1.2.232
     assert [x["date"] for x in NEWS] == sorted(x["date"] for x in NEWS)
     import datetime as dt
     for day in {x["date"] for x in new}:                                                   # each day in the order of its hours
