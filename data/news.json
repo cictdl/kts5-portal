@@ -2531,6 +2531,13 @@
         "date": "2026-11-16",
         "kind": "video",
         "url": "https://www.youtube.com/shorts/sPaVhAxkk5E"
+      },
+      {
+        "site": "YouTube",
+        "account": "cicttamil",
+        "date": "2026-11-20",
+        "kind": "video",
+        "url": "https://www.youtube.com/shorts/W2QYqLm9FT0"
       }
     ],
     "versions": [
@@ -2689,6 +2696,13 @@
         "date": "2026-11-20",
         "kind": "video",
         "url": "https://www.youtube.com/shorts/LpJ7ynmNsnk"
+      },
+      {
+        "site": "YouTube",
+        "account": "cicttamil",
+        "date": "2026-11-20",
+        "kind": "video",
+        "url": "https://www.youtube.com/shorts/rlwg0tcxhNI"
       }
     ],
     "versions": [
@@ -2716,6 +2730,13 @@
         "date": "2026-11-20",
         "kind": "video",
         "url": "https://www.youtube.com/shorts/G0NTy3ZZbjU"
+      },
+      {
+        "site": "YouTube",
+        "account": "cicttamil",
+        "date": "2026-11-20",
+        "kind": "video",
+        "url": "https://www.youtube.com/shorts/qINX6FfPX6k"
       }
     ],
     "versions": [
@@ -2862,6 +2883,13 @@
         "date": "2026-11-21",
         "kind": "video",
         "url": "https://www.youtube.com/shorts/yFL29qVw_fY"
+      },
+      {
+        "site": "YouTube",
+        "account": "cicttamil",
+        "date": "2026-11-20",
+        "kind": "video",
+        "url": "https://www.youtube.com/shorts/Y4uc1HR7yYM"
       }
     ],
     "versions": [
@@ -3066,6 +3094,13 @@
         "date": "2026-11-22",
         "kind": "video",
         "url": "https://www.youtube.com/shorts/pe1xgv2lt50"
+      },
+      {
+        "site": "YouTube",
+        "account": "cicttamil",
+        "date": "2026-11-20",
+        "kind": "video",
+        "url": "https://www.youtube.com/shorts/ZwGl0axOgz4"
       }
     ],
     "versions": [
@@ -3610,6 +3645,40 @@
     ]
   },
   {
+    "key": "social-2026-11-25-102",
+    "date": "2026-11-25",
+    "kind": "social",
+    "source": "Ministry of Education",
+    "gov": true,
+    "title": "The Ministry of Education: KTS 5.0, a confluence of cultures, a celebration of shared heritage, a journey of discovery",
+    "quote": "From the spiritual splendour of Kashi to the vibrant traditions of Tamil Nadu, Kashi Tamil Sangamam 5.0 brings people and stories together, with Thirukkural at its heart.",
+    "quote_lang": "en",
+    "links": [
+      {
+        "site": "YouTube",
+        "account": "Eduminofindia",
+        "date": "2026-11-25",
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=wUcojpF_Io0"
+      },
+      {
+        "site": "YouTube",
+        "account": "cicttamil",
+        "date": "2026-11-20",
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=3HpDc4LbnfU"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "The Ministry of Education: KTS 5.0, a confluence of cultures, a celebration of shared heritage, a journey of discovery",
+        "url": "https://www.youtube.com/watch?v=wUcojpF_Io0",
+        "time": "12:25 PM"
+      }
+    ]
+  },
+  {
     "key": "social-2026-11-25-90",
     "date": "2026-11-25",
     "kind": "social",
@@ -3932,6 +4001,87 @@
     ]
   },
   {
+    "key": "social-2026-11-27-103",
+    "date": "2026-11-27",
+    "kind": "social",
+    "source": "Ministry of Education",
+    "gov": true,
+    "title": "The Ministry of Education: a run for Kashi Tamil Sangamam 5.0 at Banaras Hindu University",
+    "quote": "As part of the pre-event activities of Kashi Tamil Sangamam 5.0, Banaras Hindu University organises a run for its students, faculty and staff ...",
+    "quote_lang": "en",
+    "links": [
+      {
+        "site": "YouTube",
+        "account": "Eduminofindia",
+        "date": "2026-11-27",
+        "kind": "video",
+        "url": "https://www.youtube.com/shorts/t6W-fqXFVOw"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "The Ministry of Education: a run for Kashi Tamil Sangamam 5.0 at Banaras Hindu University",
+        "url": "https://www.youtube.com/shorts/t6W-fqXFVOw",
+        "time": "2:22 PM"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-11-27-104",
+    "date": "2026-11-27",
+    "kind": "social",
+    "source": "Ministry of Education",
+    "gov": true,
+    "title": "The Ministry of Education: episode 3, the timeless wisdom of the Thirukkural",
+    "quote": "Discover the timeless wisdom of the Thirukkural, one of Tamil's greatest literary works, featuring 1,330 couplets on morality, good conduct, governance, compassion and love.",
+    "quote_lang": "en",
+    "links": [
+      {
+        "site": "YouTube",
+        "account": "Eduminofindia",
+        "date": "2026-11-27",
+        "kind": "video",
+        "url": "https://www.youtube.com/shorts/ca4ne3gYbzo"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "The Ministry of Education: episode 3, the timeless wisdom of the Thirukkural",
+        "url": "https://www.youtube.com/shorts/ca4ne3gYbzo",
+        "time": "2:32 PM"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-11-27-105",
+    "date": "2026-11-27",
+    "kind": "social",
+    "source": "Ministry of Education",
+    "gov": true,
+    "title": "The Ministry of Education: from Kashi to Prayagraj and Ayodhya, the journey of the participants from Tamil Nadu",
+    "quote": "From the sacred corridors of Kashi to the historic sites of Prayagraj and Ayodhya, Kashi Tamil Sangamam 5.0 offers participants from Tamil Nadu an opportunity to experience India's diverse cultural and spiritual heritage.",
+    "quote_lang": "en",
+    "links": [
+      {
+        "site": "YouTube",
+        "account": "Eduminofindia",
+        "date": "2026-11-27",
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=FEZvrEEosEc"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "The Ministry of Education: from Kashi to Prayagraj and Ayodhya, the journey of the participants from Tamil Nadu",
+        "url": "https://www.youtube.com/watch?v=FEZvrEEosEc",
+        "time": "7:32 PM"
+      }
+    ]
+  },
+  {
     "key": "social-2026-11-28-101",
     "date": "2026-11-28",
     "kind": "social",
@@ -3955,6 +4105,33 @@
         "title": "DD National live: the Hon'ble Vice-President, Shri C. P. Radhakrishnan, inaugurates Kashi Tamil Sangamam 5.0 in Varanasi",
         "url": "https://www.youtube.com/watch?v=0bV8uPVhtbg",
         "time": "9:40 AM"
+      }
+    ]
+  },
+  {
+    "key": "social-2026-11-28-106",
+    "date": "2026-11-28",
+    "kind": "social",
+    "source": "Ministry of Education",
+    "gov": true,
+    "title": "The Ministry of Education live: the inauguration of Kashi Tamil Sangamam 5.0",
+    "quote": "With the theme ‘Thirukkural Payilvom – Thirukkural Abhyas Karen’, the fifth edition celebrates the enduring wisdom of Thiruvalluvar and the rich shared heritage of India.",
+    "quote_lang": "en",
+    "links": [
+      {
+        "site": "YouTube",
+        "account": "Eduminofindia",
+        "date": "2026-11-28",
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=AiCjCUD29Ng"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "The Ministry of Education live: the inauguration of Kashi Tamil Sangamam 5.0",
+        "url": "https://www.youtube.com/watch?v=AiCjCUD29Ng",
+        "time": "12:30 PM"
       }
     ]
   }

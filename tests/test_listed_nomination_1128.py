@@ -183,7 +183,7 @@ def test_the_notice_and_the_band(monkeypatch):
     assert "background:linear-gradient(90deg,#083f4a,#0b5563)" in band
     assert _contrast("#ffffff", "#0b5563") > 7 and _contrast("#ffd166", "#0b5563") > 4.5
     assert page.index('class="listed-band"') < page.index('class="pib-band"') < page.index('class="nodal-attention"')
-    assert '<link rel="stylesheet" href="/static/css/portal.css?v=58">' in page
+    assert '<link rel="stylesheet" href="/static/css/portal.css?v=59">' in page
     # first among the latest notices of the home page (pinned, the newest: on the live portal it is put in after all the others; in a
     # new database all the notices of the start have the same moment)
     # (1.2.238: a moment after the start of the test, not 28 November 2026, 8:00 UTC, which that day passed)

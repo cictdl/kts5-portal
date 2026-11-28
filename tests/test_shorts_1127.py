@@ -21,9 +21,9 @@ MERGED = {"ktsangamam-2026-10-15-pm-reel": "u_WUxGSUFzY", "social-2026-10-22-08"
 
 def test_the_67_shorts_and_their_covers():
     from PIL import Image
-    assert len(SHORTS) == 67 and len({s["id"] for s in SHORTS}) == 67
-    assert [s["channel"] for s in SHORTS] == ["moe"] * 23 + ["kts"] * 44                   # the Ministry's first
-    for channel in ("moe", "kts"):
+    assert len(SHORTS) == 74 and len({s["id"] for s in SHORTS}) == 74      # 67 at first; 74 since 1.2.239 (tests/test_youtube_1128.py)
+    assert [s["channel"] for s in SHORTS] == ["moe"] * 25 + ["cict"] * 5 + ["kts"] * 44                   # the Ministry's first
+    for channel in ("moe", "cict", "kts"):
         days = [(s["date"], s["time"]) for s in SHORTS if s["channel"] == channel]
         assert days == sorted(days, reverse=True), channel                                 # newest first
     assert min(s["date"] for s in SHORTS) == "2026-10-15" and max(s["date"] for s in SHORTS) <= "2026-11-27"
@@ -51,11 +51,12 @@ def test_the_page_of_the_shorts():
     assert "<title>KTS 5.0 shorts on YouTube" in page and '<h2 class="gv-h" id="shorts-h"><span aria-hidden="true">▶</span> KTS 5.0 shorts on YouTube</h2>' in main
     # the tab of the shorts is the one shown; the tabs of the albums are there
     tabs = main[main.index('<div class="res-tabs">'):main.index("</div>", main.index('<div class="res-tabs">'))]
-    assert re.search(r'<a href="/gallery/shorts" class="on"><span aria-hidden="true">▶ </span>KTS 5.0 shorts on YouTube <span class="muted">67</span></a>', tabs)
+    assert re.search(r'<a href="/gallery/shorts" class="on"><span aria-hidden="true">▶ </span>KTS 5.0 shorts on YouTube <span class="muted">74</span></a>', tabs)
     assert '<a href="/gallery" class="">All albums</a>' in tabs
     # the two channels, the Ministry's first, each with its count and its shorts newest first
-    heads = re.findall(r'<h3 id="shorts-(moe|kts)-h"[^>]*><span lang="en" dir="ltr">([^<]+)</span>.*?<bdi>(\d+) shorts</bdi>', main)
-    assert heads == [("moe", "Ministry of Education, Government of India", "23"), ("kts", "Kashi Tamil Sangamam", "44")]
+    heads = re.findall(r'<h3 id="shorts-(moe|cict|kts)-h"[^>]*><span lang="en" dir="ltr">([^<]+)</span>.*?<bdi>(\d+) shorts</bdi>', main)
+    assert heads == [("moe", "Ministry of Education, Government of India", "25"), ("cict", "Central Institute of Classical Tamil", "5"),
+                     ("kts", "Kashi Tamil Sangamam", "44")]      # CICT's channel since 1.2.239
     assert 'href="https://www.youtube.com/@Eduminofindia/shorts"' in main and 'href="https://www.youtube.com/@KashiTamilSangamam/shorts"' in main
     ids = re.findall(r'data-yt="([A-Za-z0-9_-]{11})"', main)
     assert ids == [s["id"] for s in SHORTS]
@@ -81,7 +82,7 @@ def test_the_six_latest_on_the_gallery():
     latest = sorted(SHORTS, key=lambda s: (s["date"], s["time"]), reverse=True)[:6]      # by the day and the hour, whichever channel
     assert {s["channel"] for s in latest} == {"moe", "kts"}
     assert re.findall(r'data-yt="([A-Za-z0-9_-]{11})"', strip) == [s["id"] for s in latest]
-    assert '<a href="/gallery/shorts">All 67 shorts →</a>' in strip
+    assert '<a href="/gallery/shorts">All 74 shorts →</a>' in strip
     assert main.index("sh-strip") < main.index("photo-grid")                              # above the photographs
     assert page.count('<figure class="photo">') == 38 and "38 photographs" in page          # the photographs as they were (38 since 1.2.237)
     album = client.get("/gallery?lang=en&album=KTS+5.0+in+the+news").get_data(as_text=True)
@@ -92,7 +93,7 @@ def test_the_news_page():
     ids = {s["id"] for s in SHORTS}
     cards = [x for x in NEWS if any(l.get("url", "").rsplit("/", 1)[-1] in ids for l in x.get("links", []))]
     new = [x for x in cards if x["key"] not in MERGED]
-    assert len(NEWS) == 163 and len(new) == 61 and len({x["key"] for x in NEWS}) == 163        # 159: the press release of 1.2.232; 160: DD National, 1.2.234
+    assert len(NEWS) == 168 and len(new) == 63 and len({x["key"] for x in NEWS}) == 168        # 168, 63 since 1.2.239;        # 159: the press release of 1.2.232; 160: DD National, 1.2.234
     assert [x["date"] for x in NEWS] == sorted(x["date"] for x in NEWS)
     import datetime as dt
     for day in {x["date"] for x in new}:                                                   # each day in the order of its hours
@@ -100,10 +101,11 @@ def test_the_news_page():
         assert times == sorted(times), day
     moe = [x for x in new if x["source"] == "Ministry of Education"]
     kts = [x for x in new if x["source"] == "Kashi Tamil Sangamam"]
-    assert len(moe) == 23 and len(kts) == 38 and all(x.get("gov") is True for x in moe) and not any("gov" in x for x in kts)
+    assert len(moe) == 25 and len(kts) == 38 and all(x.get("gov") is True for x in moe) and not any("gov" in x for x in kts)
     for x in new:
         assert x["kind"] == "social" and re.fullmatch(r"social-2026-1[01]-\d\d-\d+", x["key"]) and x["key"].startswith(f"social-{x['date']}-")
-        (link,) = x["links"]
+        link = x["links"][0]      # since 1.2.239 CICT's link stands beside the Ministry's on the five films its channel carries too
+        assert len(x["links"]) == 1 or (x in moe and [l["account"] for l in x["links"][1:]] == ["cicttamil"])
         assert link["site"] == "YouTube" and link["kind"] == "video" and link["date"] == x["date"]
         assert link["account"] == ("Eduminofindia" if x in moe else "KashiTamilSangamam")
         assert x["versions"] == [{"lang": "en", "title": x["title"], "url": link["url"], "time": x["versions"][0]["time"]}]
@@ -131,7 +133,7 @@ def test_the_four_texts_in_23_languages():
     en = CATALOG["en"]
     assert en["sh.title"] == "KTS 5.0 shorts on YouTube" and en["sh.count"] == "{n} shorts" and en["sh.all"] == "All {n} shorts"
     assert en["sh.lead"].startswith("Short videos of Kashi Tamil Sangamam 5.0 from the YouTube channels of the Ministry of Education")
-    assert sorted(CATALOG) == sorted(LANGS) and len(en) == 1557
+    assert sorted(CATALOG) == sorted(LANGS) and len(en) == 1561
     client = make_app(ADMIN_PASSWORD=None).test_client()
     for code in LANGS:
         c = CATALOG[code]
@@ -141,4 +143,4 @@ def test_the_four_texts_in_23_languages():
         assert "{" not in c["sh.title"] + c["sh.lead"] and c["sh.title"][-1] not in ".।॥؟۔", code
         assert code == "en" or all(c[k] != en[k] for k in ("sh.title", "sh.lead")), code
         page = client.get(f"/gallery/shorts?lang={code}").get_data(as_text=True)
-        assert unescape(c["sh.title"]) in unescape(page) and unescape(c["sh.count"].replace("{n}", "23")) in unescape(page), code
+        assert unescape(c["sh.title"]) in unescape(page) and unescape(c["sh.count"].replace("{n}", "25")) in unescape(page), code

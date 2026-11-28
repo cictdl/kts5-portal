@@ -32,36 +32,68 @@ def albums(published_only=True):
                  "ORDER BY last DESC, album")
 
 
-# the YouTube channels of the shorts of KTS 5.0 (1.2.231), the Ministry's first
+# the YouTube channels of the shorts of KTS 5.0 (1.2.231), the Ministry's first; CICT's own channel since 1.2.239
 SHORT_CHANNELS = (
     {"key": "moe", "name": "Ministry of Education, Government of India", "account": "Eduminofindia",
      "url": "https://www.youtube.com/@Eduminofindia/shorts"},
+    {"key": "cict", "name": "Central Institute of Classical Tamil", "account": "cicttamil", "url": "https://www.youtube.com/@cicttamil/shorts"},
     {"key": "kts", "name": "Kashi Tamil Sangamam", "account": "KashiTamilSangamam", "url": "https://www.youtube.com/@KashiTamilSangamam/shorts"},
 )
+# ... and of its videos (1.2.239)
+VIDEO_CHANNELS = (
+    {"key": "moe", "name": "Ministry of Education, Government of India", "account": "Eduminofindia",
+     "url": "https://www.youtube.com/@Eduminofindia/videos"},
+    {"key": "cict", "name": "Central Institute of Classical Tamil", "account": "cicttamil", "url": "https://www.youtube.com/@cicttamil/videos"},
+)
+
+
+def _length(seconds):
+    """The length as YouTube writes it: 0:47, 3:31, 1:43:08."""
+    hours, rest = divmod(seconds, 3600)
+    return f"{hours}:{rest // 60:02d}:{rest % 60:02d}" if hours else f"{rest // 60}:{rest % 60:02d}"
+
+
+def _clips(path, static, folder, channels, address, most):
+    rows = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else []
+    videos = []
+    for r in rows:
+        cover = f"img/{folder}/{r['id']}.webp"
+        if not (static / cover).is_file():      # a short or a video is shown with its cover only
+            continue
+        videos.append(dict(r, cover=cover, url=address.format(r["id"]), duration=_length(r["seconds"])))
+    grouped = [dict(c, videos=[v for v in videos if v["channel"] == c["key"]]) for c in channels]
+    latest = sorted(videos, key=lambda v: (v["date"], v.get("time", "")), reverse=True)[:most]      # by the day and the hour (IST)
+    return {"count": len(videos), "channels": [c for c in grouped if c["videos"]], "latest": latest}
 
 
 @lru_cache(maxsize=4)
 def _shorts(path, static):
-    rows = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else []
-    videos = []
-    for r in rows:
-        cover = f"img/shorts/{r['id']}.webp"
-        if not (static / cover).is_file():      # a short is shown with its cover only
-            continue
-        videos.append(dict(r, cover=cover, url=f"https://www.youtube.com/shorts/{r['id']}", duration=f"{r['seconds'] // 60}:{r['seconds'] % 60:02d}"))
-    channels = [dict(c, videos=[v for v in videos if v["channel"] == c["key"]]) for c in SHORT_CHANNELS]
-    latest = sorted(videos, key=lambda v: (v["date"], v.get("time", "")), reverse=True)[:6]      # by the day and the hour (IST)
-    return {"count": len(videos), "channels": [c for c in channels if c["videos"]], "latest": latest}
+    return _clips(path, static, "shorts", SHORT_CHANNELS, "https://www.youtube.com/shorts/{}", 6)
+
+
+@lru_cache(maxsize=4)
+def _videos(path, static):
+    return _clips(path, static, "videos", VIDEO_CHANNELS, "https://www.youtube.com/watch?v={}", 3)
 
 
 def shorts():
     """
     The shorts of KTS 5.0 on YouTube (1.2.231; CICT, 27 November 2026: "kts5.0 2026 ministry of education add all shorts in the
-    youtube"): data/shorts.json, those of the Ministry of Education's channel and of the Kashi Tamil Sangamam channel, each with its
+    youtube"): data/shorts.json, those of the Ministry of Education's channel, of CICT's (1.2.239) and of the Kashi Tamil Sangamam channel, each with its
     cover kept on the portal (static/img/shorts/), newest first within its channel; the six latest of both for the page of all the
     albums.
     """
     return _shorts(Path(current_app.config["DATA_DIR"]) / "shorts.json", Path(current_app.static_folder))
+
+
+def videos():
+    """
+    The videos of KTS 5.0 on YouTube (1.2.239; CICT, 28 November 2026: "https://www.youtube.com/@Eduminofindia/videos ... update
+    KTS 5.0 related to KTS 5.0", then "https://www.youtube.com/@cicttamil/videos update KTS 5.0 and Thirukkural"): data/videos.json,
+    those of the Ministry of Education's channel and of CICT's, each with its cover kept on the portal (static/img/videos/), newest
+    first within its channel; the three latest for the page of all the albums. The videos of the Thirukkural are in the Resources.
+    """
+    return _videos(Path(current_app.config["DATA_DIR"]) / "videos.json", Path(current_app.static_folder))
 
 
 @public.route("/gallery")
@@ -73,13 +105,22 @@ def gallery():
         sql += " AND album = ?"
         args.append(album)
     photos = query(sql + " ORDER BY taken_on DESC, sort_order, id DESC", args)
-    return render_template("public/gallery.html", photos=photos, albums=albums(), album=album, shorts=shorts(), shorts_page=False)
+    return render_template("public/gallery.html", photos=photos, albums=albums(), album=album, shorts=shorts(), shorts_page=False,
+                           videos=videos(), videos_page=False)
 
 
 @public.route("/gallery/shorts")
 def gallery_shorts():
     """The shorts of KTS 5.0 on YouTube, channel by channel (1.2.231): played on the page."""
-    return render_template("public/gallery.html", photos=[], albums=albums(), album="", shorts=shorts(), shorts_page=True)
+    return render_template("public/gallery.html", photos=[], albums=albums(), album="", shorts=shorts(), shorts_page=True,
+                           videos=videos(), videos_page=False)
+
+
+@public.route("/gallery/videos")
+def gallery_videos():
+    """The videos of KTS 5.0 on YouTube, channel by channel (1.2.239): played on the page."""
+    return render_template("public/gallery.html", photos=[], albums=albums(), album="", shorts=shorts(), shorts_page=False,
+                           videos=videos(), videos_page=True)
 
 
 # ---- the console ----------------------------------------------------------------------------------

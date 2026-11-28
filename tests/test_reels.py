@@ -79,7 +79,7 @@ def test_the_shorts_added_on_21_october():
         {"id": "EAvMVUp50-s", "lang": "Malto", "native": "माल्तो", "presenter": "R. George Edward"}]
     app = make_app(ADMIN_PASSWORD=None)
     page = app.test_client().get("/programme?lang=en").get_data(as_text=True)
-    assert "56 short videos in 29 languages" in page   # 49 in 28 since 1.2.141; with seven in Tamil since 1.2.214
+    assert "104 short videos in 29 languages" in page   # 49 in 28 since 1.2.141; with seven in Tamil since 1.2.214, 55 since 1.2.239
     kurukh = page.split("कुँड़ुख़")[1].split('<div class="card reel">')[0]
     assert kurukh.count("youtube.com/shorts/") == 3
     malto = page.split("<bdi>माल्तो</bdi>")[1].split('<div class="card reel">')[0]
@@ -120,7 +120,7 @@ def test_the_shorts_added_on_29_october():
         {"id": "Kd5sxY9ltOY", "lang": "Kisan", "native": "किसान", "presenter": "Dr. Laxman Kishan"},
         {"id": "9-_RZeGA0pU", "lang": "Malto", "native": "माल्तो", "presenter": "Bijay Malto"},   # 31 October, 1.2.134
         {"id": "grxVhf6Dd4o", "lang": "Kashmiri", "native": "کٲشُر", "presenter": "Dr. Zargar Adil Ahmad"}]   # 2 November, 1.2.141
-    assert len(REELS) == 56 and len({r["lang"] for r in REELS}) == 29   # the second Malto reel (1.2.134); Kashmiri (1.2.141); Tamil (1.2.214)
+    assert len(REELS) == 104 and len({r["lang"] for r in REELS}) == 29   # the second Malto reel (1.2.134); Kashmiri (1.2.141); Tamil (1.2.214)
     page = make_app(ADMIN_PASSWORD=None).test_client().get("/programme?lang=en").get_data(as_text=True)
     hindi = page.split("<bdi>हिन्दी</bdi>")[1].split('<div class="card reel">')[0]
     assert hindi.rindex("Vijay Chittori") > hindi.index("Dr. Gajadan Charan")

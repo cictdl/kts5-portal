@@ -422,6 +422,10 @@ html[lang="ur"] .quick-links .ql, html[lang="ks"] .quick-links .ql { line-height
 .btn.reel-yt { background: #b3261e; border-color: #b3261e; color: #fff; }   /* white on it 6.5:1 */
 .btn.reel-yt:hover { background: #8f1e18; border-color: #8f1e18; }
 @media (max-width: 599px) { .reel-card { flex-direction: column; align-items: flex-start; } .reel-play { width: 64px; height: 64px; font-size: 1.5rem; border-radius: 16px; } }
+/* the reels of a language on the programme page: a language with many takes the whole row, its list in columns (1.2.239) */
+.reels .reel:has(li:nth-child(17)) { grid-column: 1 / -1; }
+.reels .reel:has(li:nth-child(17)) ul { columns: 3 280px; column-gap: 28px; }
+.reels .reel li { break-inside: avoid; }
 /* the Back button on every page but the home page (1.2.77): the previous page of the portal, else the home page */
 .back-row { padding-top: 14px; }
 .back-link { display: inline-flex; align-items: center; gap: 6px; padding: 5px 15px 5px 12px; border: 1px solid var(--border-strong);
@@ -576,7 +580,7 @@ table.table td.num, table.table th.num { text-align: end; font-variant-numeric: 
 .gv-poster { position: relative; display: block; aspect-ratio: 16 / 9; background: #1B2A4A; }
 .gv-poster:hover .gv-play, .gv-poster:focus-visible .gv-play { transform: translate(-50%, -50%) scale(1.12); }
 /* playing: the video takes the whole width of its block, in YouTube's player */
-.gv-card.gv-playing { grid-column: 1 / -1; }
+.gv-card.gv-playing { grid-column: 1 / -1; max-width: min(100%, max(260px, calc((100vh - 170px) * 16 / 9))); }
 .gv-frame { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; background: #000; }
 .gv-one .gv-card.gv-playing { flex-direction: column; }
 .gv-poster img { display: block; width: 100%; height: 100%; object-fit: cover; }

@@ -22,8 +22,10 @@ def test_the_card():
                     "title": TITLE, "quote": QUOTE, "quote_lang": "en",
                     "links": [{"site": "YouTube", "account": "DoordarshanNational", "date": "2026-11-28", "kind": "video", "url": URL}],
                     "versions": [{"lang": "en", "title": TITLE, "url": URL, "time": "9:40 AM"}]}
-    assert news[-1] is not None and news[-1]["key"] == card["key"] and [n["date"] for n in news] == sorted(n["date"] for n in news)
-    assert len({n["key"] for n in news}) == len(news) == 163      # 163: three reports of Hindu Tamil Thisai, 1.2.235
+    # the first of its day; since 1.2.239 the Ministry's own stream (12:30 PM) after it, the last
+    assert [n["key"] for n in news if n["date"] == "2026-11-28"] == [card["key"], "social-2026-11-28-106"]
+    assert news[-1]["date"] == "2026-11-28" and [n["date"] for n in news] == sorted(n["date"] for n in news)
+    assert len({n["key"] for n in news}) == len(news) == 168      # 163: three reports of Hindu Tamil Thisai, 1.2.235; 168 since 1.2.239
 
 
 def test_on_the_page():

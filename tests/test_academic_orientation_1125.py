@@ -72,12 +72,13 @@ def test_the_link_on_the_home_page():
 
 
 def test_the_tamil_reels():
-    new = [r for r in REELS if r["lang"] == "Tamil"]
+    # since 1.2.239 48 more Thirukkural reels of CICT stand with them, in the order of their days: 45 before, three after
+    new = [r for r in REELS if r["lang"] == "Tamil"][45:52]
     assert [r["id"] for r in new] == ["JHEHNq387oU", "bYlR7k8UvrY", "9gaYo2DnHCs", "3L-0ullP87g", "-41h8VnAqpQ", "pX3Xgj79HFk", "B7KjNFCdv5Q"]
-    assert REELS[-7:] == new and len(REELS) == 56
+    assert REELS[-10:-3] == new and len(REELS) == 104
     assert all(r["native"] == "தமிழ்" and r["presenter"] == "CICT" and r["topic"] and r["topic_en"] for r in new)
     page = make_app(ADMIN_PASSWORD=None).test_client().get("/programme?lang=en").get_data(as_text=True)
-    assert "56 short videos in 29 languages" in page
+    assert "104 short videos in 29 languages" in page
     tamil = page.split("<bdi>தமிழ்</bdi>")[1].split("</ul>")[0]
-    assert tamil.count("youtube.com/shorts/") == 7
+    assert tamil.count("youtube.com/shorts/") == 55
     assert '<bdi lang="ta">திருக்குறள் கூறும் கள்ளுண்ணாமை</bdi>' in tamil and "Abstaining from drinking as described in the Thirukkural" in tamil

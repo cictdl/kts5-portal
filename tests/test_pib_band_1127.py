@@ -51,7 +51,7 @@ def test_the_band_on_the_home_page():
     assert ".pib-band a:focus-visible { outline: 3px solid #fff; outline-offset: 3px; border-radius: 2px; }" in css
     # its day on one line on a phone (27-11-2026 would break at a hyphen)
     assert ".pib-band .pib-from bdi { white-space: nowrap; }" in css
-    assert '<link rel="stylesheet" href="/static/css/portal.css?v=58">' in page and "<style" not in page
+    assert '<link rel="stylesheet" href="/static/css/portal.css?v=59">' in page and "<style" not in page
     # first of all, above the circular band, the bands of the Academic Orientation and of the quiz, and the hero
     at = [page.index(mark) for mark in ('class="pib-band"', 'class="nodal-attention"', 'class="acad-band"', 'class="quick-links"', 'class="hero"')]
     assert at == sorted(at) and page.index('class="pib-band"') > page.index("<main")
@@ -83,7 +83,7 @@ def test_the_card_on_the_news_page():
     assert card == {"key": "pib-2026-11-27-kts5-inauguration", "date": "2026-11-27", "kind": "press", "source": "Press Information Bureau",
                     "versions": [{"lang": "en", "office": "PIB Delhi", "ministry": "Ministry of Education", "title": TITLE, "subtitle": SUBTITLE,
                                   "time": "1:58 PM", "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2342468"}]}
-    assert len(news) == 163 and len({n["key"] for n in news}) == 163 and [n["date"] for n in news] == sorted(n["date"] for n in news)
+    assert len(news) == 168 and len({n["key"] for n in news}) == 168 and [n["date"] for n in news] == sorted(n["date"] for n in news)
     times = [dt.datetime.strptime(n["versions"][0]["time"], "%I:%M %p") for n in news if n["date"] == "2026-11-27"]
     assert times == sorted(times) and len(times) >= 2
     client = make_app(ADMIN_PASSWORD=None).test_client()

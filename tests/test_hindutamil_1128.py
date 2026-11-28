@@ -35,7 +35,7 @@ def test_the_reports():
     # every report of the site once; six of KTS 5.0 in all
     urls = [v["url"] for n in news for v in n["versions"] if "hindutamil.in" in v["url"]]
     assert len(urls) == len(set(urls)) == 6
-    assert len(news) == len({n["key"] for n in news}) == 163 and [n["date"] for n in news] == sorted(n["date"] for n in news)
+    assert len(news) == len({n["key"] for n in news}) == 168 and [n["date"] for n in news] == sorted(n["date"] for n in news)
 
 
 def test_on_the_page():

@@ -49,7 +49,7 @@ def test_photographs_are_uploaded_in_albums_and_shown():
     assert rows[0]["file_path"].startswith("gallery/") and rows[0]["taken_on"] == "2026-11-28"
     page = client.get("/gallery?lang=en").get_data(as_text=True)
     assert page.count('<figure class="photo">') == 2 and "2 photographs" in page
-    assert f'src="/files/{rows[0]["file_path"]}"' in page and 'alt="The lamp is lit"' in page and "28 Nov 2026" in page
+    assert f'src="/files/{rows[0]["file_path"]}"' in page and 'alt="The lamp is lit"' in page and '<span class="muted">· 28 Nov 2026</span></figcaption>' in page
     assert "<bdi>Inauguration, Varanasi</bdi> <span" in page
     # the file is served while the photograph is published
     r = client.get(f"/files/{rows[0]['file_path']}")

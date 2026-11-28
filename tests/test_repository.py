@@ -67,7 +67,7 @@ def test_a_new_installation_carries_the_app():
     # seven chosen for the home page, which shows six in the order of sort_order: Kural Bridge first,
     # the Digital Archives in the repository only; the two of the prosody app and the classroom quiz
     # are in the repository only, the quiz first of them
-    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1, 0] + [0] * 44 + [0] * 6 + [0] * 5 + [0] * 88 + [1, 1, 0, 1, 1]      # ... and the two games of 1.2.184 (the second featured since 1.2.186)
+    assert [r["featured"] for r in rows] == [1, 1, 1, 1, 1, 1, 0, 0, 1, 0] + [0] * 44 + [0] * 6 + [0] * 5 + [0] * 89 + [1, 1, 0, 1, 1]      # (89: the lecture on Tolstoy, 1.2.239) ... and the two games of 1.2.184 (the second featured since 1.2.186)
     client = app.test_client()
     page = client.get("/resources").get_data(as_text=True)
     for s in SEEDS:
@@ -205,11 +205,11 @@ def test_the_videos_in_sign_language_have_a_tab_of_their_own():
     # the Thirukkural lectures: five sent by Dr. Akilan (1.2.14) and sixteen more of the channel (1.2.15); the fourteen
     # Thirukkural stories of the channel PM eVidya CICT - Tamil have a tab of their own (1.2.94); the Thiruvalluvar
     # lectures: 57 (1.2.15)
-    assert 'href="/resources?cat=video_kural&amp;l=&amp;q=" class="">Thirukkural videos <span class="muted">22</span></a>' in page
+    assert 'href="/resources?cat=video_kural&amp;l=&amp;q=" class="">Thirukkural videos <span class="muted">23</span></a>' in page      # 23 since 1.2.239
     assert 'href="/resources?cat=video_pmevidya&amp;l=&amp;q=" class="">PM eVidya CICT - Tamil <span class="muted">15</span></a>' in page
     assert 'href="/resources?cat=video_valluvar&amp;l=&amp;q=" class="">Thiruvalluvar videos <span class="muted">57</span></a>' in page
     lectures = client.get("/resources?cat=video_kural&lang=en").get_data(as_text=True)
-    assert lectures.count('<div class="card res-card">') == 22
+    assert lectures.count('<div class="card res-card">') == 23
     valluvar = client.get("/resources?cat=video_valluvar&lang=en").get_data(as_text=True)
     assert valluvar.count('<div class="card res-card">') == 57
     # each series in the order of its parts
@@ -218,7 +218,7 @@ def test_the_videos_in_sign_language_have_a_tab_of_their_own():
     assert lectures.index("Thirukural in Telugu Part 1 |") < lectures.index("Thirukural Part 03") < lectures.index("Telugu Part 12")
     # the Telugu lectures stand under Telugu in the filter of languages (with those of no language), the Tamil one not
     telugu = client.get("/resources?cat=video_kural&l=te&lang=en").get_data(as_text=True)
-    assert telugu.count('<div class="card res-card">') == 21 and "Thirukural in Telugu Part 4 |" in telugu
+    assert telugu.count('<div class="card res-card">') == 22 and "Thirukural in Telugu Part 4 |" in telugu
     assert "உலகப் பொதுமறை திருக்குறள்" not in telugu and "உலகப் பொதுமறை திருக்குறள்" in lectures
     assert lectures.index("Leadership lessons from Thirukural") < lectures.index("Part 01 : Goal setting") \
         < lectures.index("Part 02 : Goal setting") < lectures.index("part 01 : Importance of the Right Communications")
