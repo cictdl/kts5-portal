@@ -83,7 +83,7 @@ def test_the_card_on_the_news_page():
     assert card == {"key": "pib-2026-11-27-kts5-inauguration", "date": "2026-11-27", "kind": "press", "source": "Press Information Bureau",
                     "versions": [{"lang": "en", "office": "PIB Delhi", "ministry": "Ministry of Education", "title": TITLE, "subtitle": SUBTITLE,
                                   "time": "1:58 PM", "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2342468"}]}
-    assert len(news) == 160 and len({n["key"] for n in news}) == 160 and [n["date"] for n in news] == sorted(n["date"] for n in news)
+    assert len(news) == 163 and len({n["key"] for n in news}) == 163 and [n["date"] for n in news] == sorted(n["date"] for n in news)
     times = [dt.datetime.strptime(n["versions"][0]["time"], "%I:%M %p") for n in news if n["date"] == "2026-11-27"]
     assert times == sorted(times) and len(times) >= 2
     client = make_app(ADMIN_PASSWORD=None).test_client()

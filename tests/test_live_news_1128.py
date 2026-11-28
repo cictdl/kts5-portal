@@ -23,7 +23,7 @@ def test_the_card():
                     "links": [{"site": "YouTube", "account": "DoordarshanNational", "date": "2026-11-28", "kind": "video", "url": URL}],
                     "versions": [{"lang": "en", "title": TITLE, "url": URL, "time": "9:40 AM"}]}
     assert news[-1] is not None and news[-1]["key"] == card["key"] and [n["date"] for n in news] == sorted(n["date"] for n in news)
-    assert len({n["key"] for n in news}) == len(news) == 160
+    assert len({n["key"] for n in news}) == len(news) == 163      # 163: three reports of Hindu Tamil Thisai, 1.2.235
 
 
 def test_on_the_page():

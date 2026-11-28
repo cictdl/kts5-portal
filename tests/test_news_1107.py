@@ -20,8 +20,9 @@ def test_the_entries():
     social = [n for n in NEW if n["kind"] == "social"]
     reports = [n for n in NEW if n["kind"] == "article"]
     # ... and, added with 1.2.211, the report of UNI of 3 November and the press release of 4 November on the meeting at BHU
-    assert len(NEW) == 23 and len(social) == 18 and len(reports) == 4 and [n["kind"] for n in NEW].count("press") == 1
-    assert [n["source"] for n in reports] == ["UNI", "News9", "TV9 Bangla", "TV9 Hindi"]
+    # ... and, added with 1.2.235, the report of Hindu Tamil Thisai of 3 November on the curtain raiser at IIT Madras
+    assert len(NEW) == 24 and len(social) == 18 and len(reports) == 5 and [n["kind"] for n in NEW].count("press") == 1
+    assert [n["source"] for n in reports] == ["Hindu Tamil Thisai", "UNI", "News9", "TV9 Bangla", "TV9 Hindi"]
     assert {n["source"] for n in social} == {
         "MyGov Hindi", "PIB Karnataka", "PIB Andhra Pradesh", "PIB Sri Vijaya Puram", "PIB Bihar", "Akashvani News Vijayawada",
         "DD News Uttar Pradesh", "DD India", "DD Tamil", "PIB Chandigarh", "TV9 Gujarati", "TV9 Marathi", "CBC Hyderabad",
