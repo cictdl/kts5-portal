@@ -400,8 +400,11 @@ def home():
     acad_langs = [{"code": code, "native": (i18n.LANG_INFO.get(code) or {}).get("native", code)} for code, _rows in academic_lectures()]
     # the press release of the Ministry of 27 November 2026 in a band at the top (1.2.232), while the Console shows it (home.pib)
     press = home_press() if settings.get("home.pib") == "1" else None
+    # the live stream of the inauguration on YouTube, above it (1.2.233), up to LIVE_UNTIL while the Console shows it (home.live)
+    live = ({"url": LIVE_URL, "streams": LIVE_STREAMS}
+            if settings.get("home.live") == "1" and now_ist().strftime("%Y-%m-%dT%H:%M") <= LIVE_UNTIL else None)
     return render_template("public/home.html", settings=settings, dates=_key_dates(settings), uz=home_uzbek(), acad_langs=acad_langs, quiz=quiz,
-                           press=press,
+                           press=press, live=live,
                            circular=circular, circular_head=circular_head, circ_new=circ_new,
                            # "Find your next step" (1.2.140), while shown (home.hub, hidden since 1.2.146)
                            hub=FINDER.hub(settings, lang) if settings.get("home.hub") == "1" else None,
@@ -600,6 +603,15 @@ def home_uzbek():
     """
     path = current_app.config["DATA_DIR"] / "home_uzbek.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
+
+
+# LIVE: Inauguration of Kashi Tamil Sangamam 5.0 (1.2.233; CICT, 28 November 2026: "https://www.youtube.com/watch?v=AiCjCUD29Ng give a link on the
+# home page LIVE: Inauguration of Kashi Tamil Sangamam 5.0"): the live stream on YouTube, in a band at the top of the home page up to
+# LIVE_UNTIL (IST), while the Console's switch home.live shows it
+LIVE_URL = "https://www.youtube.com/watch?v=AiCjCUD29Ng"
+# the two streams on YouTube: the Ministry's (its link the band's own) and Doordarshan National's ("this link also")
+LIVE_STREAMS = (("Ministry of Education", LIVE_URL), ("DD National", "https://www.youtube.com/watch?v=0bV8uPVhtbg"))
+LIVE_UNTIL = "2026-11-28T18:00"
 
 
 def home_press():

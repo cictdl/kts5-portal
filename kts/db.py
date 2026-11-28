@@ -838,6 +838,9 @@ DEFAULT_SETTINGS = {
     # the press release of the Ministry of Education of 27 November 2026 (PIB: the Vice-President to inaugurate KTS 5.0) in a band
     # at the top of the home page (1.2.232; CICT, 27 November 2026: "Link on the Home page"); '0' takes it off
     "home.pib": "1",
+    # the live stream of the inauguration of KTS 5.0 on YouTube in a band at the top of the home page, up to 28 November 2026, 6:00 PM
+    # (1.2.233; CICT, 28 November 2026: "give a link on the home page LIVE: Inauguration of Kashi Tamil Sangamam 5.0"); '0' takes it off
+    "home.live": "1",
     # the figures CICT asked to hide on 7 November 2026 ("Hide the above said two graphs"): the card "Institutions registered"
     # (with today and the last 7 days) of At a glance on /institutions, and on the home page too (1.2.165: "at home page hide 258
     # Institutions registered"), and the ring "Participating Institutions under a Nodal Officer" on /nodal-institutions (1.2.164);

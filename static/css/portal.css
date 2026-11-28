@@ -370,6 +370,8 @@ mark { background: rgba(255, 196, 0, .45); color: inherit; padding: 0 1px; borde
    phone (27-11-2026 would break at a hyphen), as on the reels */
 .pib-band a:focus-visible { outline: 3px solid #fff; outline-offset: 3px; border-radius: 2px; }
 .pib-band .pib-from bdi { white-space: nowrap; }
+/* ... and on the band of the live stream of the inauguration of 28 November 2026 (1.2.233), deep red */
+.live-band a:focus-visible { outline: 3px solid #fff; outline-offset: 3px; border-radius: 2px; }
 /* a long name (Tamil) may take two lines on a phone rather than widen the page (1.2.83) */
 @media (max-width: 599px) { .nodal-attention .na-btn { white-space: normal; max-width: 100%; } .nodal-attention .na-items { flex-direction: column; align-items: flex-start; } }
 /* NEW beside "Circular" (1.2.152): black-on-yellow lettering in a red frame; it blinks once a second for as long as the page is open
