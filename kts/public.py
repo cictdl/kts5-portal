@@ -412,11 +412,14 @@ def home():
     if until and now_ist().strftime("%Y-%m-%dT%H:%M") <= until:
         listed_band = query("SELECT id, title, link, lang FROM notices WHERE link = ? AND published = 1 AND (publish_at IS NULL OR publish_at <= ?)"
                             + hide + " ORDER BY pinned DESC, created_at DESC, id DESC LIMIT 1", (LISTED_NOTICE_LINK, utcnow(), *hide_args), one=True)
+    # the photographs of the release of the Thirukkural in 50 languages at the inauguration, with CICT's caption, under the bands (1.2.238),
+    # while the Console shows it (home.photo)
+    photo = home_photo() if settings.get("home.photo") == "1" else None
     # the live stream of the inauguration on YouTube, above it (1.2.233), up to LIVE_UNTIL while the Console shows it (home.live)
     live = ({"url": LIVE_URL, "streams": LIVE_STREAMS}
             if settings.get("home.live") == "1" and now_ist().strftime("%Y-%m-%dT%H:%M") <= LIVE_UNTIL else None)
     return render_template("public/home.html", settings=settings, dates=_key_dates(settings), uz=home_uzbek(), acad_langs=acad_langs, quiz=quiz,
-                           press=press, live=live, listed_band=listed_band,
+                           press=press, live=live, listed_band=listed_band, photo=photo,
                            circular=circular, circular_head=circular_head, circ_new=circ_new,
                            # "Find your next step" (1.2.140), while shown (home.hub, hidden since 1.2.146)
                            hub=FINDER.hub(settings, lang) if settings.get("home.hub") == "1" else None,
@@ -635,6 +638,21 @@ def home_press():
     """
     path = current_app.config["DATA_DIR"] / "home_press.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
+
+
+def home_photo():
+    """
+    The photographs on the home page (data/home_photo.json, 1.2.238; CICT, 28 November 2026: "Paste in picture on the Home page with
+    caption. 50 Thirukkural translations released on 28 November 2026 at KTS 5.0 at Varanasi.", with two photographs): the day,
+    CICT's caption and, for each photograph, its file under static/, its size and the text for those who cannot see it; those whose
+    file is there; None without the file of data or without a picture.
+    """
+    path = current_app.config["DATA_DIR"] / "home_photo.json"
+    if not path.exists():
+        return None
+    data = json.loads(path.read_text(encoding="utf-8"))
+    photos = [p for p in data["photos"] if (Path(current_app.static_folder) / p["file"]).is_file()]
+    return dict(data, photos=photos) if photos else None
 
 
 # the video guide to the portal (1.2.128): four videos on CICT's YouTube channel, data/guide_videos.json

@@ -845,6 +845,9 @@ DEFAULT_SETTINGS = {
     # the live stream of the inauguration of KTS 5.0 on YouTube in a band at the top of the home page, up to 28 November 2026, 6:00 PM
     # (1.2.233; CICT, 28 November 2026: "give a link on the home page LIVE: Inauguration of Kashi Tamil Sangamam 5.0"); '0' takes it off
     "home.live": "1",
+    # the photographs of the release of the Thirukkural in 50 languages at the inauguration of KTS 5.0 on the home page, with CICT's
+    # caption (1.2.238; CICT, 28 November 2026: "Paste in picture on the Home page with caption"); '0' takes it off
+    "home.photo": "1",
     # the figures CICT asked to hide on 7 November 2026 ("Hide the above said two graphs"): the card "Institutions registered"
     # (with today and the last 7 days) of At a glance on /institutions, and on the home page too (1.2.165: "at home page hide 258
     # Institutions registered"), and the ring "Participating Institutions under a Nodal Officer" on /nodal-institutions (1.2.164);

@@ -89,6 +89,22 @@
   </div>
 </div>
 {% endif %}
+{# The photographs of the release of the Thirukkural in 50 languages at the inauguration of KTS 5.0 (1.2.238; CICT, 28 November 2026:
+   "Paste in picture on the Home page with caption. 50 Thirukkural translations released on 28 November 2026 at KTS 5.0 at
+   Varanasi.", twice, with a photograph each time): data/home_photo.json, under the bands at the top, side by side (one above the
+   other on a phone), the caption under them in CICT's words (English); while the Console shows them (home.photo). #}
+{% if photo %}
+<section class="home-photo" aria-labelledby="home-photo-cap" style="padding:18px 0 4px">
+  <div class="wrap">
+    <figure style="margin:0 auto;max-width:1100px">
+      <div class="home-photo-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px">{% for p in photo.photos %}
+        <img src="{{ url_for('static', filename=p.file) }}" alt="{{ p.alt }}" width="{{ p.width }}" height="{{ p.height }}" lang="en" style="display:block;width:100%;height:auto;border-radius:12px;box-shadow:0 6px 18px rgba(15,30,56,.16)">{% endfor %}
+      </div>
+      <figcaption id="home-photo-cap" lang="en" dir="ltr" style="margin-top:10px;font-weight:800;font-size:1.2rem;line-height:1.4;text-align:center">{{ photo.caption }}</figcaption>
+    </figure>
+  </div>
+</section>
+{% endif %}
 {# Quick links (1.2.152, CICT: "Make the Registration, Programme Guidelines, Study Materials (particularly the 108 Tirukkural
    couplets), and Login pages easily accessible through prominent links on the website homepage") #}
 <nav class="quick-links" aria-label="{{ t('site.quick_links') }}">

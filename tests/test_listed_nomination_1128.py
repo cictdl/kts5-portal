@@ -186,7 +186,10 @@ def test_the_notice_and_the_band(monkeypatch):
     assert '<link rel="stylesheet" href="/static/css/portal.css?v=58">' in page
     # first among the latest notices of the home page (pinned, the newest: on the live portal it is put in after all the others; in a
     # new database all the notices of the start have the same moment)
-    _sql(app, "UPDATE notices SET created_at = '2026-11-28T08:00:00+00:00' WHERE link = ?", (LISTED_NOTICE_LINK,))
+    # (1.2.238: a moment after the start of the test, not 28 November 2026, 8:00 UTC, which that day passed)
+    from datetime import datetime, timedelta, timezone
+    later = (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat(timespec="seconds")
+    _sql(app, "UPDATE notices SET created_at = ? WHERE link = ?", (later, LISTED_NOTICE_LINK))
     page = client.get("/?lang=en").get_data(as_text=True)
     latest = page[page.index('<ul class="notice-list">'):]
     assert latest.index(f'href="/notices/{nid}"') < latest.index("</li>")
