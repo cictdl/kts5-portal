@@ -36,7 +36,7 @@ def test_shown_in_the_gallery_and_in_the_news():
     client = make_app(ADMIN_PASSWORD=None).test_client()
     seeds = _seeds()
     page = client.get("/gallery?lang=en&album=KTS+5.0+in+the+news").get_data(as_text=True)
-    assert page.count('<figure class="photo">') == 9 and "9 photographs" in page
+    assert page.count('<figure class="photo">') == 14 and "14 photographs" in page      # 14 since 1.2.237 (the supplement of 28 November)
     # the newest first, in the order given
     at = [page.index(s["file"]) for s in seeds]
     assert at == sorted(at) and at[-1] < page.index("kts5-news-2026-10-23-dinamani.jpg")

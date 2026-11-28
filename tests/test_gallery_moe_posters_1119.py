@@ -45,11 +45,13 @@ def test_the_album_on_the_gallery():
     app = make_app(ADMIN_PASSWORD=None)
     client = app.test_client()
     page = client.get("/gallery?lang=en").get_data(as_text=True)
-    # the newest album, first among the albums and the pictures
+    # the newest album, first among the albums and the pictures; since 1.2.237 after the album of the news, whose clippings of the
+    # supplement of Hindu Tamil Thisai of 28 November are newer
     assert f"<bdi>{ALBUM}</bdi> <span" in page
-    assert page.index(f"<bdi>{ALBUM}</bdi>") < page.index("<bdi>KTS 5.0 in the news</bdi>")
+    assert page.index("<bdi>KTS 5.0 in the news</bdi>") < page.index(f"<bdi>{ALBUM}</bdi>")
     first = page.index('<figure class="photo">')
-    assert page.index("/files/gallery/kts5-moe-three-initiatives.webp", first) < page.index("/files/gallery/kts5-news-", first)
+    assert (page.index("/files/gallery/kts5-news-2026-11-28-", first) < page.index("/files/gallery/kts5-moe-three-initiatives.webp", first)
+            < page.index("/files/gallery/kts5-news-2026-11-04-", first))
     album = client.get("/gallery?lang=en&album=" + ALBUM).get_data(as_text=True)
     # ... and the poster of the MyGov quiz, of 24 November, since 1.2.213 (tests/test_mygov_quiz_1124.py)
     assert album.count('<figure class="photo">') == 9 and "9 photographs" in album and "18 Nov 2026" in album

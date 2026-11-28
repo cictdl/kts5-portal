@@ -156,10 +156,11 @@ def test_kts5_in_the_news():
     # the Ministry of Education, tests/test_gallery_moe_posters_1119.py)
     # ... 32 since 1.2.211 (four photographs of the Ministry of Education from PIB, tests/test_news_gallery_1123.py)
     # ... 33 since 1.2.213 (the poster of the MyGov quiz, tests/test_mygov_quiz_1124.py)
-    assert page.count('<figure class="photo">') == 33 and "33 photographs" in page
+    # ... 38 since 1.2.237 (the supplement of Hindu Tamil Thisai of 28 November, tests/test_supplement_1128.py)
+    assert page.count('<figure class="photo">') == 38 and "38 photographs" in page
     assert page.index("<bdi>KTS 5.0 in the news</bdi>") < page.index("<bdi>Launch of the KTS 5.0 web portal and registration</bdi>")
     news = client.get("/gallery?lang=en&album=KTS+5.0+in+the+news").get_data(as_text=True)
-    assert news.count('<figure class="photo">') == 9 and "Classical text Thirukkural to take centre stage" in news   # 9 since 1.2.159
+    assert news.count('<figure class="photo">') == 14 and "Classical text Thirukkural to take centre stage" in news   # 9 since 1.2.159, 14 since 1.2.237
     assert "காசி தமிழ் சங்கமம் நவ., 28ல் தொடக்கம்" in news
     for s in seeds:
         r = client.get(f"/files/gallery/{s['file']}")

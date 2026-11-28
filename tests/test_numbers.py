@@ -82,7 +82,7 @@ def test_the_banner_on_the_home_page():
     assert numbers[:7] == [23, 1330, 1359, numbers[3], 23, 92, numbers[6]] and numbers[3] >= 217 and numbers[6] >= 253      # 23 books since 1.2.219
     # the gallery 15 since 1.2.159, 20 since 1.2.183, 28 since 1.2.206; the lectures 46 since 1.2.166; the repository 158 with 9 apps
     # since 1.2.184
-    assert numbers[8:18] == [158, 57, 44, 22, 15, 9, 6, 46, 56, 33]      # the gallery 32 since 1.2.211, 33 since 1.2.213; reels 56 since 1.2.214
+    assert numbers[8:18] == [158, 57, 44, 22, 15, 9, 6, 46, 56, 38]      # the gallery 32 since 1.2.211, 33 since 1.2.213, 38 since 1.2.237; reels 56 since 1.2.214
     assert numbers[18:] == [865, 100000, 41, 15, 133, 17, 108655, 275262, 6758, 59170]
     hrefs = [t[0] for t in tiles]
     assert hrefs[:8] == ["/about", "/thirukkural", "/thirukkural", "/resources", "/syllabus", "/posters",

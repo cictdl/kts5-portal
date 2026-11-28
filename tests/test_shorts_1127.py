@@ -83,7 +83,7 @@ def test_the_six_latest_on_the_gallery():
     assert re.findall(r'data-yt="([A-Za-z0-9_-]{11})"', strip) == [s["id"] for s in latest]
     assert '<a href="/gallery/shorts">All 67 shorts →</a>' in strip
     assert main.index("sh-strip") < main.index("photo-grid")                              # above the photographs
-    assert page.count('<figure class="photo">') == 33 and "33 photographs" in page          # the photographs as they were
+    assert page.count('<figure class="photo">') == 38 and "38 photographs" in page          # the photographs as they were (38 since 1.2.237)
     album = client.get("/gallery?lang=en&album=KTS+5.0+in+the+news").get_data(as_text=True)
     assert "sh-strip" not in album and 'href="/gallery/shorts"' in album                    # an album: the tab only
 
