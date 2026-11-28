@@ -80,7 +80,8 @@ def _page(app, path):
 
 
 def _halves(page):
-    """(upcoming, past) of the schedule page."""
+    """(upcoming, past) of the schedule page, without its footer (whose "Updated: <day>" is the day of the newest change, 1.2.234)."""
+    page = page[:page.index("</main>") + len("</main>")]
     start = page.index("<h2>" + _text("schedule.upcoming") + "</h2>")
     mark = '<h2 style="margin-top:28px">' + _text("schedule.past") + "</h2>"
     if mark not in page:

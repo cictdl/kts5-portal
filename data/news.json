@@ -3885,5 +3885,32 @@
         "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2342468"
       }
     ]
+  },
+  {
+    "key": "social-2026-11-28-101",
+    "date": "2026-11-28",
+    "kind": "social",
+    "source": "DD National",
+    "gov": true,
+    "title": "DD National live: the Hon'ble Vice-President, Shri C. P. Radhakrishnan, inaugurates Kashi Tamil Sangamam 5.0 in Varanasi",
+    "quote": "Hon'ble Vice President of India Shri C. P. Radhakrishnan inaugurates the 5th edition of Kashi Tamil Sangamam in Varanasi, celebrating the enduring cultural, linguistic and civilisational bonds between Kashi and Tamil Nadu.",
+    "quote_lang": "en",
+    "links": [
+      {
+        "site": "YouTube",
+        "account": "DoordarshanNational",
+        "date": "2026-11-28",
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=0bV8uPVhtbg"
+      }
+    ],
+    "versions": [
+      {
+        "lang": "en",
+        "title": "DD National live: the Hon'ble Vice-President, Shri C. P. Radhakrishnan, inaugurates Kashi Tamil Sangamam 5.0 in Varanasi",
+        "url": "https://www.youtube.com/watch?v=0bV8uPVhtbg",
+        "time": "9:40 AM"
+      }
+    ]
   }
 ]
