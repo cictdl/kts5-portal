@@ -30,6 +30,7 @@
   {% elif by_inst %}<p class="alert warning" style="max-width:70ch"><b>{{ t('reg.selected_only') }}</b></p>
   {% else %}{% include "public/_hei_box.html" %}{% endif %}
   <p class="alert info" style="max-width:70ch"><b>{{ t('reg.nom_english_note') if by_coord else t('reg.english_note') }}</b></p>
+  {% if by_coord and quiet %}<p class="alert warning" id="no-mail" style="max-width:70ch" lang="en" dir="ltr"><b>No e-mail is sent now</b> (1.2.236): after you submit, give the student the application number shown; the student uses it to follow the application and to sign in to the candidate portal.</p>{% endif %}
   {% include "public/_nomination_box.html" %}
   <p class="stipend-note" style="margin:0 0 14px"><span class="amt">₹10,000</span><span>{{ t('home.stipend') }}</span></p>
   {% if dates_public() %}<p><span class="pill green">{{ t('reg.closes_on') }}: {{ reg_until() }}</span></p>{% endif %}

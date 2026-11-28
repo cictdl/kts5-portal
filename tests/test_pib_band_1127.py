@@ -51,7 +51,7 @@ def test_the_band_on_the_home_page():
     assert ".pib-band a:focus-visible { outline: 3px solid #fff; outline-offset: 3px; border-radius: 2px; }" in css
     # its day on one line on a phone (27-11-2026 would break at a hyphen)
     assert ".pib-band .pib-from bdi { white-space: nowrap; }" in css
-    assert '<link rel="stylesheet" href="/static/css/portal.css?v=57">' in page and "<style" not in page
+    assert '<link rel="stylesheet" href="/static/css/portal.css?v=58">' in page and "<style" not in page
     # first of all, above the circular band, the bands of the Academic Orientation and of the quiz, and the hero
     at = [page.index(mark) for mark in ('class="pib-band"', 'class="nodal-attention"', 'class="acad-band"', 'class="quick-links"', 'class="hero"')]
     assert at == sorted(at) and page.index('class="pib-band"') > page.index("<main")

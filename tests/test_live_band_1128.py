@@ -58,7 +58,7 @@ def test_the_band_on_the_home_page(monkeypatch):
     assert _contrast("#ffffff", "#a30000") > 7 and _contrast("#ffd166", "#a30000") > 4.5
     css = (ROOT / "static" / "css" / "portal.css").read_text(encoding="utf-8")
     assert ".live-band a:focus-visible { outline: 3px solid #fff; outline-offset: 3px; border-radius: 2px; }" in css
-    assert '<link rel="stylesheet" href="/static/css/portal.css?v=57">' in page and "<style" not in page
+    assert '<link rel="stylesheet" href="/static/css/portal.css?v=58">' in page and "<style" not in page
     # the very first, above the band of the press release, the circular band and the hero
     at = [page.index(mark) for mark in ('class="live-band"', 'class="pib-band"', 'class="nodal-attention"', 'class="acad-band"',
                                         'class="quick-links"', 'class="hero"')]

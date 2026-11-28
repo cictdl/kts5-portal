@@ -3,7 +3,7 @@
 {% block content %}
 <div class="wrap section">
   {% if not printable %}
-  {% if nominated %}<div class="alert success"><b>{{ t('reg.nom_done_title') }}.</b> {{ t('reg.nom_done_lead') }} <b>{{ app.app_no }}</b>. {{ t('reg.nom_done_note') }}</div>
+  {% if nominated %}<div class="alert success"><b>{{ t('reg.nom_done_title') }}.</b> {{ t('reg.nom_done_lead') }} <b>{{ app.app_no }}</b>. {% if quiet %}<span lang="en" dir="ltr" id="no-mail">No e-mail is sent now: give the student this application number. With it, the date of birth and the last four digits of the mobile number the student follows the application at /status and signs in to the candidate portal.</span>{% else %}{{ t('reg.nom_done_note') }}{% endif %}</div>
   {% else %}<div class="alert success"><b>{{ t('reg.done_title') }}.</b> {{ t('reg.done_lead') }} <b>{{ app.app_no }}</b>. {{ t('reg.done_note') }}</div>{% endif %}
   {% endif %}
   <div class="doc">

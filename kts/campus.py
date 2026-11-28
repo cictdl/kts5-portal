@@ -34,7 +34,7 @@ import random
 import re
 import secrets
 import sqlite3
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 from flask import (Blueprint, Response, abort, current_app, flash, g, jsonify, redirect, render_template,
                    request, session, url_for)
@@ -367,10 +367,19 @@ def _day(value):
         return None
 
 
-def assessment_period(settings=None):
-    """(from, to) of the institution-level assessments, as dates."""
+def assessment_period(settings=None, inst=None):
+    """
+    (from, to) of the institution-level assessments, as dates; for an institution on the list of the Nodal Officer of its State/UT,
+    up to the day of nominate.listed_until while that has not passed (1.2.236).
+    """
     settings = settings or all_settings()
-    return _day(settings.get("camp.from")), _day(settings.get("camp.to"))
+    start, end = _day(settings.get("camp.from")), _day(settings.get("camp.to"))
+    if inst is not None:
+        from .heis import listed_open, listed_until
+        if listed_open(inst, settings):
+            last = _day(listed_until(settings))
+            end = max(end, last) if end else last
+    return start, end
 
 
 def assessment_state(inst, settings=None):
@@ -378,7 +387,9 @@ def assessment_state(inst, settings=None):
     settings = settings or all_settings()
     if inst["status"] != "accepted":
         return "not_accepted"
-    if settings.get("camp.on") != "1" or not inst["test_on"]:
+    from .heis import listed_open
+    # an institution on the list of the Nodal Officer of its State/UT, up to nominate.listed_until, whatever camp.on says (1.2.236)
+    if not inst["test_on"] or (settings.get("camp.on") != "1" and not listed_open(inst, settings)):
         return "off"
     today = now_ist().date()
     start, end = _day(inst["test_from"]), _day(inst["test_to"])
@@ -423,9 +434,27 @@ def home():
               if r["id"] != inst["id"] and _opens(r, session["inst_email"], session.get("inst_m"))]
     winner = _winner(inst)
     application = query("SELECT * FROM applications WHERE id = ?", (inst["application_id"],), one=True) if inst["application_id"] else None
-    start, end = assessment_period(settings)
+    start, end = assessment_period(settings, inst)
     base = current_app.config["BASE_URL"]
+    # the nomination open again for an institution on the list of the Nodal Officer of its State/UT (1.2.236): up to when; its mails
+    from .heis import flow_mail, listed_open, listed_states, listed_until
+    listed = listed_open(inst, settings)
+    # the selected student was told by e-mail when the selection was made up to the last day of the nomination, or by a listed
+    # institution up to nominate.listed_until
+    told = True
+    if winner is not None and inst["winner_at"]:
+        from .utils import reg_over
+        at = parse_iso(inst["winner_at"])
+        at = at.astimezone(now_ist().tzinfo) if at is not None else None
+        until = listed_until(settings)
+        told = at is not None and (not reg_over(settings, at) or (inst["status"] == "accepted" and inst["state"] in listed_states()
+                                                                  and bool(until) and at.strftime("%Y-%m-%dT%H:%M") <= until))
+    listed_text = ""
+    if listed:
+        until = datetime.strptime(listed_until(settings), "%Y-%m-%dT%H:%M")
+        listed_text = f"{until:%d %B %Y}, " + until.strftime("%I:%M %p").lstrip("0")
     return render_template("campus/home.html", inst=inst, others=others, settings=settings, students=students_of(inst),
+                           listed=listed, listed_text=listed_text, quiet=not flow_mail(settings, inst), told=told,
                            winner=winner, application=application, state=assessment_state(inst, settings),
                            period=(start, end), reg_end=_day(settings.get("reg.end")),
                            test_url=f"{base}/assessment/{inst['test_slug']}" if inst["test_slug"] else "",
@@ -442,7 +471,7 @@ def assessment():
         abort(403)
     action = request.form.get("action")
     settings = all_settings()
-    start, end = assessment_period(settings)
+    start, end = assessment_period(settings, inst)
     now = utcnow()
     if action == "on":
         a, b = _day(request.form.get("test_from")), _day(request.form.get("test_to"))
@@ -503,6 +532,9 @@ def registration_mail(inst, student):
     The selection of the student (1.2.158: the Institutional Coordinator submits the nomination, B-3 of the D.O. letter of 31 October
     2026): the student is informed, without a link; the coordinator is asked to submit the nomination from the institution's page.
     """
+    from .heis import flow_mail
+    if not flow_mail(inst=inst):      # after the last day of the nomination, but for a listed institution: no mail (1.2.236)
+        return
     base = current_app.config["BASE_URL"]
     if student["email"]:
         send_mail(student["email"], f"KTS 5.0: you are selected by {inst['name']}",
@@ -521,6 +553,12 @@ def registration_mail(inst, student):
               f"Faculty Supervisor/Guide.\n\nThe student has been informed by e-mail"
               + (f" ({student['email']})" if student["email"] else "") +
               f".\n\nCentral Institute of Classical Tamil, Chennai")
+
+
+def _told(inst):
+    """How the selected student learns of it: by e-mail while its mails go, by the coordinator else (1.2.236)."""
+    from .heis import flow_mail
+    return " and informed by e-mail" if flow_mail(inst=inst) else "; no e-mail is sent now: tell the student yourself"
 
 
 def _on_or_before():
@@ -565,7 +603,7 @@ def winner():
         if student is None:
             abort(404)
         _issue(inst, student["id"])
-        flash(f"{student['name']} is selected and informed by e-mail. Now submit the nomination: \u201cSubmit the nomination\u201d below.",
+        flash(f"{student['name']} is selected{_told(inst)}. Now submit the nomination: \u201cSubmit the nomination\u201d below.",
               "success")
     elif action == "enter":
         d = {k: (request.form.get(k) or "").strip() for k in ("name", "email", "mobile", "roll_no", "course", "lang")}
@@ -584,7 +622,7 @@ def winner():
                           "VALUES(?,?,?,?,?,?,?,'entered',?,?)",
                           (inst["id"], d["name"], d["email"], d["mobile"], d["roll_no"], d["course"], d["lang"], utcnow(), client_ip()))
         _issue(inst, sid)
-        flash(f"{d['name']} is selected and informed by e-mail. Now submit the nomination: \u201cSubmit the nomination\u201d below.",
+        flash(f"{d['name']} is selected{_told(inst)}. Now submit the nomination: \u201cSubmit the nomination\u201d below.",
               "success")
     elif action == "clear":
         if inst["application_id"]:
@@ -626,6 +664,9 @@ def bind_application(inst, application_id, by_coord=False):
                  attempt["time_taken_sec"], attempt["ip"], attempt["user_agent"]))
         execute("UPDATE applications SET exam_score = ?, updated_at = ? WHERE id = ?", (attempt["score"], utcnow(), application_id))
     app = query("SELECT app_no, full_name FROM applications WHERE id = ?", (application_id,), one=True)
+    from .heis import flow_mail
+    if not flow_mail(inst=inst):      # after the last day of the nomination, but for a listed institution: no mail (1.2.236)
+        return
     if by_coord:
         send_mail(inst["coord_email"], f"KTS 5.0: the nomination of {app['full_name']} is submitted ({app['app_no']})",
                   f"Dear {inst['coord_name']},\n\nThe nomination of {app['full_name']}, the student selected by {inst['name']}, is "

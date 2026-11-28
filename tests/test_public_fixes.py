@@ -678,7 +678,8 @@ def test_templates_print_streams_through_the_filter():
                                          "kts_banner.lang|langtag",   # the banner of the home page (1.2.145)
                                          "r.lang|langtag",   # the language of a student selected on merit, in the Console (1.2.157)
                                          "g.code|langtag",   # the language of the lectures of the Academic Orientation (1.2.214)
-                                         "quiz.lang|langtag"}   # the language of the notice of the MyGov quiz, on its band (1.2.215)
+                                         "quiz.lang|langtag",   # the language of the notice of the MyGov quiz, on its band (1.2.215)
+                                         "listed_band.lang|langtag"}   # ... of the notice of the nomination open again, on its band (1.2.236)
 
 
 def test_style_sheet_selects_the_tags():
@@ -1003,16 +1004,16 @@ def test_version_of_style_sheet_and_script():
     for path in TEMPLATES:
         for name, version in re.findall(r"filename='((?:css|js)/portal\.(?:css|js))'\) \}\}\?v=(\d+)", path.read_text(encoding="utf-8")):
             linked.setdefault(path.relative_to(ROOT / "templates").as_posix(), []).append((name, version))
-    expected = {name: [("css/portal.css", "57"), ("js/portal.js", "24")]      # 53 since 1.2.205, 54 since 1.2.215, 55 since 1.2.231, 56 since 1.2.232, 57 since 1.2.233
+    expected = {name: [("css/portal.css", "58"), ("js/portal.js", "24")]      # 53 since 1.2.205, 54 since 1.2.215, 55 since 1.2.231, 56 since 1.2.232, 57 since 1.2.233, 58 since 1.2.236
                 for name in ("base.html", "candidate/exam_paper.html", "console/base.html")}
     # the certificate has a style sheet of its own and the script for its print button
     expected["public/certificate.html"] = [("js/portal.js", "24")]
     expected["public/letter.html"] = [("js/portal.js", "24")]
     # the pages of the classroom quiz have a frame of their own, with the style sheet and the script of the portal
-    expected["quiz/layout.html"] = [("css/portal.css", "57"), ("js/portal.js", "24")]
+    expected["quiz/layout.html"] = [("css/portal.css", "58"), ("js/portal.js", "24")]
     assert linked == expected
     for path in TEMPLATES:
-        assert not re.search(r"portal\.css'\) \}\}(?!\?v=57\")", path.read_text(encoding="utf-8")), path
+        assert not re.search(r"portal\.css'\) \}\}(?!\?v=58\")", path.read_text(encoding="utf-8")), path
         assert not re.search(r"portal\.js'\) \}\}(?!\?v=24\")", path.read_text(encoding="utf-8")), path
 
 
@@ -1116,7 +1117,7 @@ def test_robots(app):
 def test_healthz_tells_the_version(app):
     from kts.version import VERSION
     answer = app.test_client().get("/healthz").get_json()
-    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.235" and answer["time"]
+    assert answer["ok"] is True and answer["version"] == VERSION == "1.2.236" and answer["time"]
     assert sorted(answer) == ["ok", "time", "version"]
 
 

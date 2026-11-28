@@ -644,6 +644,45 @@ def listed_states():
     return frozenset(("Jammu and Kashmir", "Ladakh") + NODAL_LISTS_SAME_1126 + tuple(nodal_list["state"] for nodal_list in NODAL_LISTS_1126))
 
 
+def listed_until(settings=None):
+    """
+    The last moment at which the institutions on the lists of the Nodal Officers assess and nominate (nominate.listed_until, 1.2.236),
+    'YYYY-MM-DDTHH:MM' in IST; '' when none is set or it cannot be read.
+    """
+    from datetime import datetime
+    value = ((settings.get("nominate.listed_until") if settings is not None else get_setting("nominate.listed_until")) or "").strip()
+    try:
+        datetime.strptime(value, "%Y-%m-%dT%H:%M")
+    except ValueError:
+        return ""
+    return value
+
+
+def listed_open(inst, settings=None):
+    """
+    The institution is on the list of the Nodal Officer of its State/UT - accepted, of a State/UT of listed_states, as the section
+    "List of selected institutions given by the Nodal Officers" of /institutions shows it - and nominate.listed_until has not passed
+    (1.2.236; CICT, 28 November 2026: "the selected from List of selected institutions given by the Nodal Officers can nominate the
+    students for 3 days from now onwards"): it may set its online assessment and submit the nomination up to then.
+    """
+    until = listed_until(settings)
+    return (bool(until) and inst is not None and inst["status"] == "accepted" and inst["state"] in listed_states()
+            and now_ist().strftime("%Y-%m-%dT%H:%M") <= until)
+
+
+def flow_mail(settings=None, inst=None):
+    """
+    The mails of the selection of the student and of the nomination - to the student (selected; the application number) and to the
+    coordinator (to submit; submitted, registered) - go up to the last day of the nomination (reg.end, at its hour), and for an
+    institution on the list of the Nodal Officer of its State/UT up to nominate.listed_until (1.2.236; CICT: "send mail for
+    nomination only"); none for any other institution after the last day.
+    """
+    from .db import all_settings
+    from .utils import reg_over
+    settings = settings if settings is not None else all_settings()
+    return not reg_over(settings, now_ist()) or listed_open(inst, settings)
+
+
 def _name_key(name):
     """The name of an institution as a list is compared with the database: without case, its white space as single spaces."""
     return re.sub(r"\s+", " ", name or "").strip().casefold()

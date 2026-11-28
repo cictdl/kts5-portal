@@ -23,7 +23,7 @@ from . import finder as FINDER
 from . import heis as HEI
 from . import kural as K
 from . import letters as LETTERS
-from .db import (DO_NOTICE_FILE, LAUNCH_NOTICE, MYGOV_QUIZ_UNTIL, MYGOV_QUIZ_URL, RETIRED_LAUNCH_NOTICES, all_settings, audit, execute,
+from .db import (DO_NOTICE_FILE, LAUNCH_NOTICE, LISTED_NOTICE_LINK, MYGOV_QUIZ_UNTIL, MYGOV_QUIZ_URL, RETIRED_LAUNCH_NOTICES, all_settings, audit, execute,
                  get_setting, query, utcnow)
 from . import i18n
 from . import search as S
@@ -333,6 +333,11 @@ def key_dates_box(settings=None):
     return groups
 
 
+def _held_mail(*_args, **_kwargs):
+    """In place of send_mail where no mail goes (1.2.236: the nomination after its last day)."""
+    return None
+
+
 def nomination_open(settings):
     """
     The nomination by the Participating Institutions open (1.2.154): nominate.open not '0' and reg.end, the last day of the
@@ -400,11 +405,18 @@ def home():
     acad_langs = [{"code": code, "native": (i18n.LANG_INFO.get(code) or {}).get("native", code)} for code, _rows in academic_lectures()]
     # the press release of the Ministry of 27 November 2026 in a band at the top (1.2.232), while the Console shows it (home.pib)
     press = home_press() if settings.get("home.pib") == "1" else None
+    # the nomination open again for the institutions on the lists of the Nodal Officers (1.2.236): its notice, in a band at the top,
+    # while the notice is published, up to nominate.listed_until; in the words that the notice has now
+    listed_band = None
+    until = HEI.listed_until(settings)
+    if until and now_ist().strftime("%Y-%m-%dT%H:%M") <= until:
+        listed_band = query("SELECT id, title, link, lang FROM notices WHERE link = ? AND published = 1 AND (publish_at IS NULL OR publish_at <= ?)"
+                            + hide + " ORDER BY pinned DESC, created_at DESC, id DESC LIMIT 1", (LISTED_NOTICE_LINK, utcnow(), *hide_args), one=True)
     # the live stream of the inauguration on YouTube, above it (1.2.233), up to LIVE_UNTIL while the Console shows it (home.live)
     live = ({"url": LIVE_URL, "streams": LIVE_STREAMS}
             if settings.get("home.live") == "1" and now_ist().strftime("%Y-%m-%dT%H:%M") <= LIVE_UNTIL else None)
     return render_template("public/home.html", settings=settings, dates=_key_dates(settings), uz=home_uzbek(), acad_langs=acad_langs, quiz=quiz,
-                           press=press, live=live,
+                           press=press, live=live, listed_band=listed_band,
                            circular=circular, circular_head=circular_head, circ_new=circ_new,
                            # "Find your next step" (1.2.140), while shown (home.hub, hidden since 1.2.146)
                            hub=FINDER.hub(settings, lang) if settings.get("home.hub") == "1" else None,
@@ -912,14 +924,15 @@ def register():
     me = CAMP.current_institution() if inst is not None else None
     by_coord = me is not None and me["id"] == inst["id"]
     # the nomination open (1.2.154): up to reg.end even while the students' registration is switched off or hidden
-    open_now = state == "open" or nomination_open(settings)
+    # ... and for an institution on the list of the Nodal Officer of its State/UT up to nominate.listed_until (1.2.236)
+    open_now = state == "open" or nomination_open(settings) or HEI.listed_open(inst, settings)
     if not (by_coord and open_now):
         # anybody else: the coordinator submits the nomination (before reg.start, the page of the day it opens, as before)
         ctx.update(ended=reg_over(settings, now_ist()), by_institution=open_now and state != "not_yet",
                    token_bad=bool(token) and inst is None)
         # a form sent by anybody but the coordinator stores nothing
         return render_template("public/register_closed.html", **ctx), (403 if request.method == "POST" else 200)
-    ctx.update(inst=inst, token=token, by_inst=False, token_bad=False, by_coord=by_coord, heis=[])
+    ctx.update(inst=inst, token=token, by_inst=False, token_bad=False, by_coord=by_coord, heis=[], quiet=not HEI.flow_mail(settings, inst))
     if inst is not None and request.method == "GET":
         winner = CAMP.winner_of(inst)
         if winner:
@@ -983,7 +996,9 @@ def register():
             audit("nomination_submitted", "institution", inst["id"], detail=app_no, ip=ip)
         from .certificate import certificate_link
         cert = certificate_link(query("SELECT * FROM applications WHERE id = ?", (row_id,), one=True), external=True)
-        send_mail(
+        # the application number by mail up to the last day of the nomination, and for a listed institution up to
+        # nominate.listed_until (1.2.236)
+        (send_mail if HEI.flow_mail(settings, inst) else _held_mail)(
             data["email"],
             f"KTS 5.0 application received: {app_no}",
             f"Dear {data['full_name']},\n\n"
@@ -1193,6 +1208,9 @@ def register_done(app_no):
     if row is None or session.get("just_registered") != row["id"]:
         return redirect(url_for("public.status"))
     return render_template("public/register_done.html", app=row, nominated=session.get("just_nominated") == row["id"],
+                           # no mail of the application number after the last day, but for a listed institution (1.2.236)
+                           quiet=not HEI.flow_mail(all_settings(), query("SELECT * FROM institutions WHERE id = ?", (row["institution_id"],), one=True)
+                                                   if row["institution_id"] else None),
                            qr=qr_data_uri(f"{current_app.config['BASE_URL']}/status?app={app_no}"),
                            lang_name=K.lang_info(row["pref_lang"])["name"], settings=all_settings())
 

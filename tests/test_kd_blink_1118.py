@@ -116,4 +116,4 @@ def test_the_letters_are_bold_and_blink_as_the_new_badge_does():
     assert css.count("kd-blink") == 2
     # every browser takes the new style sheet
     page = _portal("2099-12-31").get("/?lang=en").get_data(as_text=True)
-    assert '<link rel="stylesheet" href="/static/css/portal.css?v=57">' in page      # 54 since 1.2.215
+    assert '<link rel="stylesheet" href="/static/css/portal.css?v=58">' in page      # 54 since 1.2.215

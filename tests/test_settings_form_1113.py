@@ -79,7 +79,7 @@ def test_the_form_sent_back_as_it_is_shown_saves_nothing():
     from kts.db import all_settings
     app, admin = _portal()
     keys = [key for _group, items in SETTING_GROUPS for key, _label, _kind in items]
-    assert len(keys) == len(set(keys)) == 136 and sorted(_fields(admin)) == sorted(keys)      # three more since 1.2.189, one since 1.2.190, two since 1.2.195, one since 1.2.198; two fewer since 1.2.199; one more since 1.2.232, one since 1.2.233
+    assert len(keys) == len(set(keys)) == 137 and sorted(_fields(admin)) == sorted(keys)      # three more since 1.2.189, one since 1.2.190, two since 1.2.195, one since 1.2.198; two fewer since 1.2.199; one more since 1.2.232, one since 1.2.233, one since 1.2.236
     with app.app_context():
         before = all_settings()
     page = _send(admin)

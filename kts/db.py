@@ -830,6 +830,10 @@ DEFAULT_SETTINGS = {
     # the nomination by the Participating Institutions (1.2.154): the personal registration link of the student a Participating
     # Institution has selected opens the form up to reg.end, even while the students' own registration is off; '0' closes it
     "nominate.open": "1",
+    # the institutions on the lists of the Nodal Officers (the section "List of selected institutions given by the Nodal Officers" of
+    # /institutions) assess their students and nominate one up to this moment, IST, 'YYYY-MM-DDTHH:MM' (1.2.236; CICT, 28 November
+    # 2026: "can nominate the students for 3 days from now onwards"; "1 Dec 2026, 5:00 PM"); empty: no such time (heis.listed_open)
+    "nominate.listed_until": "2026-12-01T17:00",
     # the days for which the newest circular of the Ministry carries a blinking NEW on the home page (1.2.152); 0: never
     "circular.new_days": "30",
     # the newest circular of the Ministry, with its PDF, first in the circular band of the home page (1.2.162, the user, 5 November
@@ -1692,6 +1696,23 @@ MYGOV_QUIZ_NOTICE = (
         "Play the quiz: " + MYGOV_QUIZ_URL,
         "",
         "To prepare, read the Thirukkural in your language on this portal.",
+    ]),
+)
+# The nomination open again for the institutions on the lists of the Nodal Officers, to 1 December 2026, 5:00 PM (1.2.236): its notice,
+# which leads to the sign-in of the institutions (LISTED_NOTICE_LINK); the band of the home page shows its title up to
+# nominate.listed_until
+LISTED_NOTICE_LINK = "/institution/login"
+LISTED_NOTICE = (
+    'Nomination open again until 1 December 2026, 5:00 PM for the institutions on the lists of the Nodal Officers',
+    "\n".join([
+        'The institutions on the lists of selected institutions given by the Nodal Officers (Participating Institutions: https://kts.cict.in/institutions#hei-selected) may assess their students and nominate one student on this portal until 1 December 2026, 5:00 PM (IST).',
+        '',
+        "• Sign in on the institution's page, https://kts.cict.in/institution/login, with the e-mail address and the mobile number of the Institutional Coordinator given at registration.",
+        '• Assess your interested students on the Thirukkural: switch on the online assessment with its days up to 1 December 2026 and give your students the link and the access code shown, or assess them in any other suitable mode.',
+        '• Select the student and submit the nomination on the institution\'s page ("Submit the nomination"), with the nomination form signed and sealed by the Head of the Institution, a photograph, an ID proof and the details of the Faculty Supervisor/Guide.',
+        '• The student is informed by e-mail when selected, and receives the application number by e-mail once the nomination is submitted.',
+        '',
+        'The nomination of the other institutions remains closed.',
     ]),
 )
 EXT27_NOTICE = (
@@ -2883,6 +2904,16 @@ def init_db(app):
         if not conn.execute("SELECT 1 FROM notices WHERE title = ?", (MYGOV_QUIZ_NOTICE[0],)).fetchone():
             conn.execute("INSERT INTO notices(title, body, category, lang, pinned, published, attachment, link, created_at, updated_at) "
                          "VALUES(?,?,'general','en',1,1,'',?,?,?)", (MYGOV_QUIZ_NOTICE[0], MYGOV_QUIZ_NOTICE[1], MYGOV_QUIZ_URL, now, now))
+        conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
+
+    # The nomination open again for the institutions on the lists of the Nodal Officers (1.2.236): its notice, pinned, leading to the
+    # sign-in of the institutions, put in once for each database; none is added when a notice with its title is there already.
+    # No mail goes with it.
+    mark = "seed.notice.listed_nomination"
+    if not conn.execute("SELECT 1 FROM settings WHERE key = ?", (mark,)).fetchone():
+        if not conn.execute("SELECT 1 FROM notices WHERE title = ?", (LISTED_NOTICE[0],)).fetchone():
+            conn.execute("INSERT INTO notices(title, body, category, lang, pinned, published, attachment, link, created_at, updated_at) "
+                         "VALUES(?,?,'registration','en',1,1,'',?,?,?)", (LISTED_NOTICE[0], LISTED_NOTICE[1], LISTED_NOTICE_LINK, now, now))
         conn.execute("INSERT OR IGNORE INTO settings(key, value, updated_at) VALUES(?,?,?)", (mark, "1", now))
 
     # The launch of 14 October 2026, 5:00 PM was postponed (1.2.69): on a database that has announced it already (its notice
